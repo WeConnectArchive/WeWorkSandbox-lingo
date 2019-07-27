@@ -1,0 +1,5 @@
+dir: "db/mysql"
+schemas:
+  - "information_schema"
+driver_name: "mysql"
+dsn: "root:P@ssw0rd@/?maxAllowedPacket=0"

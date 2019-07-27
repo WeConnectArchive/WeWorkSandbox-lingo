@@ -1,0 +1,42 @@
+# System Files
+*.swp
+*.DS_Store
+.tmp_*
+*~
+
+# IDE files
+.idea/
+.idea_modules/
+*.ipr
+*.iws
+*.iml
+
+cmake-build-*/
+out/
+
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+vendor/
+.vendor.*
+test_results/
+
+# Ignore any files that are generated mocks
+mock_*_test.go
+# Ignore mocking matchers
+**/matchers/**
+
+# But include our custom Test Matchers
+!/internal/test/matchers/***
+
+# Binaries
+/lingo
+/output/
