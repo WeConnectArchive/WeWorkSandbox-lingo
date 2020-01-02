@@ -1,7 +1,7 @@
 package matchers
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/core"
 )
 
 func isSQL(a interface{}) bool {

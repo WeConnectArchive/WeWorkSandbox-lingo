@@ -3,8 +3,8 @@
 package qtables
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/core"
+	"github.com/weworksandbox/lingo/core/path"
 )
 
 func As(alias string) QTables {

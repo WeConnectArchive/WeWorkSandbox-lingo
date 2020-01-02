@@ -2,7 +2,7 @@
 
 package qinnodbsystablestats
 
-import "github.com/weworksandbox/lingo/pkg/core/path"
+import "github.com/weworksandbox/lingo/core/path"
 
 var instance = New()
 

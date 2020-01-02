@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 type Settings interface {
@@ -54,7 +54,7 @@ func Generate(ctx context.Context, settings Settings, parser Parser) <-chan erro
 
 func ensureDirectoryIsClean(directory string) (string, error) {
 	if directory == "" {
-		return "", xerrors.New("root directory must be a valid path")
+		return "", errors.New("root directory must be a valid path")
 	}
 	directory = path.Clean(directory)
 

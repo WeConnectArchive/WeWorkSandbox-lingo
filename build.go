@@ -23,7 +23,7 @@ type Gen mg.Namespace
 
 func (Gen) Mocks() error {
 	mg.Deps(Deps)
-	return sh.Run("go", "generate", "-v", "./pkg/...")
+	return sh.Run("go", "generate", "-v", "./...")
 }
 
 type Test mg.Namespace
@@ -33,7 +33,7 @@ func (Test) Unit() error {
 	goTest := RunCmd("go", "test", "-v", "-count=1")
 	return goTest([]string{
 		"./internal/...",
-		"./pkg/...",
+		"./...",
 	})
 }
 

@@ -3,13 +3,13 @@ package generator
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
 	. "github.com/dave/jennifer/jen"
-	"golang.org/x/xerrors"
 )
 
 func Render(jenFile *File) (string, error) {
@@ -49,5 +49,5 @@ func transformErr(e error) error {
 		}
 	}
 
-	return xerrors.New(originalErrorStr + "\n" + newErrStr.String())
+	return errors.New(originalErrorStr + "\n" + newErrStr.String())
 }
