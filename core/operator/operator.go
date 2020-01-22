@@ -1,9 +1,5 @@
 package operator
 
-import (
-	"github.com/weworksandbox/lingo/core"
-)
-
 type Operand int
 
 const (
@@ -31,6 +27,7 @@ const (
 	Between
 	NotBetween
 )
+const _ = Unknown // Just prevents unused warning
 
 var _names = map[Operand]string{
 	And:                "AND",
@@ -51,11 +48,15 @@ var _names = map[Operand]string{
 	NotBetween:         "NOT BETWEEN",
 }
 
-func (o Operand) String() string {
-	return _names[o]
+func (o Operand) IsValidEnum() bool {
+	switch o {
+	case And, Or, Eq, NotEq, LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual,
+	Like, NotLike, Null, NotNull, In, NotIn, Between, NotBetween: return true
+	}
+	return false
 }
 
-func (o Operand) GetSQL(d core.Dialect, sql core.SQL) error {
-	sql.AppendString(o.String())
-	return nil
+
+func (o Operand) String() string {
+	return _names[o]
 }

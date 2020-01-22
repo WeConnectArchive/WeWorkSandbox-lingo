@@ -3,7 +3,6 @@ package operator_test
 import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
-	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/core/operator"
 )
 
@@ -12,10 +11,6 @@ var _ = DescribeTable("Operator",
 	func(op operator.Operand, sqlStr string) {
 		opStr := op.String()
 		Expect(opStr).To(Equal(sqlStr))
-
-		sql, err := op.GetSQL(NewMockDialect())
-		Expect(err).ToNot(HaveOccurred())
-		Expect(sql).To(matchers.MatchSQLString(sqlStr))
 	},
 
 	Entry("And", operator.And, "AND"),

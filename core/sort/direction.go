@@ -1,9 +1,5 @@
 package sort
 
-import (
-	"github.com/weworksandbox/lingo/core"
-)
-
 type Direction int
 
 const (
@@ -12,16 +8,20 @@ const (
 	Ascending
 	Descending
 )
+const _ = Unknown // Just prevents unused warning
 
 var _names = map[Direction]string{
 	Ascending:  "ASC",
 	Descending: "DESC",
 }
 
-func (d Direction) String() string {
-	return _names[d]
+func (d Direction) IsValidEnum() bool {
+	switch d {
+	case Ascending, Descending: return true
+	}
+	return false
 }
 
-func (d Direction) GetSQL(dialect core.Dialect) (core.SQL, error) {
-	return core.NewSQL(d.String(), nil), nil
+func (d Direction) String() string {
+	return _names[d]
 }

@@ -24,7 +24,7 @@ type Column interface {
 }
 
 type Expression interface {
-	GetSQL(d Dialect, sql SQL) error
+	GetSQL(sql string) error
 }
 
 type Set interface {
@@ -35,30 +35,8 @@ type OrderBy interface {
 	Expression
 }
 
-type SQL interface {
-	New() SQL
-	String() string
-	Values() []interface{}
-	AppendSql(right SQL) SQL
-	AppendSqlWithSpace(right SQL) SQL
-	AppendSqlValues(sql SQL) SQL
-	AppendString(str string) SQL
-	AppendStringWithSpace(str string) SQL
-	AppendFormat(format string, values ...interface{}) SQL
-	AppendValues(values []interface{}) SQL
-	AppendValuesWithFormat(appendValues []interface{}, format string, values ...interface{}) SQL
-	CombineWithSeparator(sqls []SQL, separator string) SQL
-	CombinePaths(sqls []SQL) SQL
-	SurroundWithParens() SQL
-	SurroundWith(left string, right string) SQL
-}
-
 type ComboExpression interface {
 	Expression
 	And(Expression) ComboExpression
 	Or(Expression) ComboExpression
-}
-
-type Dialect interface {
-	Name
 }

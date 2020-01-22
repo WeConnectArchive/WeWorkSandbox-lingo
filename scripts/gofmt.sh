@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
- set -eo pipefail
+set -eo pipefail
 
- #  A custom shell script to error whenever formatting is incorrect. We had to do a script becuase
+#  A custom shell script to error whenever formatting is incorrect. We had to do a script becuase
 #  `gofmt` does not return anything but `0` even with invalid formatting. This script iterates through each .go
 #  file and runs gofmt, captures the output, and emits it if an error occurs, then after all files are
 #  completed, it returns an error.
