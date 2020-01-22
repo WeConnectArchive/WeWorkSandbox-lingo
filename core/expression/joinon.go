@@ -18,7 +18,7 @@ const (
 )
 
 type Joiner interface {
-	Join(left core.SQL, joinType JoinType, on core.SQL) (core.SQL, error)
+	Join(left core.SQL, joinType JoinType, on core.SQL) error
 }
 
 func NewJoinOn(left core.Expression, joinType JoinType, on core.Expression) core.ComboExpression {
@@ -38,27 +38,26 @@ type joinOn struct {
 	joinType JoinType
 }
 
-func (j joinOn) GetSQL(d core.Dialect) (core.SQL, error) {
+func (j joinOn) GetSQL(d core.Dialect, sql core.SQL) error {
 	joiner, ok := d.(Joiner)
 	if !ok {
-		return nil, DialectFunctionNotSupported("Joiner")
-	}
-
-	if helpers.IsValueNilOrEmpty(j.on) {
-		return nil, ExpressionIsNil("on")
-	}
-	on, oerr := j.on.GetSQL(d)
-	if oerr != nil {
-		return nil, oerr
+		return DialectFunctionNotSupported("Joiner")
 	}
 
 	if helpers.IsValueNilOrEmpty(j.left) {
-		return nil, ExpressionIsNil("left")
+		return ExpressionIsNil("left")
 	}
-	left, lerr := j.left.GetSQL(d)
-	if lerr != nil {
-		return nil, ErrorAroundSql(lerr, on.String())
+	if helpers.IsValueNilOrEmpty(j.on) {
+		return ExpressionIsNil("on")
 	}
 
-	return joiner.Join(left, j.joinType, on)
+	if lerr := j.left.GetSQL(d, sql); lerr != nil {
+		return ErrorAroundSql(lerr, sql.String())
+	}
+	onSQL := sql.New()
+	if oerr := j.on.GetSQL(d, onSQL); oerr != nil {
+		return oerr
+	}
+
+	return joiner.Join(sql, j.joinType, onSQL)
 }

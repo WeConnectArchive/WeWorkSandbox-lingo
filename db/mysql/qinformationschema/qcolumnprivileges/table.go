@@ -52,8 +52,8 @@ func (q QColumnPrivileges) GetColumns() []core.Column {
 	}
 }
 
-func (q QColumnPrivileges) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QColumnPrivileges) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QColumnPrivileges) GetAlias() string {

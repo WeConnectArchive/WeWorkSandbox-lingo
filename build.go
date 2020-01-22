@@ -50,7 +50,7 @@ type Run mg.Namespace
 func (Run) Generate() error {
 	mg.SerialDeps(Build)
 
-	return sh.Run("./lingo", "generate")
+	return sh.Run("./lingo", "generate","--config", "config.yml")
 }
 
 // Clean up after yourself

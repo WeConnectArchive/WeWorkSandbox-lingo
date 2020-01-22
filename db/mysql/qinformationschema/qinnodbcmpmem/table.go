@@ -49,8 +49,8 @@ func (q QInnodbCmpmem) GetColumns() []core.Column {
 	}
 }
 
-func (q QInnodbCmpmem) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QInnodbCmpmem) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QInnodbCmpmem) GetAlias() string {

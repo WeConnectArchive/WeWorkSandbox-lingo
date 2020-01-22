@@ -55,6 +55,7 @@ func (o Operand) String() string {
 	return _names[o]
 }
 
-func (o Operand) GetSQL(d core.Dialect) (core.SQL, error) {
-	return core.NewSQL(o.String(), nil), nil
+func (o Operand) GetSQL(d core.Dialect, sql core.SQL) error {
+	sql.AppendString(o.String())
+	return nil
 }

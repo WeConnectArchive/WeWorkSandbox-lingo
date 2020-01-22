@@ -20,21 +20,21 @@ func newQTriggers(alias string) QTriggers {
 	q.triggerCatalog = path.NewStringPath(q, "TRIGGER_CATALOG")
 	q.triggerSchema = path.NewStringPath(q, "TRIGGER_SCHEMA")
 	q.triggerName = path.NewStringPath(q, "TRIGGER_NAME")
-	q.eventManipulation = path.NewStringPath(q, "EVENT_MANIPULATION")
+	q.eventManipulation = NewUnknownPathType(q, "EVENT_MANIPULATION")
 	q.eventObjectCatalog = path.NewStringPath(q, "EVENT_OBJECT_CATALOG")
 	q.eventObjectSchema = path.NewStringPath(q, "EVENT_OBJECT_SCHEMA")
 	q.eventObjectTable = path.NewStringPath(q, "EVENT_OBJECT_TABLE")
-	q.actionOrder = path.NewInt64Path(q, "ACTION_ORDER")
-	q.actionCondition = path.NewStringPath(q, "ACTION_CONDITION")
+	q.actionOrder = path.NewIntPath(q, "ACTION_ORDER")
+	q.actionCondition = NewUnknownPathType(q, "ACTION_CONDITION")
 	q.actionStatement = path.NewStringPath(q, "ACTION_STATEMENT")
 	q.actionOrientation = path.NewStringPath(q, "ACTION_ORIENTATION")
-	q.actionTiming = path.NewStringPath(q, "ACTION_TIMING")
-	q.actionReferenceOldTable = path.NewStringPath(q, "ACTION_REFERENCE_OLD_TABLE")
-	q.actionReferenceNewTable = path.NewStringPath(q, "ACTION_REFERENCE_NEW_TABLE")
+	q.actionTiming = NewUnknownPathType(q, "ACTION_TIMING")
+	q.actionReferenceOldTable = NewUnknownPathType(q, "ACTION_REFERENCE_OLD_TABLE")
+	q.actionReferenceNewTable = NewUnknownPathType(q, "ACTION_REFERENCE_NEW_TABLE")
 	q.actionReferenceOldRow = path.NewStringPath(q, "ACTION_REFERENCE_OLD_ROW")
 	q.actionReferenceNewRow = path.NewStringPath(q, "ACTION_REFERENCE_NEW_ROW")
 	q.created = path.NewTimePath(q, "CREATED")
-	q.sqlMode = path.NewStringPath(q, "SQL_MODE")
+	q.sqlMode = NewUnknownPathType(q, "SQL_MODE")
 	q.definer = path.NewStringPath(q, "DEFINER")
 	q.characterSetClient = path.NewStringPath(q, "CHARACTER_SET_CLIENT")
 	q.collationConnection = path.NewStringPath(q, "COLLATION_CONNECTION")
@@ -47,21 +47,21 @@ type QTriggers struct {
 	triggerCatalog          path.StringPath
 	triggerSchema           path.StringPath
 	triggerName             path.StringPath
-	eventManipulation       path.StringPath
+	eventManipulation       UnknownPathType
 	eventObjectCatalog      path.StringPath
 	eventObjectSchema       path.StringPath
 	eventObjectTable        path.StringPath
-	actionOrder             path.Int64Path
-	actionCondition         path.StringPath
+	actionOrder             path.IntPath
+	actionCondition         UnknownPathType
 	actionStatement         path.StringPath
 	actionOrientation       path.StringPath
-	actionTiming            path.StringPath
-	actionReferenceOldTable path.StringPath
-	actionReferenceNewTable path.StringPath
+	actionTiming            UnknownPathType
+	actionReferenceOldTable UnknownPathType
+	actionReferenceNewTable UnknownPathType
 	actionReferenceOldRow   path.StringPath
 	actionReferenceNewRow   path.StringPath
 	created                 path.TimePath
-	sqlMode                 path.StringPath
+	sqlMode                 UnknownPathType
 	definer                 path.StringPath
 	characterSetClient      path.StringPath
 	collationConnection     path.StringPath
@@ -97,8 +97,8 @@ func (q QTriggers) GetColumns() []core.Column {
 	}
 }
 
-func (q QTriggers) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QTriggers) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QTriggers) GetAlias() string {
@@ -127,7 +127,7 @@ func (q QTriggers) TriggerName() path.StringPath {
 	return q.triggerName
 }
 
-func (q QTriggers) EventManipulation() path.StringPath {
+func (q QTriggers) EventManipulation() UnknownPathType {
 	return q.eventManipulation
 }
 
@@ -143,11 +143,11 @@ func (q QTriggers) EventObjectTable() path.StringPath {
 	return q.eventObjectTable
 }
 
-func (q QTriggers) ActionOrder() path.Int64Path {
+func (q QTriggers) ActionOrder() path.IntPath {
 	return q.actionOrder
 }
 
-func (q QTriggers) ActionCondition() path.StringPath {
+func (q QTriggers) ActionCondition() UnknownPathType {
 	return q.actionCondition
 }
 
@@ -159,15 +159,15 @@ func (q QTriggers) ActionOrientation() path.StringPath {
 	return q.actionOrientation
 }
 
-func (q QTriggers) ActionTiming() path.StringPath {
+func (q QTriggers) ActionTiming() UnknownPathType {
 	return q.actionTiming
 }
 
-func (q QTriggers) ActionReferenceOldTable() path.StringPath {
+func (q QTriggers) ActionReferenceOldTable() UnknownPathType {
 	return q.actionReferenceOldTable
 }
 
-func (q QTriggers) ActionReferenceNewTable() path.StringPath {
+func (q QTriggers) ActionReferenceNewTable() UnknownPathType {
 	return q.actionReferenceNewTable
 }
 
@@ -183,7 +183,7 @@ func (q QTriggers) Created() path.TimePath {
 	return q.created
 }
 
-func (q QTriggers) SqlMode() path.StringPath {
+func (q QTriggers) SqlMode() UnknownPathType {
 	return q.sqlMode
 }
 

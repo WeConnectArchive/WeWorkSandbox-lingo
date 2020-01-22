@@ -20,7 +20,7 @@ func newQCharacterSets(alias string) QCharacterSets {
 	q.characterSetName = path.NewStringPath(q, "CHARACTER_SET_NAME")
 	q.defaultCollateName = path.NewStringPath(q, "DEFAULT_COLLATE_NAME")
 	q.description = path.NewStringPath(q, "DESCRIPTION")
-	q.maxlen = path.NewInt64Path(q, "MAXLEN")
+	q.maxlen = path.NewIntPath(q, "MAXLEN")
 	return q
 }
 
@@ -29,7 +29,7 @@ type QCharacterSets struct {
 	characterSetName   path.StringPath
 	defaultCollateName path.StringPath
 	description        path.StringPath
-	maxlen             path.Int64Path
+	maxlen             path.IntPath
 }
 
 // core.Table Functions
@@ -43,8 +43,8 @@ func (q QCharacterSets) GetColumns() []core.Column {
 	}
 }
 
-func (q QCharacterSets) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QCharacterSets) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QCharacterSets) GetAlias() string {
@@ -73,6 +73,6 @@ func (q QCharacterSets) Description() path.StringPath {
 	return q.description
 }
 
-func (q QCharacterSets) Maxlen() path.Int64Path {
+func (q QCharacterSets) Maxlen() path.IntPath {
 	return q.maxlen
 }

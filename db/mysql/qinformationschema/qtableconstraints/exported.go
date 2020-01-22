@@ -33,3 +33,7 @@ func TableName() path.StringPath {
 func ConstraintType() path.StringPath {
 	return instance.constraintType
 }
+
+func Enforced() path.StringPath {
+	return instance.enforced
+}

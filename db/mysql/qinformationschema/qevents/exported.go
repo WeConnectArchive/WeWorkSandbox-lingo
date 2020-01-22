@@ -50,11 +50,11 @@ func IntervalValue() path.StringPath {
 	return instance.intervalValue
 }
 
-func IntervalField() path.StringPath {
+func IntervalField() UnknownPathType {
 	return instance.intervalField
 }
 
-func SqlMode() path.StringPath {
+func SqlMode() UnknownPathType {
 	return instance.sqlMode
 }
 
@@ -66,7 +66,7 @@ func Ends() path.TimePath {
 	return instance.ends
 }
 
-func Status() path.StringPath {
+func Status() UnknownPathType {
 	return instance.status
 }
 
@@ -90,7 +90,7 @@ func EventComment() path.StringPath {
 	return instance.eventComment
 }
 
-func Originator() path.Int64Path {
+func Originator() path.IntPath {
 	return instance.originator
 }
 

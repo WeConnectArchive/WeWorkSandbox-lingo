@@ -6,13 +6,13 @@ import (
 )
 
 type ExpandColumn interface {
-	ExpandColumn(entity core.Column) (core.SQL, error)
+	ExpandColumn(entity core.Column, sql core.SQL) error
 }
 
-func ExpandColumnWithDialect(d core.Dialect, path core.Column) (core.SQL, error) {
+func ExpandColumnWithDialect(d core.Dialect, path core.Column, sql core.SQL) error {
 	expand, ok := d.(ExpandColumn)
 	if !ok {
-		return nil, expression.DialectFunctionNotSupported("ExpandColumn")
+		return expression.DialectFunctionNotSupported("ExpandColumn")
 	}
-	return expand.ExpandColumn(path)
+	return expand.ExpandColumn(path, sql)
 }

@@ -23,6 +23,7 @@ func newQTableConstraints(alias string) QTableConstraints {
 	q.tableSchema = path.NewStringPath(q, "TABLE_SCHEMA")
 	q.tableName = path.NewStringPath(q, "TABLE_NAME")
 	q.constraintType = path.NewStringPath(q, "CONSTRAINT_TYPE")
+	q.enforced = path.NewStringPath(q, "ENFORCED")
 	return q
 }
 
@@ -34,6 +35,7 @@ type QTableConstraints struct {
 	tableSchema       path.StringPath
 	tableName         path.StringPath
 	constraintType    path.StringPath
+	enforced          path.StringPath
 }
 
 // core.Table Functions
@@ -46,11 +48,12 @@ func (q QTableConstraints) GetColumns() []core.Column {
 		q.tableSchema,
 		q.tableName,
 		q.constraintType,
+		q.enforced,
 	}
 }
 
-func (q QTableConstraints) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QTableConstraints) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QTableConstraints) GetAlias() string {
@@ -89,4 +92,8 @@ func (q QTableConstraints) TableName() path.StringPath {
 
 func (q QTableConstraints) ConstraintType() path.StringPath {
 	return q.constraintType
+}
+
+func (q QTableConstraints) Enforced() path.StringPath {
+	return q.enforced
 }

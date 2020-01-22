@@ -6,7 +6,7 @@ import (
 )
 
 type Set interface {
-	Set(left, value core.SQL) (core.SQL, error)
+	Set(left, value core.SQL) error
 }
 
 func NewSet(left core.Expression, value core.Expression) *set {
@@ -24,27 +24,26 @@ type set struct {
 	value core.Expression
 }
 
-func (c set) GetSQL(d core.Dialect) (core.SQL, error) {
+func (c set) GetSQL(d core.Dialect, sql core.SQL) error {
 	set, ok := d.(Set)
 	if !ok {
-		return nil, DialectFunctionNotSupported("Set")
+		return DialectFunctionNotSupported("Set")
 	}
 
 	if helpers.IsValueNilOrEmpty(c.left) {
-		return nil, ExpressionIsNil("left")
+		return ExpressionIsNil("left")
 	}
-	left, lerr := c.left.GetSQL(d)
-	if lerr != nil {
-		return nil, lerr
-	}
-
 	if helpers.IsValueNilOrEmpty(c.value) {
-		return nil, ErrorAroundSql(ExpressionIsNil("value"), left.String())
-	}
-	value, verr := c.value.GetSQL(d)
-	if verr != nil {
-		return nil, ErrorAroundSql(verr, left.String())
+		return ErrorAroundSql(ExpressionIsNil("value"), sql.String())
 	}
 
-	return set.Set(left, value)
+	if lerr := c.left.GetSQL(d, sql); lerr != nil {
+		return lerr
+	}
+
+	valueSQL := sql.New()
+	if verr := c.value.GetSQL(d, valueSQL); verr != nil {
+		return ErrorAroundSql(verr, sql.String())
+	}
+	return set.Set(sql, valueSQL)
 }

@@ -91,8 +91,8 @@ func (q QInnodbBufferPage) GetColumns() []core.Column {
 	}
 }
 
-func (q QInnodbBufferPage) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QInnodbBufferPage) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QInnodbBufferPage) GetAlias() string {

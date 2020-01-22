@@ -21,7 +21,8 @@ func newQSchemata(alias string) QSchemata {
 	q.schemaName = path.NewStringPath(q, "SCHEMA_NAME")
 	q.defaultCharacterSetName = path.NewStringPath(q, "DEFAULT_CHARACTER_SET_NAME")
 	q.defaultCollationName = path.NewStringPath(q, "DEFAULT_COLLATION_NAME")
-	q.sqlPath = path.NewStringPath(q, "SQL_PATH")
+	q.sqlPath = NewUnknownPathType(q, "SQL_PATH")
+	q.defaultEncryption = NewUnknownPathType(q, "DEFAULT_ENCRYPTION")
 	return q
 }
 
@@ -31,7 +32,8 @@ type QSchemata struct {
 	schemaName              path.StringPath
 	defaultCharacterSetName path.StringPath
 	defaultCollationName    path.StringPath
-	sqlPath                 path.StringPath
+	sqlPath                 UnknownPathType
+	defaultEncryption       UnknownPathType
 }
 
 // core.Table Functions
@@ -43,11 +45,12 @@ func (q QSchemata) GetColumns() []core.Column {
 		q.defaultCharacterSetName,
 		q.defaultCollationName,
 		q.sqlPath,
+		q.defaultEncryption,
 	}
 }
 
-func (q QSchemata) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QSchemata) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QSchemata) GetAlias() string {
@@ -80,6 +83,10 @@ func (q QSchemata) DefaultCollationName() path.StringPath {
 	return q.defaultCollationName
 }
 
-func (q QSchemata) SqlPath() path.StringPath {
+func (q QSchemata) SqlPath() UnknownPathType {
 	return q.sqlPath
+}
+
+func (q QSchemata) DefaultEncryption() UnknownPathType {
+	return q.defaultEncryption
 }

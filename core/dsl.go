@@ -24,7 +24,7 @@ type Column interface {
 }
 
 type Expression interface {
-	GetSQL(d Dialect) (SQL, error)
+	GetSQL(d Dialect, sql SQL) error
 }
 
 type Set interface {
@@ -36,6 +36,7 @@ type OrderBy interface {
 }
 
 type SQL interface {
+	New() SQL
 	String() string
 	Values() []interface{}
 	AppendSql(right SQL) SQL

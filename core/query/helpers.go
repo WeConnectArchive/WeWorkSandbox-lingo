@@ -17,7 +17,7 @@ type stringColumn struct {
 	parent stringParent
 }
 
-func (s stringColumn) GetSQL(d core.Dialect) (core.SQL, error) {
+func (s stringColumn) GetSQL(d core.Dialect, sql core.SQL) error {
 	return core.NewSQL(s.GetName(), nil), nil
 }
 func (s stringColumn) GetName() string       { return s.name }
@@ -28,7 +28,7 @@ type stringParent struct {
 	name string
 }
 
-func (s stringParent) GetSQL(d core.Dialect) (core.SQL, error) {
+func (s stringParent) GetSQL(d core.Dialect, sql core.SQL) error {
 	return path.ExpandTableWithDialect(d, s)
 }
 

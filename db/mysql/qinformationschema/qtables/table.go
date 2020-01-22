@@ -20,10 +20,10 @@ func newQTables(alias string) QTables {
 	q.tableCatalog = path.NewStringPath(q, "TABLE_CATALOG")
 	q.tableSchema = path.NewStringPath(q, "TABLE_SCHEMA")
 	q.tableName = path.NewStringPath(q, "TABLE_NAME")
-	q.tableType = path.NewStringPath(q, "TABLE_TYPE")
+	q.tableType = NewUnknownPathType(q, "TABLE_TYPE")
 	q.engine = path.NewStringPath(q, "ENGINE")
 	q.version = path.NewInt64Path(q, "VERSION")
-	q.rowFormat = path.NewStringPath(q, "ROW_FORMAT")
+	q.rowFormat = NewUnknownPathType(q, "ROW_FORMAT")
 	q.tableRows = path.NewInt64Path(q, "TABLE_ROWS")
 	q.avgRowLength = path.NewInt64Path(q, "AVG_ROW_LENGTH")
 	q.dataLength = path.NewInt64Path(q, "DATA_LENGTH")
@@ -46,10 +46,10 @@ type QTables struct {
 	tableCatalog   path.StringPath
 	tableSchema    path.StringPath
 	tableName      path.StringPath
-	tableType      path.StringPath
+	tableType      UnknownPathType
 	engine         path.StringPath
 	version        path.Int64Path
-	rowFormat      path.StringPath
+	rowFormat      UnknownPathType
 	tableRows      path.Int64Path
 	avgRowLength   path.Int64Path
 	dataLength     path.Int64Path
@@ -94,8 +94,8 @@ func (q QTables) GetColumns() []core.Column {
 	}
 }
 
-func (q QTables) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QTables) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QTables) GetAlias() string {
@@ -124,7 +124,7 @@ func (q QTables) TableName() path.StringPath {
 	return q.tableName
 }
 
-func (q QTables) TableType() path.StringPath {
+func (q QTables) TableType() UnknownPathType {
 	return q.tableType
 }
 
@@ -136,7 +136,7 @@ func (q QTables) Version() path.Int64Path {
 	return q.version
 }
 
-func (q QTables) RowFormat() path.StringPath {
+func (q QTables) RowFormat() UnknownPathType {
 	return q.rowFormat
 }
 

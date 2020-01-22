@@ -20,19 +20,19 @@ func newQParameters(alias string) QParameters {
 	q.specificCatalog = path.NewStringPath(q, "SPECIFIC_CATALOG")
 	q.specificSchema = path.NewStringPath(q, "SPECIFIC_SCHEMA")
 	q.specificName = path.NewStringPath(q, "SPECIFIC_NAME")
-	q.ordinalPosition = path.NewIntPath(q, "ORDINAL_POSITION")
-	q.parameterMode = path.NewStringPath(q, "PARAMETER_MODE")
+	q.ordinalPosition = path.NewInt64Path(q, "ORDINAL_POSITION")
+	q.parameterMode = NewUnknownPathType(q, "PARAMETER_MODE")
 	q.parameterName = path.NewStringPath(q, "PARAMETER_NAME")
-	q.dataType = path.NewStringPath(q, "DATA_TYPE")
-	q.characterMaximumLength = path.NewIntPath(q, "CHARACTER_MAXIMUM_LENGTH")
-	q.characterOctetLength = path.NewIntPath(q, "CHARACTER_OCTET_LENGTH")
-	q.numericPrecision = path.NewInt64Path(q, "NUMERIC_PRECISION")
-	q.numericScale = path.NewIntPath(q, "NUMERIC_SCALE")
-	q.datetimePrecision = path.NewInt64Path(q, "DATETIME_PRECISION")
+	q.dataType = NewUnknownPathType(q, "DATA_TYPE")
+	q.characterMaximumLength = path.NewInt64Path(q, "CHARACTER_MAXIMUM_LENGTH")
+	q.characterOctetLength = path.NewInt64Path(q, "CHARACTER_OCTET_LENGTH")
+	q.numericPrecision = path.NewIntPath(q, "NUMERIC_PRECISION")
+	q.numericScale = path.NewInt64Path(q, "NUMERIC_SCALE")
+	q.datetimePrecision = path.NewIntPath(q, "DATETIME_PRECISION")
 	q.characterSetName = path.NewStringPath(q, "CHARACTER_SET_NAME")
 	q.collationName = path.NewStringPath(q, "COLLATION_NAME")
 	q.dtdIdentifier = path.NewStringPath(q, "DTD_IDENTIFIER")
-	q.routineType = path.NewStringPath(q, "ROUTINE_TYPE")
+	q.routineType = NewUnknownPathType(q, "ROUTINE_TYPE")
 	return q
 }
 
@@ -41,19 +41,19 @@ type QParameters struct {
 	specificCatalog        path.StringPath
 	specificSchema         path.StringPath
 	specificName           path.StringPath
-	ordinalPosition        path.IntPath
-	parameterMode          path.StringPath
+	ordinalPosition        path.Int64Path
+	parameterMode          UnknownPathType
 	parameterName          path.StringPath
-	dataType               path.StringPath
-	characterMaximumLength path.IntPath
-	characterOctetLength   path.IntPath
-	numericPrecision       path.Int64Path
-	numericScale           path.IntPath
-	datetimePrecision      path.Int64Path
+	dataType               UnknownPathType
+	characterMaximumLength path.Int64Path
+	characterOctetLength   path.Int64Path
+	numericPrecision       path.IntPath
+	numericScale           path.Int64Path
+	datetimePrecision      path.IntPath
 	characterSetName       path.StringPath
 	collationName          path.StringPath
 	dtdIdentifier          path.StringPath
-	routineType            path.StringPath
+	routineType            UnknownPathType
 }
 
 // core.Table Functions
@@ -79,8 +79,8 @@ func (q QParameters) GetColumns() []core.Column {
 	}
 }
 
-func (q QParameters) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QParameters) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QParameters) GetAlias() string {
@@ -109,11 +109,11 @@ func (q QParameters) SpecificName() path.StringPath {
 	return q.specificName
 }
 
-func (q QParameters) OrdinalPosition() path.IntPath {
+func (q QParameters) OrdinalPosition() path.Int64Path {
 	return q.ordinalPosition
 }
 
-func (q QParameters) ParameterMode() path.StringPath {
+func (q QParameters) ParameterMode() UnknownPathType {
 	return q.parameterMode
 }
 
@@ -121,27 +121,27 @@ func (q QParameters) ParameterName() path.StringPath {
 	return q.parameterName
 }
 
-func (q QParameters) DataType() path.StringPath {
+func (q QParameters) DataType() UnknownPathType {
 	return q.dataType
 }
 
-func (q QParameters) CharacterMaximumLength() path.IntPath {
+func (q QParameters) CharacterMaximumLength() path.Int64Path {
 	return q.characterMaximumLength
 }
 
-func (q QParameters) CharacterOctetLength() path.IntPath {
+func (q QParameters) CharacterOctetLength() path.Int64Path {
 	return q.characterOctetLength
 }
 
-func (q QParameters) NumericPrecision() path.Int64Path {
+func (q QParameters) NumericPrecision() path.IntPath {
 	return q.numericPrecision
 }
 
-func (q QParameters) NumericScale() path.IntPath {
+func (q QParameters) NumericScale() path.Int64Path {
 	return q.numericScale
 }
 
-func (q QParameters) DatetimePrecision() path.Int64Path {
+func (q QParameters) DatetimePrecision() path.IntPath {
 	return q.datetimePrecision
 }
 
@@ -157,6 +157,6 @@ func (q QParameters) DtdIdentifier() path.StringPath {
 	return q.dtdIdentifier
 }
 
-func (q QParameters) RoutineType() path.StringPath {
+func (q QParameters) RoutineType() UnknownPathType {
 	return q.routineType
 }

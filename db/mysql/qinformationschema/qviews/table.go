@@ -21,8 +21,8 @@ func newQViews(alias string) QViews {
 	q.tableSchema = path.NewStringPath(q, "TABLE_SCHEMA")
 	q.tableName = path.NewStringPath(q, "TABLE_NAME")
 	q.viewDefinition = path.NewStringPath(q, "VIEW_DEFINITION")
-	q.checkOption = path.NewStringPath(q, "CHECK_OPTION")
-	q.isUpdatable = path.NewStringPath(q, "IS_UPDATABLE")
+	q.checkOption = NewUnknownPathType(q, "CHECK_OPTION")
+	q.isUpdatable = NewUnknownPathType(q, "IS_UPDATABLE")
 	q.definer = path.NewStringPath(q, "DEFINER")
 	q.securityType = path.NewStringPath(q, "SECURITY_TYPE")
 	q.characterSetClient = path.NewStringPath(q, "CHARACTER_SET_CLIENT")
@@ -36,8 +36,8 @@ type QViews struct {
 	tableSchema         path.StringPath
 	tableName           path.StringPath
 	viewDefinition      path.StringPath
-	checkOption         path.StringPath
-	isUpdatable         path.StringPath
+	checkOption         UnknownPathType
+	isUpdatable         UnknownPathType
 	definer             path.StringPath
 	securityType        path.StringPath
 	characterSetClient  path.StringPath
@@ -61,8 +61,8 @@ func (q QViews) GetColumns() []core.Column {
 	}
 }
 
-func (q QViews) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QViews) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QViews) GetAlias() string {
@@ -95,11 +95,11 @@ func (q QViews) ViewDefinition() path.StringPath {
 	return q.viewDefinition
 }
 
-func (q QViews) CheckOption() path.StringPath {
+func (q QViews) CheckOption() UnknownPathType {
 	return q.checkOption
 }
 
-func (q QViews) IsUpdatable() path.StringPath {
+func (q QViews) IsUpdatable() UnknownPathType {
 	return q.isUpdatable
 }
 

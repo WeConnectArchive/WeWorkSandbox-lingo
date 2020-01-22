@@ -25,11 +25,3 @@ func NCols() path.IntPath {
 func Space() path.IntPath {
 	return instance.space
 }
-
-func PerTableTablespace() path.StringPath {
-	return instance.perTableTablespace
-}
-
-func IsCompressed() path.StringPath {
-	return instance.isCompressed
-}

@@ -37,6 +37,10 @@ func NewSQLf(format string, values ...interface{}) SQL {
 	return NewSQL(fmt.Sprintf(format, values...), nil)
 }
 
+func (s *sql) New() SQL {
+	return NewEmptySql()
+}
+
 func (s *sql) String() string {
 	if s == nil {
 		return ""

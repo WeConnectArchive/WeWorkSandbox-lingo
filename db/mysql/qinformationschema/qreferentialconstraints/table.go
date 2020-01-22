@@ -23,9 +23,9 @@ func newQReferentialConstraints(alias string) QReferentialConstraints {
 	q.uniqueConstraintCatalog = path.NewStringPath(q, "UNIQUE_CONSTRAINT_CATALOG")
 	q.uniqueConstraintSchema = path.NewStringPath(q, "UNIQUE_CONSTRAINT_SCHEMA")
 	q.uniqueConstraintName = path.NewStringPath(q, "UNIQUE_CONSTRAINT_NAME")
-	q.matchOption = path.NewStringPath(q, "MATCH_OPTION")
-	q.updateRule = path.NewStringPath(q, "UPDATE_RULE")
-	q.deleteRule = path.NewStringPath(q, "DELETE_RULE")
+	q.matchOption = NewUnknownPathType(q, "MATCH_OPTION")
+	q.updateRule = NewUnknownPathType(q, "UPDATE_RULE")
+	q.deleteRule = NewUnknownPathType(q, "DELETE_RULE")
 	q.tableName = path.NewStringPath(q, "TABLE_NAME")
 	q.referencedTableName = path.NewStringPath(q, "REFERENCED_TABLE_NAME")
 	return q
@@ -39,9 +39,9 @@ type QReferentialConstraints struct {
 	uniqueConstraintCatalog path.StringPath
 	uniqueConstraintSchema  path.StringPath
 	uniqueConstraintName    path.StringPath
-	matchOption             path.StringPath
-	updateRule              path.StringPath
-	deleteRule              path.StringPath
+	matchOption             UnknownPathType
+	updateRule              UnknownPathType
+	deleteRule              UnknownPathType
 	tableName               path.StringPath
 	referencedTableName     path.StringPath
 }
@@ -64,8 +64,8 @@ func (q QReferentialConstraints) GetColumns() []core.Column {
 	}
 }
 
-func (q QReferentialConstraints) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QReferentialConstraints) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QReferentialConstraints) GetAlias() string {
@@ -106,15 +106,15 @@ func (q QReferentialConstraints) UniqueConstraintName() path.StringPath {
 	return q.uniqueConstraintName
 }
 
-func (q QReferentialConstraints) MatchOption() path.StringPath {
+func (q QReferentialConstraints) MatchOption() UnknownPathType {
 	return q.matchOption
 }
 
-func (q QReferentialConstraints) UpdateRule() path.StringPath {
+func (q QReferentialConstraints) UpdateRule() UnknownPathType {
 	return q.updateRule
 }
 
-func (q QReferentialConstraints) DeleteRule() path.StringPath {
+func (q QReferentialConstraints) DeleteRule() UnknownPathType {
 	return q.deleteRule
 }
 

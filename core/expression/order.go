@@ -6,7 +6,7 @@ import (
 )
 
 type Order interface {
-	OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error)
+	OrderBy(left core.SQL, direction sort.Direction) error
 }
 
 func NewOrderBy(left core.Expression, direction sort.Direction) core.OrderBy {
@@ -24,23 +24,23 @@ type orderBy struct {
 	direction sort.Direction
 }
 
-func (o orderBy) GetSQL(d core.Dialect) (core.SQL, error) {
+func (o orderBy) GetSQL(d core.Dialect, sql core.SQL) error {
 	order, ok := d.(Order)
 	if !ok {
-		return nil, DialectFunctionNotSupported("Order")
+		return DialectFunctionNotSupported("Order")
 	}
 
 	if o.left == nil {
-		return nil, ExpressionIsNil("left")
+		return ExpressionIsNil("left")
 	}
-	left, lerr := o.left.GetSQL(d)
-	if lerr != nil {
-		return nil, lerr
+
+	if lerr := o.left.GetSQL(d, sql); lerr != nil {
+		return lerr
 	}
 
 	if o.direction == sort.Unknown {
-		return nil, ErrorAroundSql(ExpressionIsNil("direction"), left.String())
+		return ErrorAroundSql(ExpressionIsNil("direction"), sql.String())
 	}
 
-	return order.OrderBy(left, o.direction)
+	return order.OrderBy(sql, o.direction)
 }

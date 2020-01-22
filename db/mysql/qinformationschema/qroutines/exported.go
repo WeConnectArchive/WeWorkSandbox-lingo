@@ -26,23 +26,23 @@ func RoutineName() path.StringPath {
 	return instance.routineName
 }
 
-func RoutineType() path.StringPath {
+func RoutineType() UnknownPathType {
 	return instance.routineType
 }
 
-func DataType() path.StringPath {
+func DataType() UnknownPathType {
 	return instance.dataType
 }
 
-func CharacterMaximumLength() path.IntPath {
+func CharacterMaximumLength() path.Int64Path {
 	return instance.characterMaximumLength
 }
 
-func CharacterOctetLength() path.IntPath {
+func CharacterOctetLength() path.Int64Path {
 	return instance.characterOctetLength
 }
 
-func NumericPrecision() path.Int64Path {
+func NumericPrecision() path.IntPath {
 	return instance.numericPrecision
 }
 
@@ -50,7 +50,7 @@ func NumericScale() path.IntPath {
 	return instance.numericScale
 }
 
-func DatetimePrecision() path.Int64Path {
+func DatetimePrecision() path.IntPath {
 	return instance.datetimePrecision
 }
 
@@ -74,7 +74,7 @@ func RoutineDefinition() path.StringPath {
 	return instance.routineDefinition
 }
 
-func ExternalName() path.StringPath {
+func ExternalName() UnknownPathType {
 	return instance.externalName
 }
 
@@ -90,15 +90,15 @@ func IsDeterministic() path.StringPath {
 	return instance.isDeterministic
 }
 
-func SqlDataAccess() path.StringPath {
+func SqlDataAccess() UnknownPathType {
 	return instance.sqlDataAccess
 }
 
-func SqlPath() path.StringPath {
+func SqlPath() UnknownPathType {
 	return instance.sqlPath
 }
 
-func SecurityType() path.StringPath {
+func SecurityType() UnknownPathType {
 	return instance.securityType
 }
 
@@ -110,7 +110,7 @@ func LastAltered() path.TimePath {
 	return instance.lastAltered
 }
 
-func SqlMode() path.StringPath {
+func SqlMode() UnknownPathType {
 	return instance.sqlMode
 }
 

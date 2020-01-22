@@ -30,11 +30,11 @@ func TableCatalog() path.StringPath {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() UnknownPathType {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() UnknownPathType {
 	return instance.tableName
 }
 
@@ -50,15 +50,15 @@ func Engine() path.StringPath {
 	return instance.engine
 }
 
-func FulltextKeys() path.StringPath {
+func FulltextKeys() UnknownPathType {
 	return instance.fulltextKeys
 }
 
-func DeletedRows() path.Int64Path {
+func DeletedRows() UnknownPathType {
 	return instance.deletedRows
 }
 
-func UpdateCount() path.Int64Path {
+func UpdateCount() UnknownPathType {
 	return instance.updateCount
 }
 
@@ -86,23 +86,23 @@ func AutoextendSize() path.Int64Path {
 	return instance.autoextendSize
 }
 
-func CreationTime() path.TimePath {
+func CreationTime() UnknownPathType {
 	return instance.creationTime
 }
 
-func LastUpdateTime() path.TimePath {
+func LastUpdateTime() UnknownPathType {
 	return instance.lastUpdateTime
 }
 
-func LastAccessTime() path.TimePath {
+func LastAccessTime() UnknownPathType {
 	return instance.lastAccessTime
 }
 
-func RecoverTime() path.Int64Path {
+func RecoverTime() UnknownPathType {
 	return instance.recoverTime
 }
 
-func TransactionCounter() path.Int64Path {
+func TransactionCounter() UnknownPathType {
 	return instance.transactionCounter
 }
 
@@ -114,23 +114,23 @@ func RowFormat() path.StringPath {
 	return instance.rowFormat
 }
 
-func TableRows() path.Int64Path {
+func TableRows() UnknownPathType {
 	return instance.tableRows
 }
 
-func AvgRowLength() path.Int64Path {
+func AvgRowLength() UnknownPathType {
 	return instance.avgRowLength
 }
 
-func DataLength() path.Int64Path {
+func DataLength() UnknownPathType {
 	return instance.dataLength
 }
 
-func MaxDataLength() path.Int64Path {
+func MaxDataLength() UnknownPathType {
 	return instance.maxDataLength
 }
 
-func IndexLength() path.Int64Path {
+func IndexLength() UnknownPathType {
 	return instance.indexLength
 }
 
@@ -138,19 +138,19 @@ func DataFree() path.Int64Path {
 	return instance.dataFree
 }
 
-func CreateTime() path.TimePath {
+func CreateTime() UnknownPathType {
 	return instance.createTime
 }
 
-func UpdateTime() path.TimePath {
+func UpdateTime() UnknownPathType {
 	return instance.updateTime
 }
 
-func CheckTime() path.TimePath {
+func CheckTime() UnknownPathType {
 	return instance.checkTime
 }
 
-func Checksum() path.Int64Path {
+func Checksum() UnknownPathType {
 	return instance.checksum
 }
 

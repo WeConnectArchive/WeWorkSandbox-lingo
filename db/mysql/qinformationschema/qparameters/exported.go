@@ -22,11 +22,11 @@ func SpecificName() path.StringPath {
 	return instance.specificName
 }
 
-func OrdinalPosition() path.IntPath {
+func OrdinalPosition() path.Int64Path {
 	return instance.ordinalPosition
 }
 
-func ParameterMode() path.StringPath {
+func ParameterMode() UnknownPathType {
 	return instance.parameterMode
 }
 
@@ -34,27 +34,27 @@ func ParameterName() path.StringPath {
 	return instance.parameterName
 }
 
-func DataType() path.StringPath {
+func DataType() UnknownPathType {
 	return instance.dataType
 }
 
-func CharacterMaximumLength() path.IntPath {
+func CharacterMaximumLength() path.Int64Path {
 	return instance.characterMaximumLength
 }
 
-func CharacterOctetLength() path.IntPath {
+func CharacterOctetLength() path.Int64Path {
 	return instance.characterOctetLength
 }
 
-func NumericPrecision() path.Int64Path {
+func NumericPrecision() path.IntPath {
 	return instance.numericPrecision
 }
 
-func NumericScale() path.IntPath {
+func NumericScale() path.Int64Path {
 	return instance.numericScale
 }
 
-func DatetimePrecision() path.Int64Path {
+func DatetimePrecision() path.IntPath {
 	return instance.datetimePrecision
 }
 
@@ -70,6 +70,6 @@ func DtdIdentifier() path.StringPath {
 	return instance.dtdIdentifier
 }
 
-func RoutineType() path.StringPath {
+func RoutineType() UnknownPathType {
 	return instance.routineType
 }

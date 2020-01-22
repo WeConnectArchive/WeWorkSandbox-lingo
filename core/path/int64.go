@@ -41,8 +41,8 @@ func (i Int64Path) As(alias string) Int64Path {
 	return i
 }
 
-func (i Int64Path) GetSQL(d core.Dialect) (core.SQL, error) {
-	return ExpandColumnWithDialect(d, i)
+func (i Int64Path) GetSQL(d core.Dialect, sql core.SQL) error {
+	return ExpandColumnWithDialect(d, i, sql)
 }
 
 func (i Int64Path) To(value int64) core.Set {
@@ -110,7 +110,7 @@ func (i Int64Path) IsNotNull() core.ComboExpression {
 }
 
 func (i Int64Path) In(values ...int64) core.ComboExpression {
-	return expression.NewOperator(i, operator.In, expression.NewValues(values)...)
+	return expression.NewOperator(i, operator.In, expression.NewValue(values))
 }
 
 func (i Int64Path) InPaths(values ...core.Expression) core.ComboExpression {
@@ -118,7 +118,7 @@ func (i Int64Path) InPaths(values ...core.Expression) core.ComboExpression {
 }
 
 func (i Int64Path) NotIn(values ...int64) core.ComboExpression {
-	return expression.NewOperator(i, operator.NotIn, expression.NewValues(values)...)
+	return expression.NewOperator(i, operator.NotIn, expression.NewValue(values))
 }
 
 func (i Int64Path) NotInPaths(values ...core.Expression) core.ComboExpression {

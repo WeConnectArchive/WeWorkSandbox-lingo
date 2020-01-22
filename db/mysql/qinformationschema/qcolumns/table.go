@@ -21,23 +21,24 @@ func newQColumns(alias string) QColumns {
 	q.tableSchema = path.NewStringPath(q, "TABLE_SCHEMA")
 	q.tableName = path.NewStringPath(q, "TABLE_NAME")
 	q.columnName = path.NewStringPath(q, "COLUMN_NAME")
-	q.ordinalPosition = path.NewInt64Path(q, "ORDINAL_POSITION")
+	q.ordinalPosition = path.NewIntPath(q, "ORDINAL_POSITION")
 	q.columnDefault = path.NewStringPath(q, "COLUMN_DEFAULT")
 	q.isNullable = path.NewStringPath(q, "IS_NULLABLE")
-	q.dataType = path.NewStringPath(q, "DATA_TYPE")
+	q.dataType = NewUnknownPathType(q, "DATA_TYPE")
 	q.characterMaximumLength = path.NewInt64Path(q, "CHARACTER_MAXIMUM_LENGTH")
 	q.characterOctetLength = path.NewInt64Path(q, "CHARACTER_OCTET_LENGTH")
-	q.numericPrecision = path.NewInt64Path(q, "NUMERIC_PRECISION")
-	q.numericScale = path.NewInt64Path(q, "NUMERIC_SCALE")
-	q.datetimePrecision = path.NewInt64Path(q, "DATETIME_PRECISION")
+	q.numericPrecision = path.NewIntPath(q, "NUMERIC_PRECISION")
+	q.numericScale = path.NewIntPath(q, "NUMERIC_SCALE")
+	q.datetimePrecision = path.NewIntPath(q, "DATETIME_PRECISION")
 	q.characterSetName = path.NewStringPath(q, "CHARACTER_SET_NAME")
 	q.collationName = path.NewStringPath(q, "COLLATION_NAME")
 	q.columnType = path.NewStringPath(q, "COLUMN_TYPE")
-	q.columnKey = path.NewStringPath(q, "COLUMN_KEY")
+	q.columnKey = NewUnknownPathType(q, "COLUMN_KEY")
 	q.extra = path.NewStringPath(q, "EXTRA")
 	q.privileges = path.NewStringPath(q, "PRIVILEGES")
 	q.columnComment = path.NewStringPath(q, "COLUMN_COMMENT")
 	q.generationExpression = path.NewStringPath(q, "GENERATION_EXPRESSION")
+	q.srsId = path.NewIntPath(q, "SRS_ID")
 	return q
 }
 
@@ -47,23 +48,24 @@ type QColumns struct {
 	tableSchema            path.StringPath
 	tableName              path.StringPath
 	columnName             path.StringPath
-	ordinalPosition        path.Int64Path
+	ordinalPosition        path.IntPath
 	columnDefault          path.StringPath
 	isNullable             path.StringPath
-	dataType               path.StringPath
+	dataType               UnknownPathType
 	characterMaximumLength path.Int64Path
 	characterOctetLength   path.Int64Path
-	numericPrecision       path.Int64Path
-	numericScale           path.Int64Path
-	datetimePrecision      path.Int64Path
+	numericPrecision       path.IntPath
+	numericScale           path.IntPath
+	datetimePrecision      path.IntPath
 	characterSetName       path.StringPath
 	collationName          path.StringPath
 	columnType             path.StringPath
-	columnKey              path.StringPath
+	columnKey              UnknownPathType
 	extra                  path.StringPath
 	privileges             path.StringPath
 	columnComment          path.StringPath
 	generationExpression   path.StringPath
+	srsId                  path.IntPath
 }
 
 // core.Table Functions
@@ -91,11 +93,12 @@ func (q QColumns) GetColumns() []core.Column {
 		q.privileges,
 		q.columnComment,
 		q.generationExpression,
+		q.srsId,
 	}
 }
 
-func (q QColumns) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QColumns) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QColumns) GetAlias() string {
@@ -128,7 +131,7 @@ func (q QColumns) ColumnName() path.StringPath {
 	return q.columnName
 }
 
-func (q QColumns) OrdinalPosition() path.Int64Path {
+func (q QColumns) OrdinalPosition() path.IntPath {
 	return q.ordinalPosition
 }
 
@@ -140,7 +143,7 @@ func (q QColumns) IsNullable() path.StringPath {
 	return q.isNullable
 }
 
-func (q QColumns) DataType() path.StringPath {
+func (q QColumns) DataType() UnknownPathType {
 	return q.dataType
 }
 
@@ -152,15 +155,15 @@ func (q QColumns) CharacterOctetLength() path.Int64Path {
 	return q.characterOctetLength
 }
 
-func (q QColumns) NumericPrecision() path.Int64Path {
+func (q QColumns) NumericPrecision() path.IntPath {
 	return q.numericPrecision
 }
 
-func (q QColumns) NumericScale() path.Int64Path {
+func (q QColumns) NumericScale() path.IntPath {
 	return q.numericScale
 }
 
-func (q QColumns) DatetimePrecision() path.Int64Path {
+func (q QColumns) DatetimePrecision() path.IntPath {
 	return q.datetimePrecision
 }
 
@@ -176,7 +179,7 @@ func (q QColumns) ColumnType() path.StringPath {
 	return q.columnType
 }
 
-func (q QColumns) ColumnKey() path.StringPath {
+func (q QColumns) ColumnKey() UnknownPathType {
 	return q.columnKey
 }
 
@@ -194,4 +197,8 @@ func (q QColumns) ColumnComment() path.StringPath {
 
 func (q QColumns) GenerationExpression() path.StringPath {
 	return q.generationExpression
+}
+
+func (q QColumns) SrsId() path.IntPath {
+	return q.srsId
 }

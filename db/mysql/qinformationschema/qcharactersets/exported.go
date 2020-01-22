@@ -22,6 +22,6 @@ func Description() path.StringPath {
 	return instance.description
 }
 
-func Maxlen() path.Int64Path {
+func Maxlen() path.IntPath {
 	return instance.maxlen
 }

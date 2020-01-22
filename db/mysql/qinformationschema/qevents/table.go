@@ -27,17 +27,17 @@ func newQEvents(alias string) QEvents {
 	q.eventType = path.NewStringPath(q, "EVENT_TYPE")
 	q.executeAt = path.NewTimePath(q, "EXECUTE_AT")
 	q.intervalValue = path.NewStringPath(q, "INTERVAL_VALUE")
-	q.intervalField = path.NewStringPath(q, "INTERVAL_FIELD")
-	q.sqlMode = path.NewStringPath(q, "SQL_MODE")
+	q.intervalField = NewUnknownPathType(q, "INTERVAL_FIELD")
+	q.sqlMode = NewUnknownPathType(q, "SQL_MODE")
 	q.starts = path.NewTimePath(q, "STARTS")
 	q.ends = path.NewTimePath(q, "ENDS")
-	q.status = path.NewStringPath(q, "STATUS")
+	q.status = NewUnknownPathType(q, "STATUS")
 	q.onCompletion = path.NewStringPath(q, "ON_COMPLETION")
 	q.created = path.NewTimePath(q, "CREATED")
 	q.lastAltered = path.NewTimePath(q, "LAST_ALTERED")
 	q.lastExecuted = path.NewTimePath(q, "LAST_EXECUTED")
 	q.eventComment = path.NewStringPath(q, "EVENT_COMMENT")
-	q.originator = path.NewInt64Path(q, "ORIGINATOR")
+	q.originator = path.NewIntPath(q, "ORIGINATOR")
 	q.characterSetClient = path.NewStringPath(q, "CHARACTER_SET_CLIENT")
 	q.collationConnection = path.NewStringPath(q, "COLLATION_CONNECTION")
 	q.databaseCollation = path.NewStringPath(q, "DATABASE_COLLATION")
@@ -56,17 +56,17 @@ type QEvents struct {
 	eventType           path.StringPath
 	executeAt           path.TimePath
 	intervalValue       path.StringPath
-	intervalField       path.StringPath
-	sqlMode             path.StringPath
+	intervalField       UnknownPathType
+	sqlMode             UnknownPathType
 	starts              path.TimePath
 	ends                path.TimePath
-	status              path.StringPath
+	status              UnknownPathType
 	onCompletion        path.StringPath
 	created             path.TimePath
 	lastAltered         path.TimePath
 	lastExecuted        path.TimePath
 	eventComment        path.StringPath
-	originator          path.Int64Path
+	originator          path.IntPath
 	characterSetClient  path.StringPath
 	collationConnection path.StringPath
 	databaseCollation   path.StringPath
@@ -103,8 +103,8 @@ func (q QEvents) GetColumns() []core.Column {
 	}
 }
 
-func (q QEvents) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QEvents) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QEvents) GetAlias() string {
@@ -161,11 +161,11 @@ func (q QEvents) IntervalValue() path.StringPath {
 	return q.intervalValue
 }
 
-func (q QEvents) IntervalField() path.StringPath {
+func (q QEvents) IntervalField() UnknownPathType {
 	return q.intervalField
 }
 
-func (q QEvents) SqlMode() path.StringPath {
+func (q QEvents) SqlMode() UnknownPathType {
 	return q.sqlMode
 }
 
@@ -177,7 +177,7 @@ func (q QEvents) Ends() path.TimePath {
 	return q.ends
 }
 
-func (q QEvents) Status() path.StringPath {
+func (q QEvents) Status() UnknownPathType {
 	return q.status
 }
 
@@ -201,7 +201,7 @@ func (q QEvents) EventComment() path.StringPath {
 	return q.eventComment
 }
 
-func (q QEvents) Originator() path.Int64Path {
+func (q QEvents) Originator() path.IntPath {
 	return q.originator
 }
 

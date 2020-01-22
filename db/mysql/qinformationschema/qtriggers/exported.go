@@ -22,7 +22,7 @@ func TriggerName() path.StringPath {
 	return instance.triggerName
 }
 
-func EventManipulation() path.StringPath {
+func EventManipulation() UnknownPathType {
 	return instance.eventManipulation
 }
 
@@ -38,11 +38,11 @@ func EventObjectTable() path.StringPath {
 	return instance.eventObjectTable
 }
 
-func ActionOrder() path.Int64Path {
+func ActionOrder() path.IntPath {
 	return instance.actionOrder
 }
 
-func ActionCondition() path.StringPath {
+func ActionCondition() UnknownPathType {
 	return instance.actionCondition
 }
 
@@ -54,15 +54,15 @@ func ActionOrientation() path.StringPath {
 	return instance.actionOrientation
 }
 
-func ActionTiming() path.StringPath {
+func ActionTiming() UnknownPathType {
 	return instance.actionTiming
 }
 
-func ActionReferenceOldTable() path.StringPath {
+func ActionReferenceOldTable() UnknownPathType {
 	return instance.actionReferenceOldTable
 }
 
-func ActionReferenceNewTable() path.StringPath {
+func ActionReferenceNewTable() UnknownPathType {
 	return instance.actionReferenceNewTable
 }
 
@@ -78,7 +78,7 @@ func Created() path.TimePath {
 	return instance.created
 }
 
-func SqlMode() path.StringPath {
+func SqlMode() UnknownPathType {
 	return instance.sqlMode
 }
 

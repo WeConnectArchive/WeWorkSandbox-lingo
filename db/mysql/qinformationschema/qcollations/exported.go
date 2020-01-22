@@ -30,6 +30,10 @@ func IsCompiled() path.StringPath {
 	return instance.isCompiled
 }
 
-func Sortlen() path.Int64Path {
+func Sortlen() path.IntPath {
 	return instance.sortlen
+}
+
+func PadAttribute() UnknownPathType {
+	return instance.padAttribute
 }

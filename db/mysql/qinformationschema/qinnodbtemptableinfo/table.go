@@ -21,19 +21,15 @@ func newQInnodbTempTableInfo(alias string) QInnodbTempTableInfo {
 	q.name = path.NewStringPath(q, "NAME")
 	q.nCols = path.NewIntPath(q, "N_COLS")
 	q.space = path.NewIntPath(q, "SPACE")
-	q.perTableTablespace = path.NewStringPath(q, "PER_TABLE_TABLESPACE")
-	q.isCompressed = path.NewStringPath(q, "IS_COMPRESSED")
 	return q
 }
 
 type QInnodbTempTableInfo struct {
-	_alias             string
-	tableId            path.Int64Path
-	name               path.StringPath
-	nCols              path.IntPath
-	space              path.IntPath
-	perTableTablespace path.StringPath
-	isCompressed       path.StringPath
+	_alias  string
+	tableId path.Int64Path
+	name    path.StringPath
+	nCols   path.IntPath
+	space   path.IntPath
 }
 
 // core.Table Functions
@@ -44,13 +40,11 @@ func (q QInnodbTempTableInfo) GetColumns() []core.Column {
 		q.name,
 		q.nCols,
 		q.space,
-		q.perTableTablespace,
-		q.isCompressed,
 	}
 }
 
-func (q QInnodbTempTableInfo) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QInnodbTempTableInfo) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QInnodbTempTableInfo) GetAlias() string {
@@ -81,12 +75,4 @@ func (q QInnodbTempTableInfo) NCols() path.IntPath {
 
 func (q QInnodbTempTableInfo) Space() path.IntPath {
 	return q.space
-}
-
-func (q QInnodbTempTableInfo) PerTableTablespace() path.StringPath {
-	return q.perTableTablespace
-}
-
-func (q QInnodbTempTableInfo) IsCompressed() path.StringPath {
-	return q.isCompressed
 }

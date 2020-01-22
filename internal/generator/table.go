@@ -203,15 +203,16 @@ func createGetColumnsFunc(table string, cols []*column) *Statement {
 
 // createGetSQLFunc makes the GetSQL(d core.Dialect) function
 //
-// func (q qResourceGroup) GetSQL(d core.Dialect) (core.SQL, error) {
-//    return path.ExpandTableWithDialect(d, q)
+// func (q qResourceGroup) GetSQL(d core.Dialect, sql core.SQL) error {
+//    return path.ExpandTableWithDialect(d, q, sql)
 // }
 func createGetSQLFunc(table string) *Statement {
 	structName := ToTableStruct(table)
 	dialect := "d"
+	sqlName := "sql"
 
-	f := Func().Parens(Id(tableReceiver).Qual("", structName)).Id(funcGetSQL).Call(Id(dialect).Qual(pkgCore, typeDialect)).Params(Qual(pkgCore, typeSQL), Error())
-	f.Block(Return(Qual(pkgCorePath, funcExpandTable).Call(Id(dialect), Id(tableReceiver))))
+	f := Func().Parens(Id(tableReceiver).Qual("", structName)).Id(funcGetSQL).Call(Id(dialect).Qual(pkgCore, typeDialect), Id(sqlName).Qual(pkgCore, typeSQL)).Error()
+	f.Block(Return(Qual(pkgCorePath, funcExpandTable).Call(Id(dialect), Id(tableReceiver), Id(sqlName))))
 	return f
 }
 

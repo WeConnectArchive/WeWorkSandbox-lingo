@@ -85,8 +85,8 @@ func (q QProfiling) GetColumns() []core.Column {
 	}
 }
 
-func (q QProfiling) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QProfiling) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QProfiling) GetAlias() string {

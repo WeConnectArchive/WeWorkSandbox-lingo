@@ -6,13 +6,13 @@ import (
 )
 
 type ExpandTable interface {
-	ExpandTable(entity core.Table) (core.SQL, error)
+	ExpandTable(entity core.Table, sql core.SQL) error
 }
 
-func ExpandTableWithDialect(d core.Dialect, entity core.Table) (core.SQL, error) {
+func ExpandTableWithDialect(d core.Dialect, entity core.Table, sql core.SQL) error {
 	expand, ok := d.(ExpandTable)
 	if !ok {
-		return nil, expression.DialectFunctionNotSupported("ExpandTable")
+		return expression.DialectFunctionNotSupported("ExpandTable")
 	}
-	return expand.ExpandTable(entity)
+	return expand.ExpandTable(entity, sql)
 }

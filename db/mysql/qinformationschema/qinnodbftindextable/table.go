@@ -49,8 +49,8 @@ func (q QInnodbFtIndexTable) GetColumns() []core.Column {
 	}
 }
 
-func (q QInnodbFtIndexTable) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QInnodbFtIndexTable) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QInnodbFtIndexTable) GetAlias() string {

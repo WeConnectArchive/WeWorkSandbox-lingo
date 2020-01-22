@@ -36,13 +36,13 @@ func (b BinaryPath) GetAlias() string {
 	return b.alias
 }
 
-func (s BinaryPath) As(alias string) BinaryPath {
-	s.alias = alias
-	return s
+func (b BinaryPath) As(alias string) BinaryPath {
+	b.alias = alias
+	return b
 }
 
-func (b BinaryPath) GetSQL(d core.Dialect) (core.SQL, error) {
-	return ExpandColumnWithDialect(d, b)
+func (b BinaryPath) GetSQL(d core.Dialect, sql core.SQL) error {
+	return ExpandColumnWithDialect(d, b, sql)
 }
 
 func (b BinaryPath) To(value []byte) core.Set {
@@ -110,7 +110,7 @@ func (b BinaryPath) IsNotNull() core.ComboExpression {
 }
 
 func (b BinaryPath) In(values ...[]byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.In, expression.NewValues(values)...)
+	return expression.NewOperator(b, operator.In, expression.NewValue(values))
 }
 
 func (b BinaryPath) InPaths(values ...core.Expression) core.ComboExpression {
@@ -118,7 +118,7 @@ func (b BinaryPath) InPaths(values ...core.Expression) core.ComboExpression {
 }
 
 func (b BinaryPath) NotIn(values ...[]byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotIn, expression.NewValues(values)...)
+	return expression.NewOperator(b, operator.NotIn, expression.NewValue(values))
 }
 
 func (b BinaryPath) NotInPaths(values ...core.Expression) core.ComboExpression {

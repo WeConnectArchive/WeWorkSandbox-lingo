@@ -64,8 +64,8 @@ func (q QPlugins) GetColumns() []core.Column {
 	}
 }
 
-func (q QPlugins) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QPlugins) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QPlugins) GetAlias() string {

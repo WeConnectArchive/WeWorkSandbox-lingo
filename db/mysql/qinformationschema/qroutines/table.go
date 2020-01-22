@@ -21,28 +21,28 @@ func newQRoutines(alias string) QRoutines {
 	q.routineCatalog = path.NewStringPath(q, "ROUTINE_CATALOG")
 	q.routineSchema = path.NewStringPath(q, "ROUTINE_SCHEMA")
 	q.routineName = path.NewStringPath(q, "ROUTINE_NAME")
-	q.routineType = path.NewStringPath(q, "ROUTINE_TYPE")
-	q.dataType = path.NewStringPath(q, "DATA_TYPE")
-	q.characterMaximumLength = path.NewIntPath(q, "CHARACTER_MAXIMUM_LENGTH")
-	q.characterOctetLength = path.NewIntPath(q, "CHARACTER_OCTET_LENGTH")
-	q.numericPrecision = path.NewInt64Path(q, "NUMERIC_PRECISION")
+	q.routineType = NewUnknownPathType(q, "ROUTINE_TYPE")
+	q.dataType = NewUnknownPathType(q, "DATA_TYPE")
+	q.characterMaximumLength = path.NewInt64Path(q, "CHARACTER_MAXIMUM_LENGTH")
+	q.characterOctetLength = path.NewInt64Path(q, "CHARACTER_OCTET_LENGTH")
+	q.numericPrecision = path.NewIntPath(q, "NUMERIC_PRECISION")
 	q.numericScale = path.NewIntPath(q, "NUMERIC_SCALE")
-	q.datetimePrecision = path.NewInt64Path(q, "DATETIME_PRECISION")
+	q.datetimePrecision = path.NewIntPath(q, "DATETIME_PRECISION")
 	q.characterSetName = path.NewStringPath(q, "CHARACTER_SET_NAME")
 	q.collationName = path.NewStringPath(q, "COLLATION_NAME")
 	q.dtdIdentifier = path.NewStringPath(q, "DTD_IDENTIFIER")
 	q.routineBody = path.NewStringPath(q, "ROUTINE_BODY")
 	q.routineDefinition = path.NewStringPath(q, "ROUTINE_DEFINITION")
-	q.externalName = path.NewStringPath(q, "EXTERNAL_NAME")
+	q.externalName = NewUnknownPathType(q, "EXTERNAL_NAME")
 	q.externalLanguage = path.NewStringPath(q, "EXTERNAL_LANGUAGE")
 	q.parameterStyle = path.NewStringPath(q, "PARAMETER_STYLE")
 	q.isDeterministic = path.NewStringPath(q, "IS_DETERMINISTIC")
-	q.sqlDataAccess = path.NewStringPath(q, "SQL_DATA_ACCESS")
-	q.sqlPath = path.NewStringPath(q, "SQL_PATH")
-	q.securityType = path.NewStringPath(q, "SECURITY_TYPE")
+	q.sqlDataAccess = NewUnknownPathType(q, "SQL_DATA_ACCESS")
+	q.sqlPath = NewUnknownPathType(q, "SQL_PATH")
+	q.securityType = NewUnknownPathType(q, "SECURITY_TYPE")
 	q.created = path.NewTimePath(q, "CREATED")
 	q.lastAltered = path.NewTimePath(q, "LAST_ALTERED")
-	q.sqlMode = path.NewStringPath(q, "SQL_MODE")
+	q.sqlMode = NewUnknownPathType(q, "SQL_MODE")
 	q.routineComment = path.NewStringPath(q, "ROUTINE_COMMENT")
 	q.definer = path.NewStringPath(q, "DEFINER")
 	q.characterSetClient = path.NewStringPath(q, "CHARACTER_SET_CLIENT")
@@ -57,28 +57,28 @@ type QRoutines struct {
 	routineCatalog         path.StringPath
 	routineSchema          path.StringPath
 	routineName            path.StringPath
-	routineType            path.StringPath
-	dataType               path.StringPath
-	characterMaximumLength path.IntPath
-	characterOctetLength   path.IntPath
-	numericPrecision       path.Int64Path
+	routineType            UnknownPathType
+	dataType               UnknownPathType
+	characterMaximumLength path.Int64Path
+	characterOctetLength   path.Int64Path
+	numericPrecision       path.IntPath
 	numericScale           path.IntPath
-	datetimePrecision      path.Int64Path
+	datetimePrecision      path.IntPath
 	characterSetName       path.StringPath
 	collationName          path.StringPath
 	dtdIdentifier          path.StringPath
 	routineBody            path.StringPath
 	routineDefinition      path.StringPath
-	externalName           path.StringPath
+	externalName           UnknownPathType
 	externalLanguage       path.StringPath
 	parameterStyle         path.StringPath
 	isDeterministic        path.StringPath
-	sqlDataAccess          path.StringPath
-	sqlPath                path.StringPath
-	securityType           path.StringPath
+	sqlDataAccess          UnknownPathType
+	sqlPath                UnknownPathType
+	securityType           UnknownPathType
 	created                path.TimePath
 	lastAltered            path.TimePath
-	sqlMode                path.StringPath
+	sqlMode                UnknownPathType
 	routineComment         path.StringPath
 	definer                path.StringPath
 	characterSetClient     path.StringPath
@@ -124,8 +124,8 @@ func (q QRoutines) GetColumns() []core.Column {
 	}
 }
 
-func (q QRoutines) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QRoutines) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QRoutines) GetAlias() string {
@@ -158,23 +158,23 @@ func (q QRoutines) RoutineName() path.StringPath {
 	return q.routineName
 }
 
-func (q QRoutines) RoutineType() path.StringPath {
+func (q QRoutines) RoutineType() UnknownPathType {
 	return q.routineType
 }
 
-func (q QRoutines) DataType() path.StringPath {
+func (q QRoutines) DataType() UnknownPathType {
 	return q.dataType
 }
 
-func (q QRoutines) CharacterMaximumLength() path.IntPath {
+func (q QRoutines) CharacterMaximumLength() path.Int64Path {
 	return q.characterMaximumLength
 }
 
-func (q QRoutines) CharacterOctetLength() path.IntPath {
+func (q QRoutines) CharacterOctetLength() path.Int64Path {
 	return q.characterOctetLength
 }
 
-func (q QRoutines) NumericPrecision() path.Int64Path {
+func (q QRoutines) NumericPrecision() path.IntPath {
 	return q.numericPrecision
 }
 
@@ -182,7 +182,7 @@ func (q QRoutines) NumericScale() path.IntPath {
 	return q.numericScale
 }
 
-func (q QRoutines) DatetimePrecision() path.Int64Path {
+func (q QRoutines) DatetimePrecision() path.IntPath {
 	return q.datetimePrecision
 }
 
@@ -206,7 +206,7 @@ func (q QRoutines) RoutineDefinition() path.StringPath {
 	return q.routineDefinition
 }
 
-func (q QRoutines) ExternalName() path.StringPath {
+func (q QRoutines) ExternalName() UnknownPathType {
 	return q.externalName
 }
 
@@ -222,15 +222,15 @@ func (q QRoutines) IsDeterministic() path.StringPath {
 	return q.isDeterministic
 }
 
-func (q QRoutines) SqlDataAccess() path.StringPath {
+func (q QRoutines) SqlDataAccess() UnknownPathType {
 	return q.sqlDataAccess
 }
 
-func (q QRoutines) SqlPath() path.StringPath {
+func (q QRoutines) SqlPath() UnknownPathType {
 	return q.sqlPath
 }
 
-func (q QRoutines) SecurityType() path.StringPath {
+func (q QRoutines) SecurityType() UnknownPathType {
 	return q.securityType
 }
 
@@ -242,7 +242,7 @@ func (q QRoutines) LastAltered() path.TimePath {
 	return q.lastAltered
 }
 
-func (q QRoutines) SqlMode() path.StringPath {
+func (q QRoutines) SqlMode() UnknownPathType {
 	return q.sqlMode
 }
 

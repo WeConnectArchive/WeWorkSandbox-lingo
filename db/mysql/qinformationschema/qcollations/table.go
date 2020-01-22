@@ -22,7 +22,8 @@ func newQCollations(alias string) QCollations {
 	q.id = path.NewInt64Path(q, "ID")
 	q.isDefault = path.NewStringPath(q, "IS_DEFAULT")
 	q.isCompiled = path.NewStringPath(q, "IS_COMPILED")
-	q.sortlen = path.NewInt64Path(q, "SORTLEN")
+	q.sortlen = path.NewIntPath(q, "SORTLEN")
+	q.padAttribute = NewUnknownPathType(q, "PAD_ATTRIBUTE")
 	return q
 }
 
@@ -33,7 +34,8 @@ type QCollations struct {
 	id               path.Int64Path
 	isDefault        path.StringPath
 	isCompiled       path.StringPath
-	sortlen          path.Int64Path
+	sortlen          path.IntPath
+	padAttribute     UnknownPathType
 }
 
 // core.Table Functions
@@ -46,11 +48,12 @@ func (q QCollations) GetColumns() []core.Column {
 		q.isDefault,
 		q.isCompiled,
 		q.sortlen,
+		q.padAttribute,
 	}
 }
 
-func (q QCollations) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QCollations) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QCollations) GetAlias() string {
@@ -87,6 +90,10 @@ func (q QCollations) IsCompiled() path.StringPath {
 	return q.isCompiled
 }
 
-func (q QCollations) Sortlen() path.Int64Path {
+func (q QCollations) Sortlen() path.IntPath {
 	return q.sortlen
+}
+
+func (q QCollations) PadAttribute() UnknownPathType {
+	return q.padAttribute
 }

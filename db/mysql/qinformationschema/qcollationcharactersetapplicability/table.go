@@ -37,8 +37,8 @@ func (q QCollationCharacterSetApplicability) GetColumns() []core.Column {
 	}
 }
 
-func (q QCollationCharacterSetApplicability) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QCollationCharacterSetApplicability) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QCollationCharacterSetApplicability) GetAlias() string {

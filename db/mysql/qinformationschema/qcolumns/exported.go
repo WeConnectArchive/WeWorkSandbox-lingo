@@ -26,7 +26,7 @@ func ColumnName() path.StringPath {
 	return instance.columnName
 }
 
-func OrdinalPosition() path.Int64Path {
+func OrdinalPosition() path.IntPath {
 	return instance.ordinalPosition
 }
 
@@ -38,7 +38,7 @@ func IsNullable() path.StringPath {
 	return instance.isNullable
 }
 
-func DataType() path.StringPath {
+func DataType() UnknownPathType {
 	return instance.dataType
 }
 
@@ -50,15 +50,15 @@ func CharacterOctetLength() path.Int64Path {
 	return instance.characterOctetLength
 }
 
-func NumericPrecision() path.Int64Path {
+func NumericPrecision() path.IntPath {
 	return instance.numericPrecision
 }
 
-func NumericScale() path.Int64Path {
+func NumericScale() path.IntPath {
 	return instance.numericScale
 }
 
-func DatetimePrecision() path.Int64Path {
+func DatetimePrecision() path.IntPath {
 	return instance.datetimePrecision
 }
 
@@ -74,7 +74,7 @@ func ColumnType() path.StringPath {
 	return instance.columnType
 }
 
-func ColumnKey() path.StringPath {
+func ColumnKey() UnknownPathType {
 	return instance.columnKey
 }
 
@@ -92,4 +92,8 @@ func ColumnComment() path.StringPath {
 
 func GenerationExpression() path.StringPath {
 	return instance.generationExpression
+}
+
+func SrsId() path.IntPath {
+	return instance.srsId
 }

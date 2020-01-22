@@ -43,8 +43,8 @@ func (s TimePath) As(alias string) TimePath {
 	return s
 }
 
-func (t TimePath) GetSQL(d core.Dialect) (core.SQL, error) {
-	return ExpandColumnWithDialect(d, t)
+func (t TimePath) GetSQL(d core.Dialect, sql core.SQL) error {
+	return ExpandColumnWithDialect(d, t, sql)
 }
 
 func (t TimePath) To(value time.Time) core.Set {
@@ -112,7 +112,7 @@ func (t TimePath) IsNotNull() core.ComboExpression {
 }
 
 func (t TimePath) In(values ...time.Time) core.ComboExpression {
-	return expression.NewOperator(t, operator.In, expression.NewValues(values)...)
+	return expression.NewOperator(t, operator.In, expression.NewValue(values))
 }
 
 func (t TimePath) InPaths(values ...core.Expression) core.ComboExpression {
@@ -120,7 +120,7 @@ func (t TimePath) InPaths(values ...core.Expression) core.ComboExpression {
 }
 
 func (t TimePath) NotIn(values ...time.Time) core.ComboExpression {
-	return expression.NewOperator(t, operator.NotIn, expression.NewValues(values)...)
+	return expression.NewOperator(t, operator.NotIn, expression.NewValue(values))
 }
 
 func (t TimePath) NotInPaths(values ...core.Expression) core.ComboExpression {

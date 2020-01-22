@@ -30,7 +30,7 @@ func (u UpdateQuery) Set(exp ...core.Set) *UpdateQuery {
 	return &u
 }
 
-func (u UpdateQuery) GetSQL(d core.Dialect) (core.SQL, error) {
+func (u UpdateQuery) GetSQL(d core.Dialect, sql core.SQL) error {
 	var sql = core.NewSQL("UPDATE", nil)
 
 	if helpers.IsValueNilOrBlank(u.table) {

@@ -34,15 +34,15 @@ func UniqueConstraintName() path.StringPath {
 	return instance.uniqueConstraintName
 }
 
-func MatchOption() path.StringPath {
+func MatchOption() UnknownPathType {
 	return instance.matchOption
 }
 
-func UpdateRule() path.StringPath {
+func UpdateRule() UnknownPathType {
 	return instance.updateRule
 }
 
-func DeleteRule() path.StringPath {
+func DeleteRule() UnknownPathType {
 	return instance.deleteRule
 }
 

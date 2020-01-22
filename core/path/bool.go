@@ -41,8 +41,8 @@ func (b BoolPath) As(alias string) BoolPath {
 	return b
 }
 
-func (b BoolPath) GetSQL(d core.Dialect) (core.SQL, error) {
-	return ExpandColumnWithDialect(d, b)
+func (b BoolPath) GetSQL(d core.Dialect, sql core.SQL) error {
+	return ExpandColumnWithDialect(d, b, sql)
 }
 
 func (b BoolPath) To(value bool) core.Set {

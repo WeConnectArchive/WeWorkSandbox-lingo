@@ -24,8 +24,8 @@ func newQKeyColumnUsage(alias string) QKeyColumnUsage {
 	q.tableSchema = path.NewStringPath(q, "TABLE_SCHEMA")
 	q.tableName = path.NewStringPath(q, "TABLE_NAME")
 	q.columnName = path.NewStringPath(q, "COLUMN_NAME")
-	q.ordinalPosition = path.NewInt64Path(q, "ORDINAL_POSITION")
-	q.positionInUniqueConstraint = path.NewInt64Path(q, "POSITION_IN_UNIQUE_CONSTRAINT")
+	q.ordinalPosition = path.NewIntPath(q, "ORDINAL_POSITION")
+	q.positionInUniqueConstraint = path.NewIntPath(q, "POSITION_IN_UNIQUE_CONSTRAINT")
 	q.referencedTableSchema = path.NewStringPath(q, "REFERENCED_TABLE_SCHEMA")
 	q.referencedTableName = path.NewStringPath(q, "REFERENCED_TABLE_NAME")
 	q.referencedColumnName = path.NewStringPath(q, "REFERENCED_COLUMN_NAME")
@@ -41,8 +41,8 @@ type QKeyColumnUsage struct {
 	tableSchema                path.StringPath
 	tableName                  path.StringPath
 	columnName                 path.StringPath
-	ordinalPosition            path.Int64Path
-	positionInUniqueConstraint path.Int64Path
+	ordinalPosition            path.IntPath
+	positionInUniqueConstraint path.IntPath
 	referencedTableSchema      path.StringPath
 	referencedTableName        path.StringPath
 	referencedColumnName       path.StringPath
@@ -67,8 +67,8 @@ func (q QKeyColumnUsage) GetColumns() []core.Column {
 	}
 }
 
-func (q QKeyColumnUsage) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QKeyColumnUsage) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QKeyColumnUsage) GetAlias() string {
@@ -113,11 +113,11 @@ func (q QKeyColumnUsage) ColumnName() path.StringPath {
 	return q.columnName
 }
 
-func (q QKeyColumnUsage) OrdinalPosition() path.Int64Path {
+func (q QKeyColumnUsage) OrdinalPosition() path.IntPath {
 	return q.ordinalPosition
 }
 
-func (q QKeyColumnUsage) PositionInUniqueConstraint() path.Int64Path {
+func (q QKeyColumnUsage) PositionInUniqueConstraint() path.IntPath {
 	return q.positionInUniqueConstraint
 }
 

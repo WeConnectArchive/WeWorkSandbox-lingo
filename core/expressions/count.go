@@ -16,15 +16,17 @@ type count struct {
 	countOn core.Expression
 }
 
-func (c count) GetSQL(d core.Dialect) (core.SQL, error) {
+func (c count) GetSQL(d core.Dialect, sql core.SQL) error {
 	if helpers.IsValueNilOrBlank(c.countOn) {
-		return nil, expression.ExpressionIsNil("countOn")
+		return expression.ExpressionIsNil("countOn")
 	}
 
-	countOn, countOnErr := c.countOn.GetSQL(d)
+	countOnSQL := sql.New()
+	countOnErr := c.countOn.GetSQL(d, countOnSQL)
 	if countOnErr != nil {
-		return nil, countOnErr
+		return countOnErr
 	}
 
-	return core.NewSQL("COUNT", nil).AppendSql(countOn.SurroundWithParens()), nil
+	sql.AppendString("COUNT").AppendSql(countOnSQL.SurroundWithParens())
+	return nil
 }

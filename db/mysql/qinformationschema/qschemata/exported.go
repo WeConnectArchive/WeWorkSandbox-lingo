@@ -26,6 +26,10 @@ func DefaultCollationName() path.StringPath {
 	return instance.defaultCollationName
 }
 
-func SqlPath() path.StringPath {
+func SqlPath() UnknownPathType {
 	return instance.sqlPath
+}
+
+func DefaultEncryption() UnknownPathType {
+	return instance.defaultEncryption
 }

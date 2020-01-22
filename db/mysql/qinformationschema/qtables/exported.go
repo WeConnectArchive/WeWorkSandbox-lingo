@@ -22,7 +22,7 @@ func TableName() path.StringPath {
 	return instance.tableName
 }
 
-func TableType() path.StringPath {
+func TableType() UnknownPathType {
 	return instance.tableType
 }
 
@@ -34,7 +34,7 @@ func Version() path.Int64Path {
 	return instance.version
 }
 
-func RowFormat() path.StringPath {
+func RowFormat() UnknownPathType {
 	return instance.rowFormat
 }
 

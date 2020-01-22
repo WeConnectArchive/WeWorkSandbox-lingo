@@ -26,11 +26,11 @@ func ViewDefinition() path.StringPath {
 	return instance.viewDefinition
 }
 
-func CheckOption() path.StringPath {
+func CheckOption() UnknownPathType {
 	return instance.checkOption
 }
 
-func IsUpdatable() path.StringPath {
+func IsUpdatable() UnknownPathType {
 	return instance.isUpdatable
 }
 

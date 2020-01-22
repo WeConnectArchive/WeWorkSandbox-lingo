@@ -37,8 +37,8 @@ func (q QInnodbFtConfig) GetColumns() []core.Column {
 	}
 }
 
-func (q QInnodbFtConfig) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QInnodbFtConfig) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QInnodbFtConfig) GetAlias() string {

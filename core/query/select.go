@@ -45,7 +45,7 @@ func (s *SelectQuery) Join(left core.Expression, jt expression.JoinType, on core
 	return s
 }
 
-func (s *SelectQuery) GetSQL(d core.Dialect) (core.SQL, error) {
+func (s *SelectQuery) GetSQL(d core.Dialect, sql core.SQL) error {
 	var sql = core.NewSQL("SELECT ", nil)
 
 	if helpers.IsValueNilOrEmpty(s.paths) {

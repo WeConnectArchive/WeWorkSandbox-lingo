@@ -34,8 +34,8 @@ func (q QInnodbFtDefaultStopword) GetColumns() []core.Column {
 	}
 }
 
-func (q QInnodbFtDefaultStopword) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QInnodbFtDefaultStopword) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QInnodbFtDefaultStopword) GetAlias() string {

@@ -34,7 +34,7 @@ func IndexName() path.StringPath {
 	return instance.indexName
 }
 
-func SeqInIndex() path.Int64Path {
+func SeqInIndex() path.IntPath {
 	return instance.seqInIndex
 }
 
@@ -54,7 +54,7 @@ func SubPart() path.Int64Path {
 	return instance.subPart
 }
 
-func Packed() path.StringPath {
+func Packed() UnknownPathType {
 	return instance.packed
 }
 
@@ -72,4 +72,12 @@ func Comment() path.StringPath {
 
 func IndexComment() path.StringPath {
 	return instance.indexComment
+}
+
+func IsVisible() path.StringPath {
+	return instance.isVisible
+}
+
+func Expression() path.StringPath {
+	return instance.expression
 }

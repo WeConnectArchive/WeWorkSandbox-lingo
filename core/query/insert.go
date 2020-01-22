@@ -59,7 +59,7 @@ func (i *InsertQuery) Select(s *SelectQuery) *InsertQuery {
 	return i
 }
 
-func (i *InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
+func (i *InsertQuery) GetSQL(d core.Dialect, sql core.SQL) error {
 	var sql = core.NewSQL("INSERT INTO", nil)
 
 	if helpers.IsValueNilOrBlank(i.table) {

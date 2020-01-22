@@ -38,11 +38,11 @@ func ColumnName() path.StringPath {
 	return instance.columnName
 }
 
-func OrdinalPosition() path.Int64Path {
+func OrdinalPosition() path.IntPath {
 	return instance.ordinalPosition
 }
 
-func PositionInUniqueConstraint() path.Int64Path {
+func PositionInUniqueConstraint() path.IntPath {
 	return instance.positionInUniqueConstraint
 }
 

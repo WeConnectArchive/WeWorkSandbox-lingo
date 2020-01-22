@@ -23,16 +23,18 @@ func newQStatistics(alias string) QStatistics {
 	q.nonUnique = path.NewInt64Path(q, "NON_UNIQUE")
 	q.indexSchema = path.NewStringPath(q, "INDEX_SCHEMA")
 	q.indexName = path.NewStringPath(q, "INDEX_NAME")
-	q.seqInIndex = path.NewInt64Path(q, "SEQ_IN_INDEX")
+	q.seqInIndex = path.NewIntPath(q, "SEQ_IN_INDEX")
 	q.columnName = path.NewStringPath(q, "COLUMN_NAME")
 	q.collation = path.NewStringPath(q, "COLLATION")
 	q.cardinality = path.NewInt64Path(q, "CARDINALITY")
 	q.subPart = path.NewInt64Path(q, "SUB_PART")
-	q.packed = path.NewStringPath(q, "PACKED")
+	q.packed = NewUnknownPathType(q, "PACKED")
 	q.nullable = path.NewStringPath(q, "NULLABLE")
 	q.indexType = path.NewStringPath(q, "INDEX_TYPE")
 	q.comment = path.NewStringPath(q, "COMMENT")
 	q.indexComment = path.NewStringPath(q, "INDEX_COMMENT")
+	q.isVisible = path.NewStringPath(q, "IS_VISIBLE")
+	q.expression = path.NewStringPath(q, "EXPRESSION")
 	return q
 }
 
@@ -44,16 +46,18 @@ type QStatistics struct {
 	nonUnique    path.Int64Path
 	indexSchema  path.StringPath
 	indexName    path.StringPath
-	seqInIndex   path.Int64Path
+	seqInIndex   path.IntPath
 	columnName   path.StringPath
 	collation    path.StringPath
 	cardinality  path.Int64Path
 	subPart      path.Int64Path
-	packed       path.StringPath
+	packed       UnknownPathType
 	nullable     path.StringPath
 	indexType    path.StringPath
 	comment      path.StringPath
 	indexComment path.StringPath
+	isVisible    path.StringPath
+	expression   path.StringPath
 }
 
 // core.Table Functions
@@ -76,11 +80,13 @@ func (q QStatistics) GetColumns() []core.Column {
 		q.indexType,
 		q.comment,
 		q.indexComment,
+		q.isVisible,
+		q.expression,
 	}
 }
 
-func (q QStatistics) GetSQL(d core.Dialect) (core.SQL, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (q QStatistics) GetSQL(d core.Dialect, sql core.SQL) error {
+	return path.ExpandTableWithDialect(d, q, sql)
 }
 
 func (q QStatistics) GetAlias() string {
@@ -121,7 +127,7 @@ func (q QStatistics) IndexName() path.StringPath {
 	return q.indexName
 }
 
-func (q QStatistics) SeqInIndex() path.Int64Path {
+func (q QStatistics) SeqInIndex() path.IntPath {
 	return q.seqInIndex
 }
 
@@ -141,7 +147,7 @@ func (q QStatistics) SubPart() path.Int64Path {
 	return q.subPart
 }
 
-func (q QStatistics) Packed() path.StringPath {
+func (q QStatistics) Packed() UnknownPathType {
 	return q.packed
 }
 
@@ -159,4 +165,12 @@ func (q QStatistics) Comment() path.StringPath {
 
 func (q QStatistics) IndexComment() path.StringPath {
 	return q.indexComment
+}
+
+func (q QStatistics) IsVisible() path.StringPath {
+	return q.isVisible
+}
+
+func (q QStatistics) Expression() path.StringPath {
+	return q.expression
 }
