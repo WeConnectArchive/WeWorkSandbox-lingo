@@ -1,0 +1,44 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.14
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Get dependencies
+      run: |
+        go mod download -x
+
+    - name: Revive Action
+      uses: morphy2k/revive-action@v1.3.1
+      with:
+        # Path to your Revive config within the repo (optional)
+        config: revive.toml
+        # Exclude patterns, separated by semicolons (optional)
+        #   exclude: "file.go;foo/bar.go;./foo/bar/..."
+        # Path pattern (default: ./...)
+        #   path: "./foo/..."
+      env:
+        # GitHub token for annotations (optional)
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build
+      run: go build -v ./...
+
