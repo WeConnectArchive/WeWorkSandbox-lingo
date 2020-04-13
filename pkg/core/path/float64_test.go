@@ -3,6 +3,7 @@ package path_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
@@ -109,7 +110,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -151,7 +152,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -193,7 +194,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -235,7 +236,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -277,7 +278,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -319,7 +320,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -361,7 +362,7 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				value = 1.5E99
+				value = 1.5e99
 			})
 
 			JustBeforeEach(func() {
@@ -436,8 +437,8 @@ var _ = Describe("Float64", func() {
 
 			BeforeEach(func() {
 				value = []float64{
-					1.5E99,
-					6.2E88,
+					1.5e99,
+					6.2e88,
 				}
 			})
 
@@ -485,8 +486,8 @@ var _ = Describe("Float64", func() {
 
 			BeforeEach(func() {
 				value = []float64{
-					1.5E99,
-					6.2E88,
+					1.5e99,
+					6.2e88,
 				}
 			})
 
@@ -534,8 +535,8 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				firstValue = 1.5E99
-				secondValue = 6.2E88
+				firstValue = 1.5e99
+				secondValue = 6.2e88
 			})
 
 			JustBeforeEach(func() {
@@ -580,8 +581,8 @@ var _ = Describe("Float64", func() {
 			)
 
 			BeforeEach(func() {
-				firstValue = 1.5E99
-				secondValue = 6.2E88
+				firstValue = 1.5e99
+				secondValue = 6.2e88
 			})
 
 			JustBeforeEach(func() {

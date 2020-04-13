@@ -3,11 +3,10 @@ package generator
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 	"path"
-
-	"errors"
 )
 
 type Settings interface {
@@ -35,21 +34,21 @@ type Column interface {
 }
 
 func Generate(ctx context.Context, settings Settings, parser Parser) <-chan error {
-	var errors = make(chan error)
+	var errChan = make(chan error)
 
 	rootDir, err := ensureDirectoryIsClean(settings.RootDirectory())
 	if err != nil {
-		errors <- err
-		close(errors)
-		return errors
+		errChan <- err
+		close(errChan)
+		return errChan
 	}
 
 	go func() {
-		defer close(errors)
+		defer close(errChan)
 
-		pipeErrors(errors, generateSchemas(ctx, settings, parser, rootDir))
+		pipeErrors(errChan, generateSchemas(ctx, settings, parser, rootDir))
 	}()
-	return errors
+	return errChan
 }
 
 func ensureDirectoryIsClean(directory string) (string, error) {

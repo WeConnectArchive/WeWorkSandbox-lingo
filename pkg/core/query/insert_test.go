@@ -1,16 +1,18 @@
 package query_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
-	"errors"
 )
 
 var _ = Describe("Insert", func() {
@@ -198,7 +200,7 @@ var _ = Describe("Insert", func() {
 				BeforeEach(func() {
 					valueConstants = []interface{}{
 						"stringHere",
-						1.4E2,
+						1.4e2,
 					}
 					valueExpressions = nil
 				})
@@ -208,7 +210,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns valid SQL Values", func() {
-					Expect(sql).To(MatchSQLValues(ConsistOf("stringHere", 1.4E2)))
+					Expect(sql).To(MatchSQLValues(ConsistOf("stringHere", 1.4e2)))
 				})
 
 				It("Returns no error", func() {

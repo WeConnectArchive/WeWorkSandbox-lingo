@@ -7,6 +7,7 @@ import (
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/weworksandbox/lingo/internal/generator"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
 )

@@ -3,13 +3,13 @@ package generator
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
 	. "github.com/dave/jennifer/jen"
-	"errors"
 )
 
 func Render(jenFile *File) (string, error) {

@@ -1,13 +1,13 @@
 package dialect
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
-	"github.com/weworksandbox/lingo/pkg/core/sort"
+	"errors"
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/helpers"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
-	"errors"
+	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
 
 var genericJoinTypeToStr = map[expression.JoinType]string{

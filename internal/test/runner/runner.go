@@ -1,10 +1,11 @@
 package runner
 
 import (
+	"testing"
+
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
-	"testing"
 )
 
 func SetupAndRun(t *testing.T, testName string) {
