@@ -7,7 +7,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Count", func() {
@@ -80,7 +80,7 @@ var _ = Describe("Count", func() {
 			Context("expression returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(countOn.GetSQL(d)).ThenReturn(nil, xerrors.New("countOn error"))
+					pegomock.When(countOn.GetSQL(d)).ThenReturn(nil, errors.New("countOn error"))
 				})
 
 				It("Returns a nil SQL", func() {

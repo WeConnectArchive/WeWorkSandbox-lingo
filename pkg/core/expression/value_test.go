@@ -10,7 +10,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Value", func() {
@@ -121,5 +121,5 @@ func (valueDialectSuccess) Value(value interface{}) (core.SQL, error) {
 type valueDialectFailure struct{ valueDialectSuccess }
 
 func (valueDialectFailure) Value(value interface{}) (core.SQL, error) {
-	return nil, xerrors.New("value failure")
+	return nil, errors.New("value failure")
 }

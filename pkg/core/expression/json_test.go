@@ -9,7 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	. "github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/json"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("JSON", func() {
@@ -103,7 +103,7 @@ var _ = Describe("JSON", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					leftErr := xerrors.New("left error")
+					leftErr := errors.New("left error")
 					pegomock.When(left.GetSQL(AnyCoreDialect())).ThenReturn(nil, leftErr)
 				})
 
@@ -134,7 +134,7 @@ var _ = Describe("JSON", func() {
 			Context("an expression returns an error", func() {
 
 				BeforeEach(func() {
-					expErr := xerrors.New("exp error")
+					expErr := errors.New("exp error")
 					pegomock.When(expressions[1].GetSQL(AnyCoreDialect())).ThenReturn(nil, expErr)
 				})
 
@@ -175,5 +175,5 @@ func (jsonDialectSuccess) JSONOperator(core.SQL, json.Operand, []core.SQL) (core
 type jsonDialectFailure struct{ jsonDialectSuccess }
 
 func (jsonDialectFailure) JSONOperator(core.SQL, json.Operand, []core.SQL) (core.SQL, error) {
-	return nil, xerrors.New("json failure")
+	return nil, errors.New("json failure")
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("JoinOn", func() {
@@ -98,7 +98,7 @@ var _ = Describe("JoinOn", func() {
 			Context("on returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(on.GetSQL(d)).ThenReturn(nil, xerrors.New("on error"))
+					pegomock.When(on.GetSQL(d)).ThenReturn(nil, errors.New("on error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -128,7 +128,7 @@ var _ = Describe("JoinOn", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(d)).ThenReturn(nil, xerrors.New("left error"))
+					pegomock.When(left.GetSQL(d)).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -168,5 +168,5 @@ func (joinerDialectSuccess) Join(core.SQL, expression.JoinType, core.SQL) (core.
 type joinerDialectFailure struct{ joinerDialectSuccess }
 
 func (joinerDialectFailure) Join(core.SQL, expression.JoinType, core.SQL) (core.SQL, error) {
-	return nil, xerrors.New("joiner failure")
+	return nil, errors.New("joiner failure")
 }

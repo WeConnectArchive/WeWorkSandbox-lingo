@@ -2,12 +2,12 @@ package generate
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/weworksandbox/lingo/internal/generator"
 	"github.com/weworksandbox/lingo/internal/parse"
-	"golang.org/x/xerrors"
 )
 
 func Generate() *cobra.Command {
@@ -48,7 +48,7 @@ func generate() error {
 		if combined == nil {
 			combined = err
 		} else {
-			combined = xerrors.Errorf("%s: %s", combined, err)
+			combined = fmt.Errorf("%s: %w", combined, err)
 		}
 	}
 	return combined

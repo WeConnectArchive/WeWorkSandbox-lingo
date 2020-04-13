@@ -10,7 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Insert", func() {
@@ -118,7 +118,7 @@ var _ = Describe("Insert", func() {
 			Context("Table GetSQL has an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("table error"))
+					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("table error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -151,7 +151,7 @@ var _ = Describe("Insert", func() {
 			XContext("Columns return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(cols[len(cols)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("col error"))
+					pegomock.When(cols[len(cols)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("col error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -181,7 +181,7 @@ var _ = Describe("Insert", func() {
 			Context("Values return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(valueExpressions[len(valueExpressions)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("valueExpressions error"))
+					pegomock.When(valueExpressions[len(valueExpressions)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("valueExpressions error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -264,7 +264,7 @@ var _ = Describe("Insert", func() {
 				Context("Select returns an error", func() {
 
 					BeforeEach(func() {
-						pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("select error"))
+						pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("select error"))
 					})
 
 					It("Returns a nil SQL", func() {

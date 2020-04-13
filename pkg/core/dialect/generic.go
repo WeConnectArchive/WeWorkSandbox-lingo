@@ -7,7 +7,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var genericJoinTypeToStr = map[expression.JoinType]string{
@@ -44,7 +44,7 @@ func Value(format ValueFormatter, value interface{}) (core.SQL, error) {
 		return nil, expression.ConstantIsNil()
 	}
 	if helpers.IsValueNilOrBlank(format) {
-		return nil, xerrors.New("ValueFormatter is nil or the interface pointer is nil")
+		return nil, errors.New("ValueFormatter is nil or the interface pointer is nil")
 	}
 	return core.NewSQL(format.ValueFormat(), []interface{}{value}), nil
 }
@@ -87,7 +87,7 @@ type SetFormatter interface {
 
 func Set(format SetFormatter, left core.SQL, value core.SQL) (core.SQL, error) {
 	if helpers.IsValueNilOrBlank(format) {
-		return nil, xerrors.New("SetFormatter is nil or the interface pointer is nil")
+		return nil, errors.New("SetFormatter is nil or the interface pointer is nil")
 	}
 	if helpers.IsValueNilOrBlank(left.String()) {
 		return nil, expression.ExpressionIsNil("left")

@@ -10,7 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Delete", func() {
@@ -107,7 +107,7 @@ var _ = Describe("Delete", func() {
 			Context("From GetSQL returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(from.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("from error"))
+					pegomock.When(from.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("from error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -137,7 +137,7 @@ var _ = Describe("Delete", func() {
 			Context("Left part of Join returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(join[len(join)-1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("left join error"))
+					pegomock.When(join[len(join)-1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left join error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -152,7 +152,7 @@ var _ = Describe("Delete", func() {
 			Context("On part of Join returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(join[len(join)-1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("on join error"))
+					pegomock.When(join[len(join)-1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("on join error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -182,7 +182,7 @@ var _ = Describe("Delete", func() {
 			Context("Where GetSQL returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(where[len(where)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("where error"))
+					pegomock.When(where[len(where)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("where error"))
 				})
 
 				It("Returns a nil SQL", func() {

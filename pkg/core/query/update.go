@@ -4,7 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 func Update(table core.Table) *UpdateQuery {
@@ -37,7 +37,7 @@ func (u UpdateQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("table"), sql.String())
 	}
 	if u.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSql(xerrors.New("table alias must be unset"), sql.String())
+		return nil, expression.ErrorAroundSql(errors.New("table alias must be unset"), sql.String())
 	}
 	if tableSql, err := u.table.GetSQL(d); err != nil {
 		return nil, expression.ErrorAroundSql(err, sql.String())

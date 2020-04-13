@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Table", func() {
@@ -80,5 +80,5 @@ func (expandTableDialectSuccess) ExpandTable(entity core.Table) (core.SQL, error
 type expandTableDialectFailure struct{ expandTableDialectSuccess }
 
 func (expandTableDialectFailure) ExpandTable(entity core.Table) (core.SQL, error) {
-	return nil, xerrors.New("expand table error")
+	return nil, errors.New("expand table error")
 }

@@ -7,7 +7,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/query"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Paths", func() {
@@ -105,7 +105,7 @@ var _ = Describe("Paths", func() {
 		Context("With an error on the second expression", func() {
 
 			BeforeEach(func() {
-				pegomock.When(paths[1].GetSQL(d)).ThenReturn(nil, xerrors.New("second exp error"))
+				pegomock.When(paths[1].GetSQL(d)).ThenReturn(nil, errors.New("second exp error"))
 			})
 
 			It("Returns a nil SQL", func() {
@@ -168,7 +168,7 @@ var _ = Describe("Paths", func() {
 		Context("With an error on the second expression", func() {
 
 			BeforeEach(func() {
-				pegomock.When(paths[1].GetSQL(d)).ThenReturn(nil, xerrors.New("second exp error"))
+				pegomock.When(paths[1].GetSQL(d)).ThenReturn(nil, errors.New("second exp error"))
 			})
 
 			It("Returns a nil SQL", func() {

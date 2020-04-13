@@ -1,10 +1,11 @@
 package query
 
 import (
+	"fmt"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 func InsertInto(entity core.Table) *InsertQuery {
@@ -65,7 +66,7 @@ func (i *InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("table"), sql.String())
 	}
 	if i.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSql(xerrors.New("table alias must be unset"), sql.String())
+		return nil, expression.ErrorAroundSql(errors.New("table alias must be unset"), sql.String())
 	}
 	if tableSql, err := i.table.GetSQL(d); err != nil {
 		return nil, expression.ErrorAroundSql(err, sql.String())
@@ -92,7 +93,7 @@ func (i *InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 		colsLen := len(i.columns)
 		valuesLen := len(i.values)
 		if colsLen != valuesLen {
-			err := xerrors.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
+			err := fmt.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
 			return nil, expression.ErrorAroundSql(err, sql.String())
 		}
 

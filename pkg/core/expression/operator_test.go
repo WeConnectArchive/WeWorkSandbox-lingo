@@ -9,7 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var _ = Describe("Operator", func() {
@@ -100,7 +100,7 @@ var _ = Describe("Operator", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(d)).ThenReturn(nil, xerrors.New("left error"))
+					pegomock.When(left.GetSQL(d)).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -130,7 +130,7 @@ var _ = Describe("Operator", func() {
 			Context("first value returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(values[0].GetSQL(d)).ThenReturn(nil, xerrors.New("values[0] error"))
+					pegomock.When(values[0].GetSQL(d)).ThenReturn(nil, errors.New("values[0] error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -160,7 +160,7 @@ var _ = Describe("Operator", func() {
 			Context("second value returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(values[1].GetSQL(d)).ThenReturn(nil, xerrors.New("values[1] error"))
+					pegomock.When(values[1].GetSQL(d)).ThenReturn(nil, errors.New("values[1] error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -200,5 +200,5 @@ func (operatorDialectSuccess) Operator(core.SQL, operator.Operand, []core.SQL) (
 type operatorDialectFailure struct{ operatorDialectSuccess }
 
 func (operatorDialectFailure) Operator(core.SQL, operator.Operand, []core.SQL) (core.SQL, error) {
-	return nil, xerrors.New("operator failure")
+	return nil, errors.New("operator failure")
 }
