@@ -3,6 +3,7 @@ package query
 import (
 	"errors"
 	"fmt"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
