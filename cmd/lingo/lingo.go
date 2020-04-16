@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -10,21 +9,16 @@ import (
 	"github.com/weworksandbox/lingo/internal/commands/generate"
 )
 
-var configFile string
+func main() {
+	var configFile string
 
-func initConfig() {
-	if configFile != "" {
+	// Run `initConfig` before each command below is executed
+	cobra.OnInitialize(func() {
 		viper.SetConfigFile(configFile)
 		if err := viper.ReadInConfig(); err != nil {
-			fmt.Printf("Can't find or read config at '%s': %s", configFile, err)
-			os.Exit(1)
+			log.Fatalf("Can't find or read config at '%s': %s", configFile, err)
 		}
-	}
-}
-
-func main() {
-	// Run `initConfig` before each command below is executed
-	cobra.OnInitialize(initConfig)
+	})
 
 	var rootCmd = &cobra.Command{
 		Use: "lingo",

@@ -50,20 +50,22 @@ func Value(format ValueFormatter, value interface{}) (core.SQL, error) {
 }
 
 func Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
+	opWithSpaces := " "+op.String()+" "
+
 	switch op {
 	case operator.And, operator.Or:
-		return left.CombineWithSeparator(values, " "+op.String()+" ").SurroundWithParens(), nil
+		return left.CombineWithSeparator(values, opWithSpaces).SurroundWithParens(), nil
 	case operator.Eq, operator.NotEq, operator.LessThan, operator.LessThanOrEqual,
 		operator.GreaterThan, operator.GreaterThanOrEqual, operator.Like, operator.NotLike,
 		operator.Between, operator.NotBetween:
-		return left.CombineWithSeparator(values, " "+op.String()+" "), nil
+		return left.CombineWithSeparator(values, opWithSpaces), nil
 	case operator.In, operator.NotIn:
-		sql := core.NewEmptySql().CombinePaths(values).SurroundWithParens()
-		return left.AppendStringWithSpace(op.String()).AppendSqlWithSpace(sql), nil
+		sql := core.NewEmptySQL().CombinePaths(values).SurroundWithParens()
+		return left.AppendStringWithSpace(op.String()).AppendSQLWithSpace(sql), nil
 	case operator.Null, operator.NotNull:
 		return left.AppendStringWithSpace(op.String()), nil
 	}
-	return nil, expression.ErrorAroundSql(expression.EnumIsInvalid("Operator", op), left.String())
+	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("Operator", op), left.String())
 }
 
 func Join(left core.SQL, joinType string, on core.SQL) (core.SQL, error) {
@@ -71,14 +73,14 @@ func Join(left core.SQL, joinType string, on core.SQL) (core.SQL, error) {
 		return nil, expression.ExpressionIsNil("left")
 	}
 	if helpers.IsValueNilOrBlank(on.String()) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("on"), left.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("on"), left.String())
 	}
 	if helpers.IsValueNilOrEmpty(joinType) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("joinType"), left.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("joinType"), left.String())
 	}
 
 	var sql = core.NewSQL(joinType, nil)
-	return sql.AppendSqlWithSpace(left).AppendString(" ON").AppendSqlWithSpace(on), nil
+	return sql.AppendSQLWithSpace(left).AppendString(" ON").AppendSQLWithSpace(on), nil
 }
 
 type SetFormatter interface {
@@ -96,7 +98,7 @@ func Set(format SetFormatter, left core.SQL, value core.SQL) (core.SQL, error) {
 		return nil, expression.ExpressionIsNil("value")
 	}
 
-	return left.AppendStringWithSpace(format.SetValueFormat()).AppendSqlWithSpace(value), nil
+	return left.AppendStringWithSpace(format.SetValueFormat()).AppendSQLWithSpace(value), nil
 }
 
 func OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error) {

@@ -22,6 +22,6 @@ func (d Direction) String() string {
 	return _names[d]
 }
 
-func (d Direction) GetSQL(dialect core.Dialect) (core.SQL, error) {
+func (d Direction) GetSQL(_ core.Dialect) (core.SQL, error) {
 	return core.NewSQL(d.String(), nil), nil
 }

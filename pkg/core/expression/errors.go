@@ -40,20 +40,20 @@ func (e valueIsComplexType) Error() string {
 }
 func (e valueIsComplexType) TypeName() string { return e.value.String() }
 
-type errorAtSql struct {
+type errorAtSQL struct {
 	err error
 	sql string
 }
 
-func ErrorAroundSql(err error, sql string) error {
-	return errorAtSql{err: err, sql: sql}
+func ErrorAroundSQL(err error, sql string) error {
+	return errorAtSQL{err: err, sql: sql}
 }
-func (e errorAtSql) Error() string {
+func (e errorAtSQL) Error() string {
 	return fmt.Sprintf("an error occurred around sql '%s': %s", e.lastChars(), e.Unwrap().Error())
 }
-func (e errorAtSql) SQL() string   { return e.sql }
-func (e errorAtSql) Unwrap() error { return e.err }
-func (e errorAtSql) lastChars() string {
+func (e errorAtSQL) SQL() string   { return e.sql }
+func (e errorAtSQL) Unwrap() error { return e.err }
+func (e errorAtSQL) lastChars() string {
 	const length = 20
 	var sqlLen = len(e.SQL())
 	if sqlLen <= length {

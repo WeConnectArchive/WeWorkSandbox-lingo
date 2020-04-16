@@ -1,7 +1,7 @@
 package generator
 
 import (
-	. "strings"
+	"strings"
 )
 
 // DBToPathType is a map of database data/column type names to an
@@ -21,11 +21,11 @@ func (c column) DatabaseName() string {
 }
 
 func (c column) MemberName() string {
-	return c.replace(ToNonExported(ToLower(c.col.Name())))
+	return c.replace(ToNonExported(strings.ToLower(c.col.Name())))
 }
 
 func (c column) MethodName() string {
-	return ToExported(ToLower(c.col.Name()))
+	return ToExported(strings.ToLower(c.col.Name()))
 }
 
 func (c column) PathTypeName() (string, string) {

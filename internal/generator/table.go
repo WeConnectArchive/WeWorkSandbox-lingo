@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 
+	//revive:disable-next-line
 	. "github.com/dave/jennifer/jen"
 )
 
@@ -16,6 +17,7 @@ const typeColumn = "Column"
 const typeDialect = "Dialect"
 const typeName = "Name"
 const typeSQL = "SQL"
+const typeSchema = "schema"
 
 const addrOf = "&"
 const ptr = "*"

@@ -33,6 +33,7 @@ jobs:
         config: revive.toml
         # Exclude patterns, separated by semicolons (optional)
         #   exclude: "file.go;foo/bar.go;./foo/bar/..."
+        exclude: "./db/..."
         # Path pattern (default: ./...)
         #   path: "./foo/..."
       env:

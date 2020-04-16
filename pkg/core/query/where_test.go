@@ -132,7 +132,7 @@ func (whereDialectSuccess) GetName() string { return "where dialect success" }
 func (whereDialectSuccess) Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
 	var sql = left
 	for _, value := range values {
-		sql = sql.AppendStringWithSpace(op.String()).AppendSqlWithSpace(value)
+		sql = sql.AppendStringWithSpace(op.String()).AppendSQLWithSpace(value)
 	}
 	return sql, nil
 }

@@ -39,7 +39,7 @@ func (o orderBy) GetSQL(d core.Dialect) (core.SQL, error) {
 	}
 
 	if o.direction == sort.Unknown {
-		return nil, ErrorAroundSql(ExpressionIsNil("direction"), left.String())
+		return nil, ErrorAroundSQL(ExpressionIsNil("direction"), left.String())
 	}
 
 	return order.OrderBy(left, o.direction)

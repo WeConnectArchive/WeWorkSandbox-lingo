@@ -21,18 +21,24 @@ func Generate() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().StringP("dir", "d", "./db", "directory where generated file structure should go")
-	_ = viper.BindPFlag("dir", cmd.Flag("dir"))
-	_ = cmd.PersistentFlags().SetAnnotation("dir", cobra.BashCompSubdirsInDir, []string{})
+	const (
+		flagDir = "dir"
+		flagSchema = "schema"
+		flagDriver = "driver"
+		flagDSN = "dsn"
+	)
+	cmd.PersistentFlags().StringP(flagDir, "d", "./db", "directory where generated file structure should go")
+	_ = viper.BindPFlag(flagDir, cmd.Flag(flagDir))
+	_ = cmd.PersistentFlags().SetAnnotation(flagDir, cobra.BashCompSubdirsInDir, []string{})
 
-	cmd.PersistentFlags().StringSliceP("schema", "s", []string{}, "schema name to generate for")
-	_ = viper.BindPFlag("schema", cmd.Flag("schema"))
+	cmd.PersistentFlags().StringSliceP(flagSchema, "s", []string{}, "schema name to generate for")
+	_ = viper.BindPFlag(flagSchema, cmd.Flag(flagSchema))
 
-	cmd.PersistentFlags().String("driver", "mysql", "driver name used to initialize the SQL driver")
-	_ = viper.BindPFlag("driver", cmd.Flag("driver"))
+	cmd.PersistentFlags().String(flagDriver, "mysql", "driver name used to initialize the SQL driver")
+	_ = viper.BindPFlag(flagDriver, cmd.Flag(flagDriver))
 
-	cmd.PersistentFlags().String("dsn", "", "data source connection string")
-	_ = viper.BindPFlag("dsn", cmd.Flag("dsn"))
+	cmd.PersistentFlags().String(flagDSN, "", "data source connection string")
+	_ = viper.BindPFlag(flagDSN, cmd.Flag(flagDSN))
 	return cmd
 }
 

@@ -38,24 +38,26 @@ func (d DeleteQuery) GetSQL(dialect core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("DELETE FROM", nil)
 
 	if helpers.IsValueNilOrEmpty(d.from) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionCannotBeEmpty("from"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("from"), sql.String())
 	}
-	if fromSql, err := CombinePathSQL(dialect, d.from); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else {
-		sql = sql.AppendSqlWithSpace(fromSql)
+	fromSQL, err := CombinePathSQL(dialect, d.from)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	}
+	sql = sql.AppendSQLWithSpace(fromSQL)
+
+	if joinSQL, err := CombineSQL(dialect, d.join); err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	} else if joinSQL.String() != "" {
+		sql = sql.AppendSQLWithSpace(joinSQL)
 	}
 
-	if joinSql, err := CombineSQL(dialect, d.join); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else if joinSql.String() != "" {
-		sql = sql.AppendSqlWithSpace(joinSql)
+	whereSQL, err := BuildWhereSQL(dialect, d.where)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
 	}
-
-	if whereSql, err := BuildWhereSQL(dialect, d.where); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else if whereSql.String() != "" {
-		sql = sql.AppendSqlWithSpace(whereSql)
+	if whereSQL.String() != "" {
+		sql = sql.AppendSQLWithSpace(whereSQL)
 	}
 
 	return sql, nil

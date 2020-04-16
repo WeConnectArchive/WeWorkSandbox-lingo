@@ -38,9 +38,9 @@ func (t TimePath) GetAlias() string {
 	return t.alias
 }
 
-func (s TimePath) As(alias string) TimePath {
-	s.alias = alias
-	return s
+func (t TimePath) As(alias string) TimePath {
+	t.alias = alias
+	return t
 }
 
 func (t TimePath) GetSQL(d core.Dialect) (core.SQL, error) {

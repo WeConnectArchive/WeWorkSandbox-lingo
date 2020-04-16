@@ -5,15 +5,8 @@ import (
 )
 
 func pipeErrors(errorsOut chan<- error, errorsIn <-chan error) {
-	for {
-		select {
-		case err, ok := <-errorsIn:
-			if !ok {
-				return
-			} else {
-				errorsOut <- err
-			}
-		}
+	for err := range errorsIn {
+		errorsOut <- err
 	}
 }
 

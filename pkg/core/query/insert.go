@@ -64,46 +64,66 @@ func (i *InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("INSERT INTO", nil)
 
 	if helpers.IsValueNilOrBlank(i.table) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("table"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), sql.String())
 	}
 	if i.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSql(errors.New("table alias must be unset"), sql.String())
+		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), sql.String())
 	}
-	if tableSql, err := i.table.GetSQL(d); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else {
-		sql = sql.AppendSqlWithSpace(tableSql)
+	tableSQL, err := i.table.GetSQL(d)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
 	}
+	sql = sql.AppendSQLWithSpace(tableSQL)
 
 	if helpers.IsValueNilOrEmpty(i.columns) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionCannotBeEmpty("columns"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), sql.String())
 	}
-	if pathsSql, err := CombinePathSQL(d, i.columns); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else {
-		sql = sql.AppendSqlWithSpace(pathsSql.SurroundWithParens())
+	pathsSQL, err := CombinePathSQL(d, i.columns)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
 	}
+	sql = sql.AppendSQLWithSpace(pathsSQL.SurroundWithParens())
 
 	if i.selectPart != nil {
-		if selectSql, err := i.selectPart.GetSQL(d); err != nil {
-			return nil, expression.ErrorAroundSql(err, sql.String())
-		} else if selectSql.String() != "" {
-			sql = sql.AppendSqlWithSpace(selectSql)
+		sql, err = i.buildSelectFrom(d, sql)
+		if err != nil {
+			return nil, err
 		}
 	} else {
-		colsLen := len(i.columns)
-		valuesLen := len(i.values)
-		if colsLen != valuesLen {
-			err := fmt.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
-			return nil, expression.ErrorAroundSql(err, sql.String())
-		}
-
-		if valuesSql, err := CombinePathSQL(d, i.values); err != nil {
-			return nil, expression.ErrorAroundSql(err, sql.String())
-		} else if valuesSql.String() != "" {
-			sql = sql.AppendStringWithSpace("VALUES").AppendSqlWithSpace(valuesSql.SurroundWithParens())
+		sql, err = i.buildValues(d, sql)
+		if err != nil {
+			return sql, err
 		}
 	}
 
+	return sql, nil
+}
+
+func (i *InsertQuery) buildSelectFrom(d core.Dialect, sql core.SQL) (core.SQL, error) {
+	selectSQL, err := i.selectPart.GetSQL(d)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	}
+	if selectSQL.String() != "" {
+		sql = sql.AppendSQLWithSpace(selectSQL)
+	}
+	return sql, nil
+}
+
+func (i *InsertQuery) buildValues(d core.Dialect, sql core.SQL) (core.SQL, error) {
+	colsLen := len(i.columns)
+	valuesLen := len(i.values)
+	if colsLen != valuesLen {
+		err := fmt.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	}
+
+	valuesSQL, err := CombinePathSQL(d, i.values)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	}
+	if valuesSQL.String() != "" {
+		sql = sql.AppendStringWithSpace("VALUES").AppendSQLWithSpace(valuesSQL.SurroundWithParens())
+	}
 	return sql, nil
 }

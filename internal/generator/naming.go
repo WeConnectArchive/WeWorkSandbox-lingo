@@ -1,17 +1,17 @@
 package generator
 
 import (
-	. "strings"
+	"strings"
 
 	"github.com/iancoleman/strcase"
 )
 
 func ToTableStruct(tableName string) string {
-	return BigQ(ToExported(ToLower(tableName)))
+	return BigQ(ToExported(strings.ToLower(tableName)))
 }
 
 func ToPackageName(s string) string {
-	return ToLower(LittleQ(ToNonExported(s)))
+	return strings.ToLower(LittleQ(ToNonExported(s)))
 }
 
 func ToExported(s string) string {

@@ -10,6 +10,6 @@ func Star() core.Expression {
 
 type star struct{}
 
-func (star) GetSQL(d core.Dialect) (core.SQL, error) {
+func (star) GetSQL(_ core.Dialect) (core.SQL, error) {
 	return core.NewSQL("*", nil), nil
 }

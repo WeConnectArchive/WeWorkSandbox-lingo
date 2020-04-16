@@ -1,13 +1,6 @@
 package query_test
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/query"
-	"github.com/weworksandbox/lingo/pkg/core/sort"
-)
-
-import (
 	"errors"
 
 	. "github.com/onsi/ginkgo"

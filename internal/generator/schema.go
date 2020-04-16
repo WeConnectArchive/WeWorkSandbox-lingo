@@ -3,8 +3,10 @@ package generator
 import (
 	"fmt"
 
+	//revive:disable-next-line
 	. "github.com/dave/jennifer/jen"
 )
+
 
 func GenerateSchema(schema string) (string, error) {
 	f := NewFile(ToPackageName(schema))
@@ -26,7 +28,7 @@ func GenerateSchema(schema string) (string, error) {
 //    _name: "information_schema",
 // }
 func createSchemaInstance(schema string) *Statement {
-	v := Var().Id("instance").Op("=").Qual("", "schema").Values(Dict{
+	v := Var().Id("instance").Op("=").Qual("", typeSchema).Values(Dict{
 		Id(nameField): Lit(schema),
 	})
 	return v
@@ -39,7 +41,7 @@ func createSchemaInstance(schema string) *Statement {
 //    return &instance
 // }
 func createGetSchema() *Statement {
-	f := Func().Id("GetSchema").Call().Op(ptr).Qual("", "schema")
+	f := Func().Id("GetSchema").Call().Op(ptr).Qual("", typeSchema)
 	f.Block(Return(Op(addrOf).Id("instance")))
 	return f
 }
@@ -50,7 +52,7 @@ func createGetSchema() *Statement {
 //    _name           string
 // }
 func createSchemaStruct() *Statement {
-	t := Type().Id("schema")
+	t := Type().Id(typeSchema)
 	t.StructFunc(func(g *Group) {
 		g.Id(nameField).String()
 	})
@@ -63,7 +65,7 @@ func createSchemaStruct() *Statement {
 //    return s._name
 // }
 func createGetNameStructFunc() *Statement {
-	f := Func().Parens(Id("s").Qual("", "schema")).Id("GetName").Call().String()
+	f := Func().Parens(Id("s").Qual("", typeSchema)).Id("GetName").Call().String()
 	f.Block(Return(Id("s").Dot(nameField)))
 	return f
 }

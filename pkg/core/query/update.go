@@ -35,30 +35,34 @@ func (u UpdateQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("UPDATE", nil)
 
 	if helpers.IsValueNilOrBlank(u.table) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("table"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), sql.String())
 	}
 	if u.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSql(errors.New("table alias must be unset"), sql.String())
+		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), sql.String())
 	}
-	if tableSql, err := u.table.GetSQL(d); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else {
-		sql = sql.AppendSqlWithSpace(tableSql)
+	tableSQL, err := u.table.GetSQL(d)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
 	}
+	sql = sql.AppendSQLWithSpace(tableSQL)
 
 	if helpers.IsValueNilOrEmpty(u.set) {
-		return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("set"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("set"), sql.String())
 	}
-	if pathsSql, err := CombinePathSQL(d, u.set); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else if pathsSql.String() != "" {
-		sql = sql.AppendStringWithSpace("SET").AppendSqlWithSpace(pathsSql)
+	pathsSQL, err := CombinePathSQL(d, u.set)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	}
+	if pathsSQL.String() != "" {
+		sql = sql.AppendStringWithSpace("SET").AppendSQLWithSpace(pathsSQL)
 	}
 
-	if whereSql, err := BuildWhereSQL(d, u.where); err != nil {
-		return nil, expression.ErrorAroundSql(err, sql.String())
-	} else if whereSql.String() != "" {
-		sql = sql.AppendSqlWithSpace(whereSql)
+	whereSQL, err := BuildWhereSQL(d, u.where)
+	if err != nil {
+		return nil, expression.ErrorAroundSQL(err, sql.String())
+	}
+	if whereSQL.String() != "" {
+		sql = sql.AppendSQLWithSpace(whereSQL)
 	}
 
 	return sql, nil

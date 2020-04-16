@@ -8,20 +8,22 @@ import (
 
 func BuildWhereSQL(d core.Dialect, values []core.Expression) (core.SQL, error) {
 	var where = core.NewSQL("WHERE ", nil)
+
 	switch length := len(values); {
 	case length == 1:
-		if whereSql, err := values[0].GetSQL(d); err != nil {
+		whereSQL, err := values[0].GetSQL(d)
+		if err != nil {
 			return nil, err
-		} else {
-			return where.AppendSql(whereSql), nil
 		}
+		return where.AppendSQL(whereSQL), nil
+
 	case length > 1:
 		andOperator := expression.NewOperator(values[0], operator.And, values[1:]...)
-		if whereSql, err := andOperator.GetSQL(d); err != nil {
+		whereSQL, err := andOperator.GetSQL(d)
+		if err != nil {
 			return nil, err
-		} else {
-			return where.AppendSql(whereSql), nil
 		}
+		return where.AppendSQL(whereSQL), nil
 	}
 	return core.NewSQL("", nil), nil
 }

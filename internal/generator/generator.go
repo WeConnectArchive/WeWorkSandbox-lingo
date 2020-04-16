@@ -67,33 +67,33 @@ func ensureDirectoryIsClean(directory string) (string, error) {
 }
 
 func generateSchemas(ctx context.Context, settings Settings, parser Parser, rootDir string) <-chan error {
-	var errors = make(chan error)
+	var errs = make(chan error)
 
 	go func() {
-		defer close(errors)
+		defer close(errs)
 
 		for _, schemaName := range settings.Schemas() {
 			tableNames, tablesErr := parser.Tables(ctx, schemaName)
 
 			if contents, err := GenerateSchema(schemaName); err != nil {
-				errors <- err
-			} else if err := writeSchema(rootDir, contents, schemaName); err != nil {
-				errors <- err
+				errs <- err
+			} else if err = writeSchema(rootDir, contents, schemaName); err != nil {
+				errs <- err
 			}
 
-			forEachPipeErrors(tableNames, tablesErr, errors, func(tableName interface{}) {
-				pipeErrors(errors, retrieveDataAndWriteTable(ctx, settings, parser, rootDir, schemaName, tableName.(string)))
+			forEachPipeErrors(tableNames, tablesErr, errs, func(tableName interface{}) {
+				pipeErrors(errs, retrieveDataAndWriteTable(ctx, settings, parser, rootDir, schemaName, tableName.(string)))
 			})
 		}
 	}()
-	return errors
+	return errs
 }
 
 func retrieveDataAndWriteTable(ctx context.Context, settings Settings, parser Parser, schemaDir, schemaName, tableName string) <-chan error {
-	var errors = make(chan error)
+	var errs = make(chan error)
 
 	go func() {
-		defer close(errors)
+		defer close(errs)
 
 		cols, colErrs := parser.Columns(ctx, schemaName, tableName)
 
@@ -101,7 +101,7 @@ func retrieveDataAndWriteTable(ctx context.Context, settings Settings, parser Pa
 			name:   tableName,
 			schema: schemaName,
 		}
-		forEachPipeErrors(cols, colErrs, errors, func(column interface{}) {
+		forEachPipeErrors(cols, colErrs, errs, func(column interface{}) {
 			tInfo.columns = append(tInfo.columns, column.(Column))
 		})
 
@@ -109,18 +109,18 @@ func retrieveDataAndWriteTable(ctx context.Context, settings Settings, parser Pa
 
 		log.Printf("Generating table: %s", tInfo.Name())
 		if contents, err := GenerateTable(settings, tInfo, combinedTypes); err != nil {
-			errors <- err
-		} else if err := writeTable(schemaDir, contents, schemaName, tableName); err != nil {
-			errors <- err
+			errs <- err
+		} else if err = writeTable(schemaDir, contents, schemaName, tableName); err != nil {
+			errs <- err
 		}
 
 		if contents, err := GeneratePackageMembers(settings, tInfo, combinedTypes); err != nil {
-			errors <- err
-		} else if err := writePackageMembers(schemaDir, contents, schemaName, tableName); err != nil {
-			errors <- err
+			errs <- err
+		} else if err = writePackageMembers(schemaDir, contents, schemaName, tableName); err != nil {
+			errs <- err
 		}
 	}()
-	return errors
+	return errs
 }
 
 func combineDbTypes(dbToPath map[string][2]string, overridePathTypes map[string][2]string) DBToPathType {
