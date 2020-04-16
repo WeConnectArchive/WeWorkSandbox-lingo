@@ -1,15 +1,17 @@
 package query_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Update", func() {
@@ -105,7 +107,7 @@ var _ = Describe("Update", func() {
 			Context("Table GetSQL returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("table error"))
+					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("table error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -135,7 +137,7 @@ var _ = Describe("Update", func() {
 			Context("Set returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(set[len(set)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("set error"))
+					pegomock.When(set[len(set)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("set error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -165,7 +167,7 @@ var _ = Describe("Update", func() {
 			Context("Where returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(where[len(where)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("where error"))
+					pegomock.When(where[len(where)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("where error"))
 				})
 
 				It("Returns a nil SQL", func() {

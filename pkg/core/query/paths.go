@@ -22,21 +22,25 @@ func ExpandTables(paths []core.Expression) []core.Expression {
 
 // CombinePathSQL will validate each path is not nil, and will append n+1 with a comma separating them
 func CombinePathSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
-	var sql = core.NewEmptySql()
+	var sql = core.NewEmptySQL()
 	for _, p := range paths {
 		if helpers.IsValueNilOrBlank(p) {
-			return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("path entry"), sql.String())
+			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("path entry"), sql.String())
 		}
-		if pathSql, err := p.GetSQL(d); err != nil {
-			return nil, expression.ErrorAroundSql(err, sql.String())
-		} else if _, ok := p.(*SelectQuery); ok {
+
+		pathSQL, err := p.GetSQL(d)
+		if err != nil {
+			return nil, expression.ErrorAroundSQL(err, sql.String())
+		}
+
+		if _, ok := p.(*SelectQuery); ok {
 			// This case helps us add parens if the path is of a query type
-			sql = sql.AppendFormat(", %s", pathSql.SurroundWithParens().String()).AppendValues(pathSql.Values())
+			sql = sql.AppendFormat(", %s", pathSQL.SurroundWithParens().String()).AppendValues(pathSQL.Values())
 		} else {
 			if sql.String() == "" {
-				sql = sql.AppendSql(pathSql)
+				sql = sql.AppendSQL(pathSQL)
 			} else {
-				sql = sql.AppendFormat(", %s", pathSql.String()).AppendValues(pathSql.Values())
+				sql = sql.AppendFormat(", %s", pathSQL.String()).AppendValues(pathSQL.Values())
 			}
 		}
 	}
@@ -46,19 +50,21 @@ func CombinePathSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
 // CombineSQL will validate each path is not nil, and will append each SQL to the previous
 // with a single space between each.
 func CombineSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
-	var sql = core.NewEmptySql()
+	var sql = core.NewEmptySQL()
 	for _, p := range paths {
 		if helpers.IsValueNilOrBlank(p) {
-			return nil, expression.ErrorAroundSql(expression.ExpressionIsNil("path entry"), sql.String())
+			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("path entry"), sql.String())
 		}
-		if pathSql, err := p.GetSQL(d); err != nil {
-			return nil, expression.ErrorAroundSql(err, sql.String())
+
+		pathSQL, err := p.GetSQL(d)
+		if err != nil {
+			return nil, expression.ErrorAroundSQL(err, sql.String())
+		}
+
+		if sql.String() == "" {
+			sql = sql.AppendSQL(pathSQL)
 		} else {
-			if sql.String() == "" {
-				sql = sql.AppendSql(pathSql)
-			} else {
-				sql = sql.AppendSqlWithSpace(pathSql)
-			}
+			sql = sql.AppendSQLWithSpace(pathSQL)
 		}
 	}
 	return sql, nil

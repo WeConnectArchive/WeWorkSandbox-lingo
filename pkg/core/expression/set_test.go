@@ -1,14 +1,16 @@
 package expression_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Set", func() {
@@ -96,7 +98,7 @@ var _ = Describe("Set", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("left error"))
+					pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -126,7 +128,7 @@ var _ = Describe("Set", func() {
 			Context("value returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(value.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("value error"))
+					pegomock.When(value.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("value error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -166,5 +168,5 @@ func (setDialectSuccess) Set(left, value core.SQL) (core.SQL, error) {
 type setDialectFailure struct{ setDialectSuccess }
 
 func (setDialectFailure) Set(left, value core.SQL) (core.SQL, error) {
-	return nil, xerrors.New("set error")
+	return nil, errors.New("set error")
 }

@@ -1,13 +1,15 @@
 package expressions_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Count", func() {
@@ -80,7 +82,7 @@ var _ = Describe("Count", func() {
 			Context("expression returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(countOn.GetSQL(d)).ThenReturn(nil, xerrors.New("countOn error"))
+					pegomock.When(countOn.GetSQL(d)).ThenReturn(nil, errors.New("countOn error"))
 				})
 
 				It("Returns a nil SQL", func() {

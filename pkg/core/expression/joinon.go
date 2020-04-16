@@ -57,7 +57,7 @@ func (j joinOn) GetSQL(d core.Dialect) (core.SQL, error) {
 	}
 	left, lerr := j.left.GetSQL(d)
 	if lerr != nil {
-		return nil, ErrorAroundSql(lerr, on.String())
+		return nil, ErrorAroundSQL(lerr, on.String())
 	}
 
 	return joiner.Join(left, j.joinType, on)

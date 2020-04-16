@@ -36,9 +36,9 @@ func (b BinaryPath) GetAlias() string {
 	return b.alias
 }
 
-func (s BinaryPath) As(alias string) BinaryPath {
-	s.alias = alias
-	return s
+func (b BinaryPath) As(alias string) BinaryPath {
+	b.alias = alias
+	return b
 }
 
 func (b BinaryPath) GetSQL(d core.Dialect) (core.SQL, error) {

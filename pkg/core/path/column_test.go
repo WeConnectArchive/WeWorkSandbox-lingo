@@ -1,12 +1,14 @@
 package path_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Column", func() {
@@ -80,5 +82,5 @@ func (expandColumnDialectSuccess) ExpandColumn(entity core.Column) (core.SQL, er
 type expandColumnDialectFailure struct{ expandColumnDialectSuccess }
 
 func (expandColumnDialectFailure) ExpandColumn(entity core.Column) (core.SQL, error) {
-	return nil, xerrors.New("expand column error")
+	return nil, errors.New("expand column error")
 }

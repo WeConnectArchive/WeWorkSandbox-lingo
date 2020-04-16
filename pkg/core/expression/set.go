@@ -9,7 +9,7 @@ type Set interface {
 	Set(left, value core.SQL) (core.SQL, error)
 }
 
-func NewSet(left core.Expression, value core.Expression) *set {
+func NewSet(left core.Expression, value core.Expression) core.ComboExpression {
 	e := &set{
 		left:  left,
 		value: value,
@@ -39,11 +39,11 @@ func (c set) GetSQL(d core.Dialect) (core.SQL, error) {
 	}
 
 	if helpers.IsValueNilOrEmpty(c.value) {
-		return nil, ErrorAroundSql(ExpressionIsNil("value"), left.String())
+		return nil, ErrorAroundSQL(ExpressionIsNil("value"), left.String())
 	}
 	value, verr := c.value.GetSQL(d)
 	if verr != nil {
-		return nil, ErrorAroundSql(verr, left.String())
+		return nil, ErrorAroundSQL(verr, left.String())
 	}
 
 	return set.Set(left, value)

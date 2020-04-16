@@ -1,15 +1,17 @@
 package expression_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Order", func() {
@@ -96,7 +98,7 @@ var _ = Describe("Order", func() {
 			Context("left return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("left error"))
+					pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
@@ -151,5 +153,5 @@ func (orderDialectSuccess) OrderBy(left core.SQL, direction sort.Direction) (cor
 type orderDialectFailure struct{ orderDialectSuccess }
 
 func (orderDialectFailure) OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error) {
-	return nil, xerrors.New("order by failure")
+	return nil, errors.New("order by failure")
 }

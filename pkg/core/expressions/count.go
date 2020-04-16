@@ -26,5 +26,5 @@ func (c count) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, countOnErr
 	}
 
-	return core.NewSQL("COUNT", nil).AppendSql(countOn.SurroundWithParens()), nil
+	return core.NewSQL("COUNT", nil).AppendSQL(countOn.SurroundWithParens()), nil
 }

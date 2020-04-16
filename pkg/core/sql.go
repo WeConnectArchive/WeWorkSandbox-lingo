@@ -13,7 +13,7 @@ type sql struct {
 	values []interface{}
 }
 
-func NewEmptySql() SQL {
+func NewEmptySQL() SQL {
 	return &sql{
 		sql:    "",
 		values: make([]interface{}, 0),
@@ -32,7 +32,7 @@ func NewSQL(sqlStr string, values []interface{}) SQL {
 
 func NewSQLf(format string, values ...interface{}) SQL {
 	if format == "" {
-		return NewEmptySql()
+		return NewEmptySQL()
 	}
 	return NewSQL(fmt.Sprintf(format, values...), nil)
 }
@@ -51,19 +51,19 @@ func (s *sql) Values() []interface{} {
 	return s.values
 }
 
-func (s *sql) AppendSql(right SQL) SQL {
+func (s *sql) AppendSQL(right SQL) SQL {
 	if s == nil {
 		return right
 	}
 	return s.AppendString(right.String()).AppendValues(right.Values())
 }
 
-func (s *sql) AppendSqlWithSpace(right SQL) SQL {
+func (s *sql) AppendSQLWithSpace(right SQL) SQL {
 	if s == nil {
 		return right
 	}
 	s.ensureSingleSpace()
-	return s.AppendSql(right)
+	return s.AppendSQL(right)
 }
 
 func (s *sql) AppendStringWithSpace(str string) SQL {
@@ -95,7 +95,7 @@ func (s *sql) AppendString(str string) SQL {
 	return NewSQL(s.String()+str, s.Values())
 }
 
-func (s *sql) AppendSqlValues(sql SQL) SQL {
+func (s *sql) AppendSQLValues(sql SQL) SQL {
 	if s == nil {
 		return NewSQL("", sql.Values())
 	}
@@ -104,30 +104,30 @@ func (s *sql) AppendSqlValues(sql SQL) SQL {
 
 func (s *sql) AppendValues(values []interface{}) SQL {
 	if s == nil {
-		return NewEmptySql()
+		return NewEmptySQL()
 	}
 	return NewSQL(s.String(), append(s.Values(), values...))
 }
 
 func (s *sql) CombineWithSeparator(sqls []SQL, separator string) SQL {
-	var previousSql SQL = s
-	for _, rangeSql := range sqls {
-		previousSql = previousSql.AppendFormat("%s%s", separator, rangeSql.String())
-		previousSql = previousSql.AppendValues(rangeSql.Values())
+	var previousSQL SQL = s
+	for _, rangeSQL := range sqls {
+		previousSQL = previousSQL.AppendFormat("%s%s", separator, rangeSQL.String())
+		previousSQL = previousSQL.AppendValues(rangeSQL.Values())
 	}
-	return previousSql
+	return previousSQL
 }
 
 func (s *sql) CombinePaths(sqls []SQL) SQL {
-	var previousSql SQL = s
-	for i, rangeSql := range sqls {
+	var previousSQL SQL = s
+	for i, rangeSQL := range sqls {
 		if i == 0 {
-			previousSql = previousSql.AppendSql(rangeSql)
+			previousSQL = previousSQL.AppendSQL(rangeSQL)
 		} else {
-			previousSql = previousSql.AppendSqlValues(rangeSql).AppendFormat("%s%s", ", ", rangeSql.String())
+			previousSQL = previousSQL.AppendSQLValues(rangeSQL).AppendFormat("%s%s", ", ", rangeSQL.String())
 		}
 	}
-	return previousSql
+	return previousSQL
 }
 
 func (s *sql) SurroundWithParens() SQL {
@@ -140,24 +140,24 @@ func (s *sql) SurroundWith(left string, right string) SQL {
 }
 
 func (s *sql) InjectValues() string {
-	questionMarkSql := s.String()
+	questionMarkSQL := s.String()
 	values := s.Values()
 	valuesLen := len(values)
 
 	// Find the locations of all the '?' values and inject proper type
 	var currentValueIndex = valuesLen
-	for i := len(questionMarkSql); ; {
-		trimmedSql := questionMarkSql[:i]
-		if i = strings.LastIndex(trimmedSql, "?"); i != -1 {
+	for i := len(questionMarkSQL); ; {
+		trimmedSQL := questionMarkSQL[:i]
+		if i = strings.LastIndex(trimmedSQL, "?"); i != -1 {
 			// Decrement since we found a question mark
 			currentValueIndex = currentValueIndex - 1
 			valueToInsert := values[currentValueIndex]
 
-			pre := questionMarkSql[:i]
-			post := questionMarkSql[i+1:]
+			pre := questionMarkSQL[:i]
+			post := questionMarkSQL[i+1:]
 
 			valueStr := stringify(valueToInsert)
-			questionMarkSql = pre + valueStr + post
+			questionMarkSQL = pre + valueStr + post
 		} else {
 			break
 		}
@@ -167,7 +167,7 @@ func (s *sql) InjectValues() string {
 	if currentValueIndex != 0 {
 		panic("somehow got a different number of '?' compared to the number of Values")
 	}
-	return questionMarkSql
+	return questionMarkSQL
 }
 
 func stringify(v interface{}) string {
@@ -201,9 +201,6 @@ func stringify(v interface{}) string {
 
 	case reflect.Chan, reflect.Func, reflect.Struct, reflect.Uintptr, reflect.Ptr, reflect.UnsafePointer:
 		panic(fmt.Sprintf("invalid type for String: %s - %s - %+v", value.Kind(), value.String(), value.Interface()))
-
-	case reflect.Interface, reflect.Map:
-		panic("maybe implement?")
 	}
 	panic("some random unknown `reflect.Kind`!")
 }

@@ -1,16 +1,18 @@
 package query_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Insert", func() {
@@ -118,7 +120,7 @@ var _ = Describe("Insert", func() {
 			Context("Table GetSQL has an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("table error"))
+					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("table error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -151,7 +153,7 @@ var _ = Describe("Insert", func() {
 			XContext("Columns return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(cols[len(cols)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("col error"))
+					pegomock.When(cols[len(cols)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("col error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -181,7 +183,7 @@ var _ = Describe("Insert", func() {
 			Context("Values return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(valueExpressions[len(valueExpressions)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("valueExpressions error"))
+					pegomock.When(valueExpressions[len(valueExpressions)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("valueExpressions error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -198,7 +200,7 @@ var _ = Describe("Insert", func() {
 				BeforeEach(func() {
 					valueConstants = []interface{}{
 						"stringHere",
-						1.4E2,
+						1.4e2,
 					}
 					valueExpressions = nil
 				})
@@ -208,7 +210,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns valid SQL Values", func() {
-					Expect(sql).To(MatchSQLValues(ConsistOf("stringHere", 1.4E2)))
+					Expect(sql).To(MatchSQLValues(ConsistOf("stringHere", 1.4e2)))
 				})
 
 				It("Returns no error", func() {
@@ -264,7 +266,7 @@ var _ = Describe("Insert", func() {
 				Context("Select returns an error", func() {
 
 					BeforeEach(func() {
-						pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, xerrors.New("select error"))
+						pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("select error"))
 					})
 
 					It("Returns a nil SQL", func() {

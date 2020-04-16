@@ -1,14 +1,16 @@
 package query_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/petergtz/pegomock"
+
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/query"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("where", func() {
@@ -50,7 +52,7 @@ var _ = Describe("where", func() {
 		Context("With an error returning", func() {
 
 			BeforeEach(func() {
-				pegomock.When(values[2].GetSQL(d)).ThenReturn(nil, xerrors.New("last error"))
+				pegomock.When(values[2].GetSQL(d)).ThenReturn(nil, errors.New("last error"))
 			})
 
 			It("Returns a nil SQL", func() {
@@ -94,7 +96,7 @@ var _ = Describe("where", func() {
 			Context("With an error returning", func() {
 
 				BeforeEach(func() {
-					pegomock.When(values[0].GetSQL(d)).ThenReturn(nil, xerrors.New("last error"))
+					pegomock.When(values[0].GetSQL(d)).ThenReturn(nil, errors.New("last error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -130,7 +132,7 @@ func (whereDialectSuccess) GetName() string { return "where dialect success" }
 func (whereDialectSuccess) Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
 	var sql = left
 	for _, value := range values {
-		sql = sql.AppendStringWithSpace(op.String()).AppendSqlWithSpace(value)
+		sql = sql.AppendStringWithSpace(op.String()).AppendSQLWithSpace(value)
 	}
 	return sql, nil
 }

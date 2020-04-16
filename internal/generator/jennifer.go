@@ -3,13 +3,14 @@ package generator
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
+	//revive:disable-next-line
 	. "github.com/dave/jennifer/jen"
-	"golang.org/x/xerrors"
 )
 
 func Render(jenFile *File) (string, error) {
@@ -41,13 +42,14 @@ func transformErr(e error) error {
 	var originalErrorStr = errStr[:strings.IndexRune(errStr, '\n')]
 	var newErrStr = strings.Builder{}
 	scanner := bufio.NewScanner(strings.NewReader(errStr))
+	const linesToShow = 5
 	for lineCount := 0; scanner.Scan(); lineCount++ {
 
 		// If we are within 5 lines (before or after) the error, we want to capture that context and print that out
-		if lineCount-5 <= lineNum && lineCount+5 >= lineNum {
-			newErrStr.WriteString(fmt.Sprintf("[Line %2d] %s\n", lineCount, scanner.Text()))
+		if lineCount-linesToShow <= lineNum && lineCount+linesToShow >= lineNum {
+			_, _ = newErrStr.WriteString(fmt.Sprintf("[Line %2d] %s\n", lineCount, scanner.Text()))
 		}
 	}
 
-	return xerrors.New(originalErrorStr + "\n" + newErrStr.String())
+	return errors.New(originalErrorStr + "\n" + newErrStr.String())
 }

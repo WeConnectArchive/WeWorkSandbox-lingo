@@ -8,7 +8,7 @@ import (
 
 // NewNamedOnlyColumn creates a `core.Column` of which only the name of the column is filled out.
 // Thus, when `GetSQL()` is called, only a single SQL with the value of `name` is returned.
-func NewNamedOnlyColumn(name, parent string) *stringColumn {
+func NewNamedOnlyColumn(name, parent string) core.Column {
 	return &stringColumn{name: name, parent: stringParent{name: parent}}
 }
 
@@ -17,7 +17,7 @@ type stringColumn struct {
 	parent stringParent
 }
 
-func (s stringColumn) GetSQL(d core.Dialect) (core.SQL, error) {
+func (s stringColumn) GetSQL(_ core.Dialect) (core.SQL, error) {
 	return core.NewSQL(s.GetName(), nil), nil
 }
 func (s stringColumn) GetName() string       { return s.name }

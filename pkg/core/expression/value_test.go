@@ -1,16 +1,17 @@
 package expression_test
 
 import (
+	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"golang.org/x/xerrors"
 )
 
 var _ = Describe("Value", func() {
@@ -121,5 +122,5 @@ func (valueDialectSuccess) Value(value interface{}) (core.SQL, error) {
 type valueDialectFailure struct{ valueDialectSuccess }
 
 func (valueDialectFailure) Value(value interface{}) (core.SQL, error) {
-	return nil, xerrors.New("value failure")
+	return nil, errors.New("value failure")
 }

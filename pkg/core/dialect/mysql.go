@@ -16,13 +16,13 @@ func (MySQL) GetName() string {
 func (m MySQL) JSONOperator(left core.SQL, op json.Operand, values []core.SQL) (core.SQL, error) {
 	switch op {
 	case json.Extract:
-		return m.multiPathJson(left, op, values)
+		return m.multiPathJSON(left, op, values)
 	}
 
-	return nil, expression.ErrorAroundSql(expression.EnumIsInvalid("json.Operator", op), left.String())
+	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("json.Operator", op), left.String())
 }
 
-func (MySQL) multiPathJson(left core.SQL, op json.Operand, values []core.SQL) (core.SQL, error) {
+func (MySQL) multiPathJSON(left core.SQL, op json.Operand, values []core.SQL) (core.SQL, error) {
 	if helpers.IsValueNilOrBlank(left) {
 		return nil, expression.ExpressionIsNil("left")
 	}
@@ -32,7 +32,7 @@ func (MySQL) multiPathJson(left core.SQL, op json.Operand, values []core.SQL) (c
 		return nil, expression.EnumIsInvalid("json.Operator", op)
 	}
 
-	return core.NewSQLf(opStr).AppendSql(left.AppendString(", ").CombinePaths(values).SurroundWithParens()), nil
+	return core.NewSQLf(opStr).AppendSQL(left.AppendString(", ").CombinePaths(values).SurroundWithParens()), nil
 }
 
 var mysqlJSONOperatorToString = map[json.Operand]string{

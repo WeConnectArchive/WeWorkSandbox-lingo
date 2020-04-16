@@ -46,12 +46,12 @@ func (o jsonOperate) GetSQL(d core.Dialect) (core.SQL, error) {
 	var sqlArr = make([]core.SQL, 0, len(o.expressions))
 	for index, ex := range o.expressions {
 		if helpers.IsValueNilOrEmpty(ex) {
-			return nil, ErrorAroundSql(ExpressionIsNil(fmt.Sprintf("expressions[%d]", index)), left.String())
+			return nil, ErrorAroundSQL(ExpressionIsNil(fmt.Sprintf("expressions[%d]", index)), left.String())
 		}
 
 		sql, err := ex.GetSQL(d)
 		if err != nil {
-			return nil, ErrorAroundSql(err, left.String())
+			return nil, ErrorAroundSQL(err, left.String())
 		}
 		sqlArr = append(sqlArr, sql)
 	}

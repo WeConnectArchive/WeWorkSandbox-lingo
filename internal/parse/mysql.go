@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"log"
 
+	// Include MySQL driver in order to connect to it in NewMySQL
 	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/weworksandbox/lingo/internal/generator"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
 )
@@ -27,7 +29,7 @@ type MySQL struct {
 	db *sql.DB
 }
 
-func (m *MySQL) DBTypesToPaths() map[string][2]string {
+func (MySQL) DBTypesToPaths() map[string][2]string {
 	const pkgCorePath = "github.com/weworksandbox/lingo/pkg/core/path"
 	// TODO - Need to do further changes to Paths. Right now, every Path can have nullable operations against it.
 	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends and
@@ -49,7 +51,7 @@ func (m *MySQL) DBTypesToPaths() map[string][2]string {
 	}
 }
 
-func (m *MySQL) Tables(ctx context.Context, schema string) (<-chan string, <-chan error) {
+func (m MySQL) Tables(ctx context.Context, schema string) (<-chan string, <-chan error) {
 	var tables = make(chan string)
 	var errors = make(chan error)
 
@@ -93,7 +95,7 @@ func (m *MySQL) Tables(ctx context.Context, schema string) (<-chan string, <-cha
 	return tables, errors
 }
 
-func (m *MySQL) Columns(ctx context.Context, schema, table string) (<-chan generator.Column, <-chan error) {
+func (m MySQL) Columns(ctx context.Context, schema, table string) (<-chan generator.Column, <-chan error) {
 	var columns = make(chan generator.Column)
 	var errors = make(chan error)
 
@@ -143,7 +145,7 @@ func (m *MySQL) Columns(ctx context.Context, schema, table string) (<-chan gener
 	return columns, errors
 }
 
-func (m *MySQL) ForeignKeys(ctx context.Context, schema, table string) (<-chan generator.ForeignKey, <-chan error) {
+func (m MySQL) ForeignKeys(ctx context.Context, schema, table string) (<-chan generator.ForeignKey, <-chan error) {
 	var foreignKeys = make(chan generator.ForeignKey)
 	var errors = make(chan error)
 
@@ -182,7 +184,7 @@ func (m *MySQL) ForeignKeys(ctx context.Context, schema, table string) (<-chan g
 			}
 		}()
 
-		var fKey *ForeignKey = nil
+		var fKey *ForeignKey
 		for rows.Next() {
 			var constraintName string
 			var columnName string
