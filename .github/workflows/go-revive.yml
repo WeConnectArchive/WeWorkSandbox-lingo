@@ -1,0 +1,25 @@
+# This will run revive on our code. It only runs on PRs.
+
+name: Golang Revive
+on: [pull_request]
+jobs:
+  build:
+    name: Revive Action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+      - name: Golang Formatter
+        uses: morphy2k/revive-action@v1.3.1
+        with:
+          # Path to your Revive config within the repo (optional)
+          config: revive.toml
+          # Exclude patterns, separated by semicolons (optional)
+          #   exclude: "file.go;foo/bar.go;./foo/bar/..."
+          exclude: "./db/..."
+          # Path pattern (default: ./...)
+          #   path: "./foo/..."
+        env:
+          # GitHub token for annotations (optional)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
