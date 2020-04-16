@@ -1,0 +1,16 @@
+# This will create a Report Card Score for the PR or Branch.
+
+name: Golang Report Card
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build:
+    name: Golang Report Card
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+      - name: Golang Formatter
+        uses: creekorful/goreportcard-action@v1.0
