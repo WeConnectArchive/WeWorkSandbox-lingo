@@ -1,3 +1,5 @@
+![Go](https://github.com/WeWorkSandbox/lingo/workflows/Go/badge.svg)
+
 # Lingo <!-- omit in toc -->
 
 Lingo is used to dynamically create type safe SQL queries in Go. 
