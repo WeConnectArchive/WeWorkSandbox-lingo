@@ -1,6 +1,6 @@
 module github.com/weworksandbox/lingo
 
-go 1.12
+go 1.14
 
 require (
 	github.com/dave/jennifer v1.4.0
