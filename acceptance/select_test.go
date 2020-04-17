@@ -55,6 +55,10 @@ func stripNT(s string) string {
 }
 
 func SelectLeftJoinWhereOrderBy() (string, SelectTest) {
+	const (
+		maxLen = 60
+		defCollName = "DefaultName"
+	)
 	cs := qcharactersets.As("cs")
 	col := qcollations.As("col")
 
@@ -62,9 +66,9 @@ func SelectLeftJoinWhereOrderBy() (string, SelectTest) {
 		Query: query.Select(cs.Description(), cs.CharacterSetName()).
 			From(cs).
 			Join(col, expression.LeftJoin, cs.CharacterSetName().EqPath(col.CharacterSetName())).
-			Where(cs.Maxlen().GT(60)).
+			Where(cs.Maxlen().GT(maxLen)).
 			OrderBy(cs.Maxlen(), sort.Descending).
-			Where(cs.DefaultCollateName().Eq("DefaultName")),
+			Where(cs.DefaultCollateName().Eq(defCollName)),
 		SQLAssert: ContainSubstring(stripNT(`
 					SELECT cs.DESCRIPTION, cs.CHARACTER_SET_NAME
 					FROM information_schema.CHARACTER_SETS AS cs
@@ -72,8 +76,8 @@ func SelectLeftJoinWhereOrderBy() (string, SelectTest) {
 					WHERE (cs.MAXLEN > ? AND cs.DEFAULT_COLLATE_NAME = ?)
 					ORDER BY cs.MAXLEN DESC`)),
 		ValuesAssert: []types.GomegaMatcher{
-			BeEquivalentTo(60),
-			BeEquivalentTo("DefaultName"),
+			BeEquivalentTo(maxLen),
+			BeEquivalentTo(defCollName),
 		},
 		ErrAssert: BeNil(),
 	}
