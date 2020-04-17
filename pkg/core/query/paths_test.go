@@ -167,6 +167,21 @@ var _ = Describe("Paths", func() {
 			})
 		})
 
+		Context("With an embedded empty path", func() {
+
+			BeforeEach(func() {
+				paths[len(paths)-1] = nil
+			})
+
+			It("Returns a nil SQL", func() {
+				Expect(sql).To(BeNil())
+			})
+
+			It("Returns a nil expression error", func() {
+				Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "path entry[1]")))
+			})
+		})
+
 		Context("With an error on the second expression", func() {
 
 			BeforeEach(func() {
@@ -177,7 +192,7 @@ var _ = Describe("Paths", func() {
 				Expect(sql).To(BeNil())
 			})
 
-			It("Returns the second error", func() {
+			It("Returns the second SQL error", func() {
 				Expect(err).To(MatchError(ContainSubstring("second exp error")))
 			})
 		})

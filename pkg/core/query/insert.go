@@ -60,7 +60,7 @@ func (i *InsertQuery) Select(s *SelectQuery) *InsertQuery {
 	return i
 }
 
-func (i *InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
+func (i InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("INSERT INTO", nil)
 
 	if helpers.IsValueNilOrBlank(i.table) {
@@ -99,7 +99,7 @@ func (i *InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	return sql, nil
 }
 
-func (i *InsertQuery) buildSelectFrom(d core.Dialect, sql core.SQL) (core.SQL, error) {
+func (i InsertQuery) buildSelectFrom(d core.Dialect, sql core.SQL) (core.SQL, error) {
 	selectSQL, err := i.selectPart.GetSQL(d)
 	if err != nil {
 		return nil, expression.ErrorAroundSQL(err, sql.String())
@@ -110,7 +110,7 @@ func (i *InsertQuery) buildSelectFrom(d core.Dialect, sql core.SQL) (core.SQL, e
 	return sql, nil
 }
 
-func (i *InsertQuery) buildValues(d core.Dialect, sql core.SQL) (core.SQL, error) {
+func (i InsertQuery) buildValues(d core.Dialect, sql core.SQL) (core.SQL, error) {
 	colsLen := len(i.columns)
 	valuesLen := len(i.values)
 	if colsLen != valuesLen {

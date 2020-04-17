@@ -3,7 +3,7 @@
 name: Golang Formatter
 on: [pull_request]
 jobs:
-  build:
+  go_format:
     name: Golang Formatter
     runs-on: ubuntu-latest
     steps:

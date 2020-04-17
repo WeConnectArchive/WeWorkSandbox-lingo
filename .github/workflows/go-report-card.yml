@@ -5,7 +5,7 @@ on:
   push:
     branches: [ master ]
 jobs:
-  build:
+  go_report_card:
     name: Golang Report Card
     runs-on: ubuntu-latest
     steps:
