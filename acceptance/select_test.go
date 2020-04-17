@@ -41,7 +41,7 @@ var _ = ginkgo.Describe("Select", func() {
 			d := dialect.Default{}
 			sql, err := s.Query.GetSQL(d)
 			Expect(sql).To(MatchSQLString(s.SQLAssert))
-			Expect(sql).To(MatchSQLValues(convertedValues...))
+			Expect(sql).To(MatchSQLValues(AllInSlice(convertedValues...)))
 			Expect(err).To(s.ErrAssert)
 		},
 		table.Entry(SelectLeftJoinWhereOrderBy()),
