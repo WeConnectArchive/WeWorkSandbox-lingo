@@ -53,6 +53,10 @@ var _ = Describe("Insert", func() {
 			}
 			pegomock.When(valueExpressions[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("valueExpressions[0].sql"), nil)
 			pegomock.When(valueExpressions[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("valueExpressions[1].sql"), nil)
+
+			// Ensure we reset valueConstants. Had random test failures due to this. Only happened on certain
+			// random num test seeds.
+			valueConstants = nil
 		})
 
 		JustBeforeEach(func() {

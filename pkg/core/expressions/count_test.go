@@ -57,7 +57,7 @@ var _ = Describe("Count", func() {
 			})
 
 			It("SQL should have no values", func() {
-				Expect(sql).Should(matchers.MatchSQLValues(ContainElement(10)))
+				Expect(sql).Should(matchers.MatchSQLValues(matchers.AllInSlice(10)))
 			})
 
 			It("Returns nil error", func() {

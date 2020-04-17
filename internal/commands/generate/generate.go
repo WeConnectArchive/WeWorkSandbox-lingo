@@ -22,10 +22,10 @@ func Generate() *cobra.Command {
 	}
 
 	const (
-		flagDir = "dir"
+		flagDir    = "dir"
 		flagSchema = "schema"
 		flagDriver = "driver"
-		flagDSN = "dsn"
+		flagDSN    = "dsn"
 	)
 	cmd.PersistentFlags().StringP(flagDir, "d", "./db", "directory where generated file structure should go")
 	_ = viper.BindPFlag(flagDir, cmd.Flag(flagDir))

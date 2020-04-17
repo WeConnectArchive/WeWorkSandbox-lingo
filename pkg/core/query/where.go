@@ -6,6 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
+// BuildWhereSQL is to be used by custom queries to build a WHERE clause.
 func BuildWhereSQL(d core.Dialect, values []core.Expression) (core.SQL, error) {
 	var where = core.NewSQL("WHERE ", nil)
 

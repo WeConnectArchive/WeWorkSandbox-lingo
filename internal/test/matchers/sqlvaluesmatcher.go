@@ -2,6 +2,7 @@ package matchers
 
 import (
 	"fmt"
+	"github.com/onsi/gomega"
 
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/types"
@@ -27,9 +28,10 @@ func (matcher *SQLValuesMatcher) Match(actual interface{}) (success bool, err er
 	var hasSubMatcher bool
 	if matcher.Expected != nil {
 		subMatcher, hasSubMatcher = (matcher.Expected).(types.GomegaMatcher)
-		if hasSubMatcher {
-			return subMatcher.Match(s.Values())
+		if !hasSubMatcher {
+			subMatcher = gomega.Equal(matcher.Expected)
 		}
+		return subMatcher.Match(s.Values())
 	}
 
 	return false, fmt.Errorf("SQLValuesMatcher must be passed zero or more multiple matchers.  Got:\n%s", format.Object(matcher.Expected, 1))

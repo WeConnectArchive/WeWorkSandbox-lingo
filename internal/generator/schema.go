@@ -7,7 +7,6 @@ import (
 	. "github.com/dave/jennifer/jen"
 )
 
-
 func GenerateSchema(schema string) (string, error) {
 	f := NewFile(ToPackageName(schema))
 	f.HeaderComment(fmt.Sprintf(fmtSchemaHeaderComment, schema))

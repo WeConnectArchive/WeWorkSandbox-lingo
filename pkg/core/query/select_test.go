@@ -26,7 +26,7 @@ var _ = Describe("select", func() {
 			where     []core.Expression
 			orderBy   []core.Expression
 			direction []sort.Direction
-			join      [][]core.Expression
+			joins     [][]core.Expression
 			joinType  []expression.JoinType
 
 			q *query.SelectQuery
@@ -61,7 +61,7 @@ var _ = Describe("select", func() {
 			pegomock.When(orderBy[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("orderBy[0].sql"), nil)
 			pegomock.When(orderBy[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("orderBy[1].sql"), nil)
 
-			join = [][]core.Expression{
+			joins = [][]core.Expression{
 				{
 					NewMockExpression(),
 					NewMockExpression(),
@@ -75,10 +75,10 @@ var _ = Describe("select", func() {
 				expression.LeftJoin,
 				expression.RightJoin,
 			}
-			pegomock.When(join[0][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("join[0][0].sql"), nil)
-			pegomock.When(join[0][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("join[0][1].sql"), nil)
-			pegomock.When(join[1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("join[1][0].sql"), nil)
-			pegomock.When(join[1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("join[1][1].sql"), nil)
+			pegomock.When(joins[0][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[0][0].sql"), nil)
+			pegomock.When(joins[0][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[0][1].sql"), nil)
+			pegomock.When(joins[1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[1][0].sql"), nil)
+			pegomock.When(joins[1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[1][1].sql"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -86,7 +86,7 @@ var _ = Describe("select", func() {
 			for i, order := range orderBy {
 				q = q.OrderBy(order, direction[i])
 			}
-			for i, join := range join {
+			for i, join := range joins {
 				q = q.Join(join[0], joinType[i], join[1])
 			}
 		})
@@ -109,7 +109,7 @@ var _ = Describe("select", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN join[0][0].sql ON join[0][1].sql RIGHT JOIN join[1][0].sql ON join[1][1].sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
+				Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
 			})
 
 			It("Returns no error", func() {
@@ -179,7 +179,7 @@ var _ = Describe("select", func() {
 			Context("No joins", func() {
 
 				BeforeEach(func() {
-					join = nil
+					joins = nil
 				})
 
 				It("Returns a valid SQL string", func() {
@@ -191,33 +191,33 @@ var _ = Describe("select", func() {
 				})
 			})
 
-			Context("Error on left side of join", func() {
+			Context("Error on left side of joins", func() {
 
 				BeforeEach(func() {
-					pegomock.When(join[len(join)-1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left join error"))
+					pegomock.When(joins[len(joins)-1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left joins error"))
 				})
 
 				It("Returns a nil SQL", func() {
 					Expect(sql).To(BeNil())
 				})
 
-				It("Returns a left join error", func() {
-					Expect(err).To(MatchError(ContainSubstring("left join error")))
+				It("Returns a left joins error", func() {
+					Expect(err).To(MatchError(ContainSubstring("left joins error")))
 				})
 			})
 
-			Context("Error on on of join", func() {
+			Context("Error on on of joins", func() {
 
 				BeforeEach(func() {
-					pegomock.When(join[len(join)-1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("on join error"))
+					pegomock.When(joins[len(joins)-1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("on joins error"))
 				})
 
 				It("Returns a nil SQL", func() {
 					Expect(sql).To(BeNil())
 				})
 
-				It("Returns an on join error", func() {
-					Expect(err).To(MatchError(ContainSubstring("on join error")))
+				It("Returns an on joins error", func() {
+					Expect(err).To(MatchError(ContainSubstring("on joins error")))
 				})
 			})
 
@@ -228,7 +228,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN join[0][0].sql ON join[0][1].sql RIGHT JOIN join[1][0].sql ON join[1][1].sql ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
 				})
 
 				It("Returns no error", func() {
@@ -258,7 +258,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN join[0][0].sql ON join[0][1].sql RIGHT JOIN join[1][0].sql ON join[1][1].sql WHERE (where[0].sql AND where[1].sql)"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql)"))
 				})
 
 				It("Returns no error", func() {

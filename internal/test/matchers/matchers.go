@@ -15,8 +15,16 @@ func MatchSQLString(expected interface{}) types.GomegaMatcher {
 	}
 }
 
+// MatchSQLValues takes a matcher to test SQL Values()
 func MatchSQLValues(expected interface{}) types.GomegaMatcher {
 	return &SQLValuesMatcher{
+		Expected: expected,
+	}
+}
+
+// AllInSlice will check each element in the slice against each element/matcher in expected.
+func AllInSlice(expected ...interface{}) types.GomegaMatcher {
+	return &AllInSliceMatcher{
 		Expected: expected,
 	}
 }
