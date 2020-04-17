@@ -1,4 +1,5 @@
-![Go](https://github.com/WeWorkSandbox/lingo/workflows/Go/badge.svg)
+![Go Build](https://github.com/WeWorkSandbox/lingo/workflows/Go%20Build/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/weworksandbox/lingo)](https://goreportcard.com/report/github.com/weworksandbox/lingo)
 [![codecov](https://codecov.io/gh/WeWorkSandbox/lingo/branch/master/graph/badge.svg)](https://codecov.io/gh/WeWorkSandbox/lingo)
 
 # Lingo <!-- omit in toc -->
