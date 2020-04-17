@@ -50,7 +50,7 @@ func Value(format ValueFormatter, value interface{}) (core.SQL, error) {
 }
 
 func Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
-	opWithSpaces := " "+op.String()+" "
+	opWithSpaces := " " + op.String() + " "
 
 	switch op {
 	case operator.And, operator.Or:

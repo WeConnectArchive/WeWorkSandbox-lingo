@@ -11,7 +11,7 @@ import (
 
 // AllInSliceMatcher matches a slice of entries to matchers.
 type AllInSliceMatcher struct {
-	Expected []interface{}
+	Expected  []interface{}
 	idxFailed int
 }
 
