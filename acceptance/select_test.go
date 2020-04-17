@@ -56,7 +56,7 @@ func stripNT(s string) string {
 
 func SelectLeftJoinWhereOrderBy() (string, SelectTest) {
 	const (
-		maxLen = 60
+		maxLen      = 60
 		defCollName = "DefaultName"
 	)
 	cs := qcharactersets.As("cs")
