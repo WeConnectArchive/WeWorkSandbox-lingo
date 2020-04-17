@@ -43,7 +43,6 @@ jobs:
         go generate -v ./...
 
     - name: Test
-      uses: actions/setup-go@v1
       run: go test ./... -count=1 -covermode=count -coverprofile=coverage.out -ginkgo.randomizeAllSpecs
 
     - uses: codecov/codecov-action@v1
