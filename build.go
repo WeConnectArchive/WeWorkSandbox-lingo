@@ -12,6 +12,7 @@ import (
 
 var (
 	codePaths = []string{
+		"./cmd/...",
 		"./internal/...",
 		"./pkg/...",
 	}

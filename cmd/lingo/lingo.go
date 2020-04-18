@@ -24,8 +24,10 @@ func main() {
 		Use: "lingo",
 	}
 
+	var configFileBashCompletion = []string{"!*.yml", "!*.yaml", "!*.properties", "!*.toml", "!*.json"}
+
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "configuration file")
-	_ = rootCmd.PersistentFlags().SetAnnotation("config", cobra.BashCompFilenameExt, []string{"!*.yml", "!*.yaml", "!*.properties", "!*.toml", "!*.json"})
+	_ = rootCmd.PersistentFlags().SetAnnotation("config", cobra.BashCompFilenameExt, configFileBashCompletion)
 	rootCmd.AddCommand(generate.Generate())
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
