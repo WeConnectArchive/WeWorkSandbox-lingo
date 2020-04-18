@@ -3,12 +3,11 @@ package generator
 import (
 	"fmt"
 
-	//revive:disable-next-line
-	. "github.com/dave/jennifer/jen"
+	"github.com/dave/jennifer/jen"
 )
 
 func GenerateSchema(schema string) (string, error) {
-	f := NewFile(ToPackageName(schema))
+	f := jen.NewFile(ToPackageName(schema))
 	f.HeaderComment(fmt.Sprintf(fmtSchemaHeaderComment, schema))
 	f.Add(createSchemaInstance(schema))
 	f.Line()
@@ -26,9 +25,9 @@ func GenerateSchema(schema string) (string, error) {
 // var instance = schema{
 //    _name: "information_schema",
 // }
-func createSchemaInstance(schema string) *Statement {
-	v := Var().Id("instance").Op("=").Qual("", typeSchema).Values(Dict{
-		Id(nameField): Lit(schema),
+func createSchemaInstance(schema string) *jen.Statement {
+	v := jen.Var().Id("instance").Op("=").Qual("", typeSchema).Values(jen.Dict{
+		jen.Id(nameField): jen.Lit(schema),
 	})
 	return v
 }
@@ -39,9 +38,9 @@ func createSchemaInstance(schema string) *Statement {
 // func GetSchema() *schema {
 //    return &instance
 // }
-func createGetSchema() *Statement {
-	f := Func().Id("GetSchema").Call().Op(ptr).Qual("", typeSchema)
-	f.Block(Return(Op(addrOf).Id("instance")))
+func createGetSchema() *jen.Statement {
+	f := jen.Func().Id("GetSchema").Call().Op(ptr).Qual("", typeSchema)
+	f.Block(jen.Return(jen.Op(addrOf).Id("instance")))
 	return f
 }
 
@@ -50,9 +49,9 @@ func createGetSchema() *Statement {
 // type schema struct {
 //    _name           string
 // }
-func createSchemaStruct() *Statement {
-	t := Type().Id(typeSchema)
-	t.StructFunc(func(g *Group) {
+func createSchemaStruct() *jen.Statement {
+	t := jen.Type().Id(typeSchema)
+	t.StructFunc(func(g *jen.Group) {
 		g.Id(nameField).String()
 	})
 	return t
@@ -63,8 +62,8 @@ func createSchemaStruct() *Statement {
 // func (s schema) GetName() string {
 //    return s._name
 // }
-func createGetNameStructFunc() *Statement {
-	f := Func().Parens(Id("s").Qual("", typeSchema)).Id("GetName").Call().String()
-	f.Block(Return(Id("s").Dot(nameField)))
+func createGetNameStructFunc() *jen.Statement {
+	f := jen.Func().Parens(jen.Id("s").Qual("", typeSchema)).Id("GetName").Call().String()
+	f.Block(jen.Return(jen.Id("s").Dot(nameField)))
 	return f
 }

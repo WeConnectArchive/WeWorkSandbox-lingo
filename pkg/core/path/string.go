@@ -94,7 +94,7 @@ func (s StringPath) IsNotNull() core.ComboExpression {
 }
 
 func (s StringPath) In(values ...string) core.ComboExpression {
-	return expression.NewOperator(s, operator.In, expression.NewValues(values)...)
+	return expression.NewOperator(s, operator.In, expression.NewValue(values))
 }
 
 func (s StringPath) InPaths(values ...core.Expression) core.ComboExpression {
@@ -102,7 +102,7 @@ func (s StringPath) InPaths(values ...core.Expression) core.ComboExpression {
 }
 
 func (s StringPath) NotIn(values ...string) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotIn, expression.NewValues(values)...)
+	return expression.NewOperator(s, operator.NotIn, expression.NewValue(values))
 }
 
 func (s StringPath) NotInPaths(values ...core.Expression) core.ComboExpression {

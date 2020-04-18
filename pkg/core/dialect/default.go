@@ -1,6 +1,8 @@
 package dialect
 
 import (
+	"strings"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
@@ -13,8 +15,10 @@ func (Default) GetName() string {
 	return "Default"
 }
 
-func (Default) ValueFormat() string {
-	return "?"
+func (Default) ValueFormat(count int) core.SQL {
+	s := strings.Repeat("?, ", count)
+	s = strings.TrimSuffix(s, ", ")
+	return core.NewSQL(s, nil)
 }
 
 func (Default) SetValueFormat() string {
@@ -34,7 +38,7 @@ func (Default) Operator(left core.SQL, op operator.Operand, values []core.SQL) (
 	return Operator(left, op, values)
 }
 
-func (m Default) Value(value interface{}) (core.SQL, error) {
+func (m Default) Value(value []interface{}) (core.SQL, error) {
 	return Value(m, value)
 }
 

@@ -82,14 +82,20 @@ func generateSchemas(ctx context.Context, settings Settings, parser Parser, root
 			}
 
 			forEachPipeErrors(tableNames, tablesErr, errs, func(tableName interface{}) {
-				pipeErrors(errs, retrieveDataAndWriteTable(ctx, settings, parser, rootDir, schemaName, tableName.(string)))
+				retErrChan := retrieveDataAndWriteTable(ctx, settings, parser, rootDir, schemaName, tableName.(string))
+				pipeErrors(errs, retErrChan)
 			})
 		}
 	}()
 	return errs
 }
 
-func retrieveDataAndWriteTable(ctx context.Context, settings Settings, parser Parser, schemaDir, schemaName, tableName string) <-chan error {
+func retrieveDataAndWriteTable(
+	ctx context.Context,
+	settings Settings,
+	parser Parser,
+	schemaDir, schemaName, tableName string,
+) <-chan error {
 	var errs = make(chan error)
 
 	go func() {

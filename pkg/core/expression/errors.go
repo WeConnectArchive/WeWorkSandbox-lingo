@@ -31,10 +31,10 @@ func ConstantIsNil() error          { return constantIsNil{} }
 func (constantIsNil) Error() string { return "constant is nil, use IsNull instead" }
 
 type valueIsComplexType struct {
-	value reflect.Value
+	value reflect.Type
 }
 
-func ValueIsComplexType(value reflect.Value) error { return valueIsComplexType{value: value} }
+func ValueIsComplexType(value reflect.Type) error { return valueIsComplexType{value: value} }
 func (e valueIsComplexType) Error() string {
 	return fmt.Sprintf("value is complex type '%s' when it should be a simple type", e.TypeName())
 }

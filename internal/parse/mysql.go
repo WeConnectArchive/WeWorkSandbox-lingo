@@ -32,13 +32,13 @@ type MySQL struct {
 func (MySQL) DBTypesToPaths() map[string][2]string {
 	const pkgCorePath = "github.com/weworksandbox/lingo/pkg/core/path"
 	// TODO - Need to do further changes to Paths. Right now, every Path can have nullable operations against it.
-	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends and
-	//  adds the nullable methods? https://github.com/go-sql-driver/mysql/blob/master/fields.go
+	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends
+	//  and adds the nullable methods? https://github.com/go-sql-driver/mysql/blob/master/fields.go
 	return map[string][2]string{
 		"BIGINT":   {pkgCorePath, "Int64Path"},
 		"BINARY":   {pkgCorePath, "BinaryPath"},
 		"DATETIME": {pkgCorePath, "TimePath"},
-		// Might be able to create our own, but there is no 'decimal' type in Go besides `math/big/decimal.go` which is binary
+		// Could create our own, but there is no 'decimal' type in Go besides `math/big/decimal.go` which is binary
 		"DECIMAL":   {pkgCorePath, "BinaryPath"},
 		"DOUBLE":    {pkgCorePath, "Float64Path"},
 		"FLOAT":     {pkgCorePath, "Float32Path"},
@@ -59,7 +59,8 @@ func (m MySQL) Tables(ctx context.Context, schema string) (<-chan string, <-chan
 		defer close(tables)
 		defer close(errors)
 
-		sqlStmt, prepareErr := m.db.PrepareContext(ctx, "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?")
+		const selectQuery = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?"
+		sqlStmt, prepareErr := m.db.PrepareContext(ctx, selectQuery)
 		if prepareErr != nil {
 			errors <- prepareErr
 			return
@@ -154,7 +155,9 @@ func (m MySQL) ForeignKeys(ctx context.Context, schema, table string) (<-chan ge
 		defer close(errors)
 
 		sqlStr := `
-			SELECT cu.CONSTRAINT_NAME, cu.COLUMN_NAME, cu.ORDINAL_POSITION, cu.REFERENCED_TABLE_SCHEMA, cu.REFERENCED_TABLE_NAME, cu.REFERENCED_COLUMN_NAME
+			SELECT 
+				cu.CONSTRAINT_NAME, cu.COLUMN_NAME, cu.ORDINAL_POSITION, 
+				cu.REFERENCED_TABLE_SCHEMA, cu.REFERENCED_TABLE_NAME, cu.REFERENCED_COLUMN_NAME
 			FROM information_schema.KEY_COLUMN_USAGE cu
 			LEFT JOIN information_schema.TABLE_CONSTRAINTS tc on cu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
 			WHERE cu.TABLE_SCHEMA = ? AND cu.TABLE_NAME = ? AND tc.CONSTRAINT_TYPE = 'FOREIGN KEY'
@@ -186,13 +189,21 @@ func (m MySQL) ForeignKeys(ctx context.Context, schema, table string) (<-chan ge
 
 		var fKey *ForeignKey
 		for rows.Next() {
+			// Prob refactor this out?
 			var constraintName string
 			var columnName string
 			var ordinalPosition int
 			var referencedTableSchema string
 			var referencedTableName string
 			var referencedTableColumnName string
-			scanErr := rows.Scan(&constraintName, &columnName, &ordinalPosition, &referencedTableSchema, &referencedTableName, &referencedTableColumnName)
+
+			scanErr := rows.Scan(
+				&constraintName,
+				&columnName,
+				&ordinalPosition,
+				&referencedTableSchema,
+				&referencedTableName,
+				&referencedTableColumnName)
 			if scanErr != nil {
 				errors <- scanErr
 			}

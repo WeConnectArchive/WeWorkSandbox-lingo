@@ -36,17 +36,18 @@ func ExpandColumn(column core.Column) (core.SQL, error) {
 }
 
 type ValueFormatter interface {
-	ValueFormat() string
+	ValueFormat(count int) core.SQL
 }
 
-func Value(format ValueFormatter, value interface{}) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(value) {
+func Value(formatter ValueFormatter, values []interface{}) (core.SQL, error) {
+	if helpers.IsValueNilOrBlank(values) {
 		return nil, expression.ConstantIsNil()
 	}
-	if helpers.IsValueNilOrBlank(format) {
+	if helpers.IsValueNilOrBlank(formatter) {
 		return nil, errors.New("ValueFormatter is nil or the interface pointer is nil")
 	}
-	return core.NewSQL(format.ValueFormat(), []interface{}{value}), nil
+
+	return formatter.ValueFormat(len(values)).AppendValues(values), nil
 }
 
 func Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {

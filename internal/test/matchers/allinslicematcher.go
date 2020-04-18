@@ -49,13 +49,17 @@ func (matcher *AllInSliceMatcher) Match(actual interface{}) (success bool, err e
 		return true, nil
 	}
 
-	return false, fmt.Errorf("AllInSliceMatcher must be passed zero or more multiple values (for Equal or) matchers.  Got:\n%s", format.Object(matcher.Expected, 1))
+	return false, fmt.Errorf(
+		"AllInSliceMatcher must be passed zero or more multiple values (for Equal or) matchers.  Got:\n%s",
+		format.Object(matcher.Expected, 1))
 }
 
 func (matcher *AllInSliceMatcher) FailureMessage(actual interface{}) (message string) {
-	return format.Message(actual, fmt.Sprintf("to match a slice at index %d", matcher.idxFailed), matcher.Expected)
+	return format.Message(actual, fmt.Sprintf(
+		"to match a slice at index %d", matcher.idxFailed), matcher.Expected)
 }
 
 func (matcher *AllInSliceMatcher) NegatedFailureMessage(actual interface{}) (message string) {
-	return format.Message(actual, fmt.Sprintf("not to match a slice but did at index %d", matcher.idxFailed), matcher.Expected)
+	return format.Message(actual, fmt.Sprintf(
+		"not to match a slice but did at index %d", matcher.idxFailed), matcher.Expected)
 }

@@ -1,7 +1,7 @@
 # This will run revive on our code. It only runs on PRs.
 
 name: Golang Revive
-on: [pull_request]
+on: [push]
 jobs:
   go_revive:
     name: Revive Action
@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@master
         with:
           fetch-depth: 0
-      - name: Golang Formatter
+      - name: Run Revive
         uses: morphy2k/revive-action@v1.3.1
         with:
           # Path to your Revive config within the repo (optional)
