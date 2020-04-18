@@ -110,7 +110,7 @@ func (b BinaryPath) IsNotNull() core.ComboExpression {
 }
 
 func (b BinaryPath) In(values ...[]byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.In, expression.NewValues(values)...)
+	return expression.NewOperator(b, operator.In, expression.NewValue(values))
 }
 
 func (b BinaryPath) InPaths(values ...core.Expression) core.ComboExpression {
@@ -118,7 +118,7 @@ func (b BinaryPath) InPaths(values ...core.Expression) core.ComboExpression {
 }
 
 func (b BinaryPath) NotIn(values ...[]byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotIn, expression.NewValues(values)...)
+	return expression.NewOperator(b, operator.NotIn, expression.NewValue(values))
 }
 
 func (b BinaryPath) NotInPaths(values ...core.Expression) core.ComboExpression {

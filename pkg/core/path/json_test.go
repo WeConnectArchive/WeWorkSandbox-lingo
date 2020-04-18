@@ -122,7 +122,7 @@ var _ = Describe("JSON", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewJSONOperation(p, json.Extract, expression.NewValues(paths)...)))
+				Expect(result).To(Equal(expression.NewJSONOperation(p, json.Extract, expression.NewValue(paths))))
 			})
 		})
 	})

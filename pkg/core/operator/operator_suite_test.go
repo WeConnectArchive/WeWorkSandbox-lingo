@@ -8,5 +8,5 @@ import (
 
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core Dialect
 func TestOperator(t *testing.T) {
-	runner.SetupAndRun(t, "operator")
+	runner.SetupAndRunUnit(t, "operator")
 }

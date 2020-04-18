@@ -26,5 +26,5 @@ func (j JSONPath) As(alias string) JSONPath {
 }
 
 func (j JSONPath) Extract(paths ...string) core.ComboExpression {
-	return expression.NewJSONOperation(j, json.Extract, expression.NewValues(paths)...)
+	return expression.NewJSONOperation(j, json.Extract, expression.NewValue(paths))
 }

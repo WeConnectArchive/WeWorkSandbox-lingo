@@ -2,8 +2,8 @@ name: Go Build
 
 on: [push, pull_request]
 
-# The `echo "::set-env...` used below is to export an env var for use in other steps!
-# https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+# The `echo "::set-env...` and `echo "::add-path...` are used to mess around with env vars for use in other steps!
+# https://help.github.com/en/actions/reference/workflow-commands-for-github-actions
 
 jobs:
   go_build:
@@ -23,27 +23,14 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: go mod download -x
-
-    - name: Install Tools
+    - name: Build, Generate, Test, Benchmark, All those...
       run: |
-        # Include `go/bin` binaries in PATH
-        echo "::set-env name=PATH::$PATH:$HOME/go/bin"
-
         # Install Tools
-        go install github.com/petergtz/pegomock/pegomock
-        echo "Installed Pegomock at: $(which pegomock)"
+        go install github.com/magefile/mage
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Generate
-      run: |
-        go generate -v ./...
-
-    - name: Test
-      run: go test ./... -count=1 -covermode=count -coverprofile=coverage.out -ginkgo.randomizeAllSpecs
+        # Include `go/bin` binaries in PATH
+        echo "::add-path:: $HOME/go/bin"
+        mage -v all
 
     - uses: codecov/codecov-action@v1
       with:

@@ -449,7 +449,7 @@ var _ = Describe("Float64", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.In, expression.NewValue(value[0]), expression.NewValue(value[1]))))
+				Expect(result).To(Equal(expression.NewOperator(p, operator.In, expression.NewValue(value))))
 			})
 		})
 
@@ -498,7 +498,7 @@ var _ = Describe("Float64", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotIn, expression.NewValue(value[0]), expression.NewValue(value[1]))))
+				Expect(result).To(Equal(expression.NewOperator(p, operator.NotIn, expression.NewValue(value))))
 			})
 		})
 
