@@ -70,7 +70,7 @@ func (Test) Unit() error {
 	)
 	return runCmd("go", "test",
 		"-short",
-		"-coverprofile=coverage.out",
+		"-coverprofile=unit-coverage.out",
 		debug("-v"),
 	)(pathsPlusTestArgs)
 }
@@ -82,7 +82,7 @@ func (Test) Acceptance() error {
 		debug("-ginkgo.progress"),
 	)
 	return runCmd("go", "test",
-		"-coverprofile=coverage.out",
+		"-coverprofile=acceptance-coverage.out",
 		debug("-v"),
 	)(pathsPlusTestArgs)
 }
