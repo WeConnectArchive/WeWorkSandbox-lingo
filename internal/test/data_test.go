@@ -1,11 +1,13 @@
 package test_test
 
 import (
+	"strings"
+
 	"github.com/onsi/gomega/types"
+
 	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcharactersets"
 	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcollations"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"strings"
 )
 
 const (

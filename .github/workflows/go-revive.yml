@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@master
         with:
           fetch-depth: 0
-      - name: Golang Formatter
+      - name: Run Revive
         uses: morphy2k/revive-action@v1.3.1
         with:
           # Path to your Revive config within the repo (optional)

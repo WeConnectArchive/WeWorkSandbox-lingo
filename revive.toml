@@ -34,7 +34,7 @@ warningCode = 0
 [rule.import-shadowing]
 [rule.increment-decrement]
 [rule.indent-error-flow]
-[rule.line-length-limit] #- Disabling for now
+[rule.line-length-limit]
     arguments = [120]
 [rule.package-comments]
 [rule.range]
