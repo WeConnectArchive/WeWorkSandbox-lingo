@@ -26,7 +26,11 @@ type Deps mg.Namespace
 
 // Installs pegomock and other cli tools. Mostly used for `go generate`.
 func (Deps) InstallTools() error {
-	if err := run("go", "install", "github.com/petergtz/pegomock/pegomock"); err != nil {
+	var tools = []string{
+		"github.com/petergtz/pegomock/pegomock",
+		"github.com/mgechev/revive",
+	}
+	if err := runCmd("go", "install")(tools); err != nil {
 		return err
 	}
 	return nil
