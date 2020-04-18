@@ -1,7 +1,7 @@
 # This will run revive on our code. It only runs on PRs.
 
 name: Golang Revive
-on: [pull_request]
+on: [push]
 jobs:
   go_revive:
     name: Revive Action
