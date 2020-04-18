@@ -27,9 +27,9 @@ var (
 // Query is used by Acceptance tests, along with benchmark tests. They are used for setting up common data to
 // ensure performance and code quality.
 type Query struct {
-	Name         string
-	Focus        bool
-	Benchmark    bool
+	Name      string
+	Focus     bool
+	Benchmark bool
 
 	// Params used during the test
 	Params

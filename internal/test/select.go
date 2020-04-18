@@ -12,33 +12,33 @@ import (
 
 var selectQueries = []Query{
 	{
-		Name: "SelectFrom",
+		Name:      "SelectFrom",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
-			SQL: query.SelectFrom(cs),
+			SQL:     query.SelectFrom(cs),
 			SQLAssert: ContainSubstring(trimQuery(`
 					SELECT cs.CHARACTER_SET_NAME, cs.DEFAULT_COLLATE_NAME, cs.DESCRIPTION, cs.MAXLEN
 					FROM information_schema.CHARACTER_SETS AS cs`)),
 			ValuesAssert: BeEmpty(),
-			ErrAssert: BeNil(),
+			ErrAssert:    BeNil(),
 		},
 	},
 	{
-		Name: "Select_From(columns)",
+		Name:      "Select_From(columns)",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
-			SQL: query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs),
+			SQL:     query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs),
 			SQLAssert: ContainSubstring(trimQuery(`
 					SELECT cs.MAXLEN, cs.CHARACTER_SET_NAME
 					FROM information_schema.CHARACTER_SETS AS cs`)),
 			ValuesAssert: BeEmpty(),
-			ErrAssert: BeNil(),
+			ErrAssert:    BeNil(),
 		},
 	},
 	{
-		Name: "Select_From_LeftJoin_Where_OrderBy_Where_Where",
+		Name:      "Select_From_LeftJoin_Where_OrderBy_Where_Where",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
