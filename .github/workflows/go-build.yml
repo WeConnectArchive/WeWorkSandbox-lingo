@@ -23,14 +23,17 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Build, Generate, Test, Benchmark, All those...
+    - name: Install Mage
       run: |
         # Install Tools
-        go install github.com/magefile/mage
+        go install github.com/magefile/mage/...
 
-        # Include `go/bin` binaries in PATH
-        echo "::add-path:: $HOME/go/bin"
-        mage -v all
+        # Include `go/bin` binaries in PATH. For some reason, this need to be in a prior step
+        # because the PATH is not reloaded?
+        echo "::add-path::$HOME/go/bin"
+
+    - name: Build, Generate, Test, Benchmark, All those...
+      run: mage -v all
 
     - uses: codecov/codecov-action@v1
       with:

@@ -3,6 +3,7 @@
 package main
 
 import (
+	"os"
 	"strings"
 
 	"github.com/magefile/mage/mg"
@@ -81,17 +82,17 @@ func (Test) Acceptance() error {
 	)(pathsPlusTestArgs)
 }
 
-// Builds lingo and then builds codePaths, both with with `-race`
+// Builds lingo and then builds codePaths
 func Build() error {
 	if err := run("go", "build",
-		"-race",
+		isCGOEnabled("-race"),
 		debug("-v"),
 		"./cmd/lingo/lingo.go",
 	); err != nil {
 		return err
 	}
 	if err := runCmd("go", "build",
-		"-race",
+		isCGOEnabled("-race"),
 		debug("-v"),
 	)(codePaths); err != nil {
 		return err
@@ -122,10 +123,20 @@ func (Run) Generate() error {
 // debug will return debugStr if mage debugging is turned on, else an empty string. Useful for enabling verbose
 // output from commands.
 func debug(debugStr string) string {
-	if !mg.Debug() {
+	return isEnabled(mg.Debug(), debugStr)
+}
+
+func isCGOEnabled(isEnabledVal string) string {
+	val, ok := os.LookupEnv("CGO_ENABLED")
+	return isEnabled(ok && val == "1", isEnabledVal)
+}
+
+// isEnabled will output str if b is true, else an empty string
+func isEnabled(b bool, str string) string {
+	if !b {
 		return ""
 	}
-	return debugStr
+	return str
 }
 
 // run will take a normal sh.run command argument, filtering any args entries that are empty.
