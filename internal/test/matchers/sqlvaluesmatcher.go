@@ -34,7 +34,9 @@ func (matcher *SQLValuesMatcher) Match(actual interface{}) (success bool, err er
 		return subMatcher.Match(s.Values())
 	}
 
-	return false, fmt.Errorf("SQLValuesMatcher must be passed zero or more multiple matchers.  Got:\n%s", format.Object(matcher.Expected, 1))
+	return false, fmt.Errorf(
+		"SQLValuesMatcher must be passed zero or more multiple matchers.  Got:\n%s",
+		format.Object(matcher.Expected, 1))
 }
 
 func (matcher *SQLValuesMatcher) FailureMessage(actual interface{}) (message string) {

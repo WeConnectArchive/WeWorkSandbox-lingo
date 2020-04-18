@@ -9,11 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	//revive:disable-next-line
-	. "github.com/dave/jennifer/jen"
+	"github.com/dave/jennifer/jen"
 )
 
-func Render(jenFile *File) (string, error) {
+func Render(jenFile *jen.File) (string, error) {
 	buf := &bytes.Buffer{}
 	if err := jenFile.Render(buf); err != nil {
 		return "", transformErr(err)

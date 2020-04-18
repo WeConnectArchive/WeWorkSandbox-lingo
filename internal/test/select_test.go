@@ -1,10 +1,10 @@
-package test
+package test_test
 
 import (
 	. "github.com/onsi/gomega"
-	"github.com/weworksandbox/lingo/internal/test/matchers"
-	"github.com/weworksandbox/lingo/pkg/core/dialect"
 
+	. "github.com/weworksandbox/lingo/internal/test/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/dialect"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
@@ -18,8 +18,8 @@ var selectQueries = []Query{
 			Dialect: dialect.Default{},
 			SQL:     query.SelectFrom(cs),
 			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT cs.CHARACTER_SET_NAME, cs.DEFAULT_COLLATE_NAME, cs.DESCRIPTION, cs.MAXLEN
-					FROM information_schema.CHARACTER_SETS AS cs`)),
+					SELECT CS.CHARACTER_SET_NAME, CS.DEFAULT_COLLATE_NAME, CS.DESCRIPTION, CS.MAXLEN
+					FROM information_schema.CHARACTER_SETS AS CS`)),
 			ValuesAssert: BeEmpty(),
 			ErrAssert:    BeNil(),
 		},
@@ -31,8 +31,8 @@ var selectQueries = []Query{
 			Dialect: dialect.Default{},
 			SQL:     query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs),
 			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT cs.MAXLEN, cs.CHARACTER_SET_NAME
-					FROM information_schema.CHARACTER_SETS AS cs`)),
+					SELECT CS.MAXLEN, CS.CHARACTER_SET_NAME
+					FROM information_schema.CHARACTER_SETS AS CS`)),
 			ValuesAssert: BeEmpty(),
 			ErrAssert:    BeNil(),
 		},
@@ -50,13 +50,13 @@ var selectQueries = []Query{
 				Where(cs.DefaultCollateName().Eq(defCollName)).
 				Where(cs.CharacterSetName().In(charSetNameIn...)),
 			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT cs.DESCRIPTION, cs.CHARACTER_SET_NAME
-					FROM information_schema.CHARACTER_SETS AS cs
-					LEFT JOIN information_schema.COLLATIONS AS col
-					ON cs.CHARACTER_SET_NAME = col.CHARACTER_SET_NAME
-					WHERE (cs.MAXLEN > ? AND cs.DEFAULT_COLLATE_NAME = ? AND cs.CHARACTER_SET_NAME IN (?, ?, ?))
-					ORDER BY cs.MAXLEN DESC`)),
-			ValuesAssert: matchers.AllInSlice(
+					SELECT CS.DESCRIPTION, CS.CHARACTER_SET_NAME
+					FROM information_schema.CHARACTER_SETS AS CS
+					LEFT JOIN information_schema.COLLATIONS AS COL
+					ON CS.CHARACTER_SET_NAME = COL.CHARACTER_SET_NAME
+					WHERE (CS.MAXLEN > ? AND CS.DEFAULT_COLLATE_NAME = ? AND CS.CHARACTER_SET_NAME IN (?, ?, ?))
+					ORDER BY CS.MAXLEN DESC`)),
+			ValuesAssert: AllInSlice(
 				BeEquivalentTo(maxLen),
 				BeEquivalentTo(defCollName),
 				BeEquivalentTo(charSetNameIn[0]),

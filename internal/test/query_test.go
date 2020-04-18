@@ -1,12 +1,14 @@
-package test
+package test_test
 
 import (
+	"testing"
+
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/runner"
-	"testing"
 )
 
 var (

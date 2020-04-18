@@ -36,7 +36,9 @@ func (matcher *SQLStringMatcher) Match(actual interface{}) (success bool, err er
 		return s.String() == exp, nil
 	}
 
-	return false, fmt.Errorf("SQLStringMatcher must be passed a string or a string matcher.  Got:\n%s", format.Object(matcher.Expected, 1))
+	return false, fmt.Errorf(
+		"SQLStringMatcher must be passed a string or a string matcher.  Got:\n%s",
+		format.Object(matcher.Expected, 1))
 }
 
 func (matcher *SQLStringMatcher) FailureMessage(actual interface{}) (message string) {

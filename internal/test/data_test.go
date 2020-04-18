@@ -1,4 +1,4 @@
-package test
+package test_test
 
 import (
 	"github.com/onsi/gomega/types"
@@ -20,8 +20,8 @@ var (
 		"NAME3",
 	}
 
-	cs  = qcharactersets.As("cs")
-	col = qcollations.As("col")
+	cs  = qcharactersets.As("CS")
+	col = qcollations.As("COL")
 )
 
 // Query is used by Acceptance tests, along with benchmark tests. They are used for setting up common data to

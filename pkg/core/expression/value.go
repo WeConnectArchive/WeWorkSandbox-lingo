@@ -37,7 +37,7 @@ func (v value) GetSQL(d core.Dialect) (core.SQL, error) {
 	}
 
 	reflectOfV := reflect.ValueOf(v.value)
-	if err := v.validateOverallKind(reflectOfV); err != nil {
+	if err := validateOverallKind(reflectOfV); err != nil {
 		return nil, err
 	}
 
@@ -45,7 +45,7 @@ func (v value) GetSQL(d core.Dialect) (core.SQL, error) {
 	return constant.Value(splitValues)
 }
 
-func (v value) validateOverallKind(reflectOfV reflect.Value) error {
+func validateOverallKind(reflectOfV reflect.Value) error {
 	// If this is a slice or array, check the inner type.
 	var reflectType = reflectOfV.Type()
 	switch reflectOfV.Kind() {

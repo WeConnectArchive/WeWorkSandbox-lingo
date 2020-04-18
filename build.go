@@ -19,7 +19,7 @@ var (
 
 // Run dependency downloads
 func All() {
-	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, Generate, Build, Test.All, Tidy)
+	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, Generate, Revive, Build, Test.All, Tidy)
 }
 
 type Deps mg.Namespace
@@ -105,6 +105,19 @@ func Tidy() error {
 	if err := run("go", "mod", "tidy",
 		debug("-v"),
 	); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Run `revive` with the appropriate configs
+func Revive() error {
+	// NOTE: Any changes here need to be reflected in `./.github/workflows/go-revive.yml`
+	if err := runCmd("revive",
+		"-config", "./revive.toml",
+		"-exclude", "./db/...",
+		"-formatter", "stylish",
+	)(codePaths); err != nil {
 		return err
 	}
 	return nil

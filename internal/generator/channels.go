@@ -10,7 +10,12 @@ func pipeErrors(errorsOut chan<- error, errorsIn <-chan error) {
 	}
 }
 
-func forEachPipeErrors(inputChannel interface{}, errorsIn <-chan error, errorsOut chan<- error, doWork func(interface{})) bool {
+func forEachPipeErrors(
+	inputChannel interface{},
+	errorsIn <-chan error,
+	errorsOut chan<- error,
+	doWork func(interface{}),
+) bool {
 	var cases = []reflect.SelectCase{
 		{
 			Dir:  reflect.SelectRecv,
