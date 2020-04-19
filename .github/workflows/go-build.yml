@@ -42,11 +42,11 @@ jobs:
         flags: unittests
         fail_ci_if_error: true
 
-    - name: Upload Acceptance Test Coverage
+    - name: Upload Functional Test Coverage
       uses: codecov/codecov-action@v1
       with:
-        file: ./acceptance-coverage.out
-        flags: acceptance
+        file: ./functional-coverage.out
+        flags: functional
         fail_ci_if_error: true
 
     - name: gobenchdata to gh-pages
