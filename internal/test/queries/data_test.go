@@ -1,4 +1,4 @@
-package test_test
+package queries_test
 
 import (
 	"strings"
@@ -26,7 +26,7 @@ var (
 	col = qcollations.As("COL")
 )
 
-// Query is used by Acceptance tests, along with benchmark tests. They are used for setting up common data to
+// Query is used by Functional tests, along with benchmark tests. They are used for setting up common data to
 // ensure performance and code quality.
 type Query struct {
 	Name      string

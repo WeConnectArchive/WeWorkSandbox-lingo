@@ -1,4 +1,4 @@
-package test_test
+package queries_test
 
 import (
 	. "github.com/onsi/gomega"

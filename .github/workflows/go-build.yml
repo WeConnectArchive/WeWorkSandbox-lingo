@@ -38,17 +38,21 @@ jobs:
     - name: Upload Unit Test Coverage
       uses: codecov/codecov-action@v1
       with:
-        file: ./unit-coverage.out # optional
-        flags: unittests # optional
-        fail_ci_if_error: true # optional (default = false)
-#        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-#        name: codecov-umbrella # optional
+        file: ./unit-coverage.out
+        flags: unittests
+        fail_ci_if_error: true
 
     - name: Upload Acceptance Test Coverage
       uses: codecov/codecov-action@v1
       with:
-        file: ./acceptance-coverage.out # optional
-        flags: acceptance # optional
-        fail_ci_if_error: true # optional (default = false)
-#        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-#        name: codecov-umbrella # optional
+        file: ./acceptance-coverage.out
+        flags: acceptance
+        fail_ci_if_error: true
+
+    - name: gobenchdata to gh-pages
+      uses: bobheadxi/gobenchdata@v0.5.1
+      with:
+        PRUNE_COUNT: 30
+        GO_TEST_FLAGS: -cpu 1,2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

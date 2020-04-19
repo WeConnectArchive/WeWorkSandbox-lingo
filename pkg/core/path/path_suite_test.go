@@ -11,5 +11,5 @@ import (
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core Table
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core Column
 func TestPath(t *testing.T) {
-	runner.SetupAndRunUnit(t, "path")
+	runner.SetupAndRunUnit(t, "path", "unit")
 }
