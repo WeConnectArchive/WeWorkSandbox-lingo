@@ -12,6 +12,7 @@ const (
 	maxLen      = 60
 	defCollName = "DefaultName"
 )
+
 var (
 	charSetNameIn = []string{
 		"NAME1",
@@ -33,7 +34,7 @@ type Query struct {
 
 type Params struct {
 	Dialect      core.Dialect
-	SQL          func()core.Expression
+	SQL          func() core.Expression
 	SQLAssert    types.GomegaMatcher
 	ValuesAssert types.GomegaMatcher
 	ErrAssert    types.GomegaMatcher

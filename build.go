@@ -23,7 +23,7 @@ var (
 
 // Run dependency downloads
 func All() {
-	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, GoGenerate, Revive, Build, Test.All, Tidy)
+	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, GoGenerate, GoFmt, Revive, Build, Test.All, Tidy)
 }
 
 type Deps mg.Namespace
@@ -55,6 +55,16 @@ func GoGenerate() error {
 	return runCmd("go", "generate",
 		debug("-v"),
 	)(codePaths)
+}
+
+// Runs `go fmt` with optional debug logging
+func GoFmt() error {
+	if err := runCmd("go", "fmt",
+		debug("-v"),
+	)(codePaths); err != nil {
+		return err
+	}
+	return nil
 }
 
 type Test mg.Namespace

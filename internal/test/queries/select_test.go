@@ -20,7 +20,7 @@ var selectQueries = []Query{
 		Params: Params{
 			Dialect: dialect.Default{},
 			SQL: func() core.Expression {
-				cs  := qcharactersets.As("CS")
+				cs := qcharactersets.As("CS")
 				return query.SelectFrom(cs)
 			},
 			SQLAssert: ContainSubstring(trimQuery(`
@@ -36,7 +36,7 @@ var selectQueries = []Query{
 		Params: Params{
 			Dialect: dialect.Default{},
 			SQL: func() core.Expression {
-				cs  := qcharactersets.As("CS")
+				cs := qcharactersets.As("CS")
 				return query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs)
 			},
 			SQLAssert: ContainSubstring(trimQuery(`
@@ -52,7 +52,7 @@ var selectQueries = []Query{
 		Params: Params{
 			Dialect: dialect.Default{},
 			SQL: func() core.Expression {
-				cs  := qcharactersets.As("CS")
+				cs := qcharactersets.As("CS")
 				col := qcollations.As("COL")
 
 				return query.Select(cs.Description(), cs.CharacterSetName()).
