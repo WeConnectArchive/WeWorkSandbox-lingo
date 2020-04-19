@@ -2,6 +2,9 @@ package queries_test
 
 import (
 	. "github.com/onsi/gomega"
+	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcharactersets"
+	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcollations"
+	"github.com/weworksandbox/lingo/pkg/core"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
@@ -16,7 +19,10 @@ var selectQueries = []Query{
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
-			SQL:     query.SelectFrom(cs),
+			SQL: func() core.Expression {
+				cs  := qcharactersets.As("CS")
+				return query.SelectFrom(cs)
+			},
 			SQLAssert: ContainSubstring(trimQuery(`
 					SELECT CS.CHARACTER_SET_NAME, CS.DEFAULT_COLLATE_NAME, CS.DESCRIPTION, CS.MAXLEN
 					FROM information_schema.CHARACTER_SETS AS CS`)),
@@ -29,7 +35,10 @@ var selectQueries = []Query{
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
-			SQL:     query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs),
+			SQL: func() core.Expression {
+				cs  := qcharactersets.As("CS")
+				return query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs)
+			},
 			SQLAssert: ContainSubstring(trimQuery(`
 					SELECT CS.MAXLEN, CS.CHARACTER_SET_NAME
 					FROM information_schema.CHARACTER_SETS AS CS`)),
@@ -42,13 +51,18 @@ var selectQueries = []Query{
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
-			SQL: query.Select(cs.Description(), cs.CharacterSetName()).
-				From(cs).
-				Join(col, expression.LeftJoin, cs.CharacterSetName().EqPath(col.CharacterSetName())).
-				Where(cs.Maxlen().GT(maxLen)).
-				OrderBy(cs.Maxlen(), sort.Descending).
-				Where(cs.DefaultCollateName().Eq(defCollName)).
-				Where(cs.CharacterSetName().In(charSetNameIn...)),
+			SQL: func() core.Expression {
+				cs  := qcharactersets.As("CS")
+				col := qcollations.As("COL")
+
+				return query.Select(cs.Description(), cs.CharacterSetName()).
+					From(cs).
+					Join(col, expression.LeftJoin, cs.CharacterSetName().EqPath(col.CharacterSetName())).
+					Where(cs.Maxlen().GT(maxLen)).
+					OrderBy(cs.Maxlen(), sort.Descending).
+					Where(cs.DefaultCollateName().Eq(defCollName)).
+					Where(cs.CharacterSetName().In(charSetNameIn...))
+			},
 			SQLAssert: ContainSubstring(trimQuery(`
 					SELECT CS.DESCRIPTION, CS.CHARACTER_SET_NAME
 					FROM information_schema.CHARACTER_SETS AS CS

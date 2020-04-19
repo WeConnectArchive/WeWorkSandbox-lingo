@@ -27,7 +27,7 @@ func BenchmarkQueries(b *testing.B) {
 			parallel.ReportAllocs()
 			parallel.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
-					_, _ = query.SQL.GetSQL(query.Dialect)
+					_, _ = query.SQL().GetSQL(query.Dialect)
 				}
 			})
 		})
@@ -44,7 +44,7 @@ func TestQueries(t *testing.T) {
 				Expect(p.SQLAssert).ToNot(BeNil())
 				Expect(p.ErrAssert).ToNot(BeNil())
 
-				sql, err := p.SQL.GetSQL(p.Dialect)
+				sql, err := p.SQL().GetSQL(p.Dialect)
 				Expect(err).To(p.ErrAssert)
 				Expect(sql).To(MatchSQLString(p.SQLAssert))
 				Expect(sql).To(MatchSQLValues(p.ValuesAssert))

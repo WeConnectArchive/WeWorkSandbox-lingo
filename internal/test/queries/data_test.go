@@ -5,8 +5,6 @@ import (
 
 	"github.com/onsi/gomega/types"
 
-	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcharactersets"
-	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcollations"
 	"github.com/weworksandbox/lingo/pkg/core"
 )
 
@@ -14,16 +12,12 @@ const (
 	maxLen      = 60
 	defCollName = "DefaultName"
 )
-
 var (
 	charSetNameIn = []string{
 		"NAME1",
 		"NAME2",
 		"NAME3",
 	}
-
-	cs  = qcharactersets.As("CS")
-	col = qcollations.As("COL")
 )
 
 // Query is used by Functional tests, along with benchmark tests. They are used for setting up common data to
@@ -39,7 +33,7 @@ type Query struct {
 
 type Params struct {
 	Dialect      core.Dialect
-	SQL          core.Expression
+	SQL          func()core.Expression
 	SQLAssert    types.GomegaMatcher
 	ValuesAssert types.GomegaMatcher
 	ErrAssert    types.GomegaMatcher
