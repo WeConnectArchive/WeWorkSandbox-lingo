@@ -13,5 +13,5 @@ import (
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core -m Set
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core -m Table
 func TestQuery(t *testing.T) {
-	runner.SetupAndRunUnit(t, "SQL")
+	runner.SetupAndRunUnit(t, "query", "unit")
 }

@@ -38,17 +38,13 @@ jobs:
     - name: Upload Unit Test Coverage
       uses: codecov/codecov-action@v1
       with:
-        file: ./unit-coverage.out # optional
-        flags: unittests # optional
-        fail_ci_if_error: true # optional (default = false)
-#        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-#        name: codecov-umbrella # optional
+        file: ./unit-coverage.out
+        flags: unittests
+        fail_ci_if_error: true
 
-    - name: Upload Acceptance Test Coverage
+    - name: Upload Functional Test Coverage
       uses: codecov/codecov-action@v1
       with:
-        file: ./acceptance-coverage.out # optional
-        flags: acceptance # optional
-        fail_ci_if_error: true # optional (default = false)
-#        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-#        name: codecov-umbrella # optional
+        file: ./functional-coverage.out
+        flags: functional
+        fail_ci_if_error: true

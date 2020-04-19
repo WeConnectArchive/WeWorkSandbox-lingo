@@ -11,6 +11,9 @@ import (
 )
 
 var (
+	allDirs = []string{
+		"./...",
+	}
 	codePaths = []string{
 		"./cmd/...",
 		"./internal/...",
@@ -20,7 +23,7 @@ var (
 
 // Run dependency downloads
 func All() {
-	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, Generate, Revive, Build, Test.All, Tidy)
+	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, GoGenerate, GoFmt, Revive, Build, Test.All, Tidy)
 }
 
 type Deps mg.Namespace
@@ -48,17 +51,27 @@ func (Deps) ModDownload() error {
 }
 
 // Runs `go generate` with optional debug logging
-func Generate() error {
+func GoGenerate() error {
 	return runCmd("go", "generate",
 		debug("-v"),
 	)(codePaths)
+}
+
+// Runs `go fmt` with optional debug logging
+func GoFmt() error {
+	if err := runCmd("go", "fmt",
+		debug("-v"),
+	)(codePaths); err != nil {
+		return err
+	}
+	return nil
 }
 
 type Test mg.Namespace
 
 // Runs both `test:unit` and `test:acceptance` in parallel
 func (Test) All() error {
-	mg.Deps(Test.Unit, Test.Acceptance)
+	mg.Deps(Test.Unit, Test.Functional)
 	return nil
 }
 
@@ -75,16 +88,28 @@ func (Test) Unit() error {
 	)(pathsPlusTestArgs)
 }
 
-// Runs all acceptance tests with code coverage and optional debug logging
-func (Test) Acceptance() error {
+// Runs all functional tests with code coverage and optional debug logging
+func (Test) Functional() error {
 	pathsPlusTestArgs := append(codePaths,
 		"-ginkgo.randomizeAllSpecs",
 		debug("-ginkgo.progress"),
 	)
 	return runCmd("go", "test",
-		"-coverprofile=acceptance-coverage.out",
+		"-short",
+		"-coverprofile=functional-coverage.out",
 		debug("-v"),
 	)(pathsPlusTestArgs)
+}
+
+// Runs all benchmark tests with -benchmem
+func (Test) Benchmark() error {
+	if err := runCmd("go", "test",
+		"-bench", "Benchmark.",
+		"-benchmem",
+	)(allDirs); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Builds lingo and then builds codePaths
@@ -131,7 +156,7 @@ func Revive() error {
 // Used to run Lingo commands
 type Run mg.Namespace
 
-// Runs Lingo Generate with default values (or config.yml if exists) and optional debug logging
+// Runs Lingo GoGenerate with default values (or config.yml if exists) and optional debug logging
 func (Run) Generate() error {
 	mg.SerialDeps(Build)
 
@@ -141,20 +166,25 @@ func (Run) Generate() error {
 // debug will return debugStr if mage debugging is turned on, else an empty string. Useful for enabling verbose
 // output from commands.
 func debug(debugStr string) string {
-	return isEnabled(mg.Debug(), debugStr)
-}
-
-func isCGOEnabled(isEnabledVal string) string {
-	val, ok := os.LookupEnv("CGO_ENABLED")
-	return isEnabled(ok && val == "1", isEnabledVal)
-}
-
-// isEnabled will output str if b is true, else an empty string
-func isEnabled(b bool, str string) string {
-	if !b {
-		return ""
+	if mg.Debug() {
+		return debugStr
 	}
-	return str
+	return ""
+}
+
+// isCGOEnabled returns returnIfEnabled if CGO_ENABLED is true
+func isCGOEnabled(returnIfEnabled string) string {
+	val, ok := os.LookupEnv("CGO_ENABLED")
+	if ok && val == "1" {
+		return returnIfEnabled
+	}
+	return ""
+}
+
+// isCI returns true if an env var for the CI system enabled is present
+func isCI() bool {
+	val, ok := os.LookupEnv("GITHUB_ACTIONS")
+	return ok && val == "true"
 }
 
 // run will take a normal sh.run command argument, filtering any args entries that are empty.

@@ -1,12 +1,10 @@
-package test_test
+package queries_test
 
 import (
 	"strings"
 
 	"github.com/onsi/gomega/types"
 
-	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcharactersets"
-	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcollations"
 	"github.com/weworksandbox/lingo/pkg/core"
 )
 
@@ -21,12 +19,9 @@ var (
 		"NAME2",
 		"NAME3",
 	}
-
-	cs  = qcharactersets.As("CS")
-	col = qcollations.As("COL")
 )
 
-// Query is used by Acceptance tests, along with benchmark tests. They are used for setting up common data to
+// Query is used by Functional tests, along with benchmark tests. They are used for setting up common data to
 // ensure performance and code quality.
 type Query struct {
 	Name      string
@@ -39,7 +34,7 @@ type Query struct {
 
 type Params struct {
 	Dialect      core.Dialect
-	SQL          core.Expression
+	SQL          func() core.Expression
 	SQLAssert    types.GomegaMatcher
 	ValuesAssert types.GomegaMatcher
 	ErrAssert    types.GomegaMatcher

@@ -8,7 +8,7 @@ import (
 	"github.com/petergtz/pegomock"
 )
 
-func SetupAndRunUnit(t *testing.T, unitTestName string) {
+func SetupAndRunUnit(t *testing.T, unitTestName, testCategory string) {
 	// If we aren't running unit, why run unit?
 	if !testing.Short() {
 		return
@@ -19,10 +19,10 @@ func SetupAndRunUnit(t *testing.T, unitTestName string) {
 	// Register the global Mocking framework's fail handler.
 	pegomock.RegisterMockFailHandler(ginkgo.Fail)
 	// Register Ginkgo
-	ginkgo.RunSpecs(t, unitTestName+" Suite - Unit")
+	ginkgo.RunSpecs(t, unitTestName+" Suite - "+testCategory)
 }
 
-func SetupAndRunAcceptance(t *testing.T, acceptanceTestName string) {
+func SetupAndRunFunctional(t *testing.T, funcTestName string) {
 	// These are long-er running.
 	if testing.Short() {
 		return
@@ -31,5 +31,5 @@ func SetupAndRunAcceptance(t *testing.T, acceptanceTestName string) {
 	// Register the global test framework's fail handler.
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	// Register Ginkgo
-	ginkgo.RunSpecs(t, acceptanceTestName+" Suite - Acceptance")
+	ginkgo.RunSpecs(t, funcTestName+" Suite - Functional")
 }

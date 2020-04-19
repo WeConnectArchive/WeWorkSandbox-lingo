@@ -8,5 +8,5 @@ import (
 
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core Dialect
 func TestSort(t *testing.T) {
-	runner.SetupAndRunUnit(t, "sort")
+	runner.SetupAndRunUnit(t, "sort", "unit")
 }
