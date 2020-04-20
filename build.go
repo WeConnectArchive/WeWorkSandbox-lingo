@@ -76,7 +76,7 @@ func (Gen) Go() error {
 func GoFmt() error {
 	if err := runCmd("go", "fmt",
 		debug("-v"),
-	)(codePaths); err != nil {
+	)(allDirs); err != nil {
 		return err
 	}
 	return nil
