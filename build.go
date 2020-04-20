@@ -19,12 +19,15 @@ import (
 
 const (
 	testGenerateSakilaDir = "./internal/test/testdata/sakila"
-	dockerComposeYml = "docker-compose.yml"
+	dockerComposeYml      = "docker-compose.yml"
 )
+
 var (
 	testGenerateSakilaDC = filepath.Join(testGenerateSakilaDir, dockerComposeYml)
-
+	// allDirs has the current directory `.` plus all subsequent directories `./...`.
+	// Note: `...` does not work as it tries to do EVERYTHING including random GOPATH stuff.
 	allDirs = []string{
+		".",
 		"./...",
 	}
 	codePaths = []string{
@@ -47,7 +50,7 @@ func (Deps) InstallTools() error {
 		"github.com/petergtz/pegomock/pegomock",
 		"github.com/mgechev/revive",
 	}
-	if err := runCmd("go", "install")(tools); err != nil {
+	if err := runCmd("go", "install", debug("-x"))(tools); err != nil {
 		return err
 	}
 	return nil
@@ -159,7 +162,7 @@ func (Gen) StartTestSchemaDB() error {
 		log.Println("Skipping - Unable to run Docker commands within CI")
 		return nil
 	}
-	if err := run( "docker-compose",
+	if err := run("docker-compose",
 		"-f", testGenerateSakilaDC,
 		"--env-file", filepath.Join(testGenerateSakilaDir, ".env"),
 		"up",
@@ -317,7 +320,7 @@ func copyToTempFile(r io.ReadCloser, tempFilePattern string) (string, int64, err
 	if err := r.Close(); err != nil {
 		return "", 0, fmt.Errorf("unable to close reader: %w", err)
 	}
-	if err := outFile.Close() ; err != nil {
+	if err := outFile.Close(); err != nil {
 		return "", 0, fmt.Errorf("unable to close file: %w", err)
 	}
 	return outFile.Name(), size, nil
