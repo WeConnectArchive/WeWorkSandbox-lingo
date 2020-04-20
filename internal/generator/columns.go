@@ -1,19 +1,24 @@
 package generator
 
 import (
+	"fmt"
 	"strings"
 )
 
 // DBToPathType is a map of database data/column type names to an
 // array of [import package path, path type]
-type DBToPathType map[string][2]string
+type DBToPathType map[string]PathPackageToType
+
+// PathPackageToType should
+type PathPackageToType = [2]string
 
 type replaceFieldName func(string) string
+type dbTypeToPathTypeFunc func(dbType string) (PathPackageToType, error)
 
 type column struct {
 	col      Column
 	replace  replaceFieldName
-	dbToPath DBToPathType
+	pathType PathPackageToType
 }
 
 func (c column) DatabaseName() string {
@@ -29,11 +34,7 @@ func (c column) MethodName() string {
 }
 
 func (c column) PathTypeName() (string, string) {
-	value, ok := c.dbToPath[c.col.Type().DatabaseTypeName()]
-	if !ok || value[0] == "" || value[1] == "" {
-		return "", "UnknownPathType"
-	}
-	return value[0], value[1]
+	return c.pathType[0], c.pathType[1]
 }
 
 func (c column) NewPathTypeName() (string, string) {
@@ -41,14 +42,25 @@ func (c column) NewPathTypeName() (string, string) {
 	return path, "New" + name
 }
 
-func convertCols(columns []Column, replace replaceFieldName, dbToPath DBToPathType) []*column {
+func convertCols(
+	columns []Column,
+	replace replaceFieldName,
+	dbTypeToPathType dbTypeToPathTypeFunc,
+) ([]*column, error) {
 	var cols []*column
 	for _, col := range columns {
-		cols = append(cols, &column{
+		value, err := dbTypeToPathType(col.Type().DatabaseTypeName())
+		if err != nil {
+			return nil, fmt.Errorf("unable to find lingo path type for column named %s and type %s: %w",
+				col.Name(), col.Type().DatabaseTypeName(), err)
+		}
+
+		genCol := column{
 			col:      col,
 			replace:  replace,
-			dbToPath: dbToPath,
-		})
+			pathType: value,
+		}
+		cols = append(cols, &genCol)
 	}
-	return cols
+	return cols, nil
 }

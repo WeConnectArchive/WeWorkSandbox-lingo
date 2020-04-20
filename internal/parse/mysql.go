@@ -34,16 +34,20 @@ func (MySQL) DBTypesToPaths() map[string][2]string {
 	// TODO - Need to do further changes to Paths. Right now, every Path can have nullable operations against it.
 	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends
 	//  and adds the nullable methods? https://github.com/go-sql-driver/mysql/blob/master/fields.go
+	// Note: For `decimal`, we create our own, but there is no 'decimal' type in Go
+	// besides `math/big/decimal.go` which is binary anyway...
 	return map[string][2]string{
-		"BIGINT":   {pkgCorePath, "Int64Path"},
-		"BINARY":   {pkgCorePath, "BinaryPath"},
-		"DATETIME": {pkgCorePath, "TimePath"},
-		// Could create our own, but there is no 'decimal' type in Go besides `math/big/decimal.go` which is binary
-		"DECIMAL":   {pkgCorePath, "BinaryPath"},
+		"BIGINT":    {pkgCorePath, "Int64Path"},
+		"BINARY":    {pkgCorePath, "BinaryPath"},
+		"CHAR":      {pkgCorePath, "StringPath"},
+		"DATETIME":  {pkgCorePath, "TimePath"},
+		"DECIMAL":   {pkgCorePath, "BinaryPath"}, // See note above.
 		"DOUBLE":    {pkgCorePath, "Float64Path"},
 		"FLOAT":     {pkgCorePath, "Float32Path"},
 		"INT":       {pkgCorePath, "IntPath"},
 		"JSON":      {pkgCorePath, "JSONPath"},
+		"MEDIUMINT": {pkgCorePath, "Int32Path"},
+		"SMALLINT":  {pkgCorePath, "Int16Path"},
 		"TEXT":      {pkgCorePath, "StringPath"},
 		"TINYINT":   {pkgCorePath, "BoolPath"},
 		"TIMESTAMP": {pkgCorePath, "TimePath"},

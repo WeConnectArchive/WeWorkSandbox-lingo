@@ -9,9 +9,10 @@ import (
 func getSettings() *settings {
 	s := &settings{}
 	s.rootDirectory = viper.GetString("dir")
-	s.schemas = viper.GetStringSlice("schema")
+	s.schemas = viper.GetStringSlice("schemas")
 	s.driverName = viper.GetString("driver")
 	s.dataSourceName = viper.GetString("dsn")
+	s.allowUnsupportedColTypes = viper.GetBool("allow_unsupported_column_types")
 
 	s.replaceNames = defaultReplaceNames
 	for k, v := range viper.GetStringMapString("replace_names") {
@@ -56,12 +57,13 @@ var defaultReplaceNames = map[string]string{
 }
 
 type settings struct {
-	rootDirectory  string
-	schemas        []string
-	driverName     string
-	dataSourceName string
-	replaceNames   map[string]string
-	dbToPkgTypes   map[string][2]string
+	rootDirectory            string
+	schemas                  []string
+	driverName               string
+	dataSourceName           string
+	allowUnsupportedColTypes bool
+	replaceNames             map[string]string
+	dbToPkgTypes             map[string][2]string
 }
 
 func (s settings) RootDirectory() string {
@@ -78,6 +80,10 @@ func (s settings) DriverName() string {
 
 func (s settings) DataSourceName() string {
 	return s.dataSourceName
+}
+
+func (s settings) AllowUnsupportedColumnTypes() bool {
+	return s.allowUnsupportedColTypes
 }
 
 func (s settings) ReplaceFieldName(name string) string {

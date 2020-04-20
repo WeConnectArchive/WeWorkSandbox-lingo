@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  generate-db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    env_file:
+      - .env
+    # Remember, these are external port mappings. `ext:int`.
+    ports:
+      - 9999:3306
+    networks:
+      - generate
+  recreate-schema-script:
+    image: mysql/mysql-server:8.0
+    env_file:
+      - .env
+    depends_on:
+      - generate-db
+    # We are using internal port here because the port mapping above is only for external to dcompose
+    # Note that `--file` must be the last argument.
+    command: bash -cx "
+        sleep 3
+        && cat /tmp/cache/schema/sakila-schema.sql /tmp/cache/schema/sakila-data.sql
+        | mysqlsh
+              -u root
+              --password=$MYSQL_ROOT_PASSWORD
+              --host generate-db
+              --port 3306
+              --connect-timeout 5000
+              --sql
+        "
+    volumes:
+      # Host volumes are always based upon docker-compose.yml as root dir
+      - .:/tmp/cache/schema:ro
+    networks:
+      - generate
+
+networks:
+  generate:
+    driver: "bridge"

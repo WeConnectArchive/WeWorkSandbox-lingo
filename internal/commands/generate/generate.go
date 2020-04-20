@@ -2,7 +2,8 @@ package generate
 
 import (
 	"context"
-	"fmt"
+	"log"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -16,9 +17,7 @@ func Generate() *cobra.Command {
 		Use:   "generate",
 		Short: "Generate entity table and columns from an existing database schema",
 		Args:  cobra.MaximumNArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return generate()
-		},
+		Run:   generate,
 	}
 
 	const (
@@ -42,21 +41,29 @@ func Generate() *cobra.Command {
 	return cmd
 }
 
-func generate() error {
-	var settings = getSettings()
+//revive:disable:deep-exit - Disabling deep exits from log.Fatalf due to this being a 'top level' command.
 
-	parser, err := parse.NewMySQL(settings.DataSourceName())
+func generate(_ *cobra.Command, _ []string) {
+	var s = getSettings()
+
+	switch dn := strings.ToLower(s.DriverName()); dn {
+	case "mysql":
+		// TODO refactor MySQL Parser into Interface
+	default:
+		log.Fatalf("parser unknown for driver '%s'", dn)
+	}
+
+	parser, err := parse.NewMySQL(s.DataSourceName())
 	if err != nil {
-		return err
+		log.Fatalf("unable to connect to database: %s", err)
 	}
 
-	var combined error
-	for err := range generator.Generate(context.Background(), settings, parser) {
-		if combined == nil {
-			combined = err
-		} else {
-			combined = fmt.Errorf("%s: %w", combined, err)
-		}
+	var errCount int
+	for err = range generator.Generate(context.Background(), s, parser) {
+		log.Printf("ERR: %s", err)
+		errCount++
 	}
-	return combined
+	if errCount != 0 {
+		log.Fatalf("had %d errors occur while generating", errCount)
+	}
 }
