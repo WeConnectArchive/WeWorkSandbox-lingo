@@ -1,0 +1,9 @@
+dir: "./internal/test/schema/"
+schemas:
+  - "sakila"
+driver_name: "mysql"
+dsn: "root:lingo@tcp(localhost:9999)/?maxAllowedPacket=0"
+
+# Set to true for now. This is until we have `GEOMETRY`, `YEAR` and `BLOB` PathTypes created / setup.
+# The specific schema we are using has these types, and the generator will fail if set to false.
+allow_unsupported_column_types: true

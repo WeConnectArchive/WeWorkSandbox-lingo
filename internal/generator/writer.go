@@ -8,8 +8,7 @@ import (
 )
 
 func writeSchema(root, contents, schemaName string) error {
-	pkg := strings.ToLower(LittleQ(ToNonExported(schemaName)))
-	dirPath := filepath.Join(root, pkg)
+	dirPath := buildSchemaDir(root, schemaName)
 	schemaFile := filepath.Join(dirPath, "schema.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
@@ -38,9 +37,14 @@ func writePackageMembers(root, contents, schemaName, name string) error {
 	return ioutil.WriteFile(path, []byte(contents), os.ModePerm)
 }
 
+func buildSchemaDir(root, schemaName string) string {
+	pkg := strings.ToLower(LittleQ(ToNonExported(schemaName)))
+	dirPath := filepath.Join(root, pkg)
+	return dirPath
+}
+
 func buildTableDir(root string, schemaName string, name string) string {
 	tablePkgName := strings.ToLower(LittleQ(ToNonExported(name)))
-	schemaPkgName := strings.ToLower(LittleQ(ToNonExported(schemaName)))
-	dirPath := filepath.Join(root, schemaPkgName, tablePkgName)
+	dirPath := filepath.Join(buildSchemaDir(root, schemaName), tablePkgName)
 	return dirPath
 }

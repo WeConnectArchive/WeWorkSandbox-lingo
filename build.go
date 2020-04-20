@@ -3,14 +3,27 @@
 package main
 
 import (
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
 
+const (
+	testGenerateSakilaDir = "./internal/test/testdata/sakila"
+	dockerComposeYml = "docker-compose.yml"
+)
 var (
+	testGenerateSakilaDC = filepath.Join(testGenerateSakilaDir, dockerComposeYml)
+
 	allDirs = []string{
 		"./...",
 	}
@@ -21,9 +34,9 @@ var (
 	}
 )
 
-// Run dependency downloads
+// Run all the things that CI does
 func All() {
-	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, GoGenerate, GoFmt, Revive, Build, Test.All, Tidy)
+	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, Gen.Go, GoFmt, Revive, Build, Test.All, Tidy)
 }
 
 type Deps mg.Namespace
@@ -50,8 +63,10 @@ func (Deps) ModDownload() error {
 	return nil
 }
 
+type Gen mg.Namespace
+
 // Runs `go generate` with optional debug logging
-func GoGenerate() error {
+func (Gen) Go() error {
 	return runCmd("go", "generate",
 		debug("-v"),
 	)(codePaths)
@@ -130,6 +145,49 @@ func Build() error {
 	return nil
 }
 
+// Starts the test db, installs the schema, then runs lingo to generate the files. If successful, the db
+// is shutdown and deleted.
+func (Gen) TestSchema() error {
+	mg.SerialDeps(Gen.StartTestSchemaDB, Run.LingoGenTestSchema, Gen.StopTestSchemaDB)
+	return nil
+}
+
+// This will start the DB then installs the schema & data.
+// The test schema and data comes from MySQL: https://dev.mysql.com/doc/index-other.html
+func (Gen) StartTestSchemaDB() error {
+	if isCI() {
+		log.Println("Skipping - Unable to run Docker commands within CI")
+		return nil
+	}
+	if err := run( "docker-compose",
+		"-f", testGenerateSakilaDC,
+		"--env-file", filepath.Join(testGenerateSakilaDir, ".env"),
+		"up",
+		"-d",
+		"--remove-orphans",
+		"--force-recreate",
+	); err != nil {
+		return err
+	}
+	time.Sleep(3 * time.Second)
+	log.Println("Database should be completed")
+	return nil
+}
+
+// Stop the test containers used to sakila our schema
+func (Gen) StopTestSchemaDB() error {
+	if err := run("docker-compose",
+		"-f", testGenerateSakilaDC,
+		"rm",
+		"--stop",
+		"--force",
+		"-v",
+	); err != nil {
+		_ = mg.Fatalf(1, "Unable to remove docker container test schema database")
+	}
+	return nil
+}
+
 // Runs `go mod tidy` with optional debug logging
 func Tidy() error {
 	if err := run("go", "mod", "tidy",
@@ -146,6 +204,7 @@ func Revive() error {
 	if err := runCmd("revive",
 		"-config", "./revive.toml",
 		"-exclude", "./db/...",
+		"-exclude", "./internal/test/schema/...",
 		"-formatter", "stylish",
 	)(codePaths); err != nil {
 		return err
@@ -156,11 +215,13 @@ func Revive() error {
 // Used to run Lingo commands
 type Run mg.Namespace
 
-// Runs Lingo GoGenerate with default values (or config.yml if exists) and optional debug logging
-func (Run) Generate() error {
+// Runs Lingo for the Sakila test DB
+func (Run) LingoGenTestSchema() error {
 	mg.SerialDeps(Build)
 
-	return run("./lingo", "generate", debug("-v"))
+	return run("./lingo", "generate",
+		"--config", filepath.Join(testGenerateSakilaDir, "lingo-config.yml"),
+	)
 }
 
 // debug will return debugStr if mage debugging is turned on, else an empty string. Useful for enabling verbose
@@ -224,4 +285,40 @@ func filterStrings(strs []string, filter func(string) bool) []string {
 		}
 	}
 	return strs[:n]
+}
+
+func downloadFile(url string, tempFilePattern string) (string, int64, error) {
+	c := &http.Client{
+		Timeout: 15 * time.Second,
+	}
+	resp, err := c.Get(url)
+	if err != nil {
+		return "", 0, fmt.Errorf("unable to download test database: %w", err)
+	}
+	if http.StatusOK != resp.StatusCode {
+		return "", 0, fmt.Errorf("invalid response code while trying to download file: %w", err)
+	}
+	fileName, size, err := copyToTempFile(resp.Body, tempFilePattern)
+	if err != nil {
+		return "", 0, fmt.Errorf("")
+	}
+	return fileName, size, nil
+}
+
+func copyToTempFile(r io.ReadCloser, tempFilePattern string) (string, int64, error) {
+	outFile, err := ioutil.TempFile("", tempFilePattern)
+	if err != nil {
+		return "", 0, fmt.Errorf("unable to create temp file: %w", err)
+	}
+	size, err := io.Copy(outFile, r)
+	if err != nil {
+		return "", 0, fmt.Errorf("unable to copy data to temp file: %w", err)
+	}
+	if err := r.Close(); err != nil {
+		return "", 0, fmt.Errorf("unable to close reader: %w", err)
+	}
+	if err := outFile.Close() ; err != nil {
+		return "", 0, fmt.Errorf("unable to close file: %w", err)
+	}
+	return outFile.Name(), size, nil
 }

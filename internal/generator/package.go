@@ -6,9 +6,8 @@ import (
 	"github.com/dave/jennifer/jen"
 )
 
-func GeneratePackageMembers(settings Settings, info TableInfo, dbToPath DBToPathType) (string, error) {
+func GeneratePackageMembers(info TableInfo, columns []*column) (string, error) {
 	tableName := info.Name()
-	columns := convertCols(info.Columns(), settings.ReplaceFieldName, dbToPath)
 
 	f := jen.NewFile(ToPackageName(tableName))
 	f.HeaderComment(fmt.Sprintf(fmtTableHeaderComment, info.Schema(), tableName))
