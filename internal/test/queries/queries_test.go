@@ -1,15 +1,37 @@
 package queries_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/types"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/runner"
+	"github.com/weworksandbox/lingo/pkg/core"
 )
+
+// Query is used by Functional tests, along with benchmark tests. They are used for setting up common data to
+// ensure performance and code quality.
+type Query struct {
+	Name      string
+	Focus     bool
+	Benchmark bool
+
+	// Params used during the test
+	Params
+}
+
+type Params struct {
+	Dialect      core.Dialect
+	SQL          func() core.Expression
+	SQLAssert    types.GomegaMatcher
+	ValuesAssert types.GomegaMatcher
+	ErrAssert    types.GomegaMatcher
+}
 
 func BenchmarkQueries(b *testing.B) {
 	b.ReportAllocs()
@@ -40,9 +62,10 @@ func TestQueries(t *testing.T) {
 			func(p Params) {
 				// Sanity check
 				Expect(p).ToNot(BeNil())
-				Expect(p.SQL).ToNot(BeNil())
-				Expect(p.SQLAssert).ToNot(BeNil())
-				Expect(p.ErrAssert).ToNot(BeNil())
+				Expect(p.Dialect).ToNot(BeNil(), "Dialect was nil")
+				Expect(p.SQL).ToNot(BeNil(), "SQL was nil")
+				Expect(p.SQLAssert).ToNot(BeNil(), "SQLAssert was nil")
+				Expect(p.ErrAssert).ToNot(BeNil(), "ErrAssert was nil for ")
 
 				sql, err := p.SQL().GetSQL(p.Dialect)
 				Expect(err).To(p.ErrAssert)
@@ -53,7 +76,7 @@ func TestQueries(t *testing.T) {
 		)
 	})
 
-	runner.SetupAndRunFunctional(t, "Queries")
+	runner.SetupAndRunUnit(t, "Queries", "functional")
 }
 
 var (
@@ -80,4 +103,11 @@ func queriesToEntries(queries []Query) []table.TableEntry {
 		}
 	}
 	return entries
+}
+
+// trimQuery replaces newlines with spaces, and removing any tabs. This way, SQL.SQL can use backticks.
+func trimQuery(s string) string {
+	s = strings.ReplaceAll(s, "\n", " ")
+	s = strings.ReplaceAll(s, "\t", "")
+	return strings.TrimSpace(s)
 }

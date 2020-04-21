@@ -10,7 +10,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
@@ -27,7 +27,7 @@ var _ = Describe("select", func() {
 			orderBy   []core.Expression
 			direction []sort.Direction
 			joins     [][]core.Expression
-			joinType  []expression.JoinType
+			joinType  []join.Type
 
 			q *query.SelectQuery
 		)
@@ -71,9 +71,9 @@ var _ = Describe("select", func() {
 					NewMockExpression(),
 				},
 			}
-			joinType = []expression.JoinType{
-				expression.LeftJoin,
-				expression.RightJoin,
+			joinType = []join.Type{
+				join.Left,
+				join.Right,
 			}
 			pegomock.When(joins[0][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[0][0].sql"), nil)
 			pegomock.When(joins[0][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[0][1].sql"), nil)

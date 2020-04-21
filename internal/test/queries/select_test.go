@@ -2,80 +2,121 @@ package queries_test
 
 import (
 	. "github.com/onsi/gomega"
-	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcharactersets"
-	"github.com/weworksandbox/lingo/db/mysql/qinformationschema/qcollations"
-	"github.com/weworksandbox/lingo/pkg/core"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
+	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qcategory"
+	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmactor"
+	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmcategory"
+	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmtext"
+	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
+	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/expressions"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
 
 var selectQueries = []Query{
 	{
-		Name:      "SelectFrom",
+		Name:      "InventoryIDAndFilmID_ForStoreID",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
 			SQL: func() core.Expression {
-				cs := qcharactersets.As("CS")
-				return query.SelectFrom(cs)
+				const (
+					storeId = 2
+				)
+				return query.Select(
+					qinventory.InventoryId(),
+					qinventory.FilmId(),
+				).From(
+					qinventory.Q(),
+				).Where(
+					qinventory.StoreId().Eq(storeId),
+				)
 			},
 			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT CS.CHARACTER_SET_NAME, CS.DEFAULT_COLLATE_NAME, CS.DESCRIPTION, CS.MAXLEN
-					FROM information_schema.CHARACTER_SETS AS CS`)),
-			ValuesAssert: BeEmpty(),
-			ErrAssert:    BeNil(),
-		},
-	},
-	{
-		Name:      "Select_From(columns)",
-		Benchmark: true,
-		Params: Params{
-			Dialect: dialect.Default{},
-			SQL: func() core.Expression {
-				cs := qcharactersets.As("CS")
-				return query.Select(cs.Maxlen(), cs.CharacterSetName()).From(cs)
-			},
-			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT CS.MAXLEN, CS.CHARACTER_SET_NAME
-					FROM information_schema.CHARACTER_SETS AS CS`)),
-			ValuesAssert: BeEmpty(),
-			ErrAssert:    BeNil(),
-		},
-	},
-	{
-		Name:      "Select_From_LeftJoin_Where_OrderBy_Where_Where",
-		Benchmark: true,
-		Params: Params{
-			Dialect: dialect.Default{},
-			SQL: func() core.Expression {
-				cs := qcharactersets.As("CS")
-				col := qcollations.As("COL")
-
-				return query.Select(cs.Description(), cs.CharacterSetName()).
-					From(cs).
-					Join(col, expression.LeftJoin, cs.CharacterSetName().EqPath(col.CharacterSetName())).
-					Where(cs.Maxlen().GT(maxLen)).
-					OrderBy(cs.Maxlen(), sort.Descending).
-					Where(cs.DefaultCollateName().Eq(defCollName)).
-					Where(cs.CharacterSetName().In(charSetNameIn...))
-			},
-			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT CS.DESCRIPTION, CS.CHARACTER_SET_NAME
-					FROM information_schema.CHARACTER_SETS AS CS
-					LEFT JOIN information_schema.COLLATIONS AS COL
-					ON CS.CHARACTER_SET_NAME = COL.CHARACTER_SET_NAME
-					WHERE (CS.MAXLEN > ? AND CS.DEFAULT_COLLATE_NAME = ? AND CS.CHARACTER_SET_NAME IN (?, ?, ?))
-					ORDER BY CS.MAXLEN DESC`)),
+					SELECT inventory.inventory_id, inventory.film_id
+					FROM sakila.inventory`)),
 			ValuesAssert: AllInSlice(
-				BeEquivalentTo(maxLen),
-				BeEquivalentTo(defCollName),
-				BeEquivalentTo(charSetNameIn[0]),
-				BeEquivalentTo(charSetNameIn[1]),
-				BeEquivalentTo(charSetNameIn[2]),
+				BeEquivalentTo(2),
+			),
+			ErrAssert: BeNil(),
+		},
+	},
+	{
+		Name:      "NumFilms_ForActorID",
+		Benchmark: true,
+		Params: Params{
+			Dialect: dialect.Default{},
+			SQL: func() core.Expression {
+				const (
+					actorID = 10
+				)
+				return query.Select(
+					expressions.Count(qfilmactor.FilmId()),
+				).From(
+					qfilmactor.Q(),
+				).Where(
+					qfilmactor.ActorId().Eq(actorID),
+				)
+			},
+			SQLAssert: ContainSubstring(trimQuery(`
+					SELECT COUNT(film_actor.film_id)
+					FROM sakila.film_actor
+					WHERE film_actor.actor_id = ?
+			`)),
+			ValuesAssert: AllInSlice(
+				BeEquivalentTo(10),
+			),
+			ErrAssert: BeNil(),
+		},
+	},
+	{
+		Name:      "MovieTitlesByCategory_ForActor_CategoryAsc",
+		Benchmark: true,
+		Params: Params{
+			Dialect: dialect.Default{},
+			SQL: func() core.Expression {
+				const (
+					actorID = 10
+				)
+
+				fa := qfilmactor.As("fa")
+				fc := qfilmcategory.As("fc")
+				ft := qfilmtext.As("ft")
+				cat := qcategory.As("cat")
+
+				return query.Select(
+					ft.Title(), cat.Name(),
+				).From(
+					fa,
+				).Join(
+					fc, join.Inner, fc.FilmId().EqPath(fa.FilmId()),
+				).Join(
+					ft, join.Inner, ft.FilmId().EqPath(fa.FilmId()),
+				).Join(
+					cat, join.Inner, fc.CategoryId().EqPath(cat.CategoryId()),
+				).Where(
+					fa.ActorId().Eq(actorID),
+				).OrderBy(
+					cat.Name(), sort.Ascending,
+				)
+			},
+			SQLAssert: ContainSubstring(trimQuery(`
+					SELECT ft.title, cat.name
+					FROM sakila.film_actor AS fa
+					INNER JOIN sakila.film_category AS fc
+						ON fc.film_id = fa.film_id
+					INNER JOIN sakila.film_text AS ft
+						ON ft.film_id = fa.film_id
+					INNER JOIN sakila.category AS cat
+						ON fc.category_id = cat.category_id
+					WHERE fa.actor_id = ?
+					ORDER BY cat.name ASC`)),
+			ValuesAssert: AllInSlice(
+				BeEquivalentTo(10),
 			),
 			ErrAssert: BeNil(),
 		},

@@ -17,7 +17,7 @@ func New() QLanguage {
 
 func newQLanguage(alias string) QLanguage {
 	q := QLanguage{_alias: alias}
-	q.languageId = path.NewBoolPath(q, "language_id")
+	q.languageId = path.NewInt8Path(q, "language_id")
 	q.name = path.NewStringPath(q, "name")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
@@ -25,7 +25,7 @@ func newQLanguage(alias string) QLanguage {
 
 type QLanguage struct {
 	_alias     string
-	languageId path.BoolPath
+	languageId path.Int8Path
 	name       path.StringPath
 	lastUpdate path.TimePath
 }
@@ -58,7 +58,7 @@ func (q QLanguage) GetParent() string {
 
 // Column Functions
 
-func (q QLanguage) LanguageId() path.BoolPath {
+func (q QLanguage) LanguageId() path.Int8Path {
 	return q.languageId
 }
 

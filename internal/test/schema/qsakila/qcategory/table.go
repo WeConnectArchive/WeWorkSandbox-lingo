@@ -17,7 +17,7 @@ func New() QCategory {
 
 func newQCategory(alias string) QCategory {
 	q := QCategory{_alias: alias}
-	q.categoryId = path.NewBoolPath(q, "category_id")
+	q.categoryId = path.NewInt8Path(q, "category_id")
 	q.name = path.NewStringPath(q, "name")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
@@ -25,7 +25,7 @@ func newQCategory(alias string) QCategory {
 
 type QCategory struct {
 	_alias     string
-	categoryId path.BoolPath
+	categoryId path.Int8Path
 	name       path.StringPath
 	lastUpdate path.TimePath
 }
@@ -58,7 +58,7 @@ func (q QCategory) GetParent() string {
 
 // Column Functions
 
-func (q QCategory) CategoryId() path.BoolPath {
+func (q QCategory) CategoryId() path.Int8Path {
 	return q.categoryId
 }
 

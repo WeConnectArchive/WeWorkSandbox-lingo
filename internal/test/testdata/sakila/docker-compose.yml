@@ -17,16 +17,16 @@ services:
     depends_on:
       - generate-db
     # We are using internal port here because the port mapping above is only for external to dcompose
-    # Note that `--file` must be the last argument.
+    # Note that it takes about 10-13 seconds for MySQL to fully start up and accept connections.
+    # Note that mysqlsh uses the new MySQL X protocol.
     command: bash -cx "
-        sleep 3
+        sleep 15
         && cat /tmp/cache/schema/sakila-schema.sql /tmp/cache/schema/sakila-data.sql
         | mysqlsh
               -u root
               --password=$MYSQL_ROOT_PASSWORD
               --host generate-db
-              --port 3306
-              --connect-timeout 5000
+              --port 33060
               --sql
         "
     volumes:

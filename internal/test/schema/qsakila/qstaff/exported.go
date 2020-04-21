@@ -10,7 +10,7 @@ func Q() QStaff {
 	return instance
 }
 
-func StaffId() path.BoolPath {
+func StaffId() path.Int8Path {
 	return instance.staffId
 }
 
@@ -34,11 +34,11 @@ func Email() path.StringPath {
 	return instance.email
 }
 
-func StoreId() path.BoolPath {
+func StoreId() path.Int8Path {
 	return instance.storeId
 }
 
-func Active() path.BoolPath {
+func Active() path.Int8Path {
 	return instance.active
 }
 

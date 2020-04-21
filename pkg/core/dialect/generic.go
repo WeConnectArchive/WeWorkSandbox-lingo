@@ -6,15 +6,16 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
 
-var genericJoinTypeToStr = map[expression.JoinType]string{
-	expression.InnerJoin: "INNER JOIN",
-	expression.OuterJoin: "OUTER JOIN",
-	expression.LeftJoin:  "LEFT JOIN",
-	expression.RightJoin: "RIGHT JOIN",
+var genericJoinTypeToStr = map[join.Type]string{
+	join.Inner: "INNER JOIN",
+	join.Outer: "OUTER JOIN",
+	join.Left:  "LEFT JOIN",
+	join.Right: "RIGHT JOIN",
 }
 
 func ExpandEntity(entity core.Table) (core.SQL, error) {

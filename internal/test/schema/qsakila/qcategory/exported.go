@@ -10,7 +10,7 @@ func Q() QCategory {
 	return instance
 }
 
-func CategoryId() path.BoolPath {
+func CategoryId() path.Int8Path {
 	return instance.categoryId
 }
 

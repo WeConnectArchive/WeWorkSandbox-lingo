@@ -3,25 +3,14 @@ package expression
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
-)
-
-type JoinType int
-
-// Feel free to add any additional `JoinType`'s in a given dialect.
-// Just ensure the `int` value for `JoinType` is positive as to not conflict
-// with these `JoinType`s
-const (
-	InnerJoin JoinType = -iota // The `-` in front ensures all values are negative, yay C++ macros!
-	OuterJoin
-	LeftJoin
-	RightJoin
+	"github.com/weworksandbox/lingo/pkg/core/join"
 )
 
 type Joiner interface {
-	Join(left core.SQL, joinType JoinType, on core.SQL) (core.SQL, error)
+	Join(left core.SQL, joinType join.Type, on core.SQL) (core.SQL, error)
 }
 
-func NewJoinOn(left core.Expression, joinType JoinType, on core.Expression) core.ComboExpression {
+func NewJoinOn(left core.Expression, joinType join.Type, on core.Expression) core.ComboExpression {
 	j := &joinOn{
 		left:     left,
 		on:       on,
@@ -35,7 +24,7 @@ type joinOn struct {
 	ComboExpression
 	left     core.Expression
 	on       core.Expression
-	joinType JoinType
+	joinType join.Type
 }
 
 func (j joinOn) GetSQL(d core.Dialect) (core.SQL, error) {

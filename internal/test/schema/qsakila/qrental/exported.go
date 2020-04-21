@@ -30,7 +30,7 @@ func ReturnDate() path.TimePath {
 	return instance.returnDate
 }
 
-func StaffId() path.BoolPath {
+func StaffId() path.Int8Path {
 	return instance.staffId
 }
 

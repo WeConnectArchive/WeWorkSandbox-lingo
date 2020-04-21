@@ -11,6 +11,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 )
 
 var _ = Describe("JoinOn", func() {
@@ -19,7 +20,7 @@ var _ = Describe("JoinOn", func() {
 
 		var (
 			left     core.Expression
-			joinType expression.JoinType
+			joinType join.Type
 			on       core.Expression
 
 			joinOn core.Expression
@@ -27,7 +28,7 @@ var _ = Describe("JoinOn", func() {
 
 		BeforeEach(func() {
 			left = NewMockExpression()
-			joinType = expression.OuterJoin
+			joinType = join.Outer
 			on = NewMockExpression()
 		})
 
@@ -163,12 +164,12 @@ var _ = Describe("JoinOn", func() {
 type joinerDialectSuccess struct{}
 
 func (joinerDialectSuccess) GetName() string { return "joiner success" }
-func (joinerDialectSuccess) Join(core.SQL, expression.JoinType, core.SQL) (core.SQL, error) {
+func (joinerDialectSuccess) Join(core.SQL, join.Type, core.SQL) (core.SQL, error) {
 	return core.NewSQLf("joiner sql"), nil
 }
 
 type joinerDialectFailure struct{ joinerDialectSuccess }
 
-func (joinerDialectFailure) Join(core.SQL, expression.JoinType, core.SQL) (core.SQL, error) {
+func (joinerDialectFailure) Join(core.SQL, join.Type, core.SQL) (core.SQL, error) {
 	return nil, errors.New("joiner failure")
 }

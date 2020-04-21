@@ -18,12 +18,12 @@ func New() QCustomer {
 func newQCustomer(alias string) QCustomer {
 	q := QCustomer{_alias: alias}
 	q.customerId = path.NewInt16Path(q, "customer_id")
-	q.storeId = path.NewBoolPath(q, "store_id")
+	q.storeId = path.NewInt8Path(q, "store_id")
 	q.firstName = path.NewStringPath(q, "first_name")
 	q.lastName = path.NewStringPath(q, "last_name")
 	q.email = path.NewStringPath(q, "email")
 	q.addressId = path.NewInt16Path(q, "address_id")
-	q.active = path.NewBoolPath(q, "active")
+	q.active = path.NewInt8Path(q, "active")
 	q.createDate = path.NewTimePath(q, "create_date")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
@@ -32,12 +32,12 @@ func newQCustomer(alias string) QCustomer {
 type QCustomer struct {
 	_alias     string
 	customerId path.Int16Path
-	storeId    path.BoolPath
+	storeId    path.Int8Path
 	firstName  path.StringPath
 	lastName   path.StringPath
 	email      path.StringPath
 	addressId  path.Int16Path
-	active     path.BoolPath
+	active     path.Int8Path
 	createDate path.TimePath
 	lastUpdate path.TimePath
 }
@@ -80,7 +80,7 @@ func (q QCustomer) CustomerId() path.Int16Path {
 	return q.customerId
 }
 
-func (q QCustomer) StoreId() path.BoolPath {
+func (q QCustomer) StoreId() path.Int8Path {
 	return q.storeId
 }
 
@@ -100,7 +100,7 @@ func (q QCustomer) AddressId() path.Int16Path {
 	return q.addressId
 }
 
-func (q QCustomer) Active() path.BoolPath {
+func (q QCustomer) Active() path.Int8Path {
 	return q.active
 }
 

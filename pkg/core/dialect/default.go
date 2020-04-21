@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
@@ -42,7 +42,7 @@ func (m Default) Value(value []interface{}) (core.SQL, error) {
 	return Value(m, value)
 }
 
-func (Default) Join(left core.SQL, joinType expression.JoinType, on core.SQL) (core.SQL, error) {
+func (Default) Join(left core.SQL, joinType join.Type, on core.SQL) (core.SQL, error) {
 	return Join(left, genericJoinTypeToStr[joinType], on)
 }
 

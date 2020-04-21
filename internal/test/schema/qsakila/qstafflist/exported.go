@@ -10,7 +10,7 @@ func Q() QStaffList {
 	return instance
 }
 
-func Id() path.BoolPath {
+func Id() path.Int8Path {
 	return instance.id
 }
 
@@ -38,6 +38,6 @@ func Country() path.StringPath {
 	return instance.country
 }
 
-func Sid() path.BoolPath {
+func Sid() path.Int8Path {
 	return instance.sid
 }

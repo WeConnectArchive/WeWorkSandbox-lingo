@@ -19,7 +19,7 @@ func newQPayment(alias string) QPayment {
 	q := QPayment{_alias: alias}
 	q.paymentId = path.NewInt16Path(q, "payment_id")
 	q.customerId = path.NewInt16Path(q, "customer_id")
-	q.staffId = path.NewBoolPath(q, "staff_id")
+	q.staffId = path.NewInt8Path(q, "staff_id")
 	q.rentalId = path.NewIntPath(q, "rental_id")
 	q.amount = path.NewBinaryPath(q, "amount")
 	q.paymentDate = path.NewTimePath(q, "payment_date")
@@ -31,7 +31,7 @@ type QPayment struct {
 	_alias      string
 	paymentId   path.Int16Path
 	customerId  path.Int16Path
-	staffId     path.BoolPath
+	staffId     path.Int8Path
 	rentalId    path.IntPath
 	amount      path.BinaryPath
 	paymentDate path.TimePath
@@ -78,7 +78,7 @@ func (q QPayment) CustomerId() path.Int16Path {
 	return q.customerId
 }
 
-func (q QPayment) StaffId() path.BoolPath {
+func (q QPayment) StaffId() path.Int8Path {
 	return q.staffId
 }
 

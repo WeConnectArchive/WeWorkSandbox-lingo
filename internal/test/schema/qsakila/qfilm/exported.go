@@ -26,15 +26,15 @@ func ReleaseYear() path.UnsupportedPath {
 	return instance.releaseYear
 }
 
-func LanguageId() path.BoolPath {
+func LanguageId() path.Int8Path {
 	return instance.languageId
 }
 
-func OriginalLanguageId() path.BoolPath {
+func OriginalLanguageId() path.Int8Path {
 	return instance.originalLanguageId
 }
 
-func RentalDuration() path.BoolPath {
+func RentalDuration() path.Int8Path {
 	return instance.rentalDuration
 }
 
