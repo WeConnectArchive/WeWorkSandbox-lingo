@@ -69,10 +69,7 @@ func ensureDirectoryIsClean(directory string) error {
 	if err := os.RemoveAll(directory); err != nil && !os.IsNotExist(err) {
 		return err
 	}
-	if err := os.MkdirAll(directory, os.ModeDir|os.ModePerm); err != nil {
-		return err
-	}
-	return nil
+	return os.MkdirAll(directory, os.ModeDir|os.ModePerm)
 }
 
 func generateSchemas(
