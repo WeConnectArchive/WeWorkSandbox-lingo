@@ -203,12 +203,19 @@ func Tidy() error {
 
 // Run `revive` with the appropriate configs
 func Revive() error {
+	// Allows for Cmd + Click on the line in logs to go directly to it
+	var formatter = "friendly"
+	if isCI() {
+		// Groups each files errors together for easy lint fixing.
+		formatter = "stylish"
+	}
+
 	// NOTE: Any changes here need to be reflected in `./.github/workflows/go-revive.yml`
 	if err := runCmd("revive",
 		"-config", "./revive.toml",
 		"-exclude", "./db/...",
 		"-exclude", "./internal/test/schema/...",
-		"-formatter", "stylish",
+		"-formatter", formatter,
 	)(codePaths); err != nil {
 		return err
 	}

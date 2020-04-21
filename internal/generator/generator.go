@@ -65,14 +65,11 @@ func Generate(ctx context.Context, settings Settings, parser Parser) <-chan erro
 	return errChan
 }
 
-func ensureDirectoryIsClean(directory string) (string, error) {
+func ensureDirectoryIsClean(directory string) error {
 	if err := os.RemoveAll(directory); err != nil && !os.IsNotExist(err) {
-		return "", err
+		return err
 	}
-	if err := os.MkdirAll(directory, os.ModeDir|os.ModePerm); err != nil {
-		return "", err
-	}
-	return directory, nil
+	return os.MkdirAll(directory, os.ModeDir|os.ModePerm)
 }
 
 func generateSchemas(
@@ -93,16 +90,14 @@ func generateSchemas(
 		}
 
 		for _, schemaName := range schemas {
-			schemaDir := path.Clean(settings.RootDirectory())
-			schemaDir = buildSchemaDir(schemaDir, schemaName)
-
+			rootDir := path.Clean(settings.RootDirectory())
+			schemaDir := buildSchemaDir(rootDir, schemaName)
 			if schemaDir == "" {
 				errs <- fmt.Errorf("root directory '%s' is not a valid path", schemaDir)
 				continue
 			}
 
-			rootDir, err := ensureDirectoryIsClean(schemaDir)
-			if err != nil {
+			if err := ensureDirectoryIsClean(schemaDir); err != nil {
 				errs <- err
 				continue
 			}
