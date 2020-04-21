@@ -1,7 +1,6 @@
 package path_test
 
 import (
-	path2 "github.com/weworksandbox/lingo/pkg/core/path"
 	"math"
 
 	. "github.com/onsi/ginkgo"
@@ -10,6 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/path"
 )
 
 var _ = Describe("Int8", func() {
@@ -21,7 +21,7 @@ var _ = Describe("Int8", func() {
 			name  string
 			alias string
 
-			p path2.Int8Path
+			p path.Int8Path
 		)
 
 		BeforeEach(func() {
@@ -31,11 +31,11 @@ var _ = Describe("Int8", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path2.NewInt8PathWithAlias(e, name, alias)
+			p = path.NewInt8PathWithAlias(e, name, alias)
 		})
 
 		It("Returns a `Int8Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path2.Int8Path{}))
+			Expect(p).To(BeAssignableToTypeOf(path.Int8Path{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Int8", func() {
 			e    core.Table
 			name string
 
-			p path2.Int8Path
+			p path.Int8Path
 		)
 
 		BeforeEach(func() {
@@ -66,11 +66,11 @@ var _ = Describe("Int8", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path2.NewInt8Path(e, name)
+			p = path.NewInt8Path(e, name)
 		})
 
 		It("Returns a `Int8Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path2.Int8Path{}))
+			Expect(p).To(BeAssignableToTypeOf(path.Int8Path{}))
 		})
 
 		It("Has the given parent table", func() {
