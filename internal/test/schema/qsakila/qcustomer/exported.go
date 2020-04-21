@@ -14,7 +14,7 @@ func CustomerId() path.Int16Path {
 	return instance.customerId
 }
 
-func StoreId() path.BoolPath {
+func StoreId() path.Int8Path {
 	return instance.storeId
 }
 
@@ -34,7 +34,7 @@ func AddressId() path.Int16Path {
 	return instance.addressId
 }
 
-func Active() path.BoolPath {
+func Active() path.Int8Path {
 	return instance.active
 }
 

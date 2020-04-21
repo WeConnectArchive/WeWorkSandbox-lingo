@@ -19,7 +19,7 @@ func newQInventory(alias string) QInventory {
 	q := QInventory{_alias: alias}
 	q.inventoryId = path.NewInt32Path(q, "inventory_id")
 	q.filmId = path.NewInt16Path(q, "film_id")
-	q.storeId = path.NewBoolPath(q, "store_id")
+	q.storeId = path.NewInt8Path(q, "store_id")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
 }
@@ -28,7 +28,7 @@ type QInventory struct {
 	_alias      string
 	inventoryId path.Int32Path
 	filmId      path.Int16Path
-	storeId     path.BoolPath
+	storeId     path.Int8Path
 	lastUpdate  path.TimePath
 }
 
@@ -69,7 +69,7 @@ func (q QInventory) FilmId() path.Int16Path {
 	return q.filmId
 }
 
-func (q QInventory) StoreId() path.BoolPath {
+func (q QInventory) StoreId() path.Int8Path {
 	return q.storeId
 }
 

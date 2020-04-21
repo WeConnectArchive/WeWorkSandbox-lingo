@@ -42,6 +42,6 @@ func Notes() path.StringPath {
 	return instance.notes
 }
 
-func Sid() path.BoolPath {
+func Sid() path.Int8Path {
 	return instance.sid
 }

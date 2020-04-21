@@ -18,7 +18,7 @@ func New() QFilmCategory {
 func newQFilmCategory(alias string) QFilmCategory {
 	q := QFilmCategory{_alias: alias}
 	q.filmId = path.NewInt16Path(q, "film_id")
-	q.categoryId = path.NewBoolPath(q, "category_id")
+	q.categoryId = path.NewInt8Path(q, "category_id")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
 }
@@ -26,7 +26,7 @@ func newQFilmCategory(alias string) QFilmCategory {
 type QFilmCategory struct {
 	_alias     string
 	filmId     path.Int16Path
-	categoryId path.BoolPath
+	categoryId path.Int8Path
 	lastUpdate path.TimePath
 }
 
@@ -62,7 +62,7 @@ func (q QFilmCategory) FilmId() path.Int16Path {
 	return q.filmId
 }
 
-func (q QFilmCategory) CategoryId() path.BoolPath {
+func (q QFilmCategory) CategoryId() path.Int8Path {
 	return q.categoryId
 }
 

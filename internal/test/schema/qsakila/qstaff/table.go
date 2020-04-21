@@ -17,14 +17,14 @@ func New() QStaff {
 
 func newQStaff(alias string) QStaff {
 	q := QStaff{_alias: alias}
-	q.staffId = path.NewBoolPath(q, "staff_id")
+	q.staffId = path.NewInt8Path(q, "staff_id")
 	q.firstName = path.NewStringPath(q, "first_name")
 	q.lastName = path.NewStringPath(q, "last_name")
 	q.addressId = path.NewInt16Path(q, "address_id")
 	q.picture = path.NewUnsupportedPath(q, "picture")
 	q.email = path.NewStringPath(q, "email")
-	q.storeId = path.NewBoolPath(q, "store_id")
-	q.active = path.NewBoolPath(q, "active")
+	q.storeId = path.NewInt8Path(q, "store_id")
+	q.active = path.NewInt8Path(q, "active")
 	q.username = path.NewStringPath(q, "username")
 	q.password = path.NewStringPath(q, "password")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
@@ -33,14 +33,14 @@ func newQStaff(alias string) QStaff {
 
 type QStaff struct {
 	_alias     string
-	staffId    path.BoolPath
+	staffId    path.Int8Path
 	firstName  path.StringPath
 	lastName   path.StringPath
 	addressId  path.Int16Path
 	picture    path.UnsupportedPath
 	email      path.StringPath
-	storeId    path.BoolPath
-	active     path.BoolPath
+	storeId    path.Int8Path
+	active     path.Int8Path
 	username   path.StringPath
 	password   path.StringPath
 	lastUpdate path.TimePath
@@ -82,7 +82,7 @@ func (q QStaff) GetParent() string {
 
 // Column Functions
 
-func (q QStaff) StaffId() path.BoolPath {
+func (q QStaff) StaffId() path.Int8Path {
 	return q.staffId
 }
 
@@ -106,11 +106,11 @@ func (q QStaff) Email() path.StringPath {
 	return q.email
 }
 
-func (q QStaff) StoreId() path.BoolPath {
+func (q QStaff) StoreId() path.Int8Path {
 	return q.storeId
 }
 
-func (q QStaff) Active() path.BoolPath {
+func (q QStaff) Active() path.Int8Path {
 	return q.active
 }
 

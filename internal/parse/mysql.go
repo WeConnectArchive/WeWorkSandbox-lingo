@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-
 	// Include MySQL driver in order to connect to it in NewMySQL
 	_ "github.com/go-sql-driver/mysql"
 
@@ -49,7 +48,7 @@ func (MySQL) DBTypesToPaths() map[string][2]string {
 		"MEDIUMINT": {pkgCorePath, "Int32Path"},
 		"SMALLINT":  {pkgCorePath, "Int16Path"},
 		"TEXT":      {pkgCorePath, "StringPath"},
-		"TINYINT":   {pkgCorePath, "BoolPath"},
+		"TINYINT":   {pkgCorePath, "Int8Path"},
 		"TIMESTAMP": {pkgCorePath, "TimePath"},
 		"VARCHAR":   {pkgCorePath, "StringPath"},
 	}

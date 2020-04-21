@@ -18,7 +18,7 @@ func CustomerId() path.Int16Path {
 	return instance.customerId
 }
 
-func StaffId() path.BoolPath {
+func StaffId() path.Int8Path {
 	return instance.staffId
 }
 

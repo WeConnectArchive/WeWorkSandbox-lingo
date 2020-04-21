@@ -10,7 +10,7 @@ func Q() QLanguage {
 	return instance
 }
 
-func LanguageId() path.BoolPath {
+func LanguageId() path.Int8Path {
 	return instance.languageId
 }
 

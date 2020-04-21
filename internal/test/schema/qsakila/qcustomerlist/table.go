@@ -25,7 +25,7 @@ func newQCustomerList(alias string) QCustomerList {
 	q.city = path.NewStringPath(q, "city")
 	q.country = path.NewStringPath(q, "country")
 	q.notes = path.NewStringPath(q, "notes")
-	q.sid = path.NewBoolPath(q, "SID")
+	q.sid = path.NewInt8Path(q, "SID")
 	return q
 }
 
@@ -39,7 +39,7 @@ type QCustomerList struct {
 	city    path.StringPath
 	country path.StringPath
 	notes   path.StringPath
-	sid     path.BoolPath
+	sid     path.Int8Path
 }
 
 // core.Table Functions
@@ -108,6 +108,6 @@ func (q QCustomerList) Notes() path.StringPath {
 	return q.notes
 }
 
-func (q QCustomerList) Sid() path.BoolPath {
+func (q QCustomerList) Sid() path.Int8Path {
 	return q.sid
 }

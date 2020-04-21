@@ -22,7 +22,7 @@ func newQRental(alias string) QRental {
 	q.inventoryId = path.NewInt32Path(q, "inventory_id")
 	q.customerId = path.NewInt16Path(q, "customer_id")
 	q.returnDate = path.NewTimePath(q, "return_date")
-	q.staffId = path.NewBoolPath(q, "staff_id")
+	q.staffId = path.NewInt8Path(q, "staff_id")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
 }
@@ -34,7 +34,7 @@ type QRental struct {
 	inventoryId path.Int32Path
 	customerId  path.Int16Path
 	returnDate  path.TimePath
-	staffId     path.BoolPath
+	staffId     path.Int8Path
 	lastUpdate  path.TimePath
 }
 
@@ -90,7 +90,7 @@ func (q QRental) ReturnDate() path.TimePath {
 	return q.returnDate
 }
 
-func (q QRental) StaffId() path.BoolPath {
+func (q QRental) StaffId() path.Int8Path {
 	return q.staffId
 }
 

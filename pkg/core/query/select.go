@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
 
@@ -40,7 +41,7 @@ func (s *SelectQuery) OrderBy(exp core.Expression, direction sort.Direction) *Se
 	return s
 }
 
-func (s *SelectQuery) Join(left core.Expression, jt expression.JoinType, on core.Expression) *SelectQuery {
+func (s *SelectQuery) Join(left core.Expression, jt join.Type, on core.Expression) *SelectQuery {
 	s.join = append(s.join, expression.NewJoinOn(left, jt, on))
 	return s
 }

@@ -17,27 +17,27 @@ func New() QStaffList {
 
 func newQStaffList(alias string) QStaffList {
 	q := QStaffList{_alias: alias}
-	q.id = path.NewBoolPath(q, "ID")
+	q.id = path.NewInt8Path(q, "ID")
 	q.name = path.NewStringPath(q, "name")
 	q.address = path.NewStringPath(q, "address")
 	q.zipCode = path.NewStringPath(q, "zip code")
 	q.phone = path.NewStringPath(q, "phone")
 	q.city = path.NewStringPath(q, "city")
 	q.country = path.NewStringPath(q, "country")
-	q.sid = path.NewBoolPath(q, "SID")
+	q.sid = path.NewInt8Path(q, "SID")
 	return q
 }
 
 type QStaffList struct {
 	_alias  string
-	id      path.BoolPath
+	id      path.Int8Path
 	name    path.StringPath
 	address path.StringPath
 	zipCode path.StringPath
 	phone   path.StringPath
 	city    path.StringPath
 	country path.StringPath
-	sid     path.BoolPath
+	sid     path.Int8Path
 }
 
 // core.Table Functions
@@ -73,7 +73,7 @@ func (q QStaffList) GetParent() string {
 
 // Column Functions
 
-func (q QStaffList) Id() path.BoolPath {
+func (q QStaffList) Id() path.Int8Path {
 	return q.id
 }
 
@@ -101,6 +101,6 @@ func (q QStaffList) Country() path.StringPath {
 	return q.country
 }
 
-func (q QStaffList) Sid() path.BoolPath {
+func (q QStaffList) Sid() path.Int8Path {
 	return q.sid
 }

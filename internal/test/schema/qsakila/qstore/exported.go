@@ -10,11 +10,11 @@ func Q() QStore {
 	return instance
 }
 
-func StoreId() path.BoolPath {
+func StoreId() path.Int8Path {
 	return instance.storeId
 }
 
-func ManagerStaffId() path.BoolPath {
+func ManagerStaffId() path.Int8Path {
 	return instance.managerStaffId
 }
 

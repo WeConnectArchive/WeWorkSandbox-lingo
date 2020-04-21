@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 )
 
 // Delete allows deletion of an entity
@@ -29,7 +30,7 @@ func (d DeleteQuery) Where(exp ...core.Expression) *DeleteQuery {
 // LEFT JOIN Employee e
 // ON EmployeeRun=EmployeeNo
 // WHERE w.Company = '1' AND e.Date = '2013-05-06'
-func (d DeleteQuery) Join(left core.Expression, jt expression.JoinType, on core.Expression) *DeleteQuery {
+func (d DeleteQuery) Join(left core.Expression, jt join.Type, on core.Expression) *DeleteQuery {
 	d.join = append(d.join, expression.NewJoinOn(left, jt, on))
 	return &d
 }

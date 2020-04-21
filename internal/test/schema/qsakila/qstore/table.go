@@ -17,8 +17,8 @@ func New() QStore {
 
 func newQStore(alias string) QStore {
 	q := QStore{_alias: alias}
-	q.storeId = path.NewBoolPath(q, "store_id")
-	q.managerStaffId = path.NewBoolPath(q, "manager_staff_id")
+	q.storeId = path.NewInt8Path(q, "store_id")
+	q.managerStaffId = path.NewInt8Path(q, "manager_staff_id")
 	q.addressId = path.NewInt16Path(q, "address_id")
 	q.lastUpdate = path.NewTimePath(q, "last_update")
 	return q
@@ -26,8 +26,8 @@ func newQStore(alias string) QStore {
 
 type QStore struct {
 	_alias         string
-	storeId        path.BoolPath
-	managerStaffId path.BoolPath
+	storeId        path.Int8Path
+	managerStaffId path.Int8Path
 	addressId      path.Int16Path
 	lastUpdate     path.TimePath
 }
@@ -61,11 +61,11 @@ func (q QStore) GetParent() string {
 
 // Column Functions
 
-func (q QStore) StoreId() path.BoolPath {
+func (q QStore) StoreId() path.Int8Path {
 	return q.storeId
 }
 
-func (q QStore) ManagerStaffId() path.BoolPath {
+func (q QStore) ManagerStaffId() path.Int8Path {
 	return q.managerStaffId
 }
 

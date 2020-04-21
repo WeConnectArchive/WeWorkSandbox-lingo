@@ -14,7 +14,7 @@ func FilmId() path.Int16Path {
 	return instance.filmId
 }
 
-func CategoryId() path.BoolPath {
+func CategoryId() path.Int8Path {
 	return instance.categoryId
 }
 

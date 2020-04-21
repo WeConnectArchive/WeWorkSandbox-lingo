@@ -2,6 +2,7 @@ package query_test
 
 import (
 	"errors"
+	join2 "github.com/weworksandbox/lingo/pkg/core/join"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -10,7 +11,6 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
 )
@@ -22,7 +22,7 @@ var _ = Describe("Delete", func() {
 		var (
 			from     core.Table
 			join     [][]core.Expression
-			joinType []expression.JoinType
+			joinType []join2.Type
 			where    []core.Expression
 
 			q *query.DeleteQuery
@@ -42,9 +42,9 @@ var _ = Describe("Delete", func() {
 					NewMockExpression(),
 				},
 			}
-			joinType = []expression.JoinType{
-				expression.LeftJoin,
-				expression.RightJoin,
+			joinType = []join2.Type{
+				join2.Left,
+				join2.Right,
 			}
 			pegomock.When(join[0][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("join[0][0].sql"), nil)
 			pegomock.When(join[0][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("join[0][1].sql"), nil)
