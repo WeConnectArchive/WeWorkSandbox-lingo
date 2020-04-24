@@ -24,10 +24,10 @@ const (
 
 var (
 	testGenerateSakilaDC = filepath.Join(testGenerateSakilaDir, dockerComposeYml)
-	// allDirs has the current directory `.` plus all subsequent directories `./...`.
+	// allFiles has the current directory `.` plus all subsequent directories `./...`.
 	// Note: `...` does not work as it tries to do EVERYTHING including random GOPATH stuff.
-	allDirs = []string{
-		".",
+	allFiles = append(allPkgs, ".")
+	allPkgs  = []string{
 		"./...",
 	}
 	codePaths = []string{
@@ -79,7 +79,7 @@ func (Gen) Go() error {
 func GoFmt() error {
 	if err := runCmd("go", "fmt",
 		debug("-v"),
-	)(allDirs); err != nil {
+	)(allFiles); err != nil {
 		return err
 	}
 	return nil
@@ -89,7 +89,7 @@ type Test mg.Namespace
 
 // Runs both `test:unit` and `test:acceptance` in parallel
 func (Test) All() error {
-	mg.Deps(Test.Unit, Test.Functional)
+	mg.Deps(Test.Unit, Test.Functional, Test.Benchmark)
 	return nil
 }
 
@@ -124,7 +124,7 @@ func (Test) Benchmark() error {
 	if err := runCmd("go", "test",
 		"-bench", "Benchmark.",
 		"-benchmem",
-	)(allDirs); err != nil {
+	)(allPkgs); err != nil {
 		return err
 	}
 	return nil
