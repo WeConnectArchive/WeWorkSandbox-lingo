@@ -10,102 +10,102 @@ func Q() QPartitions {
 	return instance
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func PartitionName() path.StringPath {
+func PartitionName() path.String {
 	return instance.partitionName
 }
 
-func SubpartitionName() path.StringPath {
+func SubpartitionName() path.String {
 	return instance.subpartitionName
 }
 
-func PartitionOrdinalPosition() path.Int64Path {
+func PartitionOrdinalPosition() path.Int64 {
 	return instance.partitionOrdinalPosition
 }
 
-func SubpartitionOrdinalPosition() path.Int64Path {
+func SubpartitionOrdinalPosition() path.Int64 {
 	return instance.subpartitionOrdinalPosition
 }
 
-func PartitionMethod() path.StringPath {
+func PartitionMethod() path.String {
 	return instance.partitionMethod
 }
 
-func SubpartitionMethod() path.StringPath {
+func SubpartitionMethod() path.String {
 	return instance.subpartitionMethod
 }
 
-func PartitionExpression() path.StringPath {
+func PartitionExpression() path.String {
 	return instance.partitionExpression
 }
 
-func SubpartitionExpression() path.StringPath {
+func SubpartitionExpression() path.String {
 	return instance.subpartitionExpression
 }
 
-func PartitionDescription() path.StringPath {
+func PartitionDescription() path.String {
 	return instance.partitionDescription
 }
 
-func TableRows() path.Int64Path {
+func TableRows() path.Int64 {
 	return instance.tableRows
 }
 
-func AvgRowLength() path.Int64Path {
+func AvgRowLength() path.Int64 {
 	return instance.avgRowLength
 }
 
-func DataLength() path.Int64Path {
+func DataLength() path.Int64 {
 	return instance.dataLength
 }
 
-func MaxDataLength() path.Int64Path {
+func MaxDataLength() path.Int64 {
 	return instance.maxDataLength
 }
 
-func IndexLength() path.Int64Path {
+func IndexLength() path.Int64 {
 	return instance.indexLength
 }
 
-func DataFree() path.Int64Path {
+func DataFree() path.Int64 {
 	return instance.dataFree
 }
 
-func CreateTime() path.TimePath {
+func CreateTime() path.Time {
 	return instance.createTime
 }
 
-func UpdateTime() path.TimePath {
+func UpdateTime() path.Time {
 	return instance.updateTime
 }
 
-func CheckTime() path.TimePath {
+func CheckTime() path.Time {
 	return instance.checkTime
 }
 
-func Checksum() path.Int64Path {
+func Checksum() path.Int64 {
 	return instance.checksum
 }
 
-func PartitionComment() path.StringPath {
+func PartitionComment() path.String {
 	return instance.partitionComment
 }
 
-func Nodegroup() path.StringPath {
+func Nodegroup() path.String {
 	return instance.nodegroup
 }
 
-func TablespaceName() path.StringPath {
+func TablespaceName() path.String {
 	return instance.tablespaceName
 }

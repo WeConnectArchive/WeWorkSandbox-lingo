@@ -21,7 +21,7 @@ var _ = Describe("Int8", func() {
 			name  string
 			alias string
 
-			p path.Int8Path
+			p path.Int8
 		)
 
 		BeforeEach(func() {
@@ -34,8 +34,8 @@ var _ = Describe("Int8", func() {
 			p = path.NewInt8PathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `Int8Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Int8Path{}))
+		It("Returns a `Int8`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Int8{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Int8", func() {
 			e    core.Table
 			name string
 
-			p path.Int8Path
+			p path.Int8
 		)
 
 		BeforeEach(func() {
@@ -69,8 +69,8 @@ var _ = Describe("Int8", func() {
 			p = path.NewInt8Path(e, name)
 		})
 
-		It("Returns a `Int8Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Int8Path{}))
+		It("Returns a `Int8`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Int8{}))
 		})
 
 		It("Has the given parent table", func() {

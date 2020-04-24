@@ -10,10 +10,10 @@ func Q() QSalesByFilmCategory {
 	return instance
 }
 
-func Category() path.StringPath {
+func Category() path.String {
 	return instance.category
 }
 
-func TotalSales() path.BinaryPath {
+func TotalSales() path.Binary {
 	return instance.totalSales
 }

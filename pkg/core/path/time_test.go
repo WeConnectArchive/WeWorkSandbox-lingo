@@ -21,7 +21,7 @@ var _ = Describe("Time", func() {
 			name  string
 			alias string
 
-			p path.TimePath
+			p path.Time
 		)
 
 		BeforeEach(func() {
@@ -34,8 +34,8 @@ var _ = Describe("Time", func() {
 			p = path.NewTimePathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `TimePath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.TimePath{}))
+		It("Returns a `Time`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Time{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Time", func() {
 			e    core.Table
 			name string
 
-			p path.TimePath
+			p path.Time
 		)
 
 		BeforeEach(func() {
@@ -69,8 +69,8 @@ var _ = Describe("Time", func() {
 			p = path.NewTimePath(e, name)
 		})
 
-		It("Returns a `TimePath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.TimePath{}))
+		It("Returns a `Time`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Time{}))
 		})
 
 		It("Has the given parent table", func() {

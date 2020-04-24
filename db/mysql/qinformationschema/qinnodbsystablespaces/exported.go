@@ -10,46 +10,46 @@ func Q() QInnodbSysTablespaces {
 	return instance
 }
 
-func Space() path.IntPath {
+func Space() path.Int {
 	return instance.space
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func Flag() path.IntPath {
+func Flag() path.Int {
 	return instance.flag
 }
 
-func FileFormat() path.StringPath {
+func FileFormat() path.String {
 	return instance.fileFormat
 }
 
-func RowFormat() path.StringPath {
+func RowFormat() path.String {
 	return instance.rowFormat
 }
 
-func PageSize() path.IntPath {
+func PageSize() path.Int {
 	return instance.pageSize
 }
 
-func ZipPageSize() path.IntPath {
+func ZipPageSize() path.Int {
 	return instance.zipPageSize
 }
 
-func SpaceType() path.StringPath {
+func SpaceType() path.String {
 	return instance.spaceType
 }
 
-func FsBlockSize() path.IntPath {
+func FsBlockSize() path.Int {
 	return instance.fsBlockSize
 }
 
-func FileSize() path.Int64Path {
+func FileSize() path.Int64 {
 	return instance.fileSize
 }
 
-func AllocatedSize() path.Int64Path {
+func AllocatedSize() path.Int64 {
 	return instance.allocatedSize
 }

@@ -30,14 +30,14 @@ func newQNicerButSlowerFilmList(alias string) QNicerButSlowerFilmList {
 
 type QNicerButSlowerFilmList struct {
 	_alias      string
-	fid         path.Int16Path
-	title       path.StringPath
-	description path.StringPath
-	category    path.StringPath
-	price       path.BinaryPath
-	length      path.Int16Path
-	rating      path.StringPath
-	actors      path.StringPath
+	fid         path.Int16
+	title       path.String
+	description path.String
+	category    path.String
+	price       path.Binary
+	length      path.Int16
+	rating      path.String
+	actors      path.String
 }
 
 // core.Table Functions
@@ -73,34 +73,34 @@ func (q QNicerButSlowerFilmList) GetParent() string {
 
 // Column Functions
 
-func (q QNicerButSlowerFilmList) Fid() path.Int16Path {
+func (q QNicerButSlowerFilmList) Fid() path.Int16 {
 	return q.fid
 }
 
-func (q QNicerButSlowerFilmList) Title() path.StringPath {
+func (q QNicerButSlowerFilmList) Title() path.String {
 	return q.title
 }
 
-func (q QNicerButSlowerFilmList) Description() path.StringPath {
+func (q QNicerButSlowerFilmList) Description() path.String {
 	return q.description
 }
 
-func (q QNicerButSlowerFilmList) Category() path.StringPath {
+func (q QNicerButSlowerFilmList) Category() path.String {
 	return q.category
 }
 
-func (q QNicerButSlowerFilmList) Price() path.BinaryPath {
+func (q QNicerButSlowerFilmList) Price() path.Binary {
 	return q.price
 }
 
-func (q QNicerButSlowerFilmList) Length() path.Int16Path {
+func (q QNicerButSlowerFilmList) Length() path.Int16 {
 	return q.length
 }
 
-func (q QNicerButSlowerFilmList) Rating() path.StringPath {
+func (q QNicerButSlowerFilmList) Rating() path.String {
 	return q.rating
 }
 
-func (q QNicerButSlowerFilmList) Actors() path.StringPath {
+func (q QNicerButSlowerFilmList) Actors() path.String {
 	return q.actors
 }

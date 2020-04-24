@@ -10,10 +10,10 @@ func Q() QInnodbSysDatafiles {
 	return instance
 }
 
-func Space() path.IntPath {
+func Space() path.Int {
 	return instance.space
 }
 
-func Path() path.StringPath {
+func Path() path.String {
 	return instance.path
 }

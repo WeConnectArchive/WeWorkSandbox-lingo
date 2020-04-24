@@ -10,34 +10,34 @@ func Q() QInnodbSysIndexes {
 	return instance
 }
 
-func IndexId() path.Int64Path {
+func IndexId() path.Int64 {
 	return instance.indexId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func TableId() path.Int64Path {
+func TableId() path.Int64 {
 	return instance.tableId
 }
 
-func Type() path.IntPath {
+func Type() path.Int {
 	return instance.__type
 }
 
-func NFields() path.IntPath {
+func NFields() path.Int {
 	return instance.nFields
 }
 
-func PageNo() path.IntPath {
+func PageNo() path.Int {
 	return instance.pageNo
 }
 
-func Space() path.IntPath {
+func Space() path.Int {
 	return instance.space
 }
 
-func MergeThreshold() path.IntPath {
+func MergeThreshold() path.Int {
 	return instance.mergeThreshold
 }

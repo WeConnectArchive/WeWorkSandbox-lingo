@@ -10,126 +10,126 @@ func Q() QRoutines {
 	return instance
 }
 
-func SpecificName() path.StringPath {
+func SpecificName() path.String {
 	return instance.specificName
 }
 
-func RoutineCatalog() path.StringPath {
+func RoutineCatalog() path.String {
 	return instance.routineCatalog
 }
 
-func RoutineSchema() path.StringPath {
+func RoutineSchema() path.String {
 	return instance.routineSchema
 }
 
-func RoutineName() path.StringPath {
+func RoutineName() path.String {
 	return instance.routineName
 }
 
-func RoutineType() path.StringPath {
+func RoutineType() path.String {
 	return instance.routineType
 }
 
-func DataType() path.StringPath {
+func DataType() path.String {
 	return instance.dataType
 }
 
-func CharacterMaximumLength() path.IntPath {
+func CharacterMaximumLength() path.Int {
 	return instance.characterMaximumLength
 }
 
-func CharacterOctetLength() path.IntPath {
+func CharacterOctetLength() path.Int {
 	return instance.characterOctetLength
 }
 
-func NumericPrecision() path.Int64Path {
+func NumericPrecision() path.Int64 {
 	return instance.numericPrecision
 }
 
-func NumericScale() path.IntPath {
+func NumericScale() path.Int {
 	return instance.numericScale
 }
 
-func DatetimePrecision() path.Int64Path {
+func DatetimePrecision() path.Int64 {
 	return instance.datetimePrecision
 }
 
-func CharacterSetName() path.StringPath {
+func CharacterSetName() path.String {
 	return instance.characterSetName
 }
 
-func CollationName() path.StringPath {
+func CollationName() path.String {
 	return instance.collationName
 }
 
-func DtdIdentifier() path.StringPath {
+func DtdIdentifier() path.String {
 	return instance.dtdIdentifier
 }
 
-func RoutineBody() path.StringPath {
+func RoutineBody() path.String {
 	return instance.routineBody
 }
 
-func RoutineDefinition() path.StringPath {
+func RoutineDefinition() path.String {
 	return instance.routineDefinition
 }
 
-func ExternalName() path.StringPath {
+func ExternalName() path.String {
 	return instance.externalName
 }
 
-func ExternalLanguage() path.StringPath {
+func ExternalLanguage() path.String {
 	return instance.externalLanguage
 }
 
-func ParameterStyle() path.StringPath {
+func ParameterStyle() path.String {
 	return instance.parameterStyle
 }
 
-func IsDeterministic() path.StringPath {
+func IsDeterministic() path.String {
 	return instance.isDeterministic
 }
 
-func SqlDataAccess() path.StringPath {
+func SqlDataAccess() path.String {
 	return instance.sqlDataAccess
 }
 
-func SqlPath() path.StringPath {
+func SqlPath() path.String {
 	return instance.sqlPath
 }
 
-func SecurityType() path.StringPath {
+func SecurityType() path.String {
 	return instance.securityType
 }
 
-func Created() path.TimePath {
+func Created() path.Time {
 	return instance.created
 }
 
-func LastAltered() path.TimePath {
+func LastAltered() path.Time {
 	return instance.lastAltered
 }
 
-func SqlMode() path.StringPath {
+func SqlMode() path.String {
 	return instance.sqlMode
 }
 
-func RoutineComment() path.StringPath {
+func RoutineComment() path.String {
 	return instance.routineComment
 }
 
-func Definer() path.StringPath {
+func Definer() path.String {
 	return instance.definer
 }
 
-func CharacterSetClient() path.StringPath {
+func CharacterSetClient() path.String {
 	return instance.characterSetClient
 }
 
-func CollationConnection() path.StringPath {
+func CollationConnection() path.String {
 	return instance.collationConnection
 }
 
-func DatabaseCollation() path.StringPath {
+func DatabaseCollation() path.String {
 	return instance.databaseCollation
 }

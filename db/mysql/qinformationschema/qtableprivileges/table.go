@@ -28,12 +28,12 @@ func newQTablePrivileges(alias string) QTablePrivileges {
 
 type QTablePrivileges struct {
 	_alias        string
-	grantee       path.StringPath
-	tableCatalog  path.StringPath
-	tableSchema   path.StringPath
-	tableName     path.StringPath
-	privilegeType path.StringPath
-	isGrantable   path.StringPath
+	grantee       path.String
+	tableCatalog  path.String
+	tableSchema   path.String
+	tableName     path.String
+	privilegeType path.String
+	isGrantable   path.String
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QTablePrivileges) GetParent() string {
 
 // Column Functions
 
-func (q QTablePrivileges) Grantee() path.StringPath {
+func (q QTablePrivileges) Grantee() path.String {
 	return q.grantee
 }
 
-func (q QTablePrivileges) TableCatalog() path.StringPath {
+func (q QTablePrivileges) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QTablePrivileges) TableSchema() path.StringPath {
+func (q QTablePrivileges) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QTablePrivileges) TableName() path.StringPath {
+func (q QTablePrivileges) TableName() path.String {
 	return q.tableName
 }
 
-func (q QTablePrivileges) PrivilegeType() path.StringPath {
+func (q QTablePrivileges) PrivilegeType() path.String {
 	return q.privilegeType
 }
 
-func (q QTablePrivileges) IsGrantable() path.StringPath {
+func (q QTablePrivileges) IsGrantable() path.String {
 	return q.isGrantable
 }

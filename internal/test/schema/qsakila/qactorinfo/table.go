@@ -26,10 +26,10 @@ func newQActorInfo(alias string) QActorInfo {
 
 type QActorInfo struct {
 	_alias    string
-	actorId   path.Int16Path
-	firstName path.StringPath
-	lastName  path.StringPath
-	filmInfo  path.StringPath
+	actorId   path.Int16
+	firstName path.String
+	lastName  path.String
+	filmInfo  path.String
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QActorInfo) GetParent() string {
 
 // Column Functions
 
-func (q QActorInfo) ActorId() path.Int16Path {
+func (q QActorInfo) ActorId() path.Int16 {
 	return q.actorId
 }
 
-func (q QActorInfo) FirstName() path.StringPath {
+func (q QActorInfo) FirstName() path.String {
 	return q.firstName
 }
 
-func (q QActorInfo) LastName() path.StringPath {
+func (q QActorInfo) LastName() path.String {
 	return q.lastName
 }
 
-func (q QActorInfo) FilmInfo() path.StringPath {
+func (q QActorInfo) FilmInfo() path.String {
 	return q.filmInfo
 }

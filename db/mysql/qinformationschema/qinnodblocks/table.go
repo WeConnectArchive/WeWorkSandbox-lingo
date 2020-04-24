@@ -32,16 +32,16 @@ func newQInnodbLocks(alias string) QInnodbLocks {
 
 type QInnodbLocks struct {
 	_alias    string
-	lockId    path.StringPath
-	lockTrxId path.StringPath
-	lockMode  path.StringPath
-	lockType  path.StringPath
-	lockTable path.StringPath
-	lockIndex path.StringPath
-	lockSpace path.Int64Path
-	lockPage  path.Int64Path
-	lockRec   path.Int64Path
-	lockData  path.StringPath
+	lockId    path.String
+	lockTrxId path.String
+	lockMode  path.String
+	lockType  path.String
+	lockTable path.String
+	lockIndex path.String
+	lockSpace path.Int64
+	lockPage  path.Int64
+	lockRec   path.Int64
+	lockData  path.String
 }
 
 // core.Table Functions
@@ -79,42 +79,42 @@ func (q QInnodbLocks) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbLocks) LockId() path.StringPath {
+func (q QInnodbLocks) LockId() path.String {
 	return q.lockId
 }
 
-func (q QInnodbLocks) LockTrxId() path.StringPath {
+func (q QInnodbLocks) LockTrxId() path.String {
 	return q.lockTrxId
 }
 
-func (q QInnodbLocks) LockMode() path.StringPath {
+func (q QInnodbLocks) LockMode() path.String {
 	return q.lockMode
 }
 
-func (q QInnodbLocks) LockType() path.StringPath {
+func (q QInnodbLocks) LockType() path.String {
 	return q.lockType
 }
 
-func (q QInnodbLocks) LockTable() path.StringPath {
+func (q QInnodbLocks) LockTable() path.String {
 	return q.lockTable
 }
 
-func (q QInnodbLocks) LockIndex() path.StringPath {
+func (q QInnodbLocks) LockIndex() path.String {
 	return q.lockIndex
 }
 
-func (q QInnodbLocks) LockSpace() path.Int64Path {
+func (q QInnodbLocks) LockSpace() path.Int64 {
 	return q.lockSpace
 }
 
-func (q QInnodbLocks) LockPage() path.Int64Path {
+func (q QInnodbLocks) LockPage() path.Int64 {
 	return q.lockPage
 }
 
-func (q QInnodbLocks) LockRec() path.Int64Path {
+func (q QInnodbLocks) LockRec() path.Int64 {
 	return q.lockRec
 }
 
-func (q QInnodbLocks) LockData() path.StringPath {
+func (q QInnodbLocks) LockData() path.String {
 	return q.lockData
 }

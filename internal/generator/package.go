@@ -26,11 +26,11 @@ func GeneratePackageMembers(info TableInfo, columns []*column) (string, error) {
 
 // createColumnFunctions makes each columns Global / Exported Path function
 //
-// func UUID() path.BinaryPath {
+// func UUID() path.Binary {
 //    return q.uuid
 // }
 //
-// func Name() path.StringPath {
+// func Name() path.String {
 //    return q.name
 // }
 func createExportedColumnFunctions(cols []*column) <-chan *jen.Statement {

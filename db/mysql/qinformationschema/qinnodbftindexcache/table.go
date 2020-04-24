@@ -28,12 +28,12 @@ func newQInnodbFtIndexCache(alias string) QInnodbFtIndexCache {
 
 type QInnodbFtIndexCache struct {
 	_alias     string
-	word       path.StringPath
-	firstDocId path.Int64Path
-	lastDocId  path.Int64Path
-	docCount   path.Int64Path
-	docId      path.Int64Path
-	position   path.Int64Path
+	word       path.String
+	firstDocId path.Int64
+	lastDocId  path.Int64
+	docCount   path.Int64
+	docId      path.Int64
+	position   path.Int64
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QInnodbFtIndexCache) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbFtIndexCache) Word() path.StringPath {
+func (q QInnodbFtIndexCache) Word() path.String {
 	return q.word
 }
 
-func (q QInnodbFtIndexCache) FirstDocId() path.Int64Path {
+func (q QInnodbFtIndexCache) FirstDocId() path.Int64 {
 	return q.firstDocId
 }
 
-func (q QInnodbFtIndexCache) LastDocId() path.Int64Path {
+func (q QInnodbFtIndexCache) LastDocId() path.Int64 {
 	return q.lastDocId
 }
 
-func (q QInnodbFtIndexCache) DocCount() path.Int64Path {
+func (q QInnodbFtIndexCache) DocCount() path.Int64 {
 	return q.docCount
 }
 
-func (q QInnodbFtIndexCache) DocId() path.Int64Path {
+func (q QInnodbFtIndexCache) DocId() path.Int64 {
 	return q.docId
 }
 
-func (q QInnodbFtIndexCache) Position() path.Int64Path {
+func (q QInnodbFtIndexCache) Position() path.Int64 {
 	return q.position
 }

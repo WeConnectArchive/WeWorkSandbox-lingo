@@ -19,7 +19,7 @@ var _ = Describe("JSON", func() {
 			name  string
 			alias string
 
-			p path.JSONPath
+			p path.JSON
 		)
 
 		BeforeEach(func() {
@@ -32,8 +32,8 @@ var _ = Describe("JSON", func() {
 			p = path.NewJSONPathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `JSONPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.JSONPath{}))
+		It("Returns a `JSON`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.JSON{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -55,7 +55,7 @@ var _ = Describe("JSON", func() {
 			e    core.Table
 			name string
 
-			p path.JSONPath
+			p path.JSON
 		)
 
 		BeforeEach(func() {
@@ -67,8 +67,8 @@ var _ = Describe("JSON", func() {
 			p = path.NewJSONPath(e, name)
 		})
 
-		It("Returns a `JSONPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.JSONPath{}))
+		It("Returns a `JSON`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.JSON{}))
 		})
 
 		It("Has the given parent table", func() {

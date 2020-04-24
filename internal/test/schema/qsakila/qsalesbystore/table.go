@@ -25,9 +25,9 @@ func newQSalesByStore(alias string) QSalesByStore {
 
 type QSalesByStore struct {
 	_alias     string
-	store      path.StringPath
-	manager    path.StringPath
-	totalSales path.BinaryPath
+	store      path.String
+	manager    path.String
+	totalSales path.Binary
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QSalesByStore) GetParent() string {
 
 // Column Functions
 
-func (q QSalesByStore) Store() path.StringPath {
+func (q QSalesByStore) Store() path.String {
 	return q.store
 }
 
-func (q QSalesByStore) Manager() path.StringPath {
+func (q QSalesByStore) Manager() path.String {
 	return q.manager
 }
 
-func (q QSalesByStore) TotalSales() path.BinaryPath {
+func (q QSalesByStore) TotalSales() path.Binary {
 	return q.totalSales
 }

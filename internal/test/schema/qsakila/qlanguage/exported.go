@@ -10,14 +10,14 @@ func Q() QLanguage {
 	return instance
 }
 
-func LanguageId() path.Int8Path {
+func LanguageId() path.Int8 {
 	return instance.languageId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

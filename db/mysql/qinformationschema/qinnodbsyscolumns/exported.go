@@ -10,26 +10,26 @@ func Q() QInnodbSysColumns {
 	return instance
 }
 
-func TableId() path.Int64Path {
+func TableId() path.Int64 {
 	return instance.tableId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func Pos() path.Int64Path {
+func Pos() path.Int64 {
 	return instance.pos
 }
 
-func Mtype() path.IntPath {
+func Mtype() path.Int {
 	return instance.mtype
 }
 
-func Prtype() path.IntPath {
+func Prtype() path.Int {
 	return instance.prtype
 }
 
-func Len() path.IntPath {
+func Len() path.Int {
 	return instance.len
 }

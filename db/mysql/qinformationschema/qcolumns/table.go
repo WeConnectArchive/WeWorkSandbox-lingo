@@ -43,27 +43,27 @@ func newQColumns(alias string) QColumns {
 
 type QColumns struct {
 	_alias                 string
-	tableCatalog           path.StringPath
-	tableSchema            path.StringPath
-	tableName              path.StringPath
-	columnName             path.StringPath
-	ordinalPosition        path.Int64Path
-	columnDefault          path.StringPath
-	isNullable             path.StringPath
-	dataType               path.StringPath
-	characterMaximumLength path.Int64Path
-	characterOctetLength   path.Int64Path
-	numericPrecision       path.Int64Path
-	numericScale           path.Int64Path
-	datetimePrecision      path.Int64Path
-	characterSetName       path.StringPath
-	collationName          path.StringPath
-	columnType             path.StringPath
-	columnKey              path.StringPath
-	extra                  path.StringPath
-	privileges             path.StringPath
-	columnComment          path.StringPath
-	generationExpression   path.StringPath
+	tableCatalog           path.String
+	tableSchema            path.String
+	tableName              path.String
+	columnName             path.String
+	ordinalPosition        path.Int64
+	columnDefault          path.String
+	isNullable             path.String
+	dataType               path.String
+	characterMaximumLength path.Int64
+	characterOctetLength   path.Int64
+	numericPrecision       path.Int64
+	numericScale           path.Int64
+	datetimePrecision      path.Int64
+	characterSetName       path.String
+	collationName          path.String
+	columnType             path.String
+	columnKey              path.String
+	extra                  path.String
+	privileges             path.String
+	columnComment          path.String
+	generationExpression   path.String
 }
 
 // core.Table Functions
@@ -112,86 +112,86 @@ func (q QColumns) GetParent() string {
 
 // Column Functions
 
-func (q QColumns) TableCatalog() path.StringPath {
+func (q QColumns) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QColumns) TableSchema() path.StringPath {
+func (q QColumns) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QColumns) TableName() path.StringPath {
+func (q QColumns) TableName() path.String {
 	return q.tableName
 }
 
-func (q QColumns) ColumnName() path.StringPath {
+func (q QColumns) ColumnName() path.String {
 	return q.columnName
 }
 
-func (q QColumns) OrdinalPosition() path.Int64Path {
+func (q QColumns) OrdinalPosition() path.Int64 {
 	return q.ordinalPosition
 }
 
-func (q QColumns) ColumnDefault() path.StringPath {
+func (q QColumns) ColumnDefault() path.String {
 	return q.columnDefault
 }
 
-func (q QColumns) IsNullable() path.StringPath {
+func (q QColumns) IsNullable() path.String {
 	return q.isNullable
 }
 
-func (q QColumns) DataType() path.StringPath {
+func (q QColumns) DataType() path.String {
 	return q.dataType
 }
 
-func (q QColumns) CharacterMaximumLength() path.Int64Path {
+func (q QColumns) CharacterMaximumLength() path.Int64 {
 	return q.characterMaximumLength
 }
 
-func (q QColumns) CharacterOctetLength() path.Int64Path {
+func (q QColumns) CharacterOctetLength() path.Int64 {
 	return q.characterOctetLength
 }
 
-func (q QColumns) NumericPrecision() path.Int64Path {
+func (q QColumns) NumericPrecision() path.Int64 {
 	return q.numericPrecision
 }
 
-func (q QColumns) NumericScale() path.Int64Path {
+func (q QColumns) NumericScale() path.Int64 {
 	return q.numericScale
 }
 
-func (q QColumns) DatetimePrecision() path.Int64Path {
+func (q QColumns) DatetimePrecision() path.Int64 {
 	return q.datetimePrecision
 }
 
-func (q QColumns) CharacterSetName() path.StringPath {
+func (q QColumns) CharacterSetName() path.String {
 	return q.characterSetName
 }
 
-func (q QColumns) CollationName() path.StringPath {
+func (q QColumns) CollationName() path.String {
 	return q.collationName
 }
 
-func (q QColumns) ColumnType() path.StringPath {
+func (q QColumns) ColumnType() path.String {
 	return q.columnType
 }
 
-func (q QColumns) ColumnKey() path.StringPath {
+func (q QColumns) ColumnKey() path.String {
 	return q.columnKey
 }
 
-func (q QColumns) Extra() path.StringPath {
+func (q QColumns) Extra() path.String {
 	return q.extra
 }
 
-func (q QColumns) Privileges() path.StringPath {
+func (q QColumns) Privileges() path.String {
 	return q.privileges
 }
 
-func (q QColumns) ColumnComment() path.StringPath {
+func (q QColumns) ColumnComment() path.String {
 	return q.columnComment
 }
 
-func (q QColumns) GenerationExpression() path.StringPath {
+func (q QColumns) GenerationExpression() path.String {
 	return q.generationExpression
 }

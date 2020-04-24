@@ -10,18 +10,18 @@ func Q() QInnodbLockWaits {
 	return instance
 }
 
-func RequestingTrxId() path.StringPath {
+func RequestingTrxId() path.String {
 	return instance.requestingTrxId
 }
 
-func RequestedLockId() path.StringPath {
+func RequestedLockId() path.String {
 	return instance.requestedLockId
 }
 
-func BlockingTrxId() path.StringPath {
+func BlockingTrxId() path.String {
 	return instance.blockingTrxId
 }
 
-func BlockingLockId() path.StringPath {
+func BlockingLockId() path.String {
 	return instance.blockingLockId
 }

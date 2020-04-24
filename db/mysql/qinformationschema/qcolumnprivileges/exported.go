@@ -10,30 +10,30 @@ func Q() QColumnPrivileges {
 	return instance
 }
 
-func Grantee() path.StringPath {
+func Grantee() path.String {
 	return instance.grantee
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func ColumnName() path.StringPath {
+func ColumnName() path.String {
 	return instance.columnName
 }
 
-func PrivilegeType() path.StringPath {
+func PrivilegeType() path.String {
 	return instance.privilegeType
 }
 
-func IsGrantable() path.StringPath {
+func IsGrantable() path.String {
 	return instance.isGrantable
 }

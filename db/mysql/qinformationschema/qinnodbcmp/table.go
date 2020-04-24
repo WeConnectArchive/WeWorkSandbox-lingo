@@ -28,12 +28,12 @@ func newQInnodbCmp(alias string) QInnodbCmp {
 
 type QInnodbCmp struct {
 	_alias         string
-	pageSize       path.IntPath
-	compressOps    path.IntPath
-	compressOpsOk  path.IntPath
-	compressTime   path.IntPath
-	uncompressOps  path.IntPath
-	uncompressTime path.IntPath
+	pageSize       path.Int
+	compressOps    path.Int
+	compressOpsOk  path.Int
+	compressTime   path.Int
+	uncompressOps  path.Int
+	uncompressTime path.Int
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QInnodbCmp) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbCmp) PageSize() path.IntPath {
+func (q QInnodbCmp) PageSize() path.Int {
 	return q.pageSize
 }
 
-func (q QInnodbCmp) CompressOps() path.IntPath {
+func (q QInnodbCmp) CompressOps() path.Int {
 	return q.compressOps
 }
 
-func (q QInnodbCmp) CompressOpsOk() path.IntPath {
+func (q QInnodbCmp) CompressOpsOk() path.Int {
 	return q.compressOpsOk
 }
 
-func (q QInnodbCmp) CompressTime() path.IntPath {
+func (q QInnodbCmp) CompressTime() path.Int {
 	return q.compressTime
 }
 
-func (q QInnodbCmp) UncompressOps() path.IntPath {
+func (q QInnodbCmp) UncompressOps() path.Int {
 	return q.uncompressOps
 }
 
-func (q QInnodbCmp) UncompressTime() path.IntPath {
+func (q QInnodbCmp) UncompressTime() path.Int {
 	return q.uncompressTime
 }

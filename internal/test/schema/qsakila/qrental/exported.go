@@ -10,30 +10,30 @@ func Q() QRental {
 	return instance
 }
 
-func RentalId() path.IntPath {
+func RentalId() path.Int {
 	return instance.rentalId
 }
 
-func RentalDate() path.TimePath {
+func RentalDate() path.Time {
 	return instance.rentalDate
 }
 
-func InventoryId() path.Int32Path {
+func InventoryId() path.Int32 {
 	return instance.inventoryId
 }
 
-func CustomerId() path.Int16Path {
+func CustomerId() path.Int16 {
 	return instance.customerId
 }
 
-func ReturnDate() path.TimePath {
+func ReturnDate() path.Time {
 	return instance.returnDate
 }
 
-func StaffId() path.Int8Path {
+func StaffId() path.Int8 {
 	return instance.staffId
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

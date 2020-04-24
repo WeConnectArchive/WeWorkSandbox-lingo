@@ -10,26 +10,26 @@ func Q() QInnodbFtIndexTable {
 	return instance
 }
 
-func Word() path.StringPath {
+func Word() path.String {
 	return instance.word
 }
 
-func FirstDocId() path.Int64Path {
+func FirstDocId() path.Int64 {
 	return instance.firstDocId
 }
 
-func LastDocId() path.Int64Path {
+func LastDocId() path.Int64 {
 	return instance.lastDocId
 }
 
-func DocCount() path.Int64Path {
+func DocCount() path.Int64 {
 	return instance.docCount
 }
 
-func DocId() path.Int64Path {
+func DocId() path.Int64 {
 	return instance.docId
 }
 
-func Position() path.Int64Path {
+func Position() path.Int64 {
 	return instance.position
 }

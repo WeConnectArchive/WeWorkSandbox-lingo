@@ -10,22 +10,22 @@ func Q() QSchemata {
 	return instance
 }
 
-func CatalogName() path.StringPath {
+func CatalogName() path.String {
 	return instance.catalogName
 }
 
-func SchemaName() path.StringPath {
+func SchemaName() path.String {
 	return instance.schemaName
 }
 
-func DefaultCharacterSetName() path.StringPath {
+func DefaultCharacterSetName() path.String {
 	return instance.defaultCharacterSetName
 }
 
-func DefaultCollationName() path.StringPath {
+func DefaultCollationName() path.String {
 	return instance.defaultCollationName
 }
 
-func SqlPath() path.StringPath {
+func SqlPath() path.String {
 	return instance.sqlPath
 }

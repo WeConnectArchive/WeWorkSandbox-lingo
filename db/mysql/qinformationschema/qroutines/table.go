@@ -53,37 +53,37 @@ func newQRoutines(alias string) QRoutines {
 
 type QRoutines struct {
 	_alias                 string
-	specificName           path.StringPath
-	routineCatalog         path.StringPath
-	routineSchema          path.StringPath
-	routineName            path.StringPath
-	routineType            path.StringPath
-	dataType               path.StringPath
-	characterMaximumLength path.IntPath
-	characterOctetLength   path.IntPath
-	numericPrecision       path.Int64Path
-	numericScale           path.IntPath
-	datetimePrecision      path.Int64Path
-	characterSetName       path.StringPath
-	collationName          path.StringPath
-	dtdIdentifier          path.StringPath
-	routineBody            path.StringPath
-	routineDefinition      path.StringPath
-	externalName           path.StringPath
-	externalLanguage       path.StringPath
-	parameterStyle         path.StringPath
-	isDeterministic        path.StringPath
-	sqlDataAccess          path.StringPath
-	sqlPath                path.StringPath
-	securityType           path.StringPath
-	created                path.TimePath
-	lastAltered            path.TimePath
-	sqlMode                path.StringPath
-	routineComment         path.StringPath
-	definer                path.StringPath
-	characterSetClient     path.StringPath
-	collationConnection    path.StringPath
-	databaseCollation      path.StringPath
+	specificName           path.String
+	routineCatalog         path.String
+	routineSchema          path.String
+	routineName            path.String
+	routineType            path.String
+	dataType               path.String
+	characterMaximumLength path.Int
+	characterOctetLength   path.Int
+	numericPrecision       path.Int64
+	numericScale           path.Int
+	datetimePrecision      path.Int64
+	characterSetName       path.String
+	collationName          path.String
+	dtdIdentifier          path.String
+	routineBody            path.String
+	routineDefinition      path.String
+	externalName           path.String
+	externalLanguage       path.String
+	parameterStyle         path.String
+	isDeterministic        path.String
+	sqlDataAccess          path.String
+	sqlPath                path.String
+	securityType           path.String
+	created                path.Time
+	lastAltered            path.Time
+	sqlMode                path.String
+	routineComment         path.String
+	definer                path.String
+	characterSetClient     path.String
+	collationConnection    path.String
+	databaseCollation      path.String
 }
 
 // core.Table Functions
@@ -142,126 +142,126 @@ func (q QRoutines) GetParent() string {
 
 // Column Functions
 
-func (q QRoutines) SpecificName() path.StringPath {
+func (q QRoutines) SpecificName() path.String {
 	return q.specificName
 }
 
-func (q QRoutines) RoutineCatalog() path.StringPath {
+func (q QRoutines) RoutineCatalog() path.String {
 	return q.routineCatalog
 }
 
-func (q QRoutines) RoutineSchema() path.StringPath {
+func (q QRoutines) RoutineSchema() path.String {
 	return q.routineSchema
 }
 
-func (q QRoutines) RoutineName() path.StringPath {
+func (q QRoutines) RoutineName() path.String {
 	return q.routineName
 }
 
-func (q QRoutines) RoutineType() path.StringPath {
+func (q QRoutines) RoutineType() path.String {
 	return q.routineType
 }
 
-func (q QRoutines) DataType() path.StringPath {
+func (q QRoutines) DataType() path.String {
 	return q.dataType
 }
 
-func (q QRoutines) CharacterMaximumLength() path.IntPath {
+func (q QRoutines) CharacterMaximumLength() path.Int {
 	return q.characterMaximumLength
 }
 
-func (q QRoutines) CharacterOctetLength() path.IntPath {
+func (q QRoutines) CharacterOctetLength() path.Int {
 	return q.characterOctetLength
 }
 
-func (q QRoutines) NumericPrecision() path.Int64Path {
+func (q QRoutines) NumericPrecision() path.Int64 {
 	return q.numericPrecision
 }
 
-func (q QRoutines) NumericScale() path.IntPath {
+func (q QRoutines) NumericScale() path.Int {
 	return q.numericScale
 }
 
-func (q QRoutines) DatetimePrecision() path.Int64Path {
+func (q QRoutines) DatetimePrecision() path.Int64 {
 	return q.datetimePrecision
 }
 
-func (q QRoutines) CharacterSetName() path.StringPath {
+func (q QRoutines) CharacterSetName() path.String {
 	return q.characterSetName
 }
 
-func (q QRoutines) CollationName() path.StringPath {
+func (q QRoutines) CollationName() path.String {
 	return q.collationName
 }
 
-func (q QRoutines) DtdIdentifier() path.StringPath {
+func (q QRoutines) DtdIdentifier() path.String {
 	return q.dtdIdentifier
 }
 
-func (q QRoutines) RoutineBody() path.StringPath {
+func (q QRoutines) RoutineBody() path.String {
 	return q.routineBody
 }
 
-func (q QRoutines) RoutineDefinition() path.StringPath {
+func (q QRoutines) RoutineDefinition() path.String {
 	return q.routineDefinition
 }
 
-func (q QRoutines) ExternalName() path.StringPath {
+func (q QRoutines) ExternalName() path.String {
 	return q.externalName
 }
 
-func (q QRoutines) ExternalLanguage() path.StringPath {
+func (q QRoutines) ExternalLanguage() path.String {
 	return q.externalLanguage
 }
 
-func (q QRoutines) ParameterStyle() path.StringPath {
+func (q QRoutines) ParameterStyle() path.String {
 	return q.parameterStyle
 }
 
-func (q QRoutines) IsDeterministic() path.StringPath {
+func (q QRoutines) IsDeterministic() path.String {
 	return q.isDeterministic
 }
 
-func (q QRoutines) SqlDataAccess() path.StringPath {
+func (q QRoutines) SqlDataAccess() path.String {
 	return q.sqlDataAccess
 }
 
-func (q QRoutines) SqlPath() path.StringPath {
+func (q QRoutines) SqlPath() path.String {
 	return q.sqlPath
 }
 
-func (q QRoutines) SecurityType() path.StringPath {
+func (q QRoutines) SecurityType() path.String {
 	return q.securityType
 }
 
-func (q QRoutines) Created() path.TimePath {
+func (q QRoutines) Created() path.Time {
 	return q.created
 }
 
-func (q QRoutines) LastAltered() path.TimePath {
+func (q QRoutines) LastAltered() path.Time {
 	return q.lastAltered
 }
 
-func (q QRoutines) SqlMode() path.StringPath {
+func (q QRoutines) SqlMode() path.String {
 	return q.sqlMode
 }
 
-func (q QRoutines) RoutineComment() path.StringPath {
+func (q QRoutines) RoutineComment() path.String {
 	return q.routineComment
 }
 
-func (q QRoutines) Definer() path.StringPath {
+func (q QRoutines) Definer() path.String {
 	return q.definer
 }
 
-func (q QRoutines) CharacterSetClient() path.StringPath {
+func (q QRoutines) CharacterSetClient() path.String {
 	return q.characterSetClient
 }
 
-func (q QRoutines) CollationConnection() path.StringPath {
+func (q QRoutines) CollationConnection() path.String {
 	return q.collationConnection
 }
 
-func (q QRoutines) DatabaseCollation() path.StringPath {
+func (q QRoutines) DatabaseCollation() path.String {
 	return q.databaseCollation
 }

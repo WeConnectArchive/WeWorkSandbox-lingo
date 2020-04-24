@@ -10,70 +10,70 @@ func Q() QInnodbMetrics {
 	return instance
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func Subsystem() path.StringPath {
+func Subsystem() path.String {
 	return instance.subsystem
 }
 
-func Count() path.Int64Path {
+func Count() path.Int64 {
 	return instance.count
 }
 
-func MaxCount() path.Int64Path {
+func MaxCount() path.Int64 {
 	return instance.maxCount
 }
 
-func MinCount() path.Int64Path {
+func MinCount() path.Int64 {
 	return instance.minCount
 }
 
-func AvgCount() path.Float64Path {
+func AvgCount() path.Float64 {
 	return instance.avgCount
 }
 
-func CountReset() path.Int64Path {
+func CountReset() path.Int64 {
 	return instance.countReset
 }
 
-func MaxCountReset() path.Int64Path {
+func MaxCountReset() path.Int64 {
 	return instance.maxCountReset
 }
 
-func MinCountReset() path.Int64Path {
+func MinCountReset() path.Int64 {
 	return instance.minCountReset
 }
 
-func AvgCountReset() path.Float64Path {
+func AvgCountReset() path.Float64 {
 	return instance.avgCountReset
 }
 
-func TimeEnabled() path.TimePath {
+func TimeEnabled() path.Time {
 	return instance.timeEnabled
 }
 
-func TimeDisabled() path.TimePath {
+func TimeDisabled() path.Time {
 	return instance.timeDisabled
 }
 
-func TimeElapsed() path.Int64Path {
+func TimeElapsed() path.Int64 {
 	return instance.timeElapsed
 }
 
-func TimeReset() path.TimePath {
+func TimeReset() path.Time {
 	return instance.timeReset
 }
 
-func Status() path.StringPath {
+func Status() path.String {
 	return instance.status
 }
 
-func Type() path.StringPath {
+func Type() path.String {
 	return instance.__type
 }
 
-func Comment() path.StringPath {
+func Comment() path.String {
 	return instance.comment
 }

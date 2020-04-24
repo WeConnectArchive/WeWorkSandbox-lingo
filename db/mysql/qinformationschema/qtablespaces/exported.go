@@ -10,38 +10,38 @@ func Q() QTablespaces {
 	return instance
 }
 
-func TablespaceName() path.StringPath {
+func TablespaceName() path.String {
 	return instance.tablespaceName
 }
 
-func Engine() path.StringPath {
+func Engine() path.String {
 	return instance.engine
 }
 
-func TablespaceType() path.StringPath {
+func TablespaceType() path.String {
 	return instance.tablespaceType
 }
 
-func LogfileGroupName() path.StringPath {
+func LogfileGroupName() path.String {
 	return instance.logfileGroupName
 }
 
-func ExtentSize() path.Int64Path {
+func ExtentSize() path.Int64 {
 	return instance.extentSize
 }
 
-func AutoextendSize() path.Int64Path {
+func AutoextendSize() path.Int64 {
 	return instance.autoextendSize
 }
 
-func MaximumSize() path.Int64Path {
+func MaximumSize() path.Int64 {
 	return instance.maximumSize
 }
 
-func NodegroupId() path.Int64Path {
+func NodegroupId() path.Int64 {
 	return instance.nodegroupId
 }
 
-func TablespaceComment() path.StringPath {
+func TablespaceComment() path.String {
 	return instance.tablespaceComment
 }

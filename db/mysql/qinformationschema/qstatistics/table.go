@@ -38,22 +38,22 @@ func newQStatistics(alias string) QStatistics {
 
 type QStatistics struct {
 	_alias       string
-	tableCatalog path.StringPath
-	tableSchema  path.StringPath
-	tableName    path.StringPath
-	nonUnique    path.Int64Path
-	indexSchema  path.StringPath
-	indexName    path.StringPath
-	seqInIndex   path.Int64Path
-	columnName   path.StringPath
-	collation    path.StringPath
-	cardinality  path.Int64Path
-	subPart      path.Int64Path
-	packed       path.StringPath
-	nullable     path.StringPath
-	indexType    path.StringPath
-	comment      path.StringPath
-	indexComment path.StringPath
+	tableCatalog path.String
+	tableSchema  path.String
+	tableName    path.String
+	nonUnique    path.Int64
+	indexSchema  path.String
+	indexName    path.String
+	seqInIndex   path.Int64
+	columnName   path.String
+	collation    path.String
+	cardinality  path.Int64
+	subPart      path.Int64
+	packed       path.String
+	nullable     path.String
+	indexType    path.String
+	comment      path.String
+	indexComment path.String
 }
 
 // core.Table Functions
@@ -97,66 +97,66 @@ func (q QStatistics) GetParent() string {
 
 // Column Functions
 
-func (q QStatistics) TableCatalog() path.StringPath {
+func (q QStatistics) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QStatistics) TableSchema() path.StringPath {
+func (q QStatistics) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QStatistics) TableName() path.StringPath {
+func (q QStatistics) TableName() path.String {
 	return q.tableName
 }
 
-func (q QStatistics) NonUnique() path.Int64Path {
+func (q QStatistics) NonUnique() path.Int64 {
 	return q.nonUnique
 }
 
-func (q QStatistics) IndexSchema() path.StringPath {
+func (q QStatistics) IndexSchema() path.String {
 	return q.indexSchema
 }
 
-func (q QStatistics) IndexName() path.StringPath {
+func (q QStatistics) IndexName() path.String {
 	return q.indexName
 }
 
-func (q QStatistics) SeqInIndex() path.Int64Path {
+func (q QStatistics) SeqInIndex() path.Int64 {
 	return q.seqInIndex
 }
 
-func (q QStatistics) ColumnName() path.StringPath {
+func (q QStatistics) ColumnName() path.String {
 	return q.columnName
 }
 
-func (q QStatistics) Collation() path.StringPath {
+func (q QStatistics) Collation() path.String {
 	return q.collation
 }
 
-func (q QStatistics) Cardinality() path.Int64Path {
+func (q QStatistics) Cardinality() path.Int64 {
 	return q.cardinality
 }
 
-func (q QStatistics) SubPart() path.Int64Path {
+func (q QStatistics) SubPart() path.Int64 {
 	return q.subPart
 }
 
-func (q QStatistics) Packed() path.StringPath {
+func (q QStatistics) Packed() path.String {
 	return q.packed
 }
 
-func (q QStatistics) Nullable() path.StringPath {
+func (q QStatistics) Nullable() path.String {
 	return q.nullable
 }
 
-func (q QStatistics) IndexType() path.StringPath {
+func (q QStatistics) IndexType() path.String {
 	return q.indexType
 }
 
-func (q QStatistics) Comment() path.StringPath {
+func (q QStatistics) Comment() path.String {
 	return q.comment
 }
 
-func (q QStatistics) IndexComment() path.StringPath {
+func (q QStatistics) IndexComment() path.String {
 	return q.indexComment
 }

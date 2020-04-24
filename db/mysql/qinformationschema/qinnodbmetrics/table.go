@@ -39,23 +39,23 @@ func newQInnodbMetrics(alias string) QInnodbMetrics {
 
 type QInnodbMetrics struct {
 	_alias        string
-	name          path.StringPath
-	subsystem     path.StringPath
-	count         path.Int64Path
-	maxCount      path.Int64Path
-	minCount      path.Int64Path
-	avgCount      path.Float64Path
-	countReset    path.Int64Path
-	maxCountReset path.Int64Path
-	minCountReset path.Int64Path
-	avgCountReset path.Float64Path
-	timeEnabled   path.TimePath
-	timeDisabled  path.TimePath
-	timeElapsed   path.Int64Path
-	timeReset     path.TimePath
-	status        path.StringPath
-	__type        path.StringPath
-	comment       path.StringPath
+	name          path.String
+	subsystem     path.String
+	count         path.Int64
+	maxCount      path.Int64
+	minCount      path.Int64
+	avgCount      path.Float64
+	countReset    path.Int64
+	maxCountReset path.Int64
+	minCountReset path.Int64
+	avgCountReset path.Float64
+	timeEnabled   path.Time
+	timeDisabled  path.Time
+	timeElapsed   path.Int64
+	timeReset     path.Time
+	status        path.String
+	__type        path.String
+	comment       path.String
 }
 
 // core.Table Functions
@@ -100,70 +100,70 @@ func (q QInnodbMetrics) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbMetrics) Name() path.StringPath {
+func (q QInnodbMetrics) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbMetrics) Subsystem() path.StringPath {
+func (q QInnodbMetrics) Subsystem() path.String {
 	return q.subsystem
 }
 
-func (q QInnodbMetrics) Count() path.Int64Path {
+func (q QInnodbMetrics) Count() path.Int64 {
 	return q.count
 }
 
-func (q QInnodbMetrics) MaxCount() path.Int64Path {
+func (q QInnodbMetrics) MaxCount() path.Int64 {
 	return q.maxCount
 }
 
-func (q QInnodbMetrics) MinCount() path.Int64Path {
+func (q QInnodbMetrics) MinCount() path.Int64 {
 	return q.minCount
 }
 
-func (q QInnodbMetrics) AvgCount() path.Float64Path {
+func (q QInnodbMetrics) AvgCount() path.Float64 {
 	return q.avgCount
 }
 
-func (q QInnodbMetrics) CountReset() path.Int64Path {
+func (q QInnodbMetrics) CountReset() path.Int64 {
 	return q.countReset
 }
 
-func (q QInnodbMetrics) MaxCountReset() path.Int64Path {
+func (q QInnodbMetrics) MaxCountReset() path.Int64 {
 	return q.maxCountReset
 }
 
-func (q QInnodbMetrics) MinCountReset() path.Int64Path {
+func (q QInnodbMetrics) MinCountReset() path.Int64 {
 	return q.minCountReset
 }
 
-func (q QInnodbMetrics) AvgCountReset() path.Float64Path {
+func (q QInnodbMetrics) AvgCountReset() path.Float64 {
 	return q.avgCountReset
 }
 
-func (q QInnodbMetrics) TimeEnabled() path.TimePath {
+func (q QInnodbMetrics) TimeEnabled() path.Time {
 	return q.timeEnabled
 }
 
-func (q QInnodbMetrics) TimeDisabled() path.TimePath {
+func (q QInnodbMetrics) TimeDisabled() path.Time {
 	return q.timeDisabled
 }
 
-func (q QInnodbMetrics) TimeElapsed() path.Int64Path {
+func (q QInnodbMetrics) TimeElapsed() path.Int64 {
 	return q.timeElapsed
 }
 
-func (q QInnodbMetrics) TimeReset() path.TimePath {
+func (q QInnodbMetrics) TimeReset() path.Time {
 	return q.timeReset
 }
 
-func (q QInnodbMetrics) Status() path.StringPath {
+func (q QInnodbMetrics) Status() path.String {
 	return q.status
 }
 
-func (q QInnodbMetrics) Type() path.StringPath {
+func (q QInnodbMetrics) Type() path.String {
 	return q.__type
 }
 
-func (q QInnodbMetrics) Comment() path.StringPath {
+func (q QInnodbMetrics) Comment() path.String {
 	return q.comment
 }

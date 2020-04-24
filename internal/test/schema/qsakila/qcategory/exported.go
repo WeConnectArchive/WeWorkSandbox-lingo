@@ -10,14 +10,14 @@ func Q() QCategory {
 	return instance
 }
 
-func CategoryId() path.Int8Path {
+func CategoryId() path.Int8 {
 	return instance.categoryId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

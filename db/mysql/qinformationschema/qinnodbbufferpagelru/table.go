@@ -42,26 +42,26 @@ func newQInnodbBufferPageLru(alias string) QInnodbBufferPageLru {
 
 type QInnodbBufferPageLru struct {
 	_alias             string
-	poolId             path.Int64Path
-	lruPosition        path.Int64Path
-	space              path.Int64Path
-	pageNumber         path.Int64Path
-	pageType           path.StringPath
-	flushType          path.Int64Path
-	fixCount           path.Int64Path
-	isHashed           path.StringPath
-	newestModification path.Int64Path
-	oldestModification path.Int64Path
-	accessTime         path.Int64Path
-	tableName          path.StringPath
-	indexName          path.StringPath
-	numberRecords      path.Int64Path
-	dataSize           path.Int64Path
-	compressedSize     path.Int64Path
-	compressed         path.StringPath
-	ioFix              path.StringPath
-	isOld              path.StringPath
-	freePageClock      path.Int64Path
+	poolId             path.Int64
+	lruPosition        path.Int64
+	space              path.Int64
+	pageNumber         path.Int64
+	pageType           path.String
+	flushType          path.Int64
+	fixCount           path.Int64
+	isHashed           path.String
+	newestModification path.Int64
+	oldestModification path.Int64
+	accessTime         path.Int64
+	tableName          path.String
+	indexName          path.String
+	numberRecords      path.Int64
+	dataSize           path.Int64
+	compressedSize     path.Int64
+	compressed         path.String
+	ioFix              path.String
+	isOld              path.String
+	freePageClock      path.Int64
 }
 
 // core.Table Functions
@@ -109,82 +109,82 @@ func (q QInnodbBufferPageLru) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbBufferPageLru) PoolId() path.Int64Path {
+func (q QInnodbBufferPageLru) PoolId() path.Int64 {
 	return q.poolId
 }
 
-func (q QInnodbBufferPageLru) LruPosition() path.Int64Path {
+func (q QInnodbBufferPageLru) LruPosition() path.Int64 {
 	return q.lruPosition
 }
 
-func (q QInnodbBufferPageLru) Space() path.Int64Path {
+func (q QInnodbBufferPageLru) Space() path.Int64 {
 	return q.space
 }
 
-func (q QInnodbBufferPageLru) PageNumber() path.Int64Path {
+func (q QInnodbBufferPageLru) PageNumber() path.Int64 {
 	return q.pageNumber
 }
 
-func (q QInnodbBufferPageLru) PageType() path.StringPath {
+func (q QInnodbBufferPageLru) PageType() path.String {
 	return q.pageType
 }
 
-func (q QInnodbBufferPageLru) FlushType() path.Int64Path {
+func (q QInnodbBufferPageLru) FlushType() path.Int64 {
 	return q.flushType
 }
 
-func (q QInnodbBufferPageLru) FixCount() path.Int64Path {
+func (q QInnodbBufferPageLru) FixCount() path.Int64 {
 	return q.fixCount
 }
 
-func (q QInnodbBufferPageLru) IsHashed() path.StringPath {
+func (q QInnodbBufferPageLru) IsHashed() path.String {
 	return q.isHashed
 }
 
-func (q QInnodbBufferPageLru) NewestModification() path.Int64Path {
+func (q QInnodbBufferPageLru) NewestModification() path.Int64 {
 	return q.newestModification
 }
 
-func (q QInnodbBufferPageLru) OldestModification() path.Int64Path {
+func (q QInnodbBufferPageLru) OldestModification() path.Int64 {
 	return q.oldestModification
 }
 
-func (q QInnodbBufferPageLru) AccessTime() path.Int64Path {
+func (q QInnodbBufferPageLru) AccessTime() path.Int64 {
 	return q.accessTime
 }
 
-func (q QInnodbBufferPageLru) TableName() path.StringPath {
+func (q QInnodbBufferPageLru) TableName() path.String {
 	return q.tableName
 }
 
-func (q QInnodbBufferPageLru) IndexName() path.StringPath {
+func (q QInnodbBufferPageLru) IndexName() path.String {
 	return q.indexName
 }
 
-func (q QInnodbBufferPageLru) NumberRecords() path.Int64Path {
+func (q QInnodbBufferPageLru) NumberRecords() path.Int64 {
 	return q.numberRecords
 }
 
-func (q QInnodbBufferPageLru) DataSize() path.Int64Path {
+func (q QInnodbBufferPageLru) DataSize() path.Int64 {
 	return q.dataSize
 }
 
-func (q QInnodbBufferPageLru) CompressedSize() path.Int64Path {
+func (q QInnodbBufferPageLru) CompressedSize() path.Int64 {
 	return q.compressedSize
 }
 
-func (q QInnodbBufferPageLru) Compressed() path.StringPath {
+func (q QInnodbBufferPageLru) Compressed() path.String {
 	return q.compressed
 }
 
-func (q QInnodbBufferPageLru) IoFix() path.StringPath {
+func (q QInnodbBufferPageLru) IoFix() path.String {
 	return q.ioFix
 }
 
-func (q QInnodbBufferPageLru) IsOld() path.StringPath {
+func (q QInnodbBufferPageLru) IsOld() path.String {
 	return q.isOld
 }
 
-func (q QInnodbBufferPageLru) FreePageClock() path.Int64Path {
+func (q QInnodbBufferPageLru) FreePageClock() path.Int64 {
 	return q.freePageClock
 }

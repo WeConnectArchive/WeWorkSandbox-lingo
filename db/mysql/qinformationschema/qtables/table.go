@@ -43,27 +43,27 @@ func newQTables(alias string) QTables {
 
 type QTables struct {
 	_alias         string
-	tableCatalog   path.StringPath
-	tableSchema    path.StringPath
-	tableName      path.StringPath
-	tableType      path.StringPath
-	engine         path.StringPath
-	version        path.Int64Path
-	rowFormat      path.StringPath
-	tableRows      path.Int64Path
-	avgRowLength   path.Int64Path
-	dataLength     path.Int64Path
-	maxDataLength  path.Int64Path
-	indexLength    path.Int64Path
-	dataFree       path.Int64Path
-	autoIncrement  path.Int64Path
-	createTime     path.TimePath
-	updateTime     path.TimePath
-	checkTime      path.TimePath
-	tableCollation path.StringPath
-	checksum       path.Int64Path
-	createOptions  path.StringPath
-	tableComment   path.StringPath
+	tableCatalog   path.String
+	tableSchema    path.String
+	tableName      path.String
+	tableType      path.String
+	engine         path.String
+	version        path.Int64
+	rowFormat      path.String
+	tableRows      path.Int64
+	avgRowLength   path.Int64
+	dataLength     path.Int64
+	maxDataLength  path.Int64
+	indexLength    path.Int64
+	dataFree       path.Int64
+	autoIncrement  path.Int64
+	createTime     path.Time
+	updateTime     path.Time
+	checkTime      path.Time
+	tableCollation path.String
+	checksum       path.Int64
+	createOptions  path.String
+	tableComment   path.String
 }
 
 // core.Table Functions
@@ -112,86 +112,86 @@ func (q QTables) GetParent() string {
 
 // Column Functions
 
-func (q QTables) TableCatalog() path.StringPath {
+func (q QTables) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QTables) TableSchema() path.StringPath {
+func (q QTables) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QTables) TableName() path.StringPath {
+func (q QTables) TableName() path.String {
 	return q.tableName
 }
 
-func (q QTables) TableType() path.StringPath {
+func (q QTables) TableType() path.String {
 	return q.tableType
 }
 
-func (q QTables) Engine() path.StringPath {
+func (q QTables) Engine() path.String {
 	return q.engine
 }
 
-func (q QTables) Version() path.Int64Path {
+func (q QTables) Version() path.Int64 {
 	return q.version
 }
 
-func (q QTables) RowFormat() path.StringPath {
+func (q QTables) RowFormat() path.String {
 	return q.rowFormat
 }
 
-func (q QTables) TableRows() path.Int64Path {
+func (q QTables) TableRows() path.Int64 {
 	return q.tableRows
 }
 
-func (q QTables) AvgRowLength() path.Int64Path {
+func (q QTables) AvgRowLength() path.Int64 {
 	return q.avgRowLength
 }
 
-func (q QTables) DataLength() path.Int64Path {
+func (q QTables) DataLength() path.Int64 {
 	return q.dataLength
 }
 
-func (q QTables) MaxDataLength() path.Int64Path {
+func (q QTables) MaxDataLength() path.Int64 {
 	return q.maxDataLength
 }
 
-func (q QTables) IndexLength() path.Int64Path {
+func (q QTables) IndexLength() path.Int64 {
 	return q.indexLength
 }
 
-func (q QTables) DataFree() path.Int64Path {
+func (q QTables) DataFree() path.Int64 {
 	return q.dataFree
 }
 
-func (q QTables) AutoIncrement() path.Int64Path {
+func (q QTables) AutoIncrement() path.Int64 {
 	return q.autoIncrement
 }
 
-func (q QTables) CreateTime() path.TimePath {
+func (q QTables) CreateTime() path.Time {
 	return q.createTime
 }
 
-func (q QTables) UpdateTime() path.TimePath {
+func (q QTables) UpdateTime() path.Time {
 	return q.updateTime
 }
 
-func (q QTables) CheckTime() path.TimePath {
+func (q QTables) CheckTime() path.Time {
 	return q.checkTime
 }
 
-func (q QTables) TableCollation() path.StringPath {
+func (q QTables) TableCollation() path.String {
 	return q.tableCollation
 }
 
-func (q QTables) Checksum() path.Int64Path {
+func (q QTables) Checksum() path.Int64 {
 	return q.checksum
 }
 
-func (q QTables) CreateOptions() path.StringPath {
+func (q QTables) CreateOptions() path.String {
 	return q.createOptions
 }
 
-func (q QTables) TableComment() path.StringPath {
+func (q QTables) TableComment() path.String {
 	return q.tableComment
 }

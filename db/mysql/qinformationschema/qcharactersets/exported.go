@@ -10,18 +10,18 @@ func Q() QCharacterSets {
 	return instance
 }
 
-func CharacterSetName() path.StringPath {
+func CharacterSetName() path.String {
 	return instance.characterSetName
 }
 
-func DefaultCollateName() path.StringPath {
+func DefaultCollateName() path.String {
 	return instance.defaultCollateName
 }
 
-func Description() path.StringPath {
+func Description() path.String {
 	return instance.description
 }
 
-func Maxlen() path.Int64Path {
+func Maxlen() path.Int64 {
 	return instance.maxlen
 }

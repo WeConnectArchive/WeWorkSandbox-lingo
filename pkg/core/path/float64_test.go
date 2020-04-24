@@ -19,7 +19,7 @@ var _ = Describe("Float64", func() {
 			name  string
 			alias string
 
-			p path.Float64Path
+			p path.Float64
 		)
 
 		BeforeEach(func() {
@@ -32,8 +32,8 @@ var _ = Describe("Float64", func() {
 			p = path.NewFloat64PathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `Float64Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Float64Path{}))
+		It("Returns a `Float64`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Float64{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -55,7 +55,7 @@ var _ = Describe("Float64", func() {
 			e    core.Table
 			name string
 
-			p path.Float64Path
+			p path.Float64
 		)
 
 		BeforeEach(func() {
@@ -67,8 +67,8 @@ var _ = Describe("Float64", func() {
 			p = path.NewFloat64Path(e, name)
 		})
 
-		It("Returns a `Float64Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Float64Path{}))
+		It("Returns a `Float64`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Float64{}))
 		})
 
 		It("Has the given parent table", func() {

@@ -24,8 +24,8 @@ func newQGlobalStatus(alias string) QGlobalStatus {
 
 type QGlobalStatus struct {
 	_alias        string
-	variableName  path.StringPath
-	variableValue path.StringPath
+	variableName  path.String
+	variableValue path.String
 }
 
 // core.Table Functions
@@ -55,10 +55,10 @@ func (q QGlobalStatus) GetParent() string {
 
 // Column Functions
 
-func (q QGlobalStatus) VariableName() path.StringPath {
+func (q QGlobalStatus) VariableName() path.String {
 	return q.variableName
 }
 
-func (q QGlobalStatus) VariableValue() path.StringPath {
+func (q QGlobalStatus) VariableValue() path.String {
 	return q.variableValue
 }

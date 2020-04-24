@@ -33,17 +33,17 @@ func newQPlugins(alias string) QPlugins {
 
 type QPlugins struct {
 	_alias               string
-	pluginName           path.StringPath
-	pluginVersion        path.StringPath
-	pluginStatus         path.StringPath
-	pluginType           path.StringPath
-	pluginTypeVersion    path.StringPath
-	pluginLibrary        path.StringPath
-	pluginLibraryVersion path.StringPath
-	pluginAuthor         path.StringPath
-	pluginDescription    path.StringPath
-	pluginLicense        path.StringPath
-	loadOption           path.StringPath
+	pluginName           path.String
+	pluginVersion        path.String
+	pluginStatus         path.String
+	pluginType           path.String
+	pluginTypeVersion    path.String
+	pluginLibrary        path.String
+	pluginLibraryVersion path.String
+	pluginAuthor         path.String
+	pluginDescription    path.String
+	pluginLicense        path.String
+	loadOption           path.String
 }
 
 // core.Table Functions
@@ -82,46 +82,46 @@ func (q QPlugins) GetParent() string {
 
 // Column Functions
 
-func (q QPlugins) PluginName() path.StringPath {
+func (q QPlugins) PluginName() path.String {
 	return q.pluginName
 }
 
-func (q QPlugins) PluginVersion() path.StringPath {
+func (q QPlugins) PluginVersion() path.String {
 	return q.pluginVersion
 }
 
-func (q QPlugins) PluginStatus() path.StringPath {
+func (q QPlugins) PluginStatus() path.String {
 	return q.pluginStatus
 }
 
-func (q QPlugins) PluginType() path.StringPath {
+func (q QPlugins) PluginType() path.String {
 	return q.pluginType
 }
 
-func (q QPlugins) PluginTypeVersion() path.StringPath {
+func (q QPlugins) PluginTypeVersion() path.String {
 	return q.pluginTypeVersion
 }
 
-func (q QPlugins) PluginLibrary() path.StringPath {
+func (q QPlugins) PluginLibrary() path.String {
 	return q.pluginLibrary
 }
 
-func (q QPlugins) PluginLibraryVersion() path.StringPath {
+func (q QPlugins) PluginLibraryVersion() path.String {
 	return q.pluginLibraryVersion
 }
 
-func (q QPlugins) PluginAuthor() path.StringPath {
+func (q QPlugins) PluginAuthor() path.String {
 	return q.pluginAuthor
 }
 
-func (q QPlugins) PluginDescription() path.StringPath {
+func (q QPlugins) PluginDescription() path.String {
 	return q.pluginDescription
 }
 
-func (q QPlugins) PluginLicense() path.StringPath {
+func (q QPlugins) PluginLicense() path.String {
 	return q.pluginLicense
 }
 
-func (q QPlugins) LoadOption() path.StringPath {
+func (q QPlugins) LoadOption() path.String {
 	return q.loadOption
 }

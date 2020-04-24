@@ -151,14 +151,14 @@ func createPrivateNewFunc(table string, cols []*column) *jen.Statement {
 //
 // type QResourceGroup struct {
 //    _alias       string
-//    uuid         path.BinaryPath
-//    name         path.StringPath
-//    internalName path.StringPath
-//    description  path.StringPath
-//    version      path.IntPath
-//    createdAt    path.TimePath
-//    updatedAt    path.TimePath
-//    deletedAt    path.TimePath
+//    uuid         path.Binary
+//    name         path.String
+//    internalName path.String
+//    description  path.String
+//    version      path.Int
+//    createdAt    path.Time
+//    updatedAt    path.Time
+//    deletedAt    path.Time
 // }
 func createStruct(table string, cols []*column) *jen.Statement {
 	structName := ToTableStruct(table)
@@ -166,7 +166,7 @@ func createStruct(table string, cols []*column) *jen.Statement {
 	return jen.Type().Id(structName).StructFunc(func(g *jen.Group) {
 		g.Id(aliasField).String()
 
-		// internalName path.StringPath
+		// internalName path.String
 		for _, col := range cols {
 			g.Id(col.MemberName()).Add(jen.Qual(col.PathTypeName()))
 		}
@@ -261,11 +261,11 @@ func createGetParentSchemaFunc(schema, table string) *jen.Statement {
 
 // createColumnFunctions makes each columns Path function
 //
-// func (q QResourceGroup) UUID() path.BinaryPath {
+// func (q QResourceGroup) UUID() path.Binary {
 //    return q.uuid
 // }
 //
-// func (q QResourceGroup) Name() path.StringPath {
+// func (q QResourceGroup) Name() path.String {
 //    return q.name
 // }
 func createColumnFunctions(table string, cols []*column) <-chan *jen.Statement {

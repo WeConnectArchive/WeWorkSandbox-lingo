@@ -31,15 +31,15 @@ func newQCustomer(alias string) QCustomer {
 
 type QCustomer struct {
 	_alias     string
-	customerId path.Int16Path
-	storeId    path.Int8Path
-	firstName  path.StringPath
-	lastName   path.StringPath
-	email      path.StringPath
-	addressId  path.Int16Path
-	active     path.Int8Path
-	createDate path.TimePath
-	lastUpdate path.TimePath
+	customerId path.Int16
+	storeId    path.Int8
+	firstName  path.String
+	lastName   path.String
+	email      path.String
+	addressId  path.Int16
+	active     path.Int8
+	createDate path.Time
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -76,38 +76,38 @@ func (q QCustomer) GetParent() string {
 
 // Column Functions
 
-func (q QCustomer) CustomerId() path.Int16Path {
+func (q QCustomer) CustomerId() path.Int16 {
 	return q.customerId
 }
 
-func (q QCustomer) StoreId() path.Int8Path {
+func (q QCustomer) StoreId() path.Int8 {
 	return q.storeId
 }
 
-func (q QCustomer) FirstName() path.StringPath {
+func (q QCustomer) FirstName() path.String {
 	return q.firstName
 }
 
-func (q QCustomer) LastName() path.StringPath {
+func (q QCustomer) LastName() path.String {
 	return q.lastName
 }
 
-func (q QCustomer) Email() path.StringPath {
+func (q QCustomer) Email() path.String {
 	return q.email
 }
 
-func (q QCustomer) AddressId() path.Int16Path {
+func (q QCustomer) AddressId() path.Int16 {
 	return q.addressId
 }
 
-func (q QCustomer) Active() path.Int8Path {
+func (q QCustomer) Active() path.Int8 {
 	return q.active
 }
 
-func (q QCustomer) CreateDate() path.TimePath {
+func (q QCustomer) CreateDate() path.Time {
 	return q.createDate
 }
 
-func (q QCustomer) LastUpdate() path.TimePath {
+func (q QCustomer) LastUpdate() path.Time {
 	return q.lastUpdate
 }

@@ -21,7 +21,7 @@ var _ = Describe("Int32", func() {
 			name  string
 			alias string
 
-			p path.Int32Path
+			p path.Int32
 		)
 
 		BeforeEach(func() {
@@ -34,8 +34,8 @@ var _ = Describe("Int32", func() {
 			p = path.NewInt32PathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `Int32Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Int32Path{}))
+		It("Returns a `Int32`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Int32{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Int32", func() {
 			e    core.Table
 			name string
 
-			p path.Int32Path
+			p path.Int32
 		)
 
 		BeforeEach(func() {
@@ -69,8 +69,8 @@ var _ = Describe("Int32", func() {
 			p = path.NewInt32Path(e, name)
 		})
 
-		It("Returns a `Int32Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Int32Path{}))
+		It("Returns a `Int32`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Int32{}))
 		})
 
 		It("Has the given parent table", func() {

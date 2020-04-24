@@ -10,26 +10,26 @@ func Q() QInnodbCmp {
 	return instance
 }
 
-func PageSize() path.IntPath {
+func PageSize() path.Int {
 	return instance.pageSize
 }
 
-func CompressOps() path.IntPath {
+func CompressOps() path.Int {
 	return instance.compressOps
 }
 
-func CompressOpsOk() path.IntPath {
+func CompressOpsOk() path.Int {
 	return instance.compressOpsOk
 }
 
-func CompressTime() path.IntPath {
+func CompressTime() path.Int {
 	return instance.compressTime
 }
 
-func UncompressOps() path.IntPath {
+func UncompressOps() path.Int {
 	return instance.uncompressOps
 }
 
-func UncompressTime() path.IntPath {
+func UncompressTime() path.Int {
 	return instance.uncompressTime
 }

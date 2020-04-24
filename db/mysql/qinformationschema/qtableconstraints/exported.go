@@ -10,26 +10,26 @@ func Q() QTableConstraints {
 	return instance
 }
 
-func ConstraintCatalog() path.StringPath {
+func ConstraintCatalog() path.String {
 	return instance.constraintCatalog
 }
 
-func ConstraintSchema() path.StringPath {
+func ConstraintSchema() path.String {
 	return instance.constraintSchema
 }
 
-func ConstraintName() path.StringPath {
+func ConstraintName() path.String {
 	return instance.constraintName
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func ConstraintType() path.StringPath {
+func ConstraintType() path.String {
 	return instance.constraintType
 }

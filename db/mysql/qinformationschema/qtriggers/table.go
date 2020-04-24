@@ -44,28 +44,28 @@ func newQTriggers(alias string) QTriggers {
 
 type QTriggers struct {
 	_alias                  string
-	triggerCatalog          path.StringPath
-	triggerSchema           path.StringPath
-	triggerName             path.StringPath
-	eventManipulation       path.StringPath
-	eventObjectCatalog      path.StringPath
-	eventObjectSchema       path.StringPath
-	eventObjectTable        path.StringPath
-	actionOrder             path.Int64Path
-	actionCondition         path.StringPath
-	actionStatement         path.StringPath
-	actionOrientation       path.StringPath
-	actionTiming            path.StringPath
-	actionReferenceOldTable path.StringPath
-	actionReferenceNewTable path.StringPath
-	actionReferenceOldRow   path.StringPath
-	actionReferenceNewRow   path.StringPath
-	created                 path.TimePath
-	sqlMode                 path.StringPath
-	definer                 path.StringPath
-	characterSetClient      path.StringPath
-	collationConnection     path.StringPath
-	databaseCollation       path.StringPath
+	triggerCatalog          path.String
+	triggerSchema           path.String
+	triggerName             path.String
+	eventManipulation       path.String
+	eventObjectCatalog      path.String
+	eventObjectSchema       path.String
+	eventObjectTable        path.String
+	actionOrder             path.Int64
+	actionCondition         path.String
+	actionStatement         path.String
+	actionOrientation       path.String
+	actionTiming            path.String
+	actionReferenceOldTable path.String
+	actionReferenceNewTable path.String
+	actionReferenceOldRow   path.String
+	actionReferenceNewRow   path.String
+	created                 path.Time
+	sqlMode                 path.String
+	definer                 path.String
+	characterSetClient      path.String
+	collationConnection     path.String
+	databaseCollation       path.String
 }
 
 // core.Table Functions
@@ -115,90 +115,90 @@ func (q QTriggers) GetParent() string {
 
 // Column Functions
 
-func (q QTriggers) TriggerCatalog() path.StringPath {
+func (q QTriggers) TriggerCatalog() path.String {
 	return q.triggerCatalog
 }
 
-func (q QTriggers) TriggerSchema() path.StringPath {
+func (q QTriggers) TriggerSchema() path.String {
 	return q.triggerSchema
 }
 
-func (q QTriggers) TriggerName() path.StringPath {
+func (q QTriggers) TriggerName() path.String {
 	return q.triggerName
 }
 
-func (q QTriggers) EventManipulation() path.StringPath {
+func (q QTriggers) EventManipulation() path.String {
 	return q.eventManipulation
 }
 
-func (q QTriggers) EventObjectCatalog() path.StringPath {
+func (q QTriggers) EventObjectCatalog() path.String {
 	return q.eventObjectCatalog
 }
 
-func (q QTriggers) EventObjectSchema() path.StringPath {
+func (q QTriggers) EventObjectSchema() path.String {
 	return q.eventObjectSchema
 }
 
-func (q QTriggers) EventObjectTable() path.StringPath {
+func (q QTriggers) EventObjectTable() path.String {
 	return q.eventObjectTable
 }
 
-func (q QTriggers) ActionOrder() path.Int64Path {
+func (q QTriggers) ActionOrder() path.Int64 {
 	return q.actionOrder
 }
 
-func (q QTriggers) ActionCondition() path.StringPath {
+func (q QTriggers) ActionCondition() path.String {
 	return q.actionCondition
 }
 
-func (q QTriggers) ActionStatement() path.StringPath {
+func (q QTriggers) ActionStatement() path.String {
 	return q.actionStatement
 }
 
-func (q QTriggers) ActionOrientation() path.StringPath {
+func (q QTriggers) ActionOrientation() path.String {
 	return q.actionOrientation
 }
 
-func (q QTriggers) ActionTiming() path.StringPath {
+func (q QTriggers) ActionTiming() path.String {
 	return q.actionTiming
 }
 
-func (q QTriggers) ActionReferenceOldTable() path.StringPath {
+func (q QTriggers) ActionReferenceOldTable() path.String {
 	return q.actionReferenceOldTable
 }
 
-func (q QTriggers) ActionReferenceNewTable() path.StringPath {
+func (q QTriggers) ActionReferenceNewTable() path.String {
 	return q.actionReferenceNewTable
 }
 
-func (q QTriggers) ActionReferenceOldRow() path.StringPath {
+func (q QTriggers) ActionReferenceOldRow() path.String {
 	return q.actionReferenceOldRow
 }
 
-func (q QTriggers) ActionReferenceNewRow() path.StringPath {
+func (q QTriggers) ActionReferenceNewRow() path.String {
 	return q.actionReferenceNewRow
 }
 
-func (q QTriggers) Created() path.TimePath {
+func (q QTriggers) Created() path.Time {
 	return q.created
 }
 
-func (q QTriggers) SqlMode() path.StringPath {
+func (q QTriggers) SqlMode() path.String {
 	return q.sqlMode
 }
 
-func (q QTriggers) Definer() path.StringPath {
+func (q QTriggers) Definer() path.String {
 	return q.definer
 }
 
-func (q QTriggers) CharacterSetClient() path.StringPath {
+func (q QTriggers) CharacterSetClient() path.String {
 	return q.characterSetClient
 }
 
-func (q QTriggers) CollationConnection() path.StringPath {
+func (q QTriggers) CollationConnection() path.String {
 	return q.collationConnection
 }
 
-func (q QTriggers) DatabaseCollation() path.StringPath {
+func (q QTriggers) DatabaseCollation() path.String {
 	return q.databaseCollation
 }

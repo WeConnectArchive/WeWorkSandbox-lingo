@@ -28,12 +28,12 @@ func newQEngines(alias string) QEngines {
 
 type QEngines struct {
 	_alias       string
-	engine       path.StringPath
-	support      path.StringPath
-	comment      path.StringPath
-	transactions path.StringPath
-	xa           path.StringPath
-	savepoints   path.StringPath
+	engine       path.String
+	support      path.String
+	comment      path.String
+	transactions path.String
+	xa           path.String
+	savepoints   path.String
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QEngines) GetParent() string {
 
 // Column Functions
 
-func (q QEngines) Engine() path.StringPath {
+func (q QEngines) Engine() path.String {
 	return q.engine
 }
 
-func (q QEngines) Support() path.StringPath {
+func (q QEngines) Support() path.String {
 	return q.support
 }
 
-func (q QEngines) Comment() path.StringPath {
+func (q QEngines) Comment() path.String {
 	return q.comment
 }
 
-func (q QEngines) Transactions() path.StringPath {
+func (q QEngines) Transactions() path.String {
 	return q.transactions
 }
 
-func (q QEngines) Xa() path.StringPath {
+func (q QEngines) Xa() path.String {
 	return q.xa
 }
 
-func (q QEngines) Savepoints() path.StringPath {
+func (q QEngines) Savepoints() path.String {
 	return q.savepoints
 }

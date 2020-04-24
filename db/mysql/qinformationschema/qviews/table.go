@@ -32,16 +32,16 @@ func newQViews(alias string) QViews {
 
 type QViews struct {
 	_alias              string
-	tableCatalog        path.StringPath
-	tableSchema         path.StringPath
-	tableName           path.StringPath
-	viewDefinition      path.StringPath
-	checkOption         path.StringPath
-	isUpdatable         path.StringPath
-	definer             path.StringPath
-	securityType        path.StringPath
-	characterSetClient  path.StringPath
-	collationConnection path.StringPath
+	tableCatalog        path.String
+	tableSchema         path.String
+	tableName           path.String
+	viewDefinition      path.String
+	checkOption         path.String
+	isUpdatable         path.String
+	definer             path.String
+	securityType        path.String
+	characterSetClient  path.String
+	collationConnection path.String
 }
 
 // core.Table Functions
@@ -79,42 +79,42 @@ func (q QViews) GetParent() string {
 
 // Column Functions
 
-func (q QViews) TableCatalog() path.StringPath {
+func (q QViews) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QViews) TableSchema() path.StringPath {
+func (q QViews) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QViews) TableName() path.StringPath {
+func (q QViews) TableName() path.String {
 	return q.tableName
 }
 
-func (q QViews) ViewDefinition() path.StringPath {
+func (q QViews) ViewDefinition() path.String {
 	return q.viewDefinition
 }
 
-func (q QViews) CheckOption() path.StringPath {
+func (q QViews) CheckOption() path.String {
 	return q.checkOption
 }
 
-func (q QViews) IsUpdatable() path.StringPath {
+func (q QViews) IsUpdatable() path.String {
 	return q.isUpdatable
 }
 
-func (q QViews) Definer() path.StringPath {
+func (q QViews) Definer() path.String {
 	return q.definer
 }
 
-func (q QViews) SecurityType() path.StringPath {
+func (q QViews) SecurityType() path.String {
 	return q.securityType
 }
 
-func (q QViews) CharacterSetClient() path.StringPath {
+func (q QViews) CharacterSetClient() path.String {
 	return q.characterSetClient
 }
 
-func (q QViews) CollationConnection() path.StringPath {
+func (q QViews) CollationConnection() path.String {
 	return q.collationConnection
 }

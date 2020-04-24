@@ -24,8 +24,8 @@ func newQInnodbFtConfig(alias string) QInnodbFtConfig {
 
 type QInnodbFtConfig struct {
 	_alias string
-	key    path.StringPath
-	value  path.StringPath
+	key    path.String
+	value  path.String
 }
 
 // core.Table Functions
@@ -55,10 +55,10 @@ func (q QInnodbFtConfig) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbFtConfig) Key() path.StringPath {
+func (q QInnodbFtConfig) Key() path.String {
 	return q.key
 }
 
-func (q QInnodbFtConfig) Value() path.StringPath {
+func (q QInnodbFtConfig) Value() path.String {
 	return q.value
 }

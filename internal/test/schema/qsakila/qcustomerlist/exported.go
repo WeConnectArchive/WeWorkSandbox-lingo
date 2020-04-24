@@ -10,38 +10,38 @@ func Q() QCustomerList {
 	return instance
 }
 
-func Id() path.Int16Path {
+func Id() path.Int16 {
 	return instance.id
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func Address() path.StringPath {
+func Address() path.String {
 	return instance.address
 }
 
-func ZipCode() path.StringPath {
+func ZipCode() path.String {
 	return instance.zipCode
 }
 
-func Phone() path.StringPath {
+func Phone() path.String {
 	return instance.phone
 }
 
-func City() path.StringPath {
+func City() path.String {
 	return instance.city
 }
 
-func Country() path.StringPath {
+func Country() path.String {
 	return instance.country
 }
 
-func Notes() path.StringPath {
+func Notes() path.String {
 	return instance.notes
 }
 
-func Sid() path.Int8Path {
+func Sid() path.Int8 {
 	return instance.sid
 }

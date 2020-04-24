@@ -10,30 +10,30 @@ func Q() QPayment {
 	return instance
 }
 
-func PaymentId() path.Int16Path {
+func PaymentId() path.Int16 {
 	return instance.paymentId
 }
 
-func CustomerId() path.Int16Path {
+func CustomerId() path.Int16 {
 	return instance.customerId
 }
 
-func StaffId() path.Int8Path {
+func StaffId() path.Int8 {
 	return instance.staffId
 }
 
-func RentalId() path.IntPath {
+func RentalId() path.Int {
 	return instance.rentalId
 }
 
-func Amount() path.BinaryPath {
+func Amount() path.Binary {
 	return instance.amount
 }
 
-func PaymentDate() path.TimePath {
+func PaymentDate() path.Time {
 	return instance.paymentDate
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

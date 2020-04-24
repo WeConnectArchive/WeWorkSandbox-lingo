@@ -10,18 +10,18 @@ func Q() QInnodbSysForeignCols {
 	return instance
 }
 
-func Id() path.StringPath {
+func Id() path.String {
 	return instance.id
 }
 
-func ForColName() path.StringPath {
+func ForColName() path.String {
 	return instance.forColName
 }
 
-func RefColName() path.StringPath {
+func RefColName() path.String {
 	return instance.refColName
 }
 
-func Pos() path.IntPath {
+func Pos() path.Int {
 	return instance.pos
 }

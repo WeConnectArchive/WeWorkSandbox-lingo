@@ -10,18 +10,18 @@ func Q() QActor {
 	return instance
 }
 
-func ActorId() path.Int16Path {
+func ActorId() path.Int16 {
 	return instance.actorId
 }
 
-func FirstName() path.StringPath {
+func FirstName() path.String {
 	return instance.firstName
 }
 
-func LastName() path.StringPath {
+func LastName() path.String {
 	return instance.lastName
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

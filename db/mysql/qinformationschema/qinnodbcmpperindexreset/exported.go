@@ -10,34 +10,34 @@ func Q() QInnodbCmpPerIndexReset {
 	return instance
 }
 
-func DatabaseName() path.StringPath {
+func DatabaseName() path.String {
 	return instance.databaseName
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func IndexName() path.StringPath {
+func IndexName() path.String {
 	return instance.indexName
 }
 
-func CompressOps() path.IntPath {
+func CompressOps() path.Int {
 	return instance.compressOps
 }
 
-func CompressOpsOk() path.IntPath {
+func CompressOpsOk() path.Int {
 	return instance.compressOpsOk
 }
 
-func CompressTime() path.IntPath {
+func CompressTime() path.Int {
 	return instance.compressTime
 }
 
-func UncompressOps() path.IntPath {
+func UncompressOps() path.Int {
 	return instance.uncompressOps
 }
 
-func UncompressTime() path.IntPath {
+func UncompressTime() path.Int {
 	return instance.uncompressTime
 }

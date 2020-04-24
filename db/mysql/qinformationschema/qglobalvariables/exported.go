@@ -10,10 +10,10 @@ func Q() QGlobalVariables {
 	return instance
 }
 
-func VariableName() path.StringPath {
+func VariableName() path.String {
 	return instance.variableName
 }
 
-func VariableValue() path.StringPath {
+func VariableValue() path.String {
 	return instance.variableValue
 }

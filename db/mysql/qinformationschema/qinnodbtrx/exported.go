@@ -10,98 +10,98 @@ func Q() QInnodbTrx {
 	return instance
 }
 
-func TrxId() path.StringPath {
+func TrxId() path.String {
 	return instance.trxId
 }
 
-func TrxState() path.StringPath {
+func TrxState() path.String {
 	return instance.trxState
 }
 
-func TrxStarted() path.TimePath {
+func TrxStarted() path.Time {
 	return instance.trxStarted
 }
 
-func TrxRequestedLockId() path.StringPath {
+func TrxRequestedLockId() path.String {
 	return instance.trxRequestedLockId
 }
 
-func TrxWaitStarted() path.TimePath {
+func TrxWaitStarted() path.Time {
 	return instance.trxWaitStarted
 }
 
-func TrxWeight() path.Int64Path {
+func TrxWeight() path.Int64 {
 	return instance.trxWeight
 }
 
-func TrxMysqlThreadId() path.Int64Path {
+func TrxMysqlThreadId() path.Int64 {
 	return instance.trxMysqlThreadId
 }
 
-func TrxQuery() path.StringPath {
+func TrxQuery() path.String {
 	return instance.trxQuery
 }
 
-func TrxOperationState() path.StringPath {
+func TrxOperationState() path.String {
 	return instance.trxOperationState
 }
 
-func TrxTablesInUse() path.Int64Path {
+func TrxTablesInUse() path.Int64 {
 	return instance.trxTablesInUse
 }
 
-func TrxTablesLocked() path.Int64Path {
+func TrxTablesLocked() path.Int64 {
 	return instance.trxTablesLocked
 }
 
-func TrxLockStructs() path.Int64Path {
+func TrxLockStructs() path.Int64 {
 	return instance.trxLockStructs
 }
 
-func TrxLockMemoryBytes() path.Int64Path {
+func TrxLockMemoryBytes() path.Int64 {
 	return instance.trxLockMemoryBytes
 }
 
-func TrxRowsLocked() path.Int64Path {
+func TrxRowsLocked() path.Int64 {
 	return instance.trxRowsLocked
 }
 
-func TrxRowsModified() path.Int64Path {
+func TrxRowsModified() path.Int64 {
 	return instance.trxRowsModified
 }
 
-func TrxConcurrencyTickets() path.Int64Path {
+func TrxConcurrencyTickets() path.Int64 {
 	return instance.trxConcurrencyTickets
 }
 
-func TrxIsolationLevel() path.StringPath {
+func TrxIsolationLevel() path.String {
 	return instance.trxIsolationLevel
 }
 
-func TrxUniqueChecks() path.IntPath {
+func TrxUniqueChecks() path.Int {
 	return instance.trxUniqueChecks
 }
 
-func TrxForeignKeyChecks() path.IntPath {
+func TrxForeignKeyChecks() path.Int {
 	return instance.trxForeignKeyChecks
 }
 
-func TrxLastForeignKeyError() path.StringPath {
+func TrxLastForeignKeyError() path.String {
 	return instance.trxLastForeignKeyError
 }
 
-func TrxAdaptiveHashLatched() path.IntPath {
+func TrxAdaptiveHashLatched() path.Int {
 	return instance.trxAdaptiveHashLatched
 }
 
-func TrxAdaptiveHashTimeout() path.Int64Path {
+func TrxAdaptiveHashTimeout() path.Int64 {
 	return instance.trxAdaptiveHashTimeout
 }
 
-func TrxIsReadOnly() path.IntPath {
+func TrxIsReadOnly() path.Int {
 	return instance.trxIsReadOnly
 }
 
-func TrxAutocommitNonLocking() path.IntPath {
+func TrxAutocommitNonLocking() path.Int {
 	return instance.trxAutocommitNonLocking
 }

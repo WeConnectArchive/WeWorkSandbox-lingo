@@ -24,8 +24,8 @@ func newQSalesByFilmCategory(alias string) QSalesByFilmCategory {
 
 type QSalesByFilmCategory struct {
 	_alias     string
-	category   path.StringPath
-	totalSales path.BinaryPath
+	category   path.String
+	totalSales path.Binary
 }
 
 // core.Table Functions
@@ -55,10 +55,10 @@ func (q QSalesByFilmCategory) GetParent() string {
 
 // Column Functions
 
-func (q QSalesByFilmCategory) Category() path.StringPath {
+func (q QSalesByFilmCategory) Category() path.String {
 	return q.category
 }
 
-func (q QSalesByFilmCategory) TotalSales() path.BinaryPath {
+func (q QSalesByFilmCategory) TotalSales() path.Binary {
 	return q.totalSales
 }

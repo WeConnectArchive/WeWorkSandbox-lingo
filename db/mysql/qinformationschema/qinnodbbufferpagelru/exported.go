@@ -10,82 +10,82 @@ func Q() QInnodbBufferPageLru {
 	return instance
 }
 
-func PoolId() path.Int64Path {
+func PoolId() path.Int64 {
 	return instance.poolId
 }
 
-func LruPosition() path.Int64Path {
+func LruPosition() path.Int64 {
 	return instance.lruPosition
 }
 
-func Space() path.Int64Path {
+func Space() path.Int64 {
 	return instance.space
 }
 
-func PageNumber() path.Int64Path {
+func PageNumber() path.Int64 {
 	return instance.pageNumber
 }
 
-func PageType() path.StringPath {
+func PageType() path.String {
 	return instance.pageType
 }
 
-func FlushType() path.Int64Path {
+func FlushType() path.Int64 {
 	return instance.flushType
 }
 
-func FixCount() path.Int64Path {
+func FixCount() path.Int64 {
 	return instance.fixCount
 }
 
-func IsHashed() path.StringPath {
+func IsHashed() path.String {
 	return instance.isHashed
 }
 
-func NewestModification() path.Int64Path {
+func NewestModification() path.Int64 {
 	return instance.newestModification
 }
 
-func OldestModification() path.Int64Path {
+func OldestModification() path.Int64 {
 	return instance.oldestModification
 }
 
-func AccessTime() path.Int64Path {
+func AccessTime() path.Int64 {
 	return instance.accessTime
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func IndexName() path.StringPath {
+func IndexName() path.String {
 	return instance.indexName
 }
 
-func NumberRecords() path.Int64Path {
+func NumberRecords() path.Int64 {
 	return instance.numberRecords
 }
 
-func DataSize() path.Int64Path {
+func DataSize() path.Int64 {
 	return instance.dataSize
 }
 
-func CompressedSize() path.Int64Path {
+func CompressedSize() path.Int64 {
 	return instance.compressedSize
 }
 
-func Compressed() path.StringPath {
+func Compressed() path.String {
 	return instance.compressed
 }
 
-func IoFix() path.StringPath {
+func IoFix() path.String {
 	return instance.ioFix
 }
 
-func IsOld() path.StringPath {
+func IsOld() path.String {
 	return instance.isOld
 }
 
-func FreePageClock() path.Int64Path {
+func FreePageClock() path.Int64 {
 	return instance.freePageClock
 }

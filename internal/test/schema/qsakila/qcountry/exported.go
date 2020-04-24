@@ -10,14 +10,14 @@ func Q() QCountry {
 	return instance
 }
 
-func CountryId() path.Int16Path {
+func CountryId() path.Int16 {
 	return instance.countryId
 }
 
-func Country() path.StringPath {
+func Country() path.String {
 	return instance.country
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

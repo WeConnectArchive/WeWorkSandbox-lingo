@@ -25,9 +25,9 @@ func newQInnodbSysVirtual(alias string) QInnodbSysVirtual {
 
 type QInnodbSysVirtual struct {
 	_alias  string
-	tableId path.Int64Path
-	pos     path.IntPath
-	basePos path.IntPath
+	tableId path.Int64
+	pos     path.Int
+	basePos path.Int
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QInnodbSysVirtual) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysVirtual) TableId() path.Int64Path {
+func (q QInnodbSysVirtual) TableId() path.Int64 {
 	return q.tableId
 }
 
-func (q QInnodbSysVirtual) Pos() path.IntPath {
+func (q QInnodbSysVirtual) Pos() path.Int {
 	return q.pos
 }
 
-func (q QInnodbSysVirtual) BasePos() path.IntPath {
+func (q QInnodbSysVirtual) BasePos() path.Int {
 	return q.basePos
 }

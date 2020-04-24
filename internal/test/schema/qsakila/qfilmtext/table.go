@@ -25,9 +25,9 @@ func newQFilmText(alias string) QFilmText {
 
 type QFilmText struct {
 	_alias      string
-	filmId      path.Int16Path
-	title       path.StringPath
-	description path.StringPath
+	filmId      path.Int16
+	title       path.String
+	description path.String
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QFilmText) GetParent() string {
 
 // Column Functions
 
-func (q QFilmText) FilmId() path.Int16Path {
+func (q QFilmText) FilmId() path.Int16 {
 	return q.filmId
 }
 
-func (q QFilmText) Title() path.StringPath {
+func (q QFilmText) Title() path.String {
 	return q.title
 }
 
-func (q QFilmText) Description() path.StringPath {
+func (q QFilmText) Description() path.String {
 	return q.description
 }

@@ -31,15 +31,15 @@ func newQInnodbSysTablestats(alias string) QInnodbSysTablestats {
 
 type QInnodbSysTablestats struct {
 	_alias           string
-	tableId          path.Int64Path
-	name             path.StringPath
-	statsInitialized path.StringPath
-	numRows          path.Int64Path
-	clustIndexSize   path.Int64Path
-	otherIndexSize   path.Int64Path
-	modifiedCounter  path.Int64Path
-	autoinc          path.Int64Path
-	refCount         path.IntPath
+	tableId          path.Int64
+	name             path.String
+	statsInitialized path.String
+	numRows          path.Int64
+	clustIndexSize   path.Int64
+	otherIndexSize   path.Int64
+	modifiedCounter  path.Int64
+	autoinc          path.Int64
+	refCount         path.Int
 }
 
 // core.Table Functions
@@ -76,38 +76,38 @@ func (q QInnodbSysTablestats) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysTablestats) TableId() path.Int64Path {
+func (q QInnodbSysTablestats) TableId() path.Int64 {
 	return q.tableId
 }
 
-func (q QInnodbSysTablestats) Name() path.StringPath {
+func (q QInnodbSysTablestats) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbSysTablestats) StatsInitialized() path.StringPath {
+func (q QInnodbSysTablestats) StatsInitialized() path.String {
 	return q.statsInitialized
 }
 
-func (q QInnodbSysTablestats) NumRows() path.Int64Path {
+func (q QInnodbSysTablestats) NumRows() path.Int64 {
 	return q.numRows
 }
 
-func (q QInnodbSysTablestats) ClustIndexSize() path.Int64Path {
+func (q QInnodbSysTablestats) ClustIndexSize() path.Int64 {
 	return q.clustIndexSize
 }
 
-func (q QInnodbSysTablestats) OtherIndexSize() path.Int64Path {
+func (q QInnodbSysTablestats) OtherIndexSize() path.Int64 {
 	return q.otherIndexSize
 }
 
-func (q QInnodbSysTablestats) ModifiedCounter() path.Int64Path {
+func (q QInnodbSysTablestats) ModifiedCounter() path.Int64 {
 	return q.modifiedCounter
 }
 
-func (q QInnodbSysTablestats) Autoinc() path.Int64Path {
+func (q QInnodbSysTablestats) Autoinc() path.Int64 {
 	return q.autoinc
 }
 
-func (q QInnodbSysTablestats) RefCount() path.IntPath {
+func (q QInnodbSysTablestats) RefCount() path.Int {
 	return q.refCount
 }

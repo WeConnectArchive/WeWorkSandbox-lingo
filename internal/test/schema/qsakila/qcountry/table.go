@@ -25,9 +25,9 @@ func newQCountry(alias string) QCountry {
 
 type QCountry struct {
 	_alias     string
-	countryId  path.Int16Path
-	country    path.StringPath
-	lastUpdate path.TimePath
+	countryId  path.Int16
+	country    path.String
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QCountry) GetParent() string {
 
 // Column Functions
 
-func (q QCountry) CountryId() path.Int16Path {
+func (q QCountry) CountryId() path.Int16 {
 	return q.countryId
 }
 
-func (q QCountry) Country() path.StringPath {
+func (q QCountry) Country() path.String {
 	return q.country
 }
 
-func (q QCountry) LastUpdate() path.TimePath {
+func (q QCountry) LastUpdate() path.Time {
 	return q.lastUpdate
 }

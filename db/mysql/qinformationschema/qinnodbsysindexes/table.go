@@ -30,14 +30,14 @@ func newQInnodbSysIndexes(alias string) QInnodbSysIndexes {
 
 type QInnodbSysIndexes struct {
 	_alias         string
-	indexId        path.Int64Path
-	name           path.StringPath
-	tableId        path.Int64Path
-	__type         path.IntPath
-	nFields        path.IntPath
-	pageNo         path.IntPath
-	space          path.IntPath
-	mergeThreshold path.IntPath
+	indexId        path.Int64
+	name           path.String
+	tableId        path.Int64
+	__type         path.Int
+	nFields        path.Int
+	pageNo         path.Int
+	space          path.Int
+	mergeThreshold path.Int
 }
 
 // core.Table Functions
@@ -73,34 +73,34 @@ func (q QInnodbSysIndexes) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysIndexes) IndexId() path.Int64Path {
+func (q QInnodbSysIndexes) IndexId() path.Int64 {
 	return q.indexId
 }
 
-func (q QInnodbSysIndexes) Name() path.StringPath {
+func (q QInnodbSysIndexes) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbSysIndexes) TableId() path.Int64Path {
+func (q QInnodbSysIndexes) TableId() path.Int64 {
 	return q.tableId
 }
 
-func (q QInnodbSysIndexes) Type() path.IntPath {
+func (q QInnodbSysIndexes) Type() path.Int {
 	return q.__type
 }
 
-func (q QInnodbSysIndexes) NFields() path.IntPath {
+func (q QInnodbSysIndexes) NFields() path.Int {
 	return q.nFields
 }
 
-func (q QInnodbSysIndexes) PageNo() path.IntPath {
+func (q QInnodbSysIndexes) PageNo() path.Int {
 	return q.pageNo
 }
 
-func (q QInnodbSysIndexes) Space() path.IntPath {
+func (q QInnodbSysIndexes) Space() path.Int {
 	return q.space
 }
 
-func (q QInnodbSysIndexes) MergeThreshold() path.IntPath {
+func (q QInnodbSysIndexes) MergeThreshold() path.Int {
 	return q.mergeThreshold
 }

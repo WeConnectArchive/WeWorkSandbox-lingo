@@ -10,90 +10,90 @@ func Q() QTriggers {
 	return instance
 }
 
-func TriggerCatalog() path.StringPath {
+func TriggerCatalog() path.String {
 	return instance.triggerCatalog
 }
 
-func TriggerSchema() path.StringPath {
+func TriggerSchema() path.String {
 	return instance.triggerSchema
 }
 
-func TriggerName() path.StringPath {
+func TriggerName() path.String {
 	return instance.triggerName
 }
 
-func EventManipulation() path.StringPath {
+func EventManipulation() path.String {
 	return instance.eventManipulation
 }
 
-func EventObjectCatalog() path.StringPath {
+func EventObjectCatalog() path.String {
 	return instance.eventObjectCatalog
 }
 
-func EventObjectSchema() path.StringPath {
+func EventObjectSchema() path.String {
 	return instance.eventObjectSchema
 }
 
-func EventObjectTable() path.StringPath {
+func EventObjectTable() path.String {
 	return instance.eventObjectTable
 }
 
-func ActionOrder() path.Int64Path {
+func ActionOrder() path.Int64 {
 	return instance.actionOrder
 }
 
-func ActionCondition() path.StringPath {
+func ActionCondition() path.String {
 	return instance.actionCondition
 }
 
-func ActionStatement() path.StringPath {
+func ActionStatement() path.String {
 	return instance.actionStatement
 }
 
-func ActionOrientation() path.StringPath {
+func ActionOrientation() path.String {
 	return instance.actionOrientation
 }
 
-func ActionTiming() path.StringPath {
+func ActionTiming() path.String {
 	return instance.actionTiming
 }
 
-func ActionReferenceOldTable() path.StringPath {
+func ActionReferenceOldTable() path.String {
 	return instance.actionReferenceOldTable
 }
 
-func ActionReferenceNewTable() path.StringPath {
+func ActionReferenceNewTable() path.String {
 	return instance.actionReferenceNewTable
 }
 
-func ActionReferenceOldRow() path.StringPath {
+func ActionReferenceOldRow() path.String {
 	return instance.actionReferenceOldRow
 }
 
-func ActionReferenceNewRow() path.StringPath {
+func ActionReferenceNewRow() path.String {
 	return instance.actionReferenceNewRow
 }
 
-func Created() path.TimePath {
+func Created() path.Time {
 	return instance.created
 }
 
-func SqlMode() path.StringPath {
+func SqlMode() path.String {
 	return instance.sqlMode
 }
 
-func Definer() path.StringPath {
+func Definer() path.String {
 	return instance.definer
 }
 
-func CharacterSetClient() path.StringPath {
+func CharacterSetClient() path.String {
 	return instance.characterSetClient
 }
 
-func CollationConnection() path.StringPath {
+func CollationConnection() path.String {
 	return instance.collationConnection
 }
 
-func DatabaseCollation() path.StringPath {
+func DatabaseCollation() path.String {
 	return instance.databaseCollation
 }

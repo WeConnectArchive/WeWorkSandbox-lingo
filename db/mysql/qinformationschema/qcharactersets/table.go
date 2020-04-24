@@ -26,10 +26,10 @@ func newQCharacterSets(alias string) QCharacterSets {
 
 type QCharacterSets struct {
 	_alias             string
-	characterSetName   path.StringPath
-	defaultCollateName path.StringPath
-	description        path.StringPath
-	maxlen             path.Int64Path
+	characterSetName   path.String
+	defaultCollateName path.String
+	description        path.String
+	maxlen             path.Int64
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QCharacterSets) GetParent() string {
 
 // Column Functions
 
-func (q QCharacterSets) CharacterSetName() path.StringPath {
+func (q QCharacterSets) CharacterSetName() path.String {
 	return q.characterSetName
 }
 
-func (q QCharacterSets) DefaultCollateName() path.StringPath {
+func (q QCharacterSets) DefaultCollateName() path.String {
 	return q.defaultCollateName
 }
 
-func (q QCharacterSets) Description() path.StringPath {
+func (q QCharacterSets) Description() path.String {
 	return q.description
 }
 
-func (q QCharacterSets) Maxlen() path.Int64Path {
+func (q QCharacterSets) Maxlen() path.Int64 {
 	return q.maxlen
 }

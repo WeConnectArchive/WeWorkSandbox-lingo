@@ -10,26 +10,26 @@ func Q() QInnodbTempTableInfo {
 	return instance
 }
 
-func TableId() path.Int64Path {
+func TableId() path.Int64 {
 	return instance.tableId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func NCols() path.IntPath {
+func NCols() path.Int {
 	return instance.nCols
 }
 
-func Space() path.IntPath {
+func Space() path.Int {
 	return instance.space
 }
 
-func PerTableTablespace() path.StringPath {
+func PerTableTablespace() path.String {
 	return instance.perTableTablespace
 }
 
-func IsCompressed() path.StringPath {
+func IsCompressed() path.String {
 	return instance.isCompressed
 }

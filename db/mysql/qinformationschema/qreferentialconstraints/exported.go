@@ -10,46 +10,46 @@ func Q() QReferentialConstraints {
 	return instance
 }
 
-func ConstraintCatalog() path.StringPath {
+func ConstraintCatalog() path.String {
 	return instance.constraintCatalog
 }
 
-func ConstraintSchema() path.StringPath {
+func ConstraintSchema() path.String {
 	return instance.constraintSchema
 }
 
-func ConstraintName() path.StringPath {
+func ConstraintName() path.String {
 	return instance.constraintName
 }
 
-func UniqueConstraintCatalog() path.StringPath {
+func UniqueConstraintCatalog() path.String {
 	return instance.uniqueConstraintCatalog
 }
 
-func UniqueConstraintSchema() path.StringPath {
+func UniqueConstraintSchema() path.String {
 	return instance.uniqueConstraintSchema
 }
 
-func UniqueConstraintName() path.StringPath {
+func UniqueConstraintName() path.String {
 	return instance.uniqueConstraintName
 }
 
-func MatchOption() path.StringPath {
+func MatchOption() path.String {
 	return instance.matchOption
 }
 
-func UpdateRule() path.StringPath {
+func UpdateRule() path.String {
 	return instance.updateRule
 }
 
-func DeleteRule() path.StringPath {
+func DeleteRule() path.String {
 	return instance.deleteRule
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func ReferencedTableName() path.StringPath {
+func ReferencedTableName() path.String {
 	return instance.referencedTableName
 }

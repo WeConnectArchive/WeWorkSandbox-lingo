@@ -28,12 +28,12 @@ func newQInnodbCmpmemReset(alias string) QInnodbCmpmemReset {
 
 type QInnodbCmpmemReset struct {
 	_alias             string
-	pageSize           path.IntPath
-	bufferPoolInstance path.IntPath
-	pagesUsed          path.IntPath
-	pagesFree          path.IntPath
-	relocationOps      path.Int64Path
-	relocationTime     path.IntPath
+	pageSize           path.Int
+	bufferPoolInstance path.Int
+	pagesUsed          path.Int
+	pagesFree          path.Int
+	relocationOps      path.Int64
+	relocationTime     path.Int
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QInnodbCmpmemReset) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbCmpmemReset) PageSize() path.IntPath {
+func (q QInnodbCmpmemReset) PageSize() path.Int {
 	return q.pageSize
 }
 
-func (q QInnodbCmpmemReset) BufferPoolInstance() path.IntPath {
+func (q QInnodbCmpmemReset) BufferPoolInstance() path.Int {
 	return q.bufferPoolInstance
 }
 
-func (q QInnodbCmpmemReset) PagesUsed() path.IntPath {
+func (q QInnodbCmpmemReset) PagesUsed() path.Int {
 	return q.pagesUsed
 }
 
-func (q QInnodbCmpmemReset) PagesFree() path.IntPath {
+func (q QInnodbCmpmemReset) PagesFree() path.Int {
 	return q.pagesFree
 }
 
-func (q QInnodbCmpmemReset) RelocationOps() path.Int64Path {
+func (q QInnodbCmpmemReset) RelocationOps() path.Int64 {
 	return q.relocationOps
 }
 
-func (q QInnodbCmpmemReset) RelocationTime() path.IntPath {
+func (q QInnodbCmpmemReset) RelocationTime() path.Int {
 	return q.relocationTime
 }

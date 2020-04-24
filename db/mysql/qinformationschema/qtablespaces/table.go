@@ -31,15 +31,15 @@ func newQTablespaces(alias string) QTablespaces {
 
 type QTablespaces struct {
 	_alias            string
-	tablespaceName    path.StringPath
-	engine            path.StringPath
-	tablespaceType    path.StringPath
-	logfileGroupName  path.StringPath
-	extentSize        path.Int64Path
-	autoextendSize    path.Int64Path
-	maximumSize       path.Int64Path
-	nodegroupId       path.Int64Path
-	tablespaceComment path.StringPath
+	tablespaceName    path.String
+	engine            path.String
+	tablespaceType    path.String
+	logfileGroupName  path.String
+	extentSize        path.Int64
+	autoextendSize    path.Int64
+	maximumSize       path.Int64
+	nodegroupId       path.Int64
+	tablespaceComment path.String
 }
 
 // core.Table Functions
@@ -76,38 +76,38 @@ func (q QTablespaces) GetParent() string {
 
 // Column Functions
 
-func (q QTablespaces) TablespaceName() path.StringPath {
+func (q QTablespaces) TablespaceName() path.String {
 	return q.tablespaceName
 }
 
-func (q QTablespaces) Engine() path.StringPath {
+func (q QTablespaces) Engine() path.String {
 	return q.engine
 }
 
-func (q QTablespaces) TablespaceType() path.StringPath {
+func (q QTablespaces) TablespaceType() path.String {
 	return q.tablespaceType
 }
 
-func (q QTablespaces) LogfileGroupName() path.StringPath {
+func (q QTablespaces) LogfileGroupName() path.String {
 	return q.logfileGroupName
 }
 
-func (q QTablespaces) ExtentSize() path.Int64Path {
+func (q QTablespaces) ExtentSize() path.Int64 {
 	return q.extentSize
 }
 
-func (q QTablespaces) AutoextendSize() path.Int64Path {
+func (q QTablespaces) AutoextendSize() path.Int64 {
 	return q.autoextendSize
 }
 
-func (q QTablespaces) MaximumSize() path.Int64Path {
+func (q QTablespaces) MaximumSize() path.Int64 {
 	return q.maximumSize
 }
 
-func (q QTablespaces) NodegroupId() path.Int64Path {
+func (q QTablespaces) NodegroupId() path.Int64 {
 	return q.nodegroupId
 }
 
-func (q QTablespaces) TablespaceComment() path.StringPath {
+func (q QTablespaces) TablespaceComment() path.String {
 	return q.tablespaceComment
 }

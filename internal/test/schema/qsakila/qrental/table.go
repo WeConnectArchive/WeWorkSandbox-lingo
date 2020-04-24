@@ -29,13 +29,13 @@ func newQRental(alias string) QRental {
 
 type QRental struct {
 	_alias      string
-	rentalId    path.IntPath
-	rentalDate  path.TimePath
-	inventoryId path.Int32Path
-	customerId  path.Int16Path
-	returnDate  path.TimePath
-	staffId     path.Int8Path
-	lastUpdate  path.TimePath
+	rentalId    path.Int
+	rentalDate  path.Time
+	inventoryId path.Int32
+	customerId  path.Int16
+	returnDate  path.Time
+	staffId     path.Int8
+	lastUpdate  path.Time
 }
 
 // core.Table Functions
@@ -70,30 +70,30 @@ func (q QRental) GetParent() string {
 
 // Column Functions
 
-func (q QRental) RentalId() path.IntPath {
+func (q QRental) RentalId() path.Int {
 	return q.rentalId
 }
 
-func (q QRental) RentalDate() path.TimePath {
+func (q QRental) RentalDate() path.Time {
 	return q.rentalDate
 }
 
-func (q QRental) InventoryId() path.Int32Path {
+func (q QRental) InventoryId() path.Int32 {
 	return q.inventoryId
 }
 
-func (q QRental) CustomerId() path.Int16Path {
+func (q QRental) CustomerId() path.Int16 {
 	return q.customerId
 }
 
-func (q QRental) ReturnDate() path.TimePath {
+func (q QRental) ReturnDate() path.Time {
 	return q.returnDate
 }
 
-func (q QRental) StaffId() path.Int8Path {
+func (q QRental) StaffId() path.Int8 {
 	return q.staffId
 }
 
-func (q QRental) LastUpdate() path.TimePath {
+func (q QRental) LastUpdate() path.Time {
 	return q.lastUpdate
 }

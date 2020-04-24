@@ -18,7 +18,7 @@ var _ = Describe("Unsupported", func() {
 			name  string
 			alias string
 
-			p path.UnsupportedPath
+			p path.Unsupported
 		)
 
 		BeforeEach(func() {
@@ -31,8 +31,8 @@ var _ = Describe("Unsupported", func() {
 			p = path.NewUnsupportedPathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `UnsupportedPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.UnsupportedPath{}))
+		It("Returns a `Unsupported`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Unsupported{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -54,7 +54,7 @@ var _ = Describe("Unsupported", func() {
 			e    core.Table
 			name string
 
-			p path.UnsupportedPath
+			p path.Unsupported
 		)
 
 		BeforeEach(func() {
@@ -66,8 +66,8 @@ var _ = Describe("Unsupported", func() {
 			p = path.NewUnsupportedPath(e, name)
 		})
 
-		It("Returns a `UnsupportedPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.UnsupportedPath{}))
+		It("Returns a `Unsupported`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Unsupported{}))
 		})
 
 		It("Has the given parent table", func() {

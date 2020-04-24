@@ -28,12 +28,12 @@ func newQTableConstraints(alias string) QTableConstraints {
 
 type QTableConstraints struct {
 	_alias            string
-	constraintCatalog path.StringPath
-	constraintSchema  path.StringPath
-	constraintName    path.StringPath
-	tableSchema       path.StringPath
-	tableName         path.StringPath
-	constraintType    path.StringPath
+	constraintCatalog path.String
+	constraintSchema  path.String
+	constraintName    path.String
+	tableSchema       path.String
+	tableName         path.String
+	constraintType    path.String
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QTableConstraints) GetParent() string {
 
 // Column Functions
 
-func (q QTableConstraints) ConstraintCatalog() path.StringPath {
+func (q QTableConstraints) ConstraintCatalog() path.String {
 	return q.constraintCatalog
 }
 
-func (q QTableConstraints) ConstraintSchema() path.StringPath {
+func (q QTableConstraints) ConstraintSchema() path.String {
 	return q.constraintSchema
 }
 
-func (q QTableConstraints) ConstraintName() path.StringPath {
+func (q QTableConstraints) ConstraintName() path.String {
 	return q.constraintName
 }
 
-func (q QTableConstraints) TableSchema() path.StringPath {
+func (q QTableConstraints) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QTableConstraints) TableName() path.StringPath {
+func (q QTableConstraints) TableName() path.String {
 	return q.tableName
 }
 
-func (q QTableConstraints) ConstraintType() path.StringPath {
+func (q QTableConstraints) ConstraintType() path.String {
 	return q.constraintType
 }

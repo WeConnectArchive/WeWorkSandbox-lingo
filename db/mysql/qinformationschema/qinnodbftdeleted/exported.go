@@ -10,6 +10,6 @@ func Q() QInnodbFtDeleted {
 	return instance
 }
 
-func DocId() path.Int64Path {
+func DocId() path.Int64 {
 	return instance.docId
 }

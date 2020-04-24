@@ -10,130 +10,130 @@ func Q() QInnodbBufferPoolStats {
 	return instance
 }
 
-func PoolId() path.Int64Path {
+func PoolId() path.Int64 {
 	return instance.poolId
 }
 
-func PoolSize() path.Int64Path {
+func PoolSize() path.Int64 {
 	return instance.poolSize
 }
 
-func FreeBuffers() path.Int64Path {
+func FreeBuffers() path.Int64 {
 	return instance.freeBuffers
 }
 
-func DatabasePages() path.Int64Path {
+func DatabasePages() path.Int64 {
 	return instance.databasePages
 }
 
-func OldDatabasePages() path.Int64Path {
+func OldDatabasePages() path.Int64 {
 	return instance.oldDatabasePages
 }
 
-func ModifiedDatabasePages() path.Int64Path {
+func ModifiedDatabasePages() path.Int64 {
 	return instance.modifiedDatabasePages
 }
 
-func PendingDecompress() path.Int64Path {
+func PendingDecompress() path.Int64 {
 	return instance.pendingDecompress
 }
 
-func PendingReads() path.Int64Path {
+func PendingReads() path.Int64 {
 	return instance.pendingReads
 }
 
-func PendingFlushLru() path.Int64Path {
+func PendingFlushLru() path.Int64 {
 	return instance.pendingFlushLru
 }
 
-func PendingFlushList() path.Int64Path {
+func PendingFlushList() path.Int64 {
 	return instance.pendingFlushList
 }
 
-func PagesMadeYoung() path.Int64Path {
+func PagesMadeYoung() path.Int64 {
 	return instance.pagesMadeYoung
 }
 
-func PagesNotMadeYoung() path.Int64Path {
+func PagesNotMadeYoung() path.Int64 {
 	return instance.pagesNotMadeYoung
 }
 
-func PagesMadeYoungRate() path.Float64Path {
+func PagesMadeYoungRate() path.Float64 {
 	return instance.pagesMadeYoungRate
 }
 
-func PagesMadeNotYoungRate() path.Float64Path {
+func PagesMadeNotYoungRate() path.Float64 {
 	return instance.pagesMadeNotYoungRate
 }
 
-func NumberPagesRead() path.Int64Path {
+func NumberPagesRead() path.Int64 {
 	return instance.numberPagesRead
 }
 
-func NumberPagesCreated() path.Int64Path {
+func NumberPagesCreated() path.Int64 {
 	return instance.numberPagesCreated
 }
 
-func NumberPagesWritten() path.Int64Path {
+func NumberPagesWritten() path.Int64 {
 	return instance.numberPagesWritten
 }
 
-func PagesReadRate() path.Float64Path {
+func PagesReadRate() path.Float64 {
 	return instance.pagesReadRate
 }
 
-func PagesCreateRate() path.Float64Path {
+func PagesCreateRate() path.Float64 {
 	return instance.pagesCreateRate
 }
 
-func PagesWrittenRate() path.Float64Path {
+func PagesWrittenRate() path.Float64 {
 	return instance.pagesWrittenRate
 }
 
-func NumberPagesGet() path.Int64Path {
+func NumberPagesGet() path.Int64 {
 	return instance.numberPagesGet
 }
 
-func HitRate() path.Int64Path {
+func HitRate() path.Int64 {
 	return instance.hitRate
 }
 
-func YoungMakePerThousandGets() path.Int64Path {
+func YoungMakePerThousandGets() path.Int64 {
 	return instance.youngMakePerThousandGets
 }
 
-func NotYoungMakePerThousandGets() path.Int64Path {
+func NotYoungMakePerThousandGets() path.Int64 {
 	return instance.notYoungMakePerThousandGets
 }
 
-func NumberPagesReadAhead() path.Int64Path {
+func NumberPagesReadAhead() path.Int64 {
 	return instance.numberPagesReadAhead
 }
 
-func NumberReadAheadEvicted() path.Int64Path {
+func NumberReadAheadEvicted() path.Int64 {
 	return instance.numberReadAheadEvicted
 }
 
-func ReadAheadRate() path.Float64Path {
+func ReadAheadRate() path.Float64 {
 	return instance.readAheadRate
 }
 
-func ReadAheadEvictedRate() path.Float64Path {
+func ReadAheadEvictedRate() path.Float64 {
 	return instance.readAheadEvictedRate
 }
 
-func LruIoTotal() path.Int64Path {
+func LruIoTotal() path.Int64 {
 	return instance.lruIoTotal
 }
 
-func LruIoCurrent() path.Int64Path {
+func LruIoCurrent() path.Int64 {
 	return instance.lruIoCurrent
 }
 
-func UncompressTotal() path.Int64Path {
+func UncompressTotal() path.Int64 {
 	return instance.uncompressTotal
 }
 
-func UncompressCurrent() path.Int64Path {
+func UncompressCurrent() path.Int64 {
 	return instance.uncompressCurrent
 }

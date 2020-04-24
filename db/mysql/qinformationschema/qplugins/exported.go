@@ -10,46 +10,46 @@ func Q() QPlugins {
 	return instance
 }
 
-func PluginName() path.StringPath {
+func PluginName() path.String {
 	return instance.pluginName
 }
 
-func PluginVersion() path.StringPath {
+func PluginVersion() path.String {
 	return instance.pluginVersion
 }
 
-func PluginStatus() path.StringPath {
+func PluginStatus() path.String {
 	return instance.pluginStatus
 }
 
-func PluginType() path.StringPath {
+func PluginType() path.String {
 	return instance.pluginType
 }
 
-func PluginTypeVersion() path.StringPath {
+func PluginTypeVersion() path.String {
 	return instance.pluginTypeVersion
 }
 
-func PluginLibrary() path.StringPath {
+func PluginLibrary() path.String {
 	return instance.pluginLibrary
 }
 
-func PluginLibraryVersion() path.StringPath {
+func PluginLibraryVersion() path.String {
 	return instance.pluginLibraryVersion
 }
 
-func PluginAuthor() path.StringPath {
+func PluginAuthor() path.String {
 	return instance.pluginAuthor
 }
 
-func PluginDescription() path.StringPath {
+func PluginDescription() path.String {
 	return instance.pluginDescription
 }
 
-func PluginLicense() path.StringPath {
+func PluginLicense() path.String {
 	return instance.pluginLicense
 }
 
-func LoadOption() path.StringPath {
+func LoadOption() path.String {
 	return instance.loadOption
 }

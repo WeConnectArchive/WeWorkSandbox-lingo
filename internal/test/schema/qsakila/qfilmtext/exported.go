@@ -10,14 +10,14 @@ func Q() QFilmText {
 	return instance
 }
 
-func FilmId() path.Int16Path {
+func FilmId() path.Int16 {
 	return instance.filmId
 }
 
-func Title() path.StringPath {
+func Title() path.String {
 	return instance.title
 }
 
-func Description() path.StringPath {
+func Description() path.String {
 	return instance.description
 }

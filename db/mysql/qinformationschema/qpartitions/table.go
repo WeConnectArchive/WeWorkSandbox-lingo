@@ -47,31 +47,31 @@ func newQPartitions(alias string) QPartitions {
 
 type QPartitions struct {
 	_alias                      string
-	tableCatalog                path.StringPath
-	tableSchema                 path.StringPath
-	tableName                   path.StringPath
-	partitionName               path.StringPath
-	subpartitionName            path.StringPath
-	partitionOrdinalPosition    path.Int64Path
-	subpartitionOrdinalPosition path.Int64Path
-	partitionMethod             path.StringPath
-	subpartitionMethod          path.StringPath
-	partitionExpression         path.StringPath
-	subpartitionExpression      path.StringPath
-	partitionDescription        path.StringPath
-	tableRows                   path.Int64Path
-	avgRowLength                path.Int64Path
-	dataLength                  path.Int64Path
-	maxDataLength               path.Int64Path
-	indexLength                 path.Int64Path
-	dataFree                    path.Int64Path
-	createTime                  path.TimePath
-	updateTime                  path.TimePath
-	checkTime                   path.TimePath
-	checksum                    path.Int64Path
-	partitionComment            path.StringPath
-	nodegroup                   path.StringPath
-	tablespaceName              path.StringPath
+	tableCatalog                path.String
+	tableSchema                 path.String
+	tableName                   path.String
+	partitionName               path.String
+	subpartitionName            path.String
+	partitionOrdinalPosition    path.Int64
+	subpartitionOrdinalPosition path.Int64
+	partitionMethod             path.String
+	subpartitionMethod          path.String
+	partitionExpression         path.String
+	subpartitionExpression      path.String
+	partitionDescription        path.String
+	tableRows                   path.Int64
+	avgRowLength                path.Int64
+	dataLength                  path.Int64
+	maxDataLength               path.Int64
+	indexLength                 path.Int64
+	dataFree                    path.Int64
+	createTime                  path.Time
+	updateTime                  path.Time
+	checkTime                   path.Time
+	checksum                    path.Int64
+	partitionComment            path.String
+	nodegroup                   path.String
+	tablespaceName              path.String
 }
 
 // core.Table Functions
@@ -124,102 +124,102 @@ func (q QPartitions) GetParent() string {
 
 // Column Functions
 
-func (q QPartitions) TableCatalog() path.StringPath {
+func (q QPartitions) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QPartitions) TableSchema() path.StringPath {
+func (q QPartitions) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QPartitions) TableName() path.StringPath {
+func (q QPartitions) TableName() path.String {
 	return q.tableName
 }
 
-func (q QPartitions) PartitionName() path.StringPath {
+func (q QPartitions) PartitionName() path.String {
 	return q.partitionName
 }
 
-func (q QPartitions) SubpartitionName() path.StringPath {
+func (q QPartitions) SubpartitionName() path.String {
 	return q.subpartitionName
 }
 
-func (q QPartitions) PartitionOrdinalPosition() path.Int64Path {
+func (q QPartitions) PartitionOrdinalPosition() path.Int64 {
 	return q.partitionOrdinalPosition
 }
 
-func (q QPartitions) SubpartitionOrdinalPosition() path.Int64Path {
+func (q QPartitions) SubpartitionOrdinalPosition() path.Int64 {
 	return q.subpartitionOrdinalPosition
 }
 
-func (q QPartitions) PartitionMethod() path.StringPath {
+func (q QPartitions) PartitionMethod() path.String {
 	return q.partitionMethod
 }
 
-func (q QPartitions) SubpartitionMethod() path.StringPath {
+func (q QPartitions) SubpartitionMethod() path.String {
 	return q.subpartitionMethod
 }
 
-func (q QPartitions) PartitionExpression() path.StringPath {
+func (q QPartitions) PartitionExpression() path.String {
 	return q.partitionExpression
 }
 
-func (q QPartitions) SubpartitionExpression() path.StringPath {
+func (q QPartitions) SubpartitionExpression() path.String {
 	return q.subpartitionExpression
 }
 
-func (q QPartitions) PartitionDescription() path.StringPath {
+func (q QPartitions) PartitionDescription() path.String {
 	return q.partitionDescription
 }
 
-func (q QPartitions) TableRows() path.Int64Path {
+func (q QPartitions) TableRows() path.Int64 {
 	return q.tableRows
 }
 
-func (q QPartitions) AvgRowLength() path.Int64Path {
+func (q QPartitions) AvgRowLength() path.Int64 {
 	return q.avgRowLength
 }
 
-func (q QPartitions) DataLength() path.Int64Path {
+func (q QPartitions) DataLength() path.Int64 {
 	return q.dataLength
 }
 
-func (q QPartitions) MaxDataLength() path.Int64Path {
+func (q QPartitions) MaxDataLength() path.Int64 {
 	return q.maxDataLength
 }
 
-func (q QPartitions) IndexLength() path.Int64Path {
+func (q QPartitions) IndexLength() path.Int64 {
 	return q.indexLength
 }
 
-func (q QPartitions) DataFree() path.Int64Path {
+func (q QPartitions) DataFree() path.Int64 {
 	return q.dataFree
 }
 
-func (q QPartitions) CreateTime() path.TimePath {
+func (q QPartitions) CreateTime() path.Time {
 	return q.createTime
 }
 
-func (q QPartitions) UpdateTime() path.TimePath {
+func (q QPartitions) UpdateTime() path.Time {
 	return q.updateTime
 }
 
-func (q QPartitions) CheckTime() path.TimePath {
+func (q QPartitions) CheckTime() path.Time {
 	return q.checkTime
 }
 
-func (q QPartitions) Checksum() path.Int64Path {
+func (q QPartitions) Checksum() path.Int64 {
 	return q.checksum
 }
 
-func (q QPartitions) PartitionComment() path.StringPath {
+func (q QPartitions) PartitionComment() path.String {
 	return q.partitionComment
 }
 
-func (q QPartitions) Nodegroup() path.StringPath {
+func (q QPartitions) Nodegroup() path.String {
 	return q.nodegroup
 }
 
-func (q QPartitions) TablespaceName() path.StringPath {
+func (q QPartitions) TablespaceName() path.String {
 	return q.tablespaceName
 }

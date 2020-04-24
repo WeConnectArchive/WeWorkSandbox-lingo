@@ -10,18 +10,18 @@ func Q() QOptimizerTrace {
 	return instance
 }
 
-func Query() path.StringPath {
+func Query() path.String {
 	return instance.query
 }
 
-func Trace() path.StringPath {
+func Trace() path.String {
 	return instance.trace
 }
 
-func MissingBytesBeyondMaxMemSize() path.IntPath {
+func MissingBytesBeyondMaxMemSize() path.Int {
 	return instance.missingBytesBeyondMaxMemSize
 }
 
-func InsufficientPrivileges() path.BoolPath {
+func InsufficientPrivileges() path.Bool {
 	return instance.insufficientPrivileges
 }

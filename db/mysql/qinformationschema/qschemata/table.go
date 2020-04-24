@@ -27,11 +27,11 @@ func newQSchemata(alias string) QSchemata {
 
 type QSchemata struct {
 	_alias                  string
-	catalogName             path.StringPath
-	schemaName              path.StringPath
-	defaultCharacterSetName path.StringPath
-	defaultCollationName    path.StringPath
-	sqlPath                 path.StringPath
+	catalogName             path.String
+	schemaName              path.String
+	defaultCharacterSetName path.String
+	defaultCollationName    path.String
+	sqlPath                 path.String
 }
 
 // core.Table Functions
@@ -64,22 +64,22 @@ func (q QSchemata) GetParent() string {
 
 // Column Functions
 
-func (q QSchemata) CatalogName() path.StringPath {
+func (q QSchemata) CatalogName() path.String {
 	return q.catalogName
 }
 
-func (q QSchemata) SchemaName() path.StringPath {
+func (q QSchemata) SchemaName() path.String {
 	return q.schemaName
 }
 
-func (q QSchemata) DefaultCharacterSetName() path.StringPath {
+func (q QSchemata) DefaultCharacterSetName() path.String {
 	return q.defaultCharacterSetName
 }
 
-func (q QSchemata) DefaultCollationName() path.StringPath {
+func (q QSchemata) DefaultCollationName() path.String {
 	return q.defaultCollationName
 }
 
-func (q QSchemata) SqlPath() path.StringPath {
+func (q QSchemata) SqlPath() path.String {
 	return q.sqlPath
 }

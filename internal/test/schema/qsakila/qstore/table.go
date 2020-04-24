@@ -26,10 +26,10 @@ func newQStore(alias string) QStore {
 
 type QStore struct {
 	_alias         string
-	storeId        path.Int8Path
-	managerStaffId path.Int8Path
-	addressId      path.Int16Path
-	lastUpdate     path.TimePath
+	storeId        path.Int8
+	managerStaffId path.Int8
+	addressId      path.Int16
+	lastUpdate     path.Time
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QStore) GetParent() string {
 
 // Column Functions
 
-func (q QStore) StoreId() path.Int8Path {
+func (q QStore) StoreId() path.Int8 {
 	return q.storeId
 }
 
-func (q QStore) ManagerStaffId() path.Int8Path {
+func (q QStore) ManagerStaffId() path.Int8 {
 	return q.managerStaffId
 }
 
-func (q QStore) AddressId() path.Int16Path {
+func (q QStore) AddressId() path.Int16 {
 	return q.addressId
 }
 
-func (q QStore) LastUpdate() path.TimePath {
+func (q QStore) LastUpdate() path.Time {
 	return q.lastUpdate
 }

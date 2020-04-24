@@ -19,7 +19,7 @@ var _ = Describe("Binary", func() {
 			name  string
 			alias string
 
-			p path.BinaryPath
+			p path.Binary
 		)
 
 		BeforeEach(func() {
@@ -32,8 +32,8 @@ var _ = Describe("Binary", func() {
 			p = path.NewBinaryPathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `BinaryPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.BinaryPath{}))
+		It("Returns a `Binary`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Binary{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -55,7 +55,7 @@ var _ = Describe("Binary", func() {
 			e    core.Table
 			name string
 
-			p path.BinaryPath
+			p path.Binary
 		)
 
 		BeforeEach(func() {
@@ -67,8 +67,8 @@ var _ = Describe("Binary", func() {
 			p = path.NewBinaryPath(e, name)
 		})
 
-		It("Returns a `BinaryPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.BinaryPath{}))
+		It("Returns a `Binary`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Binary{}))
 		})
 
 		It("Has the given parent table", func() {

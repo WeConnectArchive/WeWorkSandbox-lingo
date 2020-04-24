@@ -31,15 +31,15 @@ func newQAddress(alias string) QAddress {
 
 type QAddress struct {
 	_alias     string
-	addressId  path.Int16Path
-	address    path.StringPath
-	address2   path.StringPath
-	district   path.StringPath
-	cityId     path.Int16Path
-	postalCode path.StringPath
-	phone      path.StringPath
-	location   path.UnsupportedPath
-	lastUpdate path.TimePath
+	addressId  path.Int16
+	address    path.String
+	address2   path.String
+	district   path.String
+	cityId     path.Int16
+	postalCode path.String
+	phone      path.String
+	location   path.Unsupported
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -76,38 +76,38 @@ func (q QAddress) GetParent() string {
 
 // Column Functions
 
-func (q QAddress) AddressId() path.Int16Path {
+func (q QAddress) AddressId() path.Int16 {
 	return q.addressId
 }
 
-func (q QAddress) Address() path.StringPath {
+func (q QAddress) Address() path.String {
 	return q.address
 }
 
-func (q QAddress) Address2() path.StringPath {
+func (q QAddress) Address2() path.String {
 	return q.address2
 }
 
-func (q QAddress) District() path.StringPath {
+func (q QAddress) District() path.String {
 	return q.district
 }
 
-func (q QAddress) CityId() path.Int16Path {
+func (q QAddress) CityId() path.Int16 {
 	return q.cityId
 }
 
-func (q QAddress) PostalCode() path.StringPath {
+func (q QAddress) PostalCode() path.String {
 	return q.postalCode
 }
 
-func (q QAddress) Phone() path.StringPath {
+func (q QAddress) Phone() path.String {
 	return q.phone
 }
 
-func (q QAddress) Location() path.UnsupportedPath {
+func (q QAddress) Location() path.Unsupported {
 	return q.location
 }
 
-func (q QAddress) LastUpdate() path.TimePath {
+func (q QAddress) LastUpdate() path.Time {
 	return q.lastUpdate
 }

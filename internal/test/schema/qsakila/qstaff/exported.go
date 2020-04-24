@@ -10,46 +10,46 @@ func Q() QStaff {
 	return instance
 }
 
-func StaffId() path.Int8Path {
+func StaffId() path.Int8 {
 	return instance.staffId
 }
 
-func FirstName() path.StringPath {
+func FirstName() path.String {
 	return instance.firstName
 }
 
-func LastName() path.StringPath {
+func LastName() path.String {
 	return instance.lastName
 }
 
-func AddressId() path.Int16Path {
+func AddressId() path.Int16 {
 	return instance.addressId
 }
 
-func Picture() path.UnsupportedPath {
+func Picture() path.Unsupported {
 	return instance.picture
 }
 
-func Email() path.StringPath {
+func Email() path.String {
 	return instance.email
 }
 
-func StoreId() path.Int8Path {
+func StoreId() path.Int8 {
 	return instance.storeId
 }
 
-func Active() path.Int8Path {
+func Active() path.Int8 {
 	return instance.active
 }
 
-func Username() path.StringPath {
+func Username() path.String {
 	return instance.username
 }
 
-func Password() path.StringPath {
+func Password() path.String {
 	return instance.password
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

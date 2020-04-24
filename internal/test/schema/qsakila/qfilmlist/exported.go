@@ -10,34 +10,34 @@ func Q() QFilmList {
 	return instance
 }
 
-func Fid() path.Int16Path {
+func Fid() path.Int16 {
 	return instance.fid
 }
 
-func Title() path.StringPath {
+func Title() path.String {
 	return instance.title
 }
 
-func Description() path.StringPath {
+func Description() path.String {
 	return instance.description
 }
 
-func Category() path.StringPath {
+func Category() path.String {
 	return instance.category
 }
 
-func Price() path.BinaryPath {
+func Price() path.Binary {
 	return instance.price
 }
 
-func Length() path.Int16Path {
+func Length() path.Int16 {
 	return instance.length
 }
 
-func Rating() path.StringPath {
+func Rating() path.String {
 	return instance.rating
 }
 
-func Actors() path.StringPath {
+func Actors() path.String {
 	return instance.actors
 }

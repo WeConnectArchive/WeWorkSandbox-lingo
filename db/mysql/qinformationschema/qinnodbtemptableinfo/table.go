@@ -28,12 +28,12 @@ func newQInnodbTempTableInfo(alias string) QInnodbTempTableInfo {
 
 type QInnodbTempTableInfo struct {
 	_alias             string
-	tableId            path.Int64Path
-	name               path.StringPath
-	nCols              path.IntPath
-	space              path.IntPath
-	perTableTablespace path.StringPath
-	isCompressed       path.StringPath
+	tableId            path.Int64
+	name               path.String
+	nCols              path.Int
+	space              path.Int
+	perTableTablespace path.String
+	isCompressed       path.String
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QInnodbTempTableInfo) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbTempTableInfo) TableId() path.Int64Path {
+func (q QInnodbTempTableInfo) TableId() path.Int64 {
 	return q.tableId
 }
 
-func (q QInnodbTempTableInfo) Name() path.StringPath {
+func (q QInnodbTempTableInfo) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbTempTableInfo) NCols() path.IntPath {
+func (q QInnodbTempTableInfo) NCols() path.Int {
 	return q.nCols
 }
 
-func (q QInnodbTempTableInfo) Space() path.IntPath {
+func (q QInnodbTempTableInfo) Space() path.Int {
 	return q.space
 }
 
-func (q QInnodbTempTableInfo) PerTableTablespace() path.StringPath {
+func (q QInnodbTempTableInfo) PerTableTablespace() path.String {
 	return q.perTableTablespace
 }
 
-func (q QInnodbTempTableInfo) IsCompressed() path.StringPath {
+func (q QInnodbTempTableInfo) IsCompressed() path.String {
 	return q.isCompressed
 }

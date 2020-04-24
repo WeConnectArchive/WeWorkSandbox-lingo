@@ -10,42 +10,42 @@ func Q() QInnodbLocks {
 	return instance
 }
 
-func LockId() path.StringPath {
+func LockId() path.String {
 	return instance.lockId
 }
 
-func LockTrxId() path.StringPath {
+func LockTrxId() path.String {
 	return instance.lockTrxId
 }
 
-func LockMode() path.StringPath {
+func LockMode() path.String {
 	return instance.lockMode
 }
 
-func LockType() path.StringPath {
+func LockType() path.String {
 	return instance.lockType
 }
 
-func LockTable() path.StringPath {
+func LockTable() path.String {
 	return instance.lockTable
 }
 
-func LockIndex() path.StringPath {
+func LockIndex() path.String {
 	return instance.lockIndex
 }
 
-func LockSpace() path.Int64Path {
+func LockSpace() path.Int64 {
 	return instance.lockSpace
 }
 
-func LockPage() path.Int64Path {
+func LockPage() path.Int64 {
 	return instance.lockPage
 }
 
-func LockRec() path.Int64Path {
+func LockRec() path.Int64 {
 	return instance.lockRec
 }
 
-func LockData() path.StringPath {
+func LockData() path.String {
 	return instance.lockData
 }

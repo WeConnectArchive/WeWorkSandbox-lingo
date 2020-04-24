@@ -33,17 +33,17 @@ func newQStaff(alias string) QStaff {
 
 type QStaff struct {
 	_alias     string
-	staffId    path.Int8Path
-	firstName  path.StringPath
-	lastName   path.StringPath
-	addressId  path.Int16Path
-	picture    path.UnsupportedPath
-	email      path.StringPath
-	storeId    path.Int8Path
-	active     path.Int8Path
-	username   path.StringPath
-	password   path.StringPath
-	lastUpdate path.TimePath
+	staffId    path.Int8
+	firstName  path.String
+	lastName   path.String
+	addressId  path.Int16
+	picture    path.Unsupported
+	email      path.String
+	storeId    path.Int8
+	active     path.Int8
+	username   path.String
+	password   path.String
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -82,46 +82,46 @@ func (q QStaff) GetParent() string {
 
 // Column Functions
 
-func (q QStaff) StaffId() path.Int8Path {
+func (q QStaff) StaffId() path.Int8 {
 	return q.staffId
 }
 
-func (q QStaff) FirstName() path.StringPath {
+func (q QStaff) FirstName() path.String {
 	return q.firstName
 }
 
-func (q QStaff) LastName() path.StringPath {
+func (q QStaff) LastName() path.String {
 	return q.lastName
 }
 
-func (q QStaff) AddressId() path.Int16Path {
+func (q QStaff) AddressId() path.Int16 {
 	return q.addressId
 }
 
-func (q QStaff) Picture() path.UnsupportedPath {
+func (q QStaff) Picture() path.Unsupported {
 	return q.picture
 }
 
-func (q QStaff) Email() path.StringPath {
+func (q QStaff) Email() path.String {
 	return q.email
 }
 
-func (q QStaff) StoreId() path.Int8Path {
+func (q QStaff) StoreId() path.Int8 {
 	return q.storeId
 }
 
-func (q QStaff) Active() path.Int8Path {
+func (q QStaff) Active() path.Int8 {
 	return q.active
 }
 
-func (q QStaff) Username() path.StringPath {
+func (q QStaff) Username() path.String {
 	return q.username
 }
 
-func (q QStaff) Password() path.StringPath {
+func (q QStaff) Password() path.String {
 	return q.password
 }
 
-func (q QStaff) LastUpdate() path.TimePath {
+func (q QStaff) LastUpdate() path.Time {
 	return q.lastUpdate
 }

@@ -38,22 +38,22 @@ func newQParameters(alias string) QParameters {
 
 type QParameters struct {
 	_alias                 string
-	specificCatalog        path.StringPath
-	specificSchema         path.StringPath
-	specificName           path.StringPath
-	ordinalPosition        path.IntPath
-	parameterMode          path.StringPath
-	parameterName          path.StringPath
-	dataType               path.StringPath
-	characterMaximumLength path.IntPath
-	characterOctetLength   path.IntPath
-	numericPrecision       path.Int64Path
-	numericScale           path.IntPath
-	datetimePrecision      path.Int64Path
-	characterSetName       path.StringPath
-	collationName          path.StringPath
-	dtdIdentifier          path.StringPath
-	routineType            path.StringPath
+	specificCatalog        path.String
+	specificSchema         path.String
+	specificName           path.String
+	ordinalPosition        path.Int
+	parameterMode          path.String
+	parameterName          path.String
+	dataType               path.String
+	characterMaximumLength path.Int
+	characterOctetLength   path.Int
+	numericPrecision       path.Int64
+	numericScale           path.Int
+	datetimePrecision      path.Int64
+	characterSetName       path.String
+	collationName          path.String
+	dtdIdentifier          path.String
+	routineType            path.String
 }
 
 // core.Table Functions
@@ -97,66 +97,66 @@ func (q QParameters) GetParent() string {
 
 // Column Functions
 
-func (q QParameters) SpecificCatalog() path.StringPath {
+func (q QParameters) SpecificCatalog() path.String {
 	return q.specificCatalog
 }
 
-func (q QParameters) SpecificSchema() path.StringPath {
+func (q QParameters) SpecificSchema() path.String {
 	return q.specificSchema
 }
 
-func (q QParameters) SpecificName() path.StringPath {
+func (q QParameters) SpecificName() path.String {
 	return q.specificName
 }
 
-func (q QParameters) OrdinalPosition() path.IntPath {
+func (q QParameters) OrdinalPosition() path.Int {
 	return q.ordinalPosition
 }
 
-func (q QParameters) ParameterMode() path.StringPath {
+func (q QParameters) ParameterMode() path.String {
 	return q.parameterMode
 }
 
-func (q QParameters) ParameterName() path.StringPath {
+func (q QParameters) ParameterName() path.String {
 	return q.parameterName
 }
 
-func (q QParameters) DataType() path.StringPath {
+func (q QParameters) DataType() path.String {
 	return q.dataType
 }
 
-func (q QParameters) CharacterMaximumLength() path.IntPath {
+func (q QParameters) CharacterMaximumLength() path.Int {
 	return q.characterMaximumLength
 }
 
-func (q QParameters) CharacterOctetLength() path.IntPath {
+func (q QParameters) CharacterOctetLength() path.Int {
 	return q.characterOctetLength
 }
 
-func (q QParameters) NumericPrecision() path.Int64Path {
+func (q QParameters) NumericPrecision() path.Int64 {
 	return q.numericPrecision
 }
 
-func (q QParameters) NumericScale() path.IntPath {
+func (q QParameters) NumericScale() path.Int {
 	return q.numericScale
 }
 
-func (q QParameters) DatetimePrecision() path.Int64Path {
+func (q QParameters) DatetimePrecision() path.Int64 {
 	return q.datetimePrecision
 }
 
-func (q QParameters) CharacterSetName() path.StringPath {
+func (q QParameters) CharacterSetName() path.String {
 	return q.characterSetName
 }
 
-func (q QParameters) CollationName() path.StringPath {
+func (q QParameters) CollationName() path.String {
 	return q.collationName
 }
 
-func (q QParameters) DtdIdentifier() path.StringPath {
+func (q QParameters) DtdIdentifier() path.String {
 	return q.dtdIdentifier
 }
 
-func (q QParameters) RoutineType() path.StringPath {
+func (q QParameters) RoutineType() path.String {
 	return q.routineType
 }

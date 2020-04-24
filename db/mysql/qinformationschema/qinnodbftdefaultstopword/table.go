@@ -23,7 +23,7 @@ func newQInnodbFtDefaultStopword(alias string) QInnodbFtDefaultStopword {
 
 type QInnodbFtDefaultStopword struct {
 	_alias string
-	value  path.StringPath
+	value  path.String
 }
 
 // core.Table Functions
@@ -52,6 +52,6 @@ func (q QInnodbFtDefaultStopword) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbFtDefaultStopword) Value() path.StringPath {
+func (q QInnodbFtDefaultStopword) Value() path.String {
 	return q.value
 }

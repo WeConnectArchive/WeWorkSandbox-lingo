@@ -10,18 +10,18 @@ func Q() QStore {
 	return instance
 }
 
-func StoreId() path.Int8Path {
+func StoreId() path.Int8 {
 	return instance.storeId
 }
 
-func ManagerStaffId() path.Int8Path {
+func ManagerStaffId() path.Int8 {
 	return instance.managerStaffId
 }
 
-func AddressId() path.Int16Path {
+func AddressId() path.Int16 {
 	return instance.addressId
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

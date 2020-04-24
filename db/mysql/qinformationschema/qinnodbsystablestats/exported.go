@@ -10,38 +10,38 @@ func Q() QInnodbSysTablestats {
 	return instance
 }
 
-func TableId() path.Int64Path {
+func TableId() path.Int64 {
 	return instance.tableId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func StatsInitialized() path.StringPath {
+func StatsInitialized() path.String {
 	return instance.statsInitialized
 }
 
-func NumRows() path.Int64Path {
+func NumRows() path.Int64 {
 	return instance.numRows
 }
 
-func ClustIndexSize() path.Int64Path {
+func ClustIndexSize() path.Int64 {
 	return instance.clustIndexSize
 }
 
-func OtherIndexSize() path.Int64Path {
+func OtherIndexSize() path.Int64 {
 	return instance.otherIndexSize
 }
 
-func ModifiedCounter() path.Int64Path {
+func ModifiedCounter() path.Int64 {
 	return instance.modifiedCounter
 }
 
-func Autoinc() path.Int64Path {
+func Autoinc() path.Int64 {
 	return instance.autoinc
 }
 
-func RefCount() path.IntPath {
+func RefCount() path.Int {
 	return instance.refCount
 }

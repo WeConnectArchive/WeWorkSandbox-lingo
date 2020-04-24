@@ -10,66 +10,66 @@ func Q() QParameters {
 	return instance
 }
 
-func SpecificCatalog() path.StringPath {
+func SpecificCatalog() path.String {
 	return instance.specificCatalog
 }
 
-func SpecificSchema() path.StringPath {
+func SpecificSchema() path.String {
 	return instance.specificSchema
 }
 
-func SpecificName() path.StringPath {
+func SpecificName() path.String {
 	return instance.specificName
 }
 
-func OrdinalPosition() path.IntPath {
+func OrdinalPosition() path.Int {
 	return instance.ordinalPosition
 }
 
-func ParameterMode() path.StringPath {
+func ParameterMode() path.String {
 	return instance.parameterMode
 }
 
-func ParameterName() path.StringPath {
+func ParameterName() path.String {
 	return instance.parameterName
 }
 
-func DataType() path.StringPath {
+func DataType() path.String {
 	return instance.dataType
 }
 
-func CharacterMaximumLength() path.IntPath {
+func CharacterMaximumLength() path.Int {
 	return instance.characterMaximumLength
 }
 
-func CharacterOctetLength() path.IntPath {
+func CharacterOctetLength() path.Int {
 	return instance.characterOctetLength
 }
 
-func NumericPrecision() path.Int64Path {
+func NumericPrecision() path.Int64 {
 	return instance.numericPrecision
 }
 
-func NumericScale() path.IntPath {
+func NumericScale() path.Int {
 	return instance.numericScale
 }
 
-func DatetimePrecision() path.Int64Path {
+func DatetimePrecision() path.Int64 {
 	return instance.datetimePrecision
 }
 
-func CharacterSetName() path.StringPath {
+func CharacterSetName() path.String {
 	return instance.characterSetName
 }
 
-func CollationName() path.StringPath {
+func CollationName() path.String {
 	return instance.collationName
 }
 
-func DtdIdentifier() path.StringPath {
+func DtdIdentifier() path.String {
 	return instance.dtdIdentifier
 }
 
-func RoutineType() path.StringPath {
+func RoutineType() path.String {
 	return instance.routineType
 }

@@ -30,14 +30,14 @@ func newQFilmList(alias string) QFilmList {
 
 type QFilmList struct {
 	_alias      string
-	fid         path.Int16Path
-	title       path.StringPath
-	description path.StringPath
-	category    path.StringPath
-	price       path.BinaryPath
-	length      path.Int16Path
-	rating      path.StringPath
-	actors      path.StringPath
+	fid         path.Int16
+	title       path.String
+	description path.String
+	category    path.String
+	price       path.Binary
+	length      path.Int16
+	rating      path.String
+	actors      path.String
 }
 
 // core.Table Functions
@@ -73,34 +73,34 @@ func (q QFilmList) GetParent() string {
 
 // Column Functions
 
-func (q QFilmList) Fid() path.Int16Path {
+func (q QFilmList) Fid() path.Int16 {
 	return q.fid
 }
 
-func (q QFilmList) Title() path.StringPath {
+func (q QFilmList) Title() path.String {
 	return q.title
 }
 
-func (q QFilmList) Description() path.StringPath {
+func (q QFilmList) Description() path.String {
 	return q.description
 }
 
-func (q QFilmList) Category() path.StringPath {
+func (q QFilmList) Category() path.String {
 	return q.category
 }
 
-func (q QFilmList) Price() path.BinaryPath {
+func (q QFilmList) Price() path.Binary {
 	return q.price
 }
 
-func (q QFilmList) Length() path.Int16Path {
+func (q QFilmList) Length() path.Int16 {
 	return q.length
 }
 
-func (q QFilmList) Rating() path.StringPath {
+func (q QFilmList) Rating() path.String {
 	return q.rating
 }
 
-func (q QFilmList) Actors() path.StringPath {
+func (q QFilmList) Actors() path.String {
 	return q.actors
 }

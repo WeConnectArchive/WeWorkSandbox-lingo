@@ -25,9 +25,9 @@ func newQFilmActor(alias string) QFilmActor {
 
 type QFilmActor struct {
 	_alias     string
-	actorId    path.Int16Path
-	filmId     path.Int16Path
-	lastUpdate path.TimePath
+	actorId    path.Int16
+	filmId     path.Int16
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QFilmActor) GetParent() string {
 
 // Column Functions
 
-func (q QFilmActor) ActorId() path.Int16Path {
+func (q QFilmActor) ActorId() path.Int16 {
 	return q.actorId
 }
 
-func (q QFilmActor) FilmId() path.Int16Path {
+func (q QFilmActor) FilmId() path.Int16 {
 	return q.filmId
 }
 
-func (q QFilmActor) LastUpdate() path.TimePath {
+func (q QFilmActor) LastUpdate() path.Time {
 	return q.lastUpdate
 }

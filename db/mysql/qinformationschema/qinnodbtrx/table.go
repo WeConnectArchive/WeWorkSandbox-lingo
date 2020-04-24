@@ -46,30 +46,30 @@ func newQInnodbTrx(alias string) QInnodbTrx {
 
 type QInnodbTrx struct {
 	_alias                  string
-	trxId                   path.StringPath
-	trxState                path.StringPath
-	trxStarted              path.TimePath
-	trxRequestedLockId      path.StringPath
-	trxWaitStarted          path.TimePath
-	trxWeight               path.Int64Path
-	trxMysqlThreadId        path.Int64Path
-	trxQuery                path.StringPath
-	trxOperationState       path.StringPath
-	trxTablesInUse          path.Int64Path
-	trxTablesLocked         path.Int64Path
-	trxLockStructs          path.Int64Path
-	trxLockMemoryBytes      path.Int64Path
-	trxRowsLocked           path.Int64Path
-	trxRowsModified         path.Int64Path
-	trxConcurrencyTickets   path.Int64Path
-	trxIsolationLevel       path.StringPath
-	trxUniqueChecks         path.IntPath
-	trxForeignKeyChecks     path.IntPath
-	trxLastForeignKeyError  path.StringPath
-	trxAdaptiveHashLatched  path.IntPath
-	trxAdaptiveHashTimeout  path.Int64Path
-	trxIsReadOnly           path.IntPath
-	trxAutocommitNonLocking path.IntPath
+	trxId                   path.String
+	trxState                path.String
+	trxStarted              path.Time
+	trxRequestedLockId      path.String
+	trxWaitStarted          path.Time
+	trxWeight               path.Int64
+	trxMysqlThreadId        path.Int64
+	trxQuery                path.String
+	trxOperationState       path.String
+	trxTablesInUse          path.Int64
+	trxTablesLocked         path.Int64
+	trxLockStructs          path.Int64
+	trxLockMemoryBytes      path.Int64
+	trxRowsLocked           path.Int64
+	trxRowsModified         path.Int64
+	trxConcurrencyTickets   path.Int64
+	trxIsolationLevel       path.String
+	trxUniqueChecks         path.Int
+	trxForeignKeyChecks     path.Int
+	trxLastForeignKeyError  path.String
+	trxAdaptiveHashLatched  path.Int
+	trxAdaptiveHashTimeout  path.Int64
+	trxIsReadOnly           path.Int
+	trxAutocommitNonLocking path.Int
 }
 
 // core.Table Functions
@@ -121,98 +121,98 @@ func (q QInnodbTrx) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbTrx) TrxId() path.StringPath {
+func (q QInnodbTrx) TrxId() path.String {
 	return q.trxId
 }
 
-func (q QInnodbTrx) TrxState() path.StringPath {
+func (q QInnodbTrx) TrxState() path.String {
 	return q.trxState
 }
 
-func (q QInnodbTrx) TrxStarted() path.TimePath {
+func (q QInnodbTrx) TrxStarted() path.Time {
 	return q.trxStarted
 }
 
-func (q QInnodbTrx) TrxRequestedLockId() path.StringPath {
+func (q QInnodbTrx) TrxRequestedLockId() path.String {
 	return q.trxRequestedLockId
 }
 
-func (q QInnodbTrx) TrxWaitStarted() path.TimePath {
+func (q QInnodbTrx) TrxWaitStarted() path.Time {
 	return q.trxWaitStarted
 }
 
-func (q QInnodbTrx) TrxWeight() path.Int64Path {
+func (q QInnodbTrx) TrxWeight() path.Int64 {
 	return q.trxWeight
 }
 
-func (q QInnodbTrx) TrxMysqlThreadId() path.Int64Path {
+func (q QInnodbTrx) TrxMysqlThreadId() path.Int64 {
 	return q.trxMysqlThreadId
 }
 
-func (q QInnodbTrx) TrxQuery() path.StringPath {
+func (q QInnodbTrx) TrxQuery() path.String {
 	return q.trxQuery
 }
 
-func (q QInnodbTrx) TrxOperationState() path.StringPath {
+func (q QInnodbTrx) TrxOperationState() path.String {
 	return q.trxOperationState
 }
 
-func (q QInnodbTrx) TrxTablesInUse() path.Int64Path {
+func (q QInnodbTrx) TrxTablesInUse() path.Int64 {
 	return q.trxTablesInUse
 }
 
-func (q QInnodbTrx) TrxTablesLocked() path.Int64Path {
+func (q QInnodbTrx) TrxTablesLocked() path.Int64 {
 	return q.trxTablesLocked
 }
 
-func (q QInnodbTrx) TrxLockStructs() path.Int64Path {
+func (q QInnodbTrx) TrxLockStructs() path.Int64 {
 	return q.trxLockStructs
 }
 
-func (q QInnodbTrx) TrxLockMemoryBytes() path.Int64Path {
+func (q QInnodbTrx) TrxLockMemoryBytes() path.Int64 {
 	return q.trxLockMemoryBytes
 }
 
-func (q QInnodbTrx) TrxRowsLocked() path.Int64Path {
+func (q QInnodbTrx) TrxRowsLocked() path.Int64 {
 	return q.trxRowsLocked
 }
 
-func (q QInnodbTrx) TrxRowsModified() path.Int64Path {
+func (q QInnodbTrx) TrxRowsModified() path.Int64 {
 	return q.trxRowsModified
 }
 
-func (q QInnodbTrx) TrxConcurrencyTickets() path.Int64Path {
+func (q QInnodbTrx) TrxConcurrencyTickets() path.Int64 {
 	return q.trxConcurrencyTickets
 }
 
-func (q QInnodbTrx) TrxIsolationLevel() path.StringPath {
+func (q QInnodbTrx) TrxIsolationLevel() path.String {
 	return q.trxIsolationLevel
 }
 
-func (q QInnodbTrx) TrxUniqueChecks() path.IntPath {
+func (q QInnodbTrx) TrxUniqueChecks() path.Int {
 	return q.trxUniqueChecks
 }
 
-func (q QInnodbTrx) TrxForeignKeyChecks() path.IntPath {
+func (q QInnodbTrx) TrxForeignKeyChecks() path.Int {
 	return q.trxForeignKeyChecks
 }
 
-func (q QInnodbTrx) TrxLastForeignKeyError() path.StringPath {
+func (q QInnodbTrx) TrxLastForeignKeyError() path.String {
 	return q.trxLastForeignKeyError
 }
 
-func (q QInnodbTrx) TrxAdaptiveHashLatched() path.IntPath {
+func (q QInnodbTrx) TrxAdaptiveHashLatched() path.Int {
 	return q.trxAdaptiveHashLatched
 }
 
-func (q QInnodbTrx) TrxAdaptiveHashTimeout() path.Int64Path {
+func (q QInnodbTrx) TrxAdaptiveHashTimeout() path.Int64 {
 	return q.trxAdaptiveHashTimeout
 }
 
-func (q QInnodbTrx) TrxIsReadOnly() path.IntPath {
+func (q QInnodbTrx) TrxIsReadOnly() path.Int {
 	return q.trxIsReadOnly
 }
 
-func (q QInnodbTrx) TrxAutocommitNonLocking() path.IntPath {
+func (q QInnodbTrx) TrxAutocommitNonLocking() path.Int {
 	return q.trxAutocommitNonLocking
 }

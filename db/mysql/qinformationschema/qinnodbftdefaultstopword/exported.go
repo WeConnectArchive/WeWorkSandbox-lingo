@@ -10,6 +10,6 @@ func Q() QInnodbFtDefaultStopword {
 	return instance
 }
 
-func Value() path.StringPath {
+func Value() path.String {
 	return instance.value
 }
