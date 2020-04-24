@@ -151,14 +151,14 @@ func createPrivateNewFunc(table string, cols []*column) *jen.Statement {
 //
 // type QResourceGroup struct {
 //    _alias       string
-//    uuid         path.BinaryPath
+//    uuid         path.Binary
 //    name         path.String
 //    internalName path.String
 //    description  path.String
-//    version      path.IntPath
-//    createdAt    path.TimePath
-//    updatedAt    path.TimePath
-//    deletedAt    path.TimePath
+//    version      path.Int
+//    createdAt    path.Time
+//    updatedAt    path.Time
+//    deletedAt    path.Time
 // }
 func createStruct(table string, cols []*column) *jen.Statement {
 	structName := ToTableStruct(table)
@@ -261,7 +261,7 @@ func createGetParentSchemaFunc(schema, table string) *jen.Statement {
 
 // createColumnFunctions makes each columns Path function
 //
-// func (q QResourceGroup) UUID() path.BinaryPath {
+// func (q QResourceGroup) UUID() path.Binary {
 //    return q.uuid
 // }
 //
