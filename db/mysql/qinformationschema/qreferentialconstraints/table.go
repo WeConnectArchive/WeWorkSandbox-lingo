@@ -33,17 +33,17 @@ func newQReferentialConstraints(alias string) QReferentialConstraints {
 
 type QReferentialConstraints struct {
 	_alias                  string
-	constraintCatalog       path.StringPath
-	constraintSchema        path.StringPath
-	constraintName          path.StringPath
-	uniqueConstraintCatalog path.StringPath
-	uniqueConstraintSchema  path.StringPath
-	uniqueConstraintName    path.StringPath
-	matchOption             path.StringPath
-	updateRule              path.StringPath
-	deleteRule              path.StringPath
-	tableName               path.StringPath
-	referencedTableName     path.StringPath
+	constraintCatalog       path.String
+	constraintSchema        path.String
+	constraintName          path.String
+	uniqueConstraintCatalog path.String
+	uniqueConstraintSchema  path.String
+	uniqueConstraintName    path.String
+	matchOption             path.String
+	updateRule              path.String
+	deleteRule              path.String
+	tableName               path.String
+	referencedTableName     path.String
 }
 
 // core.Table Functions
@@ -82,46 +82,46 @@ func (q QReferentialConstraints) GetParent() string {
 
 // Column Functions
 
-func (q QReferentialConstraints) ConstraintCatalog() path.StringPath {
+func (q QReferentialConstraints) ConstraintCatalog() path.String {
 	return q.constraintCatalog
 }
 
-func (q QReferentialConstraints) ConstraintSchema() path.StringPath {
+func (q QReferentialConstraints) ConstraintSchema() path.String {
 	return q.constraintSchema
 }
 
-func (q QReferentialConstraints) ConstraintName() path.StringPath {
+func (q QReferentialConstraints) ConstraintName() path.String {
 	return q.constraintName
 }
 
-func (q QReferentialConstraints) UniqueConstraintCatalog() path.StringPath {
+func (q QReferentialConstraints) UniqueConstraintCatalog() path.String {
 	return q.uniqueConstraintCatalog
 }
 
-func (q QReferentialConstraints) UniqueConstraintSchema() path.StringPath {
+func (q QReferentialConstraints) UniqueConstraintSchema() path.String {
 	return q.uniqueConstraintSchema
 }
 
-func (q QReferentialConstraints) UniqueConstraintName() path.StringPath {
+func (q QReferentialConstraints) UniqueConstraintName() path.String {
 	return q.uniqueConstraintName
 }
 
-func (q QReferentialConstraints) MatchOption() path.StringPath {
+func (q QReferentialConstraints) MatchOption() path.String {
 	return q.matchOption
 }
 
-func (q QReferentialConstraints) UpdateRule() path.StringPath {
+func (q QReferentialConstraints) UpdateRule() path.String {
 	return q.updateRule
 }
 
-func (q QReferentialConstraints) DeleteRule() path.StringPath {
+func (q QReferentialConstraints) DeleteRule() path.String {
 	return q.deleteRule
 }
 
-func (q QReferentialConstraints) TableName() path.StringPath {
+func (q QReferentialConstraints) TableName() path.String {
 	return q.tableName
 }
 
-func (q QReferentialConstraints) ReferencedTableName() path.StringPath {
+func (q QReferentialConstraints) ReferencedTableName() path.String {
 	return q.referencedTableName
 }

@@ -10,14 +10,14 @@ func Q() QInnodbSysVirtual {
 	return instance
 }
 
-func TableId() path.Int64Path {
+func TableId() path.Int64 {
 	return instance.tableId
 }
 
-func Pos() path.IntPath {
+func Pos() path.Int {
 	return instance.pos
 }
 
-func BasePos() path.IntPath {
+func BasePos() path.Int {
 	return instance.basePos
 }

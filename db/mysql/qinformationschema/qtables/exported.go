@@ -10,86 +10,86 @@ func Q() QTables {
 	return instance
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func TableType() path.StringPath {
+func TableType() path.String {
 	return instance.tableType
 }
 
-func Engine() path.StringPath {
+func Engine() path.String {
 	return instance.engine
 }
 
-func Version() path.Int64Path {
+func Version() path.Int64 {
 	return instance.version
 }
 
-func RowFormat() path.StringPath {
+func RowFormat() path.String {
 	return instance.rowFormat
 }
 
-func TableRows() path.Int64Path {
+func TableRows() path.Int64 {
 	return instance.tableRows
 }
 
-func AvgRowLength() path.Int64Path {
+func AvgRowLength() path.Int64 {
 	return instance.avgRowLength
 }
 
-func DataLength() path.Int64Path {
+func DataLength() path.Int64 {
 	return instance.dataLength
 }
 
-func MaxDataLength() path.Int64Path {
+func MaxDataLength() path.Int64 {
 	return instance.maxDataLength
 }
 
-func IndexLength() path.Int64Path {
+func IndexLength() path.Int64 {
 	return instance.indexLength
 }
 
-func DataFree() path.Int64Path {
+func DataFree() path.Int64 {
 	return instance.dataFree
 }
 
-func AutoIncrement() path.Int64Path {
+func AutoIncrement() path.Int64 {
 	return instance.autoIncrement
 }
 
-func CreateTime() path.TimePath {
+func CreateTime() path.Time {
 	return instance.createTime
 }
 
-func UpdateTime() path.TimePath {
+func UpdateTime() path.Time {
 	return instance.updateTime
 }
 
-func CheckTime() path.TimePath {
+func CheckTime() path.Time {
 	return instance.checkTime
 }
 
-func TableCollation() path.StringPath {
+func TableCollation() path.String {
 	return instance.tableCollation
 }
 
-func Checksum() path.Int64Path {
+func Checksum() path.Int64 {
 	return instance.checksum
 }
 
-func CreateOptions() path.StringPath {
+func CreateOptions() path.String {
 	return instance.createOptions
 }
 
-func TableComment() path.StringPath {
+func TableComment() path.String {
 	return instance.tableComment
 }

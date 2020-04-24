@@ -25,9 +25,9 @@ func newQLanguage(alias string) QLanguage {
 
 type QLanguage struct {
 	_alias     string
-	languageId path.Int8Path
-	name       path.StringPath
-	lastUpdate path.TimePath
+	languageId path.Int8
+	name       path.String
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QLanguage) GetParent() string {
 
 // Column Functions
 
-func (q QLanguage) LanguageId() path.Int8Path {
+func (q QLanguage) LanguageId() path.Int8 {
 	return q.languageId
 }
 
-func (q QLanguage) Name() path.StringPath {
+func (q QLanguage) Name() path.String {
 	return q.name
 }
 
-func (q QLanguage) LastUpdate() path.TimePath {
+func (q QLanguage) LastUpdate() path.Time {
 	return q.lastUpdate
 }

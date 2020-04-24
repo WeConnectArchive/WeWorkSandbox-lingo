@@ -19,7 +19,7 @@ var _ = Describe("Bool", func() {
 			name  string
 			alias string
 
-			p path.BoolPath
+			p path.Bool
 		)
 
 		BeforeEach(func() {
@@ -32,8 +32,8 @@ var _ = Describe("Bool", func() {
 			p = path.NewBoolPathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `BoolPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.BoolPath{}))
+		It("Returns a `Bool`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Bool{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -55,7 +55,7 @@ var _ = Describe("Bool", func() {
 			e    core.Table
 			name string
 
-			p path.BoolPath
+			p path.Bool
 		)
 
 		BeforeEach(func() {
@@ -67,8 +67,8 @@ var _ = Describe("Bool", func() {
 			p = path.NewBoolPath(e, name)
 		})
 
-		It("Returns a `BoolPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.BoolPath{}))
+		It("Returns a `Bool`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Bool{}))
 		})
 
 		It("Has the given parent table", func() {

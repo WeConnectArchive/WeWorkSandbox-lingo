@@ -10,14 +10,14 @@ func Q() QSalesByStore {
 	return instance
 }
 
-func Store() path.StringPath {
+func Store() path.String {
 	return instance.store
 }
 
-func Manager() path.StringPath {
+func Manager() path.String {
 	return instance.manager
 }
 
-func TotalSales() path.BinaryPath {
+func TotalSales() path.Binary {
 	return instance.totalSales
 }

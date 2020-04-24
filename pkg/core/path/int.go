@@ -6,137 +6,137 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewIntPathWithAlias(e core.Table, name, alias string) IntPath {
-	return IntPath{
+func NewIntPathWithAlias(e core.Table, name, alias string) Int {
+	return Int{
 		entity: e,
 		name:   name,
 		alias:  alias,
 	}
 }
 
-func NewIntPath(e core.Table, name string) IntPath {
+func NewIntPath(e core.Table, name string) Int {
 	return NewIntPathWithAlias(e, name, "")
 }
 
-type IntPath struct {
+type Int struct {
 	entity core.Table
 	name   string
 	alias  string
 }
 
-func (i IntPath) GetParent() core.Table {
+func (i Int) GetParent() core.Table {
 	return i.entity
 }
 
-func (i IntPath) GetName() string {
+func (i Int) GetName() string {
 	return i.name
 }
 
-func (i IntPath) GetAlias() string {
+func (i Int) GetAlias() string {
 	return i.alias
 }
 
-func (i IntPath) As(alias string) IntPath {
+func (i Int) As(alias string) Int {
 	i.alias = alias
 	return i
 }
 
-func (i IntPath) GetSQL(d core.Dialect) (core.SQL, error) {
+func (i Int) GetSQL(d core.Dialect) (core.SQL, error) {
 	return ExpandColumnWithDialect(d, i)
 }
 
-func (i IntPath) To(value int) core.Set {
+func (i Int) To(value int) core.Set {
 	return expression.NewSet(i, expression.NewValue(value))
 }
 
-func (i IntPath) ToExpression(setExp core.Expression) core.Set {
+func (i Int) ToExpression(setExp core.Expression) core.Set {
 	return expression.NewSet(i, setExp)
 }
 
-func (i IntPath) Eq(equalTo int) core.ComboExpression {
+func (i Int) Eq(equalTo int) core.ComboExpression {
 	return expression.NewOperator(i, operator.Eq, expression.NewValue(equalTo))
 }
 
-func (i IntPath) EqPath(equalTo core.Expression) core.ComboExpression {
+func (i Int) EqPath(equalTo core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.Eq, equalTo)
 }
 
-func (i IntPath) NotEq(notEqualTo int) core.ComboExpression {
+func (i Int) NotEq(notEqualTo int) core.ComboExpression {
 	return expression.NewOperator(i, operator.NotEq, expression.NewValue(notEqualTo))
 }
 
-func (i IntPath) NotEqPath(notEqualTo core.Expression) core.ComboExpression {
+func (i Int) NotEqPath(notEqualTo core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.NotEq, notEqualTo)
 }
 
-func (i IntPath) LT(lessThan int) core.ComboExpression {
+func (i Int) LT(lessThan int) core.ComboExpression {
 	return expression.NewOperator(i, operator.LessThan, expression.NewValue(lessThan))
 }
 
-func (i IntPath) LTPath(lessThan core.Expression) core.ComboExpression {
+func (i Int) LTPath(lessThan core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.LessThan, lessThan)
 }
 
-func (i IntPath) LTOrEq(lessThanOrEqual int) core.ComboExpression {
+func (i Int) LTOrEq(lessThanOrEqual int) core.ComboExpression {
 	return expression.NewOperator(i, operator.LessThanOrEqual, expression.NewValue(lessThanOrEqual))
 }
 
-func (i IntPath) LTOrEqPath(lessThanOrEqual core.Expression) core.ComboExpression {
+func (i Int) LTOrEqPath(lessThanOrEqual core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.LessThanOrEqual, lessThanOrEqual)
 }
 
-func (i IntPath) GT(greaterThan int) core.ComboExpression {
+func (i Int) GT(greaterThan int) core.ComboExpression {
 	return expression.NewOperator(i, operator.GreaterThan, expression.NewValue(greaterThan))
 }
 
-func (i IntPath) GTPath(greaterThan core.Expression) core.ComboExpression {
+func (i Int) GTPath(greaterThan core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.GreaterThan, greaterThan)
 }
 
-func (i IntPath) GTOrEq(greaterThanOrEqual int) core.ComboExpression {
+func (i Int) GTOrEq(greaterThanOrEqual int) core.ComboExpression {
 	return expression.NewOperator(i, operator.GreaterThanOrEqual, expression.NewValue(greaterThanOrEqual))
 }
 
-func (i IntPath) GTOrEqPath(greaterThanOrEqual core.Expression) core.ComboExpression {
+func (i Int) GTOrEqPath(greaterThanOrEqual core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.GreaterThanOrEqual, greaterThanOrEqual)
 }
 
-func (i IntPath) IsNull() core.ComboExpression {
+func (i Int) IsNull() core.ComboExpression {
 	return expression.NewOperator(i, operator.Null)
 }
 
-func (i IntPath) IsNotNull() core.ComboExpression {
+func (i Int) IsNotNull() core.ComboExpression {
 	return expression.NewOperator(i, operator.NotNull)
 }
 
-func (i IntPath) In(values ...int) core.ComboExpression {
+func (i Int) In(values ...int) core.ComboExpression {
 	return expression.NewOperator(i, operator.In, expression.NewValue(values))
 }
 
-func (i IntPath) InPaths(values ...core.Expression) core.ComboExpression {
+func (i Int) InPaths(values ...core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.In, values...)
 }
 
-func (i IntPath) NotIn(values ...int) core.ComboExpression {
+func (i Int) NotIn(values ...int) core.ComboExpression {
 	return expression.NewOperator(i, operator.NotIn, expression.NewValue(values))
 }
 
-func (i IntPath) NotInPaths(values ...core.Expression) core.ComboExpression {
+func (i Int) NotInPaths(values ...core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.NotIn, values...)
 }
 
-func (i IntPath) Between(first, second int) core.ComboExpression {
+func (i Int) Between(first, second int) core.ComboExpression {
 	return expression.NewOperator(i, operator.Between, expression.NewValue(first).And(expression.NewValue(second)))
 }
 
-func (i IntPath) BetweenPaths(first, second core.Expression) core.ComboExpression {
+func (i Int) BetweenPaths(first, second core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.Between, expression.NewOperator(first, operator.And, second))
 }
 
-func (i IntPath) NotBetween(first, second int) core.ComboExpression {
+func (i Int) NotBetween(first, second int) core.ComboExpression {
 	return expression.NewOperator(i, operator.NotBetween, expression.NewValue(first).And(expression.NewValue(second)))
 }
 
-func (i IntPath) NotBetweenPaths(first, second core.Expression) core.ComboExpression {
+func (i Int) NotBetweenPaths(first, second core.Expression) core.ComboExpression {
 	return expression.NewOperator(i, operator.NotBetween, expression.NewOperator(first, operator.And, second))
 }

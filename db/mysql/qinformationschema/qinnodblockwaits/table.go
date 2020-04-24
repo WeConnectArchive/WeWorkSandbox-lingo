@@ -26,10 +26,10 @@ func newQInnodbLockWaits(alias string) QInnodbLockWaits {
 
 type QInnodbLockWaits struct {
 	_alias          string
-	requestingTrxId path.StringPath
-	requestedLockId path.StringPath
-	blockingTrxId   path.StringPath
-	blockingLockId  path.StringPath
+	requestingTrxId path.String
+	requestedLockId path.String
+	blockingTrxId   path.String
+	blockingLockId  path.String
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QInnodbLockWaits) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbLockWaits) RequestingTrxId() path.StringPath {
+func (q QInnodbLockWaits) RequestingTrxId() path.String {
 	return q.requestingTrxId
 }
 
-func (q QInnodbLockWaits) RequestedLockId() path.StringPath {
+func (q QInnodbLockWaits) RequestedLockId() path.String {
 	return q.requestedLockId
 }
 
-func (q QInnodbLockWaits) BlockingTrxId() path.StringPath {
+func (q QInnodbLockWaits) BlockingTrxId() path.String {
 	return q.blockingTrxId
 }
 
-func (q QInnodbLockWaits) BlockingLockId() path.StringPath {
+func (q QInnodbLockWaits) BlockingLockId() path.String {
 	return q.blockingLockId
 }

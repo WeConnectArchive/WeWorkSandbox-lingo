@@ -30,14 +30,14 @@ func newQInnodbCmpPerIndex(alias string) QInnodbCmpPerIndex {
 
 type QInnodbCmpPerIndex struct {
 	_alias         string
-	databaseName   path.StringPath
-	tableName      path.StringPath
-	indexName      path.StringPath
-	compressOps    path.IntPath
-	compressOpsOk  path.IntPath
-	compressTime   path.IntPath
-	uncompressOps  path.IntPath
-	uncompressTime path.IntPath
+	databaseName   path.String
+	tableName      path.String
+	indexName      path.String
+	compressOps    path.Int
+	compressOpsOk  path.Int
+	compressTime   path.Int
+	uncompressOps  path.Int
+	uncompressTime path.Int
 }
 
 // core.Table Functions
@@ -73,34 +73,34 @@ func (q QInnodbCmpPerIndex) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbCmpPerIndex) DatabaseName() path.StringPath {
+func (q QInnodbCmpPerIndex) DatabaseName() path.String {
 	return q.databaseName
 }
 
-func (q QInnodbCmpPerIndex) TableName() path.StringPath {
+func (q QInnodbCmpPerIndex) TableName() path.String {
 	return q.tableName
 }
 
-func (q QInnodbCmpPerIndex) IndexName() path.StringPath {
+func (q QInnodbCmpPerIndex) IndexName() path.String {
 	return q.indexName
 }
 
-func (q QInnodbCmpPerIndex) CompressOps() path.IntPath {
+func (q QInnodbCmpPerIndex) CompressOps() path.Int {
 	return q.compressOps
 }
 
-func (q QInnodbCmpPerIndex) CompressOpsOk() path.IntPath {
+func (q QInnodbCmpPerIndex) CompressOpsOk() path.Int {
 	return q.compressOpsOk
 }
 
-func (q QInnodbCmpPerIndex) CompressTime() path.IntPath {
+func (q QInnodbCmpPerIndex) CompressTime() path.Int {
 	return q.compressTime
 }
 
-func (q QInnodbCmpPerIndex) UncompressOps() path.IntPath {
+func (q QInnodbCmpPerIndex) UncompressOps() path.Int {
 	return q.uncompressOps
 }
 
-func (q QInnodbCmpPerIndex) UncompressTime() path.IntPath {
+func (q QInnodbCmpPerIndex) UncompressTime() path.Int {
 	return q.uncompressTime
 }

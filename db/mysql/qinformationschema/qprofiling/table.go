@@ -40,24 +40,24 @@ func newQProfiling(alias string) QProfiling {
 
 type QProfiling struct {
 	_alias             string
-	queryId            path.IntPath
-	seq                path.IntPath
-	state              path.StringPath
-	duration           path.BinaryPath
-	cpuUser            path.BinaryPath
-	cpuSystem          path.BinaryPath
-	contextVoluntary   path.IntPath
-	contextInvoluntary path.IntPath
-	blockOpsIn         path.IntPath
-	blockOpsOut        path.IntPath
-	messagesSent       path.IntPath
-	messagesReceived   path.IntPath
-	pageFaultsMajor    path.IntPath
-	pageFaultsMinor    path.IntPath
-	swaps              path.IntPath
-	sourceFunction     path.StringPath
-	sourceFile         path.StringPath
-	sourceLine         path.IntPath
+	queryId            path.Int
+	seq                path.Int
+	state              path.String
+	duration           path.Binary
+	cpuUser            path.Binary
+	cpuSystem          path.Binary
+	contextVoluntary   path.Int
+	contextInvoluntary path.Int
+	blockOpsIn         path.Int
+	blockOpsOut        path.Int
+	messagesSent       path.Int
+	messagesReceived   path.Int
+	pageFaultsMajor    path.Int
+	pageFaultsMinor    path.Int
+	swaps              path.Int
+	sourceFunction     path.String
+	sourceFile         path.String
+	sourceLine         path.Int
 }
 
 // core.Table Functions
@@ -103,74 +103,74 @@ func (q QProfiling) GetParent() string {
 
 // Column Functions
 
-func (q QProfiling) QueryId() path.IntPath {
+func (q QProfiling) QueryId() path.Int {
 	return q.queryId
 }
 
-func (q QProfiling) Seq() path.IntPath {
+func (q QProfiling) Seq() path.Int {
 	return q.seq
 }
 
-func (q QProfiling) State() path.StringPath {
+func (q QProfiling) State() path.String {
 	return q.state
 }
 
-func (q QProfiling) Duration() path.BinaryPath {
+func (q QProfiling) Duration() path.Binary {
 	return q.duration
 }
 
-func (q QProfiling) CpuUser() path.BinaryPath {
+func (q QProfiling) CpuUser() path.Binary {
 	return q.cpuUser
 }
 
-func (q QProfiling) CpuSystem() path.BinaryPath {
+func (q QProfiling) CpuSystem() path.Binary {
 	return q.cpuSystem
 }
 
-func (q QProfiling) ContextVoluntary() path.IntPath {
+func (q QProfiling) ContextVoluntary() path.Int {
 	return q.contextVoluntary
 }
 
-func (q QProfiling) ContextInvoluntary() path.IntPath {
+func (q QProfiling) ContextInvoluntary() path.Int {
 	return q.contextInvoluntary
 }
 
-func (q QProfiling) BlockOpsIn() path.IntPath {
+func (q QProfiling) BlockOpsIn() path.Int {
 	return q.blockOpsIn
 }
 
-func (q QProfiling) BlockOpsOut() path.IntPath {
+func (q QProfiling) BlockOpsOut() path.Int {
 	return q.blockOpsOut
 }
 
-func (q QProfiling) MessagesSent() path.IntPath {
+func (q QProfiling) MessagesSent() path.Int {
 	return q.messagesSent
 }
 
-func (q QProfiling) MessagesReceived() path.IntPath {
+func (q QProfiling) MessagesReceived() path.Int {
 	return q.messagesReceived
 }
 
-func (q QProfiling) PageFaultsMajor() path.IntPath {
+func (q QProfiling) PageFaultsMajor() path.Int {
 	return q.pageFaultsMajor
 }
 
-func (q QProfiling) PageFaultsMinor() path.IntPath {
+func (q QProfiling) PageFaultsMinor() path.Int {
 	return q.pageFaultsMinor
 }
 
-func (q QProfiling) Swaps() path.IntPath {
+func (q QProfiling) Swaps() path.Int {
 	return q.swaps
 }
 
-func (q QProfiling) SourceFunction() path.StringPath {
+func (q QProfiling) SourceFunction() path.String {
 	return q.sourceFunction
 }
 
-func (q QProfiling) SourceFile() path.StringPath {
+func (q QProfiling) SourceFile() path.String {
 	return q.sourceFile
 }
 
-func (q QProfiling) SourceLine() path.IntPath {
+func (q QProfiling) SourceLine() path.Int {
 	return q.sourceLine
 }

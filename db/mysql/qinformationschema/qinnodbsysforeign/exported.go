@@ -10,22 +10,22 @@ func Q() QInnodbSysForeign {
 	return instance
 }
 
-func Id() path.StringPath {
+func Id() path.String {
 	return instance.id
 }
 
-func ForName() path.StringPath {
+func ForName() path.String {
 	return instance.forName
 }
 
-func RefName() path.StringPath {
+func RefName() path.String {
 	return instance.refName
 }
 
-func NCols() path.IntPath {
+func NCols() path.Int {
 	return instance.nCols
 }
 
-func Type() path.IntPath {
+func Type() path.Int {
 	return instance.__type
 }

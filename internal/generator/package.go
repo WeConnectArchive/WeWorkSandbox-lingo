@@ -30,7 +30,7 @@ func GeneratePackageMembers(info TableInfo, columns []*column) (string, error) {
 //    return q.uuid
 // }
 //
-// func Name() path.StringPath {
+// func Name() path.String {
 //    return q.name
 // }
 func createExportedColumnFunctions(cols []*column) <-chan *jen.Statement {

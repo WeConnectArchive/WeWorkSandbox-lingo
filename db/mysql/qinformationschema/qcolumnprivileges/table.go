@@ -29,13 +29,13 @@ func newQColumnPrivileges(alias string) QColumnPrivileges {
 
 type QColumnPrivileges struct {
 	_alias        string
-	grantee       path.StringPath
-	tableCatalog  path.StringPath
-	tableSchema   path.StringPath
-	tableName     path.StringPath
-	columnName    path.StringPath
-	privilegeType path.StringPath
-	isGrantable   path.StringPath
+	grantee       path.String
+	tableCatalog  path.String
+	tableSchema   path.String
+	tableName     path.String
+	columnName    path.String
+	privilegeType path.String
+	isGrantable   path.String
 }
 
 // core.Table Functions
@@ -70,30 +70,30 @@ func (q QColumnPrivileges) GetParent() string {
 
 // Column Functions
 
-func (q QColumnPrivileges) Grantee() path.StringPath {
+func (q QColumnPrivileges) Grantee() path.String {
 	return q.grantee
 }
 
-func (q QColumnPrivileges) TableCatalog() path.StringPath {
+func (q QColumnPrivileges) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QColumnPrivileges) TableSchema() path.StringPath {
+func (q QColumnPrivileges) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QColumnPrivileges) TableName() path.StringPath {
+func (q QColumnPrivileges) TableName() path.String {
 	return q.tableName
 }
 
-func (q QColumnPrivileges) ColumnName() path.StringPath {
+func (q QColumnPrivileges) ColumnName() path.String {
 	return q.columnName
 }
 
-func (q QColumnPrivileges) PrivilegeType() path.StringPath {
+func (q QColumnPrivileges) PrivilegeType() path.String {
 	return q.privilegeType
 }
 
-func (q QColumnPrivileges) IsGrantable() path.StringPath {
+func (q QColumnPrivileges) IsGrantable() path.String {
 	return q.isGrantable
 }

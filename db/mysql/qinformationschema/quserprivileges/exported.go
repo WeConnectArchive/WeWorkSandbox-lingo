@@ -10,18 +10,18 @@ func Q() QUserPrivileges {
 	return instance
 }
 
-func Grantee() path.StringPath {
+func Grantee() path.String {
 	return instance.grantee
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func PrivilegeType() path.StringPath {
+func PrivilegeType() path.String {
 	return instance.privilegeType
 }
 
-func IsGrantable() path.StringPath {
+func IsGrantable() path.String {
 	return instance.isGrantable
 }

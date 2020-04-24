@@ -30,14 +30,14 @@ func newQProcesslist(alias string) QProcesslist {
 
 type QProcesslist struct {
 	_alias  string
-	id      path.Int64Path
-	user    path.StringPath
-	host    path.StringPath
-	db      path.StringPath
-	command path.StringPath
-	time    path.IntPath
-	state   path.StringPath
-	info    path.StringPath
+	id      path.Int64
+	user    path.String
+	host    path.String
+	db      path.String
+	command path.String
+	time    path.Int
+	state   path.String
+	info    path.String
 }
 
 // core.Table Functions
@@ -73,34 +73,34 @@ func (q QProcesslist) GetParent() string {
 
 // Column Functions
 
-func (q QProcesslist) Id() path.Int64Path {
+func (q QProcesslist) Id() path.Int64 {
 	return q.id
 }
 
-func (q QProcesslist) User() path.StringPath {
+func (q QProcesslist) User() path.String {
 	return q.user
 }
 
-func (q QProcesslist) Host() path.StringPath {
+func (q QProcesslist) Host() path.String {
 	return q.host
 }
 
-func (q QProcesslist) Db() path.StringPath {
+func (q QProcesslist) Db() path.String {
 	return q.db
 }
 
-func (q QProcesslist) Command() path.StringPath {
+func (q QProcesslist) Command() path.String {
 	return q.command
 }
 
-func (q QProcesslist) Time() path.IntPath {
+func (q QProcesslist) Time() path.Int {
 	return q.time
 }
 
-func (q QProcesslist) State() path.StringPath {
+func (q QProcesslist) State() path.String {
 	return q.state
 }
 
-func (q QProcesslist) Info() path.StringPath {
+func (q QProcesslist) Info() path.String {
 	return q.info
 }

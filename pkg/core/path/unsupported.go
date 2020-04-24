@@ -2,37 +2,37 @@ package path
 
 import "github.com/weworksandbox/lingo/pkg/core"
 
-func NewUnsupportedPathWithAlias(e core.Table, name, alias string) UnsupportedPath {
-	return UnsupportedPath{
+func NewUnsupportedPathWithAlias(e core.Table, name, alias string) Unsupported {
+	return Unsupported{
 		entity: e,
 		name:   name,
 		alias:  alias,
 	}
 }
 
-func NewUnsupportedPath(e core.Table, name string) UnsupportedPath {
+func NewUnsupportedPath(e core.Table, name string) Unsupported {
 	return NewUnsupportedPathWithAlias(e, name, "")
 }
 
-type UnsupportedPath struct {
+type Unsupported struct {
 	entity core.Table
 	name   string
 	alias  string
 }
 
-func (i UnsupportedPath) GetParent() core.Table {
+func (i Unsupported) GetParent() core.Table {
 	return i.entity
 }
 
-func (i UnsupportedPath) GetName() string {
+func (i Unsupported) GetName() string {
 	return i.name
 }
 
-func (i UnsupportedPath) GetAlias() string {
+func (i Unsupported) GetAlias() string {
 	return i.alias
 }
 
-func (UnsupportedPath) GetSQL(_ core.Dialect) (core.SQL, error) {
+func (Unsupported) GetSQL(_ core.Dialect) (core.SQL, error) {
 	// TODO - Revisit how we want to deal with unsupported columns
 	return core.NewEmptySQL(), nil
 }

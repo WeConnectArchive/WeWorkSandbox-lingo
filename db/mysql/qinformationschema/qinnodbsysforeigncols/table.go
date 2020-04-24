@@ -26,10 +26,10 @@ func newQInnodbSysForeignCols(alias string) QInnodbSysForeignCols {
 
 type QInnodbSysForeignCols struct {
 	_alias     string
-	id         path.StringPath
-	forColName path.StringPath
-	refColName path.StringPath
-	pos        path.IntPath
+	id         path.String
+	forColName path.String
+	refColName path.String
+	pos        path.Int
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QInnodbSysForeignCols) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysForeignCols) Id() path.StringPath {
+func (q QInnodbSysForeignCols) Id() path.String {
 	return q.id
 }
 
-func (q QInnodbSysForeignCols) ForColName() path.StringPath {
+func (q QInnodbSysForeignCols) ForColName() path.String {
 	return q.forColName
 }
 
-func (q QInnodbSysForeignCols) RefColName() path.StringPath {
+func (q QInnodbSysForeignCols) RefColName() path.String {
 	return q.refColName
 }
 
-func (q QInnodbSysForeignCols) Pos() path.IntPath {
+func (q QInnodbSysForeignCols) Pos() path.Int {
 	return q.pos
 }

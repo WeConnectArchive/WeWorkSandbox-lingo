@@ -10,14 +10,14 @@ func Q() QInnodbSysFields {
 	return instance
 }
 
-func IndexId() path.Int64Path {
+func IndexId() path.Int64 {
 	return instance.indexId
 }
 
-func Name() path.StringPath {
+func Name() path.String {
 	return instance.name
 }
 
-func Pos() path.IntPath {
+func Pos() path.Int {
 	return instance.pos
 }

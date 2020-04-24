@@ -54,38 +54,38 @@ func newQInnodbBufferPoolStats(alias string) QInnodbBufferPoolStats {
 
 type QInnodbBufferPoolStats struct {
 	_alias                      string
-	poolId                      path.Int64Path
-	poolSize                    path.Int64Path
-	freeBuffers                 path.Int64Path
-	databasePages               path.Int64Path
-	oldDatabasePages            path.Int64Path
-	modifiedDatabasePages       path.Int64Path
-	pendingDecompress           path.Int64Path
-	pendingReads                path.Int64Path
-	pendingFlushLru             path.Int64Path
-	pendingFlushList            path.Int64Path
-	pagesMadeYoung              path.Int64Path
-	pagesNotMadeYoung           path.Int64Path
-	pagesMadeYoungRate          path.Float64Path
-	pagesMadeNotYoungRate       path.Float64Path
-	numberPagesRead             path.Int64Path
-	numberPagesCreated          path.Int64Path
-	numberPagesWritten          path.Int64Path
-	pagesReadRate               path.Float64Path
-	pagesCreateRate             path.Float64Path
-	pagesWrittenRate            path.Float64Path
-	numberPagesGet              path.Int64Path
-	hitRate                     path.Int64Path
-	youngMakePerThousandGets    path.Int64Path
-	notYoungMakePerThousandGets path.Int64Path
-	numberPagesReadAhead        path.Int64Path
-	numberReadAheadEvicted      path.Int64Path
-	readAheadRate               path.Float64Path
-	readAheadEvictedRate        path.Float64Path
-	lruIoTotal                  path.Int64Path
-	lruIoCurrent                path.Int64Path
-	uncompressTotal             path.Int64Path
-	uncompressCurrent           path.Int64Path
+	poolId                      path.Int64
+	poolSize                    path.Int64
+	freeBuffers                 path.Int64
+	databasePages               path.Int64
+	oldDatabasePages            path.Int64
+	modifiedDatabasePages       path.Int64
+	pendingDecompress           path.Int64
+	pendingReads                path.Int64
+	pendingFlushLru             path.Int64
+	pendingFlushList            path.Int64
+	pagesMadeYoung              path.Int64
+	pagesNotMadeYoung           path.Int64
+	pagesMadeYoungRate          path.Float64
+	pagesMadeNotYoungRate       path.Float64
+	numberPagesRead             path.Int64
+	numberPagesCreated          path.Int64
+	numberPagesWritten          path.Int64
+	pagesReadRate               path.Float64
+	pagesCreateRate             path.Float64
+	pagesWrittenRate            path.Float64
+	numberPagesGet              path.Int64
+	hitRate                     path.Int64
+	youngMakePerThousandGets    path.Int64
+	notYoungMakePerThousandGets path.Int64
+	numberPagesReadAhead        path.Int64
+	numberReadAheadEvicted      path.Int64
+	readAheadRate               path.Float64
+	readAheadEvictedRate        path.Float64
+	lruIoTotal                  path.Int64
+	lruIoCurrent                path.Int64
+	uncompressTotal             path.Int64
+	uncompressCurrent           path.Int64
 }
 
 // core.Table Functions
@@ -145,130 +145,130 @@ func (q QInnodbBufferPoolStats) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbBufferPoolStats) PoolId() path.Int64Path {
+func (q QInnodbBufferPoolStats) PoolId() path.Int64 {
 	return q.poolId
 }
 
-func (q QInnodbBufferPoolStats) PoolSize() path.Int64Path {
+func (q QInnodbBufferPoolStats) PoolSize() path.Int64 {
 	return q.poolSize
 }
 
-func (q QInnodbBufferPoolStats) FreeBuffers() path.Int64Path {
+func (q QInnodbBufferPoolStats) FreeBuffers() path.Int64 {
 	return q.freeBuffers
 }
 
-func (q QInnodbBufferPoolStats) DatabasePages() path.Int64Path {
+func (q QInnodbBufferPoolStats) DatabasePages() path.Int64 {
 	return q.databasePages
 }
 
-func (q QInnodbBufferPoolStats) OldDatabasePages() path.Int64Path {
+func (q QInnodbBufferPoolStats) OldDatabasePages() path.Int64 {
 	return q.oldDatabasePages
 }
 
-func (q QInnodbBufferPoolStats) ModifiedDatabasePages() path.Int64Path {
+func (q QInnodbBufferPoolStats) ModifiedDatabasePages() path.Int64 {
 	return q.modifiedDatabasePages
 }
 
-func (q QInnodbBufferPoolStats) PendingDecompress() path.Int64Path {
+func (q QInnodbBufferPoolStats) PendingDecompress() path.Int64 {
 	return q.pendingDecompress
 }
 
-func (q QInnodbBufferPoolStats) PendingReads() path.Int64Path {
+func (q QInnodbBufferPoolStats) PendingReads() path.Int64 {
 	return q.pendingReads
 }
 
-func (q QInnodbBufferPoolStats) PendingFlushLru() path.Int64Path {
+func (q QInnodbBufferPoolStats) PendingFlushLru() path.Int64 {
 	return q.pendingFlushLru
 }
 
-func (q QInnodbBufferPoolStats) PendingFlushList() path.Int64Path {
+func (q QInnodbBufferPoolStats) PendingFlushList() path.Int64 {
 	return q.pendingFlushList
 }
 
-func (q QInnodbBufferPoolStats) PagesMadeYoung() path.Int64Path {
+func (q QInnodbBufferPoolStats) PagesMadeYoung() path.Int64 {
 	return q.pagesMadeYoung
 }
 
-func (q QInnodbBufferPoolStats) PagesNotMadeYoung() path.Int64Path {
+func (q QInnodbBufferPoolStats) PagesNotMadeYoung() path.Int64 {
 	return q.pagesNotMadeYoung
 }
 
-func (q QInnodbBufferPoolStats) PagesMadeYoungRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) PagesMadeYoungRate() path.Float64 {
 	return q.pagesMadeYoungRate
 }
 
-func (q QInnodbBufferPoolStats) PagesMadeNotYoungRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) PagesMadeNotYoungRate() path.Float64 {
 	return q.pagesMadeNotYoungRate
 }
 
-func (q QInnodbBufferPoolStats) NumberPagesRead() path.Int64Path {
+func (q QInnodbBufferPoolStats) NumberPagesRead() path.Int64 {
 	return q.numberPagesRead
 }
 
-func (q QInnodbBufferPoolStats) NumberPagesCreated() path.Int64Path {
+func (q QInnodbBufferPoolStats) NumberPagesCreated() path.Int64 {
 	return q.numberPagesCreated
 }
 
-func (q QInnodbBufferPoolStats) NumberPagesWritten() path.Int64Path {
+func (q QInnodbBufferPoolStats) NumberPagesWritten() path.Int64 {
 	return q.numberPagesWritten
 }
 
-func (q QInnodbBufferPoolStats) PagesReadRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) PagesReadRate() path.Float64 {
 	return q.pagesReadRate
 }
 
-func (q QInnodbBufferPoolStats) PagesCreateRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) PagesCreateRate() path.Float64 {
 	return q.pagesCreateRate
 }
 
-func (q QInnodbBufferPoolStats) PagesWrittenRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) PagesWrittenRate() path.Float64 {
 	return q.pagesWrittenRate
 }
 
-func (q QInnodbBufferPoolStats) NumberPagesGet() path.Int64Path {
+func (q QInnodbBufferPoolStats) NumberPagesGet() path.Int64 {
 	return q.numberPagesGet
 }
 
-func (q QInnodbBufferPoolStats) HitRate() path.Int64Path {
+func (q QInnodbBufferPoolStats) HitRate() path.Int64 {
 	return q.hitRate
 }
 
-func (q QInnodbBufferPoolStats) YoungMakePerThousandGets() path.Int64Path {
+func (q QInnodbBufferPoolStats) YoungMakePerThousandGets() path.Int64 {
 	return q.youngMakePerThousandGets
 }
 
-func (q QInnodbBufferPoolStats) NotYoungMakePerThousandGets() path.Int64Path {
+func (q QInnodbBufferPoolStats) NotYoungMakePerThousandGets() path.Int64 {
 	return q.notYoungMakePerThousandGets
 }
 
-func (q QInnodbBufferPoolStats) NumberPagesReadAhead() path.Int64Path {
+func (q QInnodbBufferPoolStats) NumberPagesReadAhead() path.Int64 {
 	return q.numberPagesReadAhead
 }
 
-func (q QInnodbBufferPoolStats) NumberReadAheadEvicted() path.Int64Path {
+func (q QInnodbBufferPoolStats) NumberReadAheadEvicted() path.Int64 {
 	return q.numberReadAheadEvicted
 }
 
-func (q QInnodbBufferPoolStats) ReadAheadRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) ReadAheadRate() path.Float64 {
 	return q.readAheadRate
 }
 
-func (q QInnodbBufferPoolStats) ReadAheadEvictedRate() path.Float64Path {
+func (q QInnodbBufferPoolStats) ReadAheadEvictedRate() path.Float64 {
 	return q.readAheadEvictedRate
 }
 
-func (q QInnodbBufferPoolStats) LruIoTotal() path.Int64Path {
+func (q QInnodbBufferPoolStats) LruIoTotal() path.Int64 {
 	return q.lruIoTotal
 }
 
-func (q QInnodbBufferPoolStats) LruIoCurrent() path.Int64Path {
+func (q QInnodbBufferPoolStats) LruIoCurrent() path.Int64 {
 	return q.lruIoCurrent
 }
 
-func (q QInnodbBufferPoolStats) UncompressTotal() path.Int64Path {
+func (q QInnodbBufferPoolStats) UncompressTotal() path.Int64 {
 	return q.uncompressTotal
 }
 
-func (q QInnodbBufferPoolStats) UncompressCurrent() path.Int64Path {
+func (q QInnodbBufferPoolStats) UncompressCurrent() path.Int64 {
 	return q.uncompressCurrent
 }

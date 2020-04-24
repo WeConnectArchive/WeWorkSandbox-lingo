@@ -10,98 +10,98 @@ func Q() QEvents {
 	return instance
 }
 
-func EventCatalog() path.StringPath {
+func EventCatalog() path.String {
 	return instance.eventCatalog
 }
 
-func EventSchema() path.StringPath {
+func EventSchema() path.String {
 	return instance.eventSchema
 }
 
-func EventName() path.StringPath {
+func EventName() path.String {
 	return instance.eventName
 }
 
-func Definer() path.StringPath {
+func Definer() path.String {
 	return instance.definer
 }
 
-func TimeZone() path.StringPath {
+func TimeZone() path.String {
 	return instance.timeZone
 }
 
-func EventBody() path.StringPath {
+func EventBody() path.String {
 	return instance.eventBody
 }
 
-func EventDefinition() path.StringPath {
+func EventDefinition() path.String {
 	return instance.eventDefinition
 }
 
-func EventType() path.StringPath {
+func EventType() path.String {
 	return instance.eventType
 }
 
-func ExecuteAt() path.TimePath {
+func ExecuteAt() path.Time {
 	return instance.executeAt
 }
 
-func IntervalValue() path.StringPath {
+func IntervalValue() path.String {
 	return instance.intervalValue
 }
 
-func IntervalField() path.StringPath {
+func IntervalField() path.String {
 	return instance.intervalField
 }
 
-func SqlMode() path.StringPath {
+func SqlMode() path.String {
 	return instance.sqlMode
 }
 
-func Starts() path.TimePath {
+func Starts() path.Time {
 	return instance.starts
 }
 
-func Ends() path.TimePath {
+func Ends() path.Time {
 	return instance.ends
 }
 
-func Status() path.StringPath {
+func Status() path.String {
 	return instance.status
 }
 
-func OnCompletion() path.StringPath {
+func OnCompletion() path.String {
 	return instance.onCompletion
 }
 
-func Created() path.TimePath {
+func Created() path.Time {
 	return instance.created
 }
 
-func LastAltered() path.TimePath {
+func LastAltered() path.Time {
 	return instance.lastAltered
 }
 
-func LastExecuted() path.TimePath {
+func LastExecuted() path.Time {
 	return instance.lastExecuted
 }
 
-func EventComment() path.StringPath {
+func EventComment() path.String {
 	return instance.eventComment
 }
 
-func Originator() path.Int64Path {
+func Originator() path.Int64 {
 	return instance.originator
 }
 
-func CharacterSetClient() path.StringPath {
+func CharacterSetClient() path.String {
 	return instance.characterSetClient
 }
 
-func CollationConnection() path.StringPath {
+func CollationConnection() path.String {
 	return instance.collationConnection
 }
 
-func DatabaseCollation() path.StringPath {
+func DatabaseCollation() path.String {
 	return instance.databaseCollation
 }

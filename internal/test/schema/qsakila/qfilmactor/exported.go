@@ -10,14 +10,14 @@ func Q() QFilmActor {
 	return instance
 }
 
-func ActorId() path.Int16Path {
+func ActorId() path.Int16 {
 	return instance.actorId
 }
 
-func FilmId() path.Int16Path {
+func FilmId() path.Int16 {
 	return instance.filmId
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

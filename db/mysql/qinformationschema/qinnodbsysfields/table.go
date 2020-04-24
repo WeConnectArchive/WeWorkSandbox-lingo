@@ -25,9 +25,9 @@ func newQInnodbSysFields(alias string) QInnodbSysFields {
 
 type QInnodbSysFields struct {
 	_alias  string
-	indexId path.Int64Path
-	name    path.StringPath
-	pos     path.IntPath
+	indexId path.Int64
+	name    path.String
+	pos     path.Int
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QInnodbSysFields) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysFields) IndexId() path.Int64Path {
+func (q QInnodbSysFields) IndexId() path.Int64 {
 	return q.indexId
 }
 
-func (q QInnodbSysFields) Name() path.StringPath {
+func (q QInnodbSysFields) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbSysFields) Pos() path.IntPath {
+func (q QInnodbSysFields) Pos() path.Int {
 	return q.pos
 }

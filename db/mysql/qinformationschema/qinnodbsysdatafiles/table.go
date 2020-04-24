@@ -24,8 +24,8 @@ func newQInnodbSysDatafiles(alias string) QInnodbSysDatafiles {
 
 type QInnodbSysDatafiles struct {
 	_alias string
-	space  path.IntPath
-	path   path.StringPath
+	space  path.Int
+	path   path.String
 }
 
 // core.Table Functions
@@ -55,10 +55,10 @@ func (q QInnodbSysDatafiles) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysDatafiles) Space() path.IntPath {
+func (q QInnodbSysDatafiles) Space() path.Int {
 	return q.space
 }
 
-func (q QInnodbSysDatafiles) Path() path.StringPath {
+func (q QInnodbSysDatafiles) Path() path.String {
 	return q.path
 }

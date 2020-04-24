@@ -31,15 +31,15 @@ func newQInnodbSysTables(alias string) QInnodbSysTables {
 
 type QInnodbSysTables struct {
 	_alias      string
-	tableId     path.Int64Path
-	name        path.StringPath
-	flag        path.IntPath
-	nCols       path.IntPath
-	space       path.IntPath
-	fileFormat  path.StringPath
-	rowFormat   path.StringPath
-	zipPageSize path.IntPath
-	spaceType   path.StringPath
+	tableId     path.Int64
+	name        path.String
+	flag        path.Int
+	nCols       path.Int
+	space       path.Int
+	fileFormat  path.String
+	rowFormat   path.String
+	zipPageSize path.Int
+	spaceType   path.String
 }
 
 // core.Table Functions
@@ -76,38 +76,38 @@ func (q QInnodbSysTables) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysTables) TableId() path.Int64Path {
+func (q QInnodbSysTables) TableId() path.Int64 {
 	return q.tableId
 }
 
-func (q QInnodbSysTables) Name() path.StringPath {
+func (q QInnodbSysTables) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbSysTables) Flag() path.IntPath {
+func (q QInnodbSysTables) Flag() path.Int {
 	return q.flag
 }
 
-func (q QInnodbSysTables) NCols() path.IntPath {
+func (q QInnodbSysTables) NCols() path.Int {
 	return q.nCols
 }
 
-func (q QInnodbSysTables) Space() path.IntPath {
+func (q QInnodbSysTables) Space() path.Int {
 	return q.space
 }
 
-func (q QInnodbSysTables) FileFormat() path.StringPath {
+func (q QInnodbSysTables) FileFormat() path.String {
 	return q.fileFormat
 }
 
-func (q QInnodbSysTables) RowFormat() path.StringPath {
+func (q QInnodbSysTables) RowFormat() path.String {
 	return q.rowFormat
 }
 
-func (q QInnodbSysTables) ZipPageSize() path.IntPath {
+func (q QInnodbSysTables) ZipPageSize() path.Int {
 	return q.zipPageSize
 }
 
-func (q QInnodbSysTables) SpaceType() path.StringPath {
+func (q QInnodbSysTables) SpaceType() path.String {
 	return q.spaceType
 }

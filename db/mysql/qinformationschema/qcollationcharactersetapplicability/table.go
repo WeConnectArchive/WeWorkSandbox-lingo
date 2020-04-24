@@ -24,8 +24,8 @@ func newQCollationCharacterSetApplicability(alias string) QCollationCharacterSet
 
 type QCollationCharacterSetApplicability struct {
 	_alias           string
-	collationName    path.StringPath
-	characterSetName path.StringPath
+	collationName    path.String
+	characterSetName path.String
 }
 
 // core.Table Functions
@@ -55,10 +55,10 @@ func (q QCollationCharacterSetApplicability) GetParent() string {
 
 // Column Functions
 
-func (q QCollationCharacterSetApplicability) CollationName() path.StringPath {
+func (q QCollationCharacterSetApplicability) CollationName() path.String {
 	return q.collationName
 }
 
-func (q QCollationCharacterSetApplicability) CharacterSetName() path.StringPath {
+func (q QCollationCharacterSetApplicability) CharacterSetName() path.String {
 	return q.characterSetName
 }

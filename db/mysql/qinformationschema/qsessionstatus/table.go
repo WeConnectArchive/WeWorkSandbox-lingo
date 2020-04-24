@@ -24,8 +24,8 @@ func newQSessionStatus(alias string) QSessionStatus {
 
 type QSessionStatus struct {
 	_alias        string
-	variableName  path.StringPath
-	variableValue path.StringPath
+	variableName  path.String
+	variableValue path.String
 }
 
 // core.Table Functions
@@ -55,10 +55,10 @@ func (q QSessionStatus) GetParent() string {
 
 // Column Functions
 
-func (q QSessionStatus) VariableName() path.StringPath {
+func (q QSessionStatus) VariableName() path.String {
 	return q.variableName
 }
 
-func (q QSessionStatus) VariableValue() path.StringPath {
+func (q QSessionStatus) VariableValue() path.String {
 	return q.variableValue
 }

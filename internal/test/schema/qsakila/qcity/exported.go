@@ -10,18 +10,18 @@ func Q() QCity {
 	return instance
 }
 
-func CityId() path.Int16Path {
+func CityId() path.Int16 {
 	return instance.cityId
 }
 
-func City() path.StringPath {
+func City() path.String {
 	return instance.city
 }
 
-func CountryId() path.Int16Path {
+func CountryId() path.Int16 {
 	return instance.countryId
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

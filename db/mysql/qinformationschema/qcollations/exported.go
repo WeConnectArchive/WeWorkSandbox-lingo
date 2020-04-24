@@ -10,26 +10,26 @@ func Q() QCollations {
 	return instance
 }
 
-func CollationName() path.StringPath {
+func CollationName() path.String {
 	return instance.collationName
 }
 
-func CharacterSetName() path.StringPath {
+func CharacterSetName() path.String {
 	return instance.characterSetName
 }
 
-func Id() path.Int64Path {
+func Id() path.Int64 {
 	return instance.id
 }
 
-func IsDefault() path.StringPath {
+func IsDefault() path.String {
 	return instance.isDefault
 }
 
-func IsCompiled() path.StringPath {
+func IsCompiled() path.String {
 	return instance.isCompiled
 }
 
-func Sortlen() path.Int64Path {
+func Sortlen() path.Int64 {
 	return instance.sortlen
 }

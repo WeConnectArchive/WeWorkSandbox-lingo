@@ -31,15 +31,15 @@ func newQCustomerList(alias string) QCustomerList {
 
 type QCustomerList struct {
 	_alias  string
-	id      path.Int16Path
-	name    path.StringPath
-	address path.StringPath
-	zipCode path.StringPath
-	phone   path.StringPath
-	city    path.StringPath
-	country path.StringPath
-	notes   path.StringPath
-	sid     path.Int8Path
+	id      path.Int16
+	name    path.String
+	address path.String
+	zipCode path.String
+	phone   path.String
+	city    path.String
+	country path.String
+	notes   path.String
+	sid     path.Int8
 }
 
 // core.Table Functions
@@ -76,38 +76,38 @@ func (q QCustomerList) GetParent() string {
 
 // Column Functions
 
-func (q QCustomerList) Id() path.Int16Path {
+func (q QCustomerList) Id() path.Int16 {
 	return q.id
 }
 
-func (q QCustomerList) Name() path.StringPath {
+func (q QCustomerList) Name() path.String {
 	return q.name
 }
 
-func (q QCustomerList) Address() path.StringPath {
+func (q QCustomerList) Address() path.String {
 	return q.address
 }
 
-func (q QCustomerList) ZipCode() path.StringPath {
+func (q QCustomerList) ZipCode() path.String {
 	return q.zipCode
 }
 
-func (q QCustomerList) Phone() path.StringPath {
+func (q QCustomerList) Phone() path.String {
 	return q.phone
 }
 
-func (q QCustomerList) City() path.StringPath {
+func (q QCustomerList) City() path.String {
 	return q.city
 }
 
-func (q QCustomerList) Country() path.StringPath {
+func (q QCustomerList) Country() path.String {
 	return q.country
 }
 
-func (q QCustomerList) Notes() path.StringPath {
+func (q QCustomerList) Notes() path.String {
 	return q.notes
 }
 
-func (q QCustomerList) Sid() path.Int8Path {
+func (q QCustomerList) Sid() path.Int8 {
 	return q.sid
 }

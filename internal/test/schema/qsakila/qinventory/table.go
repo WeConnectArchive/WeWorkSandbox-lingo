@@ -26,10 +26,10 @@ func newQInventory(alias string) QInventory {
 
 type QInventory struct {
 	_alias      string
-	inventoryId path.Int32Path
-	filmId      path.Int16Path
-	storeId     path.Int8Path
-	lastUpdate  path.TimePath
+	inventoryId path.Int32
+	filmId      path.Int16
+	storeId     path.Int8
+	lastUpdate  path.Time
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QInventory) GetParent() string {
 
 // Column Functions
 
-func (q QInventory) InventoryId() path.Int32Path {
+func (q QInventory) InventoryId() path.Int32 {
 	return q.inventoryId
 }
 
-func (q QInventory) FilmId() path.Int16Path {
+func (q QInventory) FilmId() path.Int16 {
 	return q.filmId
 }
 
-func (q QInventory) StoreId() path.Int8Path {
+func (q QInventory) StoreId() path.Int8 {
 	return q.storeId
 }
 
-func (q QInventory) LastUpdate() path.TimePath {
+func (q QInventory) LastUpdate() path.Time {
 	return q.lastUpdate
 }

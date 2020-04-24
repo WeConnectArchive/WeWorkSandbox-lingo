@@ -10,10 +10,10 @@ func Q() QInnodbFtConfig {
 	return instance
 }
 
-func Key() path.StringPath {
+func Key() path.String {
 	return instance.key
 }
 
-func Value() path.StringPath {
+func Value() path.String {
 	return instance.value
 }

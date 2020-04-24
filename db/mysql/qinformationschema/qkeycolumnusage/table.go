@@ -34,18 +34,18 @@ func newQKeyColumnUsage(alias string) QKeyColumnUsage {
 
 type QKeyColumnUsage struct {
 	_alias                     string
-	constraintCatalog          path.StringPath
-	constraintSchema           path.StringPath
-	constraintName             path.StringPath
-	tableCatalog               path.StringPath
-	tableSchema                path.StringPath
-	tableName                  path.StringPath
-	columnName                 path.StringPath
-	ordinalPosition            path.Int64Path
-	positionInUniqueConstraint path.Int64Path
-	referencedTableSchema      path.StringPath
-	referencedTableName        path.StringPath
-	referencedColumnName       path.StringPath
+	constraintCatalog          path.String
+	constraintSchema           path.String
+	constraintName             path.String
+	tableCatalog               path.String
+	tableSchema                path.String
+	tableName                  path.String
+	columnName                 path.String
+	ordinalPosition            path.Int64
+	positionInUniqueConstraint path.Int64
+	referencedTableSchema      path.String
+	referencedTableName        path.String
+	referencedColumnName       path.String
 }
 
 // core.Table Functions
@@ -85,50 +85,50 @@ func (q QKeyColumnUsage) GetParent() string {
 
 // Column Functions
 
-func (q QKeyColumnUsage) ConstraintCatalog() path.StringPath {
+func (q QKeyColumnUsage) ConstraintCatalog() path.String {
 	return q.constraintCatalog
 }
 
-func (q QKeyColumnUsage) ConstraintSchema() path.StringPath {
+func (q QKeyColumnUsage) ConstraintSchema() path.String {
 	return q.constraintSchema
 }
 
-func (q QKeyColumnUsage) ConstraintName() path.StringPath {
+func (q QKeyColumnUsage) ConstraintName() path.String {
 	return q.constraintName
 }
 
-func (q QKeyColumnUsage) TableCatalog() path.StringPath {
+func (q QKeyColumnUsage) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QKeyColumnUsage) TableSchema() path.StringPath {
+func (q QKeyColumnUsage) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QKeyColumnUsage) TableName() path.StringPath {
+func (q QKeyColumnUsage) TableName() path.String {
 	return q.tableName
 }
 
-func (q QKeyColumnUsage) ColumnName() path.StringPath {
+func (q QKeyColumnUsage) ColumnName() path.String {
 	return q.columnName
 }
 
-func (q QKeyColumnUsage) OrdinalPosition() path.Int64Path {
+func (q QKeyColumnUsage) OrdinalPosition() path.Int64 {
 	return q.ordinalPosition
 }
 
-func (q QKeyColumnUsage) PositionInUniqueConstraint() path.Int64Path {
+func (q QKeyColumnUsage) PositionInUniqueConstraint() path.Int64 {
 	return q.positionInUniqueConstraint
 }
 
-func (q QKeyColumnUsage) ReferencedTableSchema() path.StringPath {
+func (q QKeyColumnUsage) ReferencedTableSchema() path.String {
 	return q.referencedTableSchema
 }
 
-func (q QKeyColumnUsage) ReferencedTableName() path.StringPath {
+func (q QKeyColumnUsage) ReferencedTableName() path.String {
 	return q.referencedTableName
 }
 
-func (q QKeyColumnUsage) ReferencedColumnName() path.StringPath {
+func (q QKeyColumnUsage) ReferencedColumnName() path.String {
 	return q.referencedColumnName
 }

@@ -33,17 +33,17 @@ func newQInnodbSysTablespaces(alias string) QInnodbSysTablespaces {
 
 type QInnodbSysTablespaces struct {
 	_alias        string
-	space         path.IntPath
-	name          path.StringPath
-	flag          path.IntPath
-	fileFormat    path.StringPath
-	rowFormat     path.StringPath
-	pageSize      path.IntPath
-	zipPageSize   path.IntPath
-	spaceType     path.StringPath
-	fsBlockSize   path.IntPath
-	fileSize      path.Int64Path
-	allocatedSize path.Int64Path
+	space         path.Int
+	name          path.String
+	flag          path.Int
+	fileFormat    path.String
+	rowFormat     path.String
+	pageSize      path.Int
+	zipPageSize   path.Int
+	spaceType     path.String
+	fsBlockSize   path.Int
+	fileSize      path.Int64
+	allocatedSize path.Int64
 }
 
 // core.Table Functions
@@ -82,46 +82,46 @@ func (q QInnodbSysTablespaces) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysTablespaces) Space() path.IntPath {
+func (q QInnodbSysTablespaces) Space() path.Int {
 	return q.space
 }
 
-func (q QInnodbSysTablespaces) Name() path.StringPath {
+func (q QInnodbSysTablespaces) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbSysTablespaces) Flag() path.IntPath {
+func (q QInnodbSysTablespaces) Flag() path.Int {
 	return q.flag
 }
 
-func (q QInnodbSysTablespaces) FileFormat() path.StringPath {
+func (q QInnodbSysTablespaces) FileFormat() path.String {
 	return q.fileFormat
 }
 
-func (q QInnodbSysTablespaces) RowFormat() path.StringPath {
+func (q QInnodbSysTablespaces) RowFormat() path.String {
 	return q.rowFormat
 }
 
-func (q QInnodbSysTablespaces) PageSize() path.IntPath {
+func (q QInnodbSysTablespaces) PageSize() path.Int {
 	return q.pageSize
 }
 
-func (q QInnodbSysTablespaces) ZipPageSize() path.IntPath {
+func (q QInnodbSysTablespaces) ZipPageSize() path.Int {
 	return q.zipPageSize
 }
 
-func (q QInnodbSysTablespaces) SpaceType() path.StringPath {
+func (q QInnodbSysTablespaces) SpaceType() path.String {
 	return q.spaceType
 }
 
-func (q QInnodbSysTablespaces) FsBlockSize() path.IntPath {
+func (q QInnodbSysTablespaces) FsBlockSize() path.Int {
 	return q.fsBlockSize
 }
 
-func (q QInnodbSysTablespaces) FileSize() path.Int64Path {
+func (q QInnodbSysTablespaces) FileSize() path.Int64 {
 	return q.fileSize
 }
 
-func (q QInnodbSysTablespaces) AllocatedSize() path.Int64Path {
+func (q QInnodbSysTablespaces) AllocatedSize() path.Int64 {
 	return q.allocatedSize
 }

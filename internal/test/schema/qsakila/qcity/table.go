@@ -26,10 +26,10 @@ func newQCity(alias string) QCity {
 
 type QCity struct {
 	_alias     string
-	cityId     path.Int16Path
-	city       path.StringPath
-	countryId  path.Int16Path
-	lastUpdate path.TimePath
+	cityId     path.Int16
+	city       path.String
+	countryId  path.Int16
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QCity) GetParent() string {
 
 // Column Functions
 
-func (q QCity) CityId() path.Int16Path {
+func (q QCity) CityId() path.Int16 {
 	return q.cityId
 }
 
-func (q QCity) City() path.StringPath {
+func (q QCity) City() path.String {
 	return q.city
 }
 
-func (q QCity) CountryId() path.Int16Path {
+func (q QCity) CountryId() path.Int16 {
 	return q.countryId
 }
 
-func (q QCity) LastUpdate() path.TimePath {
+func (q QCity) LastUpdate() path.Time {
 	return q.lastUpdate
 }

@@ -35,19 +35,19 @@ func newQFilm(alias string) QFilm {
 
 type QFilm struct {
 	_alias             string
-	filmId             path.Int16Path
-	title              path.StringPath
-	description        path.StringPath
-	releaseYear        path.UnsupportedPath
-	languageId         path.Int8Path
-	originalLanguageId path.Int8Path
-	rentalDuration     path.Int8Path
-	rentalRate         path.BinaryPath
-	length             path.Int16Path
-	replacementCost    path.BinaryPath
-	rating             path.StringPath
-	specialFeatures    path.StringPath
-	lastUpdate         path.TimePath
+	filmId             path.Int16
+	title              path.String
+	description        path.String
+	releaseYear        path.Unsupported
+	languageId         path.Int8
+	originalLanguageId path.Int8
+	rentalDuration     path.Int8
+	rentalRate         path.Binary
+	length             path.Int16
+	replacementCost    path.Binary
+	rating             path.String
+	specialFeatures    path.String
+	lastUpdate         path.Time
 }
 
 // core.Table Functions
@@ -88,54 +88,54 @@ func (q QFilm) GetParent() string {
 
 // Column Functions
 
-func (q QFilm) FilmId() path.Int16Path {
+func (q QFilm) FilmId() path.Int16 {
 	return q.filmId
 }
 
-func (q QFilm) Title() path.StringPath {
+func (q QFilm) Title() path.String {
 	return q.title
 }
 
-func (q QFilm) Description() path.StringPath {
+func (q QFilm) Description() path.String {
 	return q.description
 }
 
-func (q QFilm) ReleaseYear() path.UnsupportedPath {
+func (q QFilm) ReleaseYear() path.Unsupported {
 	return q.releaseYear
 }
 
-func (q QFilm) LanguageId() path.Int8Path {
+func (q QFilm) LanguageId() path.Int8 {
 	return q.languageId
 }
 
-func (q QFilm) OriginalLanguageId() path.Int8Path {
+func (q QFilm) OriginalLanguageId() path.Int8 {
 	return q.originalLanguageId
 }
 
-func (q QFilm) RentalDuration() path.Int8Path {
+func (q QFilm) RentalDuration() path.Int8 {
 	return q.rentalDuration
 }
 
-func (q QFilm) RentalRate() path.BinaryPath {
+func (q QFilm) RentalRate() path.Binary {
 	return q.rentalRate
 }
 
-func (q QFilm) Length() path.Int16Path {
+func (q QFilm) Length() path.Int16 {
 	return q.length
 }
 
-func (q QFilm) ReplacementCost() path.BinaryPath {
+func (q QFilm) ReplacementCost() path.Binary {
 	return q.replacementCost
 }
 
-func (q QFilm) Rating() path.StringPath {
+func (q QFilm) Rating() path.String {
 	return q.rating
 }
 
-func (q QFilm) SpecialFeatures() path.StringPath {
+func (q QFilm) SpecialFeatures() path.String {
 	return q.specialFeatures
 }
 
-func (q QFilm) LastUpdate() path.TimePath {
+func (q QFilm) LastUpdate() path.Time {
 	return q.lastUpdate
 }

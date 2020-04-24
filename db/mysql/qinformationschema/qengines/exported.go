@@ -10,26 +10,26 @@ func Q() QEngines {
 	return instance
 }
 
-func Engine() path.StringPath {
+func Engine() path.String {
 	return instance.engine
 }
 
-func Support() path.StringPath {
+func Support() path.String {
 	return instance.support
 }
 
-func Comment() path.StringPath {
+func Comment() path.String {
 	return instance.comment
 }
 
-func Transactions() path.StringPath {
+func Transactions() path.String {
 	return instance.transactions
 }
 
-func Xa() path.StringPath {
+func Xa() path.String {
 	return instance.xa
 }
 
-func Savepoints() path.StringPath {
+func Savepoints() path.String {
 	return instance.savepoints
 }

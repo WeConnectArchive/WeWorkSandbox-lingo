@@ -10,10 +10,10 @@ func Q() QCollationCharacterSetApplicability {
 	return instance
 }
 
-func CollationName() path.StringPath {
+func CollationName() path.String {
 	return instance.collationName
 }
 
-func CharacterSetName() path.StringPath {
+func CharacterSetName() path.String {
 	return instance.characterSetName
 }

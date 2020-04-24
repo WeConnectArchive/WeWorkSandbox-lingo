@@ -19,7 +19,7 @@ var _ = Describe("String", func() {
 			name  string
 			alias string
 
-			p path.StringPath
+			p path.String
 		)
 
 		BeforeEach(func() {
@@ -32,8 +32,8 @@ var _ = Describe("String", func() {
 			p = path.NewStringPathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `StringPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.StringPath{}))
+		It("Returns a `String`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.String{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -55,7 +55,7 @@ var _ = Describe("String", func() {
 			e    core.Table
 			name string
 
-			p path.StringPath
+			p path.String
 		)
 
 		BeforeEach(func() {
@@ -67,8 +67,8 @@ var _ = Describe("String", func() {
 			p = path.NewStringPath(e, name)
 		})
 
-		It("Returns a `StringPath`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.StringPath{}))
+		It("Returns a `String`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.String{}))
 		})
 
 		It("Has the given parent table", func() {

@@ -10,74 +10,74 @@ func Q() QProfiling {
 	return instance
 }
 
-func QueryId() path.IntPath {
+func QueryId() path.Int {
 	return instance.queryId
 }
 
-func Seq() path.IntPath {
+func Seq() path.Int {
 	return instance.seq
 }
 
-func State() path.StringPath {
+func State() path.String {
 	return instance.state
 }
 
-func Duration() path.BinaryPath {
+func Duration() path.Binary {
 	return instance.duration
 }
 
-func CpuUser() path.BinaryPath {
+func CpuUser() path.Binary {
 	return instance.cpuUser
 }
 
-func CpuSystem() path.BinaryPath {
+func CpuSystem() path.Binary {
 	return instance.cpuSystem
 }
 
-func ContextVoluntary() path.IntPath {
+func ContextVoluntary() path.Int {
 	return instance.contextVoluntary
 }
 
-func ContextInvoluntary() path.IntPath {
+func ContextInvoluntary() path.Int {
 	return instance.contextInvoluntary
 }
 
-func BlockOpsIn() path.IntPath {
+func BlockOpsIn() path.Int {
 	return instance.blockOpsIn
 }
 
-func BlockOpsOut() path.IntPath {
+func BlockOpsOut() path.Int {
 	return instance.blockOpsOut
 }
 
-func MessagesSent() path.IntPath {
+func MessagesSent() path.Int {
 	return instance.messagesSent
 }
 
-func MessagesReceived() path.IntPath {
+func MessagesReceived() path.Int {
 	return instance.messagesReceived
 }
 
-func PageFaultsMajor() path.IntPath {
+func PageFaultsMajor() path.Int {
 	return instance.pageFaultsMajor
 }
 
-func PageFaultsMinor() path.IntPath {
+func PageFaultsMinor() path.Int {
 	return instance.pageFaultsMinor
 }
 
-func Swaps() path.IntPath {
+func Swaps() path.Int {
 	return instance.swaps
 }
 
-func SourceFunction() path.StringPath {
+func SourceFunction() path.String {
 	return instance.sourceFunction
 }
 
-func SourceFile() path.StringPath {
+func SourceFile() path.String {
 	return instance.sourceFile
 }
 
-func SourceLine() path.IntPath {
+func SourceLine() path.Int {
 	return instance.sourceLine
 }

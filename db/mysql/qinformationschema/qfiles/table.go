@@ -60,44 +60,44 @@ func newQFiles(alias string) QFiles {
 
 type QFiles struct {
 	_alias             string
-	fileId             path.Int64Path
-	fileName           path.StringPath
-	fileType           path.StringPath
-	tablespaceName     path.StringPath
-	tableCatalog       path.StringPath
-	tableSchema        path.StringPath
-	tableName          path.StringPath
-	logfileGroupName   path.StringPath
-	logfileGroupNumber path.Int64Path
-	engine             path.StringPath
-	fulltextKeys       path.StringPath
-	deletedRows        path.Int64Path
-	updateCount        path.Int64Path
-	freeExtents        path.Int64Path
-	totalExtents       path.Int64Path
-	extentSize         path.Int64Path
-	initialSize        path.Int64Path
-	maximumSize        path.Int64Path
-	autoextendSize     path.Int64Path
-	creationTime       path.TimePath
-	lastUpdateTime     path.TimePath
-	lastAccessTime     path.TimePath
-	recoverTime        path.Int64Path
-	transactionCounter path.Int64Path
-	version            path.Int64Path
-	rowFormat          path.StringPath
-	tableRows          path.Int64Path
-	avgRowLength       path.Int64Path
-	dataLength         path.Int64Path
-	maxDataLength      path.Int64Path
-	indexLength        path.Int64Path
-	dataFree           path.Int64Path
-	createTime         path.TimePath
-	updateTime         path.TimePath
-	checkTime          path.TimePath
-	checksum           path.Int64Path
-	status             path.StringPath
-	extra              path.StringPath
+	fileId             path.Int64
+	fileName           path.String
+	fileType           path.String
+	tablespaceName     path.String
+	tableCatalog       path.String
+	tableSchema        path.String
+	tableName          path.String
+	logfileGroupName   path.String
+	logfileGroupNumber path.Int64
+	engine             path.String
+	fulltextKeys       path.String
+	deletedRows        path.Int64
+	updateCount        path.Int64
+	freeExtents        path.Int64
+	totalExtents       path.Int64
+	extentSize         path.Int64
+	initialSize        path.Int64
+	maximumSize        path.Int64
+	autoextendSize     path.Int64
+	creationTime       path.Time
+	lastUpdateTime     path.Time
+	lastAccessTime     path.Time
+	recoverTime        path.Int64
+	transactionCounter path.Int64
+	version            path.Int64
+	rowFormat          path.String
+	tableRows          path.Int64
+	avgRowLength       path.Int64
+	dataLength         path.Int64
+	maxDataLength      path.Int64
+	indexLength        path.Int64
+	dataFree           path.Int64
+	createTime         path.Time
+	updateTime         path.Time
+	checkTime          path.Time
+	checksum           path.Int64
+	status             path.String
+	extra              path.String
 }
 
 // core.Table Functions
@@ -163,154 +163,154 @@ func (q QFiles) GetParent() string {
 
 // Column Functions
 
-func (q QFiles) FileId() path.Int64Path {
+func (q QFiles) FileId() path.Int64 {
 	return q.fileId
 }
 
-func (q QFiles) FileName() path.StringPath {
+func (q QFiles) FileName() path.String {
 	return q.fileName
 }
 
-func (q QFiles) FileType() path.StringPath {
+func (q QFiles) FileType() path.String {
 	return q.fileType
 }
 
-func (q QFiles) TablespaceName() path.StringPath {
+func (q QFiles) TablespaceName() path.String {
 	return q.tablespaceName
 }
 
-func (q QFiles) TableCatalog() path.StringPath {
+func (q QFiles) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QFiles) TableSchema() path.StringPath {
+func (q QFiles) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QFiles) TableName() path.StringPath {
+func (q QFiles) TableName() path.String {
 	return q.tableName
 }
 
-func (q QFiles) LogfileGroupName() path.StringPath {
+func (q QFiles) LogfileGroupName() path.String {
 	return q.logfileGroupName
 }
 
-func (q QFiles) LogfileGroupNumber() path.Int64Path {
+func (q QFiles) LogfileGroupNumber() path.Int64 {
 	return q.logfileGroupNumber
 }
 
-func (q QFiles) Engine() path.StringPath {
+func (q QFiles) Engine() path.String {
 	return q.engine
 }
 
-func (q QFiles) FulltextKeys() path.StringPath {
+func (q QFiles) FulltextKeys() path.String {
 	return q.fulltextKeys
 }
 
-func (q QFiles) DeletedRows() path.Int64Path {
+func (q QFiles) DeletedRows() path.Int64 {
 	return q.deletedRows
 }
 
-func (q QFiles) UpdateCount() path.Int64Path {
+func (q QFiles) UpdateCount() path.Int64 {
 	return q.updateCount
 }
 
-func (q QFiles) FreeExtents() path.Int64Path {
+func (q QFiles) FreeExtents() path.Int64 {
 	return q.freeExtents
 }
 
-func (q QFiles) TotalExtents() path.Int64Path {
+func (q QFiles) TotalExtents() path.Int64 {
 	return q.totalExtents
 }
 
-func (q QFiles) ExtentSize() path.Int64Path {
+func (q QFiles) ExtentSize() path.Int64 {
 	return q.extentSize
 }
 
-func (q QFiles) InitialSize() path.Int64Path {
+func (q QFiles) InitialSize() path.Int64 {
 	return q.initialSize
 }
 
-func (q QFiles) MaximumSize() path.Int64Path {
+func (q QFiles) MaximumSize() path.Int64 {
 	return q.maximumSize
 }
 
-func (q QFiles) AutoextendSize() path.Int64Path {
+func (q QFiles) AutoextendSize() path.Int64 {
 	return q.autoextendSize
 }
 
-func (q QFiles) CreationTime() path.TimePath {
+func (q QFiles) CreationTime() path.Time {
 	return q.creationTime
 }
 
-func (q QFiles) LastUpdateTime() path.TimePath {
+func (q QFiles) LastUpdateTime() path.Time {
 	return q.lastUpdateTime
 }
 
-func (q QFiles) LastAccessTime() path.TimePath {
+func (q QFiles) LastAccessTime() path.Time {
 	return q.lastAccessTime
 }
 
-func (q QFiles) RecoverTime() path.Int64Path {
+func (q QFiles) RecoverTime() path.Int64 {
 	return q.recoverTime
 }
 
-func (q QFiles) TransactionCounter() path.Int64Path {
+func (q QFiles) TransactionCounter() path.Int64 {
 	return q.transactionCounter
 }
 
-func (q QFiles) Version() path.Int64Path {
+func (q QFiles) Version() path.Int64 {
 	return q.version
 }
 
-func (q QFiles) RowFormat() path.StringPath {
+func (q QFiles) RowFormat() path.String {
 	return q.rowFormat
 }
 
-func (q QFiles) TableRows() path.Int64Path {
+func (q QFiles) TableRows() path.Int64 {
 	return q.tableRows
 }
 
-func (q QFiles) AvgRowLength() path.Int64Path {
+func (q QFiles) AvgRowLength() path.Int64 {
 	return q.avgRowLength
 }
 
-func (q QFiles) DataLength() path.Int64Path {
+func (q QFiles) DataLength() path.Int64 {
 	return q.dataLength
 }
 
-func (q QFiles) MaxDataLength() path.Int64Path {
+func (q QFiles) MaxDataLength() path.Int64 {
 	return q.maxDataLength
 }
 
-func (q QFiles) IndexLength() path.Int64Path {
+func (q QFiles) IndexLength() path.Int64 {
 	return q.indexLength
 }
 
-func (q QFiles) DataFree() path.Int64Path {
+func (q QFiles) DataFree() path.Int64 {
 	return q.dataFree
 }
 
-func (q QFiles) CreateTime() path.TimePath {
+func (q QFiles) CreateTime() path.Time {
 	return q.createTime
 }
 
-func (q QFiles) UpdateTime() path.TimePath {
+func (q QFiles) UpdateTime() path.Time {
 	return q.updateTime
 }
 
-func (q QFiles) CheckTime() path.TimePath {
+func (q QFiles) CheckTime() path.Time {
 	return q.checkTime
 }
 
-func (q QFiles) Checksum() path.Int64Path {
+func (q QFiles) Checksum() path.Int64 {
 	return q.checksum
 }
 
-func (q QFiles) Status() path.StringPath {
+func (q QFiles) Status() path.String {
 	return q.status
 }
 
-func (q QFiles) Extra() path.StringPath {
+func (q QFiles) Extra() path.String {
 	return q.extra
 }

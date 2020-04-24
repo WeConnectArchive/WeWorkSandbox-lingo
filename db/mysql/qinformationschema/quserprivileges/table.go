@@ -26,10 +26,10 @@ func newQUserPrivileges(alias string) QUserPrivileges {
 
 type QUserPrivileges struct {
 	_alias        string
-	grantee       path.StringPath
-	tableCatalog  path.StringPath
-	privilegeType path.StringPath
-	isGrantable   path.StringPath
+	grantee       path.String
+	tableCatalog  path.String
+	privilegeType path.String
+	isGrantable   path.String
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QUserPrivileges) GetParent() string {
 
 // Column Functions
 
-func (q QUserPrivileges) Grantee() path.StringPath {
+func (q QUserPrivileges) Grantee() path.String {
 	return q.grantee
 }
 
-func (q QUserPrivileges) TableCatalog() path.StringPath {
+func (q QUserPrivileges) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QUserPrivileges) PrivilegeType() path.StringPath {
+func (q QUserPrivileges) PrivilegeType() path.String {
 	return q.privilegeType
 }
 
-func (q QUserPrivileges) IsGrantable() path.StringPath {
+func (q QUserPrivileges) IsGrantable() path.String {
 	return q.isGrantable
 }

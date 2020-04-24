@@ -21,7 +21,7 @@ var _ = Describe("Int64", func() {
 			name  string
 			alias string
 
-			p path.Int64Path
+			p path.Int64
 		)
 
 		BeforeEach(func() {
@@ -34,8 +34,8 @@ var _ = Describe("Int64", func() {
 			p = path.NewInt64PathWithAlias(e, name, alias)
 		})
 
-		It("Returns a `Int64Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Int64Path{}))
+		It("Returns a `Int64`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Int64{}))
 		})
 
 		It("Has the given parent table", func() {
@@ -57,7 +57,7 @@ var _ = Describe("Int64", func() {
 			e    core.Table
 			name string
 
-			p path.Int64Path
+			p path.Int64
 		)
 
 		BeforeEach(func() {
@@ -69,8 +69,8 @@ var _ = Describe("Int64", func() {
 			p = path.NewInt64Path(e, name)
 		})
 
-		It("Returns a `Int64Path`", func() {
-			Expect(p).To(BeAssignableToTypeOf(path.Int64Path{}))
+		It("Returns a `Int64`", func() {
+			Expect(p).To(BeAssignableToTypeOf(path.Int64{}))
 		})
 
 		It("Has the given parent table", func() {

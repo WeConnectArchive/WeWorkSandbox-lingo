@@ -10,26 +10,26 @@ func Q() QInnodbCmpmemReset {
 	return instance
 }
 
-func PageSize() path.IntPath {
+func PageSize() path.Int {
 	return instance.pageSize
 }
 
-func BufferPoolInstance() path.IntPath {
+func BufferPoolInstance() path.Int {
 	return instance.bufferPoolInstance
 }
 
-func PagesUsed() path.IntPath {
+func PagesUsed() path.Int {
 	return instance.pagesUsed
 }
 
-func PagesFree() path.IntPath {
+func PagesFree() path.Int {
 	return instance.pagesFree
 }
 
-func RelocationOps() path.Int64Path {
+func RelocationOps() path.Int64 {
 	return instance.relocationOps
 }
 
-func RelocationTime() path.IntPath {
+func RelocationTime() path.Int {
 	return instance.relocationTime
 }

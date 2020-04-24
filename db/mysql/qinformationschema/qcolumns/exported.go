@@ -10,86 +10,86 @@ func Q() QColumns {
 	return instance
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func ColumnName() path.StringPath {
+func ColumnName() path.String {
 	return instance.columnName
 }
 
-func OrdinalPosition() path.Int64Path {
+func OrdinalPosition() path.Int64 {
 	return instance.ordinalPosition
 }
 
-func ColumnDefault() path.StringPath {
+func ColumnDefault() path.String {
 	return instance.columnDefault
 }
 
-func IsNullable() path.StringPath {
+func IsNullable() path.String {
 	return instance.isNullable
 }
 
-func DataType() path.StringPath {
+func DataType() path.String {
 	return instance.dataType
 }
 
-func CharacterMaximumLength() path.Int64Path {
+func CharacterMaximumLength() path.Int64 {
 	return instance.characterMaximumLength
 }
 
-func CharacterOctetLength() path.Int64Path {
+func CharacterOctetLength() path.Int64 {
 	return instance.characterOctetLength
 }
 
-func NumericPrecision() path.Int64Path {
+func NumericPrecision() path.Int64 {
 	return instance.numericPrecision
 }
 
-func NumericScale() path.Int64Path {
+func NumericScale() path.Int64 {
 	return instance.numericScale
 }
 
-func DatetimePrecision() path.Int64Path {
+func DatetimePrecision() path.Int64 {
 	return instance.datetimePrecision
 }
 
-func CharacterSetName() path.StringPath {
+func CharacterSetName() path.String {
 	return instance.characterSetName
 }
 
-func CollationName() path.StringPath {
+func CollationName() path.String {
 	return instance.collationName
 }
 
-func ColumnType() path.StringPath {
+func ColumnType() path.String {
 	return instance.columnType
 }
 
-func ColumnKey() path.StringPath {
+func ColumnKey() path.String {
 	return instance.columnKey
 }
 
-func Extra() path.StringPath {
+func Extra() path.String {
 	return instance.extra
 }
 
-func Privileges() path.StringPath {
+func Privileges() path.String {
 	return instance.privileges
 }
 
-func ColumnComment() path.StringPath {
+func ColumnComment() path.String {
 	return instance.columnComment
 }
 
-func GenerationExpression() path.StringPath {
+func GenerationExpression() path.String {
 	return instance.generationExpression
 }

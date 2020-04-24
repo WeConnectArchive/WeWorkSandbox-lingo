@@ -27,11 +27,11 @@ func newQInnodbSysForeign(alias string) QInnodbSysForeign {
 
 type QInnodbSysForeign struct {
 	_alias  string
-	id      path.StringPath
-	forName path.StringPath
-	refName path.StringPath
-	nCols   path.IntPath
-	__type  path.IntPath
+	id      path.String
+	forName path.String
+	refName path.String
+	nCols   path.Int
+	__type  path.Int
 }
 
 // core.Table Functions
@@ -64,22 +64,22 @@ func (q QInnodbSysForeign) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysForeign) Id() path.StringPath {
+func (q QInnodbSysForeign) Id() path.String {
 	return q.id
 }
 
-func (q QInnodbSysForeign) ForName() path.StringPath {
+func (q QInnodbSysForeign) ForName() path.String {
 	return q.forName
 }
 
-func (q QInnodbSysForeign) RefName() path.StringPath {
+func (q QInnodbSysForeign) RefName() path.String {
 	return q.refName
 }
 
-func (q QInnodbSysForeign) NCols() path.IntPath {
+func (q QInnodbSysForeign) NCols() path.Int {
 	return q.nCols
 }
 
-func (q QInnodbSysForeign) Type() path.IntPath {
+func (q QInnodbSysForeign) Type() path.Int {
 	return q.__type
 }

@@ -6,25 +6,25 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/json"
 )
 
-func NewJSONPathWithAlias(e core.Table, name, alias string) JSONPath {
-	return JSONPath{
-		StringPath: NewStringPathWithAlias(e, name, alias),
+func NewJSONPathWithAlias(e core.Table, name, alias string) JSON {
+	return JSON{
+		String: NewStringPathWithAlias(e, name, alias),
 	}
 }
 
-func NewJSONPath(e core.Table, name string) JSONPath {
+func NewJSONPath(e core.Table, name string) JSON {
 	return NewJSONPathWithAlias(e, name, "")
 }
 
-type JSONPath struct {
-	StringPath
+type JSON struct {
+	String
 }
 
-func (j JSONPath) As(alias string) JSONPath {
+func (j JSON) As(alias string) JSON {
 	j.alias = alias
 	return j
 }
 
-func (j JSONPath) Extract(paths ...string) core.ComboExpression {
+func (j JSON) Extract(paths ...string) core.ComboExpression {
 	return expression.NewJSONOperation(j, json.Extract, expression.NewValue(paths))
 }

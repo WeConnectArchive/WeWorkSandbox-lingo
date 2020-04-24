@@ -26,10 +26,10 @@ func newQOptimizerTrace(alias string) QOptimizerTrace {
 
 type QOptimizerTrace struct {
 	_alias                       string
-	query                        path.StringPath
-	trace                        path.StringPath
-	missingBytesBeyondMaxMemSize path.IntPath
-	insufficientPrivileges       path.BoolPath
+	query                        path.String
+	trace                        path.String
+	missingBytesBeyondMaxMemSize path.Int
+	insufficientPrivileges       path.Bool
 }
 
 // core.Table Functions
@@ -61,18 +61,18 @@ func (q QOptimizerTrace) GetParent() string {
 
 // Column Functions
 
-func (q QOptimizerTrace) Query() path.StringPath {
+func (q QOptimizerTrace) Query() path.String {
 	return q.query
 }
 
-func (q QOptimizerTrace) Trace() path.StringPath {
+func (q QOptimizerTrace) Trace() path.String {
 	return q.trace
 }
 
-func (q QOptimizerTrace) MissingBytesBeyondMaxMemSize() path.IntPath {
+func (q QOptimizerTrace) MissingBytesBeyondMaxMemSize() path.Int {
 	return q.missingBytesBeyondMaxMemSize
 }
 
-func (q QOptimizerTrace) InsufficientPrivileges() path.BoolPath {
+func (q QOptimizerTrace) InsufficientPrivileges() path.Bool {
 	return q.insufficientPrivileges
 }

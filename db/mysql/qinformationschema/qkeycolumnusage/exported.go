@@ -10,50 +10,50 @@ func Q() QKeyColumnUsage {
 	return instance
 }
 
-func ConstraintCatalog() path.StringPath {
+func ConstraintCatalog() path.String {
 	return instance.constraintCatalog
 }
 
-func ConstraintSchema() path.StringPath {
+func ConstraintSchema() path.String {
 	return instance.constraintSchema
 }
 
-func ConstraintName() path.StringPath {
+func ConstraintName() path.String {
 	return instance.constraintName
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func ColumnName() path.StringPath {
+func ColumnName() path.String {
 	return instance.columnName
 }
 
-func OrdinalPosition() path.Int64Path {
+func OrdinalPosition() path.Int64 {
 	return instance.ordinalPosition
 }
 
-func PositionInUniqueConstraint() path.Int64Path {
+func PositionInUniqueConstraint() path.Int64 {
 	return instance.positionInUniqueConstraint
 }
 
-func ReferencedTableSchema() path.StringPath {
+func ReferencedTableSchema() path.String {
 	return instance.referencedTableSchema
 }
 
-func ReferencedTableName() path.StringPath {
+func ReferencedTableName() path.String {
 	return instance.referencedTableName
 }
 
-func ReferencedColumnName() path.StringPath {
+func ReferencedColumnName() path.String {
 	return instance.referencedColumnName
 }

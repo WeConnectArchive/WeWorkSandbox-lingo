@@ -46,30 +46,30 @@ func newQEvents(alias string) QEvents {
 
 type QEvents struct {
 	_alias              string
-	eventCatalog        path.StringPath
-	eventSchema         path.StringPath
-	eventName           path.StringPath
-	definer             path.StringPath
-	timeZone            path.StringPath
-	eventBody           path.StringPath
-	eventDefinition     path.StringPath
-	eventType           path.StringPath
-	executeAt           path.TimePath
-	intervalValue       path.StringPath
-	intervalField       path.StringPath
-	sqlMode             path.StringPath
-	starts              path.TimePath
-	ends                path.TimePath
-	status              path.StringPath
-	onCompletion        path.StringPath
-	created             path.TimePath
-	lastAltered         path.TimePath
-	lastExecuted        path.TimePath
-	eventComment        path.StringPath
-	originator          path.Int64Path
-	characterSetClient  path.StringPath
-	collationConnection path.StringPath
-	databaseCollation   path.StringPath
+	eventCatalog        path.String
+	eventSchema         path.String
+	eventName           path.String
+	definer             path.String
+	timeZone            path.String
+	eventBody           path.String
+	eventDefinition     path.String
+	eventType           path.String
+	executeAt           path.Time
+	intervalValue       path.String
+	intervalField       path.String
+	sqlMode             path.String
+	starts              path.Time
+	ends                path.Time
+	status              path.String
+	onCompletion        path.String
+	created             path.Time
+	lastAltered         path.Time
+	lastExecuted        path.Time
+	eventComment        path.String
+	originator          path.Int64
+	characterSetClient  path.String
+	collationConnection path.String
+	databaseCollation   path.String
 }
 
 // core.Table Functions
@@ -121,98 +121,98 @@ func (q QEvents) GetParent() string {
 
 // Column Functions
 
-func (q QEvents) EventCatalog() path.StringPath {
+func (q QEvents) EventCatalog() path.String {
 	return q.eventCatalog
 }
 
-func (q QEvents) EventSchema() path.StringPath {
+func (q QEvents) EventSchema() path.String {
 	return q.eventSchema
 }
 
-func (q QEvents) EventName() path.StringPath {
+func (q QEvents) EventName() path.String {
 	return q.eventName
 }
 
-func (q QEvents) Definer() path.StringPath {
+func (q QEvents) Definer() path.String {
 	return q.definer
 }
 
-func (q QEvents) TimeZone() path.StringPath {
+func (q QEvents) TimeZone() path.String {
 	return q.timeZone
 }
 
-func (q QEvents) EventBody() path.StringPath {
+func (q QEvents) EventBody() path.String {
 	return q.eventBody
 }
 
-func (q QEvents) EventDefinition() path.StringPath {
+func (q QEvents) EventDefinition() path.String {
 	return q.eventDefinition
 }
 
-func (q QEvents) EventType() path.StringPath {
+func (q QEvents) EventType() path.String {
 	return q.eventType
 }
 
-func (q QEvents) ExecuteAt() path.TimePath {
+func (q QEvents) ExecuteAt() path.Time {
 	return q.executeAt
 }
 
-func (q QEvents) IntervalValue() path.StringPath {
+func (q QEvents) IntervalValue() path.String {
 	return q.intervalValue
 }
 
-func (q QEvents) IntervalField() path.StringPath {
+func (q QEvents) IntervalField() path.String {
 	return q.intervalField
 }
 
-func (q QEvents) SqlMode() path.StringPath {
+func (q QEvents) SqlMode() path.String {
 	return q.sqlMode
 }
 
-func (q QEvents) Starts() path.TimePath {
+func (q QEvents) Starts() path.Time {
 	return q.starts
 }
 
-func (q QEvents) Ends() path.TimePath {
+func (q QEvents) Ends() path.Time {
 	return q.ends
 }
 
-func (q QEvents) Status() path.StringPath {
+func (q QEvents) Status() path.String {
 	return q.status
 }
 
-func (q QEvents) OnCompletion() path.StringPath {
+func (q QEvents) OnCompletion() path.String {
 	return q.onCompletion
 }
 
-func (q QEvents) Created() path.TimePath {
+func (q QEvents) Created() path.Time {
 	return q.created
 }
 
-func (q QEvents) LastAltered() path.TimePath {
+func (q QEvents) LastAltered() path.Time {
 	return q.lastAltered
 }
 
-func (q QEvents) LastExecuted() path.TimePath {
+func (q QEvents) LastExecuted() path.Time {
 	return q.lastExecuted
 }
 
-func (q QEvents) EventComment() path.StringPath {
+func (q QEvents) EventComment() path.String {
 	return q.eventComment
 }
 
-func (q QEvents) Originator() path.Int64Path {
+func (q QEvents) Originator() path.Int64 {
 	return q.originator
 }
 
-func (q QEvents) CharacterSetClient() path.StringPath {
+func (q QEvents) CharacterSetClient() path.String {
 	return q.characterSetClient
 }
 
-func (q QEvents) CollationConnection() path.StringPath {
+func (q QEvents) CollationConnection() path.String {
 	return q.collationConnection
 }
 
-func (q QEvents) DatabaseCollation() path.StringPath {
+func (q QEvents) DatabaseCollation() path.String {
 	return q.databaseCollation
 }

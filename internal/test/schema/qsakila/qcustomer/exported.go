@@ -10,38 +10,38 @@ func Q() QCustomer {
 	return instance
 }
 
-func CustomerId() path.Int16Path {
+func CustomerId() path.Int16 {
 	return instance.customerId
 }
 
-func StoreId() path.Int8Path {
+func StoreId() path.Int8 {
 	return instance.storeId
 }
 
-func FirstName() path.StringPath {
+func FirstName() path.String {
 	return instance.firstName
 }
 
-func LastName() path.StringPath {
+func LastName() path.String {
 	return instance.lastName
 }
 
-func Email() path.StringPath {
+func Email() path.String {
 	return instance.email
 }
 
-func AddressId() path.Int16Path {
+func AddressId() path.Int16 {
 	return instance.addressId
 }
 
-func Active() path.Int8Path {
+func Active() path.Int8 {
 	return instance.active
 }
 
-func CreateDate() path.TimePath {
+func CreateDate() path.Time {
 	return instance.createDate
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

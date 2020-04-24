@@ -29,13 +29,13 @@ func newQPayment(alias string) QPayment {
 
 type QPayment struct {
 	_alias      string
-	paymentId   path.Int16Path
-	customerId  path.Int16Path
-	staffId     path.Int8Path
-	rentalId    path.IntPath
-	amount      path.BinaryPath
-	paymentDate path.TimePath
-	lastUpdate  path.TimePath
+	paymentId   path.Int16
+	customerId  path.Int16
+	staffId     path.Int8
+	rentalId    path.Int
+	amount      path.Binary
+	paymentDate path.Time
+	lastUpdate  path.Time
 }
 
 // core.Table Functions
@@ -70,30 +70,30 @@ func (q QPayment) GetParent() string {
 
 // Column Functions
 
-func (q QPayment) PaymentId() path.Int16Path {
+func (q QPayment) PaymentId() path.Int16 {
 	return q.paymentId
 }
 
-func (q QPayment) CustomerId() path.Int16Path {
+func (q QPayment) CustomerId() path.Int16 {
 	return q.customerId
 }
 
-func (q QPayment) StaffId() path.Int8Path {
+func (q QPayment) StaffId() path.Int8 {
 	return q.staffId
 }
 
-func (q QPayment) RentalId() path.IntPath {
+func (q QPayment) RentalId() path.Int {
 	return q.rentalId
 }
 
-func (q QPayment) Amount() path.BinaryPath {
+func (q QPayment) Amount() path.Binary {
 	return q.amount
 }
 
-func (q QPayment) PaymentDate() path.TimePath {
+func (q QPayment) PaymentDate() path.Time {
 	return q.paymentDate
 }
 
-func (q QPayment) LastUpdate() path.TimePath {
+func (q QPayment) LastUpdate() path.Time {
 	return q.lastUpdate
 }

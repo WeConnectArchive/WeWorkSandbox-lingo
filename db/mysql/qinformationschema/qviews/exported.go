@@ -10,42 +10,42 @@ func Q() QViews {
 	return instance
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func ViewDefinition() path.StringPath {
+func ViewDefinition() path.String {
 	return instance.viewDefinition
 }
 
-func CheckOption() path.StringPath {
+func CheckOption() path.String {
 	return instance.checkOption
 }
 
-func IsUpdatable() path.StringPath {
+func IsUpdatable() path.String {
 	return instance.isUpdatable
 }
 
-func Definer() path.StringPath {
+func Definer() path.String {
 	return instance.definer
 }
 
-func SecurityType() path.StringPath {
+func SecurityType() path.String {
 	return instance.securityType
 }
 
-func CharacterSetClient() path.StringPath {
+func CharacterSetClient() path.String {
 	return instance.characterSetClient
 }
 
-func CollationConnection() path.StringPath {
+func CollationConnection() path.String {
 	return instance.collationConnection
 }

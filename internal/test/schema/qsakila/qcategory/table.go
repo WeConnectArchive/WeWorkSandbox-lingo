@@ -25,9 +25,9 @@ func newQCategory(alias string) QCategory {
 
 type QCategory struct {
 	_alias     string
-	categoryId path.Int8Path
-	name       path.StringPath
-	lastUpdate path.TimePath
+	categoryId path.Int8
+	name       path.String
+	lastUpdate path.Time
 }
 
 // core.Table Functions
@@ -58,14 +58,14 @@ func (q QCategory) GetParent() string {
 
 // Column Functions
 
-func (q QCategory) CategoryId() path.Int8Path {
+func (q QCategory) CategoryId() path.Int8 {
 	return q.categoryId
 }
 
-func (q QCategory) Name() path.StringPath {
+func (q QCategory) Name() path.String {
 	return q.name
 }
 
-func (q QCategory) LastUpdate() path.TimePath {
+func (q QCategory) LastUpdate() path.Time {
 	return q.lastUpdate
 }

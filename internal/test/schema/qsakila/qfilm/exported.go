@@ -10,54 +10,54 @@ func Q() QFilm {
 	return instance
 }
 
-func FilmId() path.Int16Path {
+func FilmId() path.Int16 {
 	return instance.filmId
 }
 
-func Title() path.StringPath {
+func Title() path.String {
 	return instance.title
 }
 
-func Description() path.StringPath {
+func Description() path.String {
 	return instance.description
 }
 
-func ReleaseYear() path.UnsupportedPath {
+func ReleaseYear() path.Unsupported {
 	return instance.releaseYear
 }
 
-func LanguageId() path.Int8Path {
+func LanguageId() path.Int8 {
 	return instance.languageId
 }
 
-func OriginalLanguageId() path.Int8Path {
+func OriginalLanguageId() path.Int8 {
 	return instance.originalLanguageId
 }
 
-func RentalDuration() path.Int8Path {
+func RentalDuration() path.Int8 {
 	return instance.rentalDuration
 }
 
-func RentalRate() path.BinaryPath {
+func RentalRate() path.Binary {
 	return instance.rentalRate
 }
 
-func Length() path.Int16Path {
+func Length() path.Int16 {
 	return instance.length
 }
 
-func ReplacementCost() path.BinaryPath {
+func ReplacementCost() path.Binary {
 	return instance.replacementCost
 }
 
-func Rating() path.StringPath {
+func Rating() path.String {
 	return instance.rating
 }
 
-func SpecialFeatures() path.StringPath {
+func SpecialFeatures() path.String {
 	return instance.specialFeatures
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

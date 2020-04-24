@@ -27,11 +27,11 @@ func newQSchemaPrivileges(alias string) QSchemaPrivileges {
 
 type QSchemaPrivileges struct {
 	_alias        string
-	grantee       path.StringPath
-	tableCatalog  path.StringPath
-	tableSchema   path.StringPath
-	privilegeType path.StringPath
-	isGrantable   path.StringPath
+	grantee       path.String
+	tableCatalog  path.String
+	tableSchema   path.String
+	privilegeType path.String
+	isGrantable   path.String
 }
 
 // core.Table Functions
@@ -64,22 +64,22 @@ func (q QSchemaPrivileges) GetParent() string {
 
 // Column Functions
 
-func (q QSchemaPrivileges) Grantee() path.StringPath {
+func (q QSchemaPrivileges) Grantee() path.String {
 	return q.grantee
 }
 
-func (q QSchemaPrivileges) TableCatalog() path.StringPath {
+func (q QSchemaPrivileges) TableCatalog() path.String {
 	return q.tableCatalog
 }
 
-func (q QSchemaPrivileges) TableSchema() path.StringPath {
+func (q QSchemaPrivileges) TableSchema() path.String {
 	return q.tableSchema
 }
 
-func (q QSchemaPrivileges) PrivilegeType() path.StringPath {
+func (q QSchemaPrivileges) PrivilegeType() path.String {
 	return q.privilegeType
 }
 
-func (q QSchemaPrivileges) IsGrantable() path.StringPath {
+func (q QSchemaPrivileges) IsGrantable() path.String {
 	return q.isGrantable
 }

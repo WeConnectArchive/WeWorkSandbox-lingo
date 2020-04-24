@@ -10,34 +10,34 @@ func Q() QProcesslist {
 	return instance
 }
 
-func Id() path.Int64Path {
+func Id() path.Int64 {
 	return instance.id
 }
 
-func User() path.StringPath {
+func User() path.String {
 	return instance.user
 }
 
-func Host() path.StringPath {
+func Host() path.String {
 	return instance.host
 }
 
-func Db() path.StringPath {
+func Db() path.String {
 	return instance.db
 }
 
-func Command() path.StringPath {
+func Command() path.String {
 	return instance.command
 }
 
-func Time() path.IntPath {
+func Time() path.Int {
 	return instance.time
 }
 
-func State() path.StringPath {
+func State() path.String {
 	return instance.state
 }
 
-func Info() path.StringPath {
+func Info() path.String {
 	return instance.info
 }

@@ -10,38 +10,38 @@ func Q() QAddress {
 	return instance
 }
 
-func AddressId() path.Int16Path {
+func AddressId() path.Int16 {
 	return instance.addressId
 }
 
-func Address() path.StringPath {
+func Address() path.String {
 	return instance.address
 }
 
-func Address2() path.StringPath {
+func Address2() path.String {
 	return instance.address2
 }
 
-func District() path.StringPath {
+func District() path.String {
 	return instance.district
 }
 
-func CityId() path.Int16Path {
+func CityId() path.Int16 {
 	return instance.cityId
 }
 
-func PostalCode() path.StringPath {
+func PostalCode() path.String {
 	return instance.postalCode
 }
 
-func Phone() path.StringPath {
+func Phone() path.String {
 	return instance.phone
 }
 
-func Location() path.UnsupportedPath {
+func Location() path.Unsupported {
 	return instance.location
 }
 
-func LastUpdate() path.TimePath {
+func LastUpdate() path.Time {
 	return instance.lastUpdate
 }

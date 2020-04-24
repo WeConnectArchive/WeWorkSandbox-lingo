@@ -28,12 +28,12 @@ func newQCollations(alias string) QCollations {
 
 type QCollations struct {
 	_alias           string
-	collationName    path.StringPath
-	characterSetName path.StringPath
-	id               path.Int64Path
-	isDefault        path.StringPath
-	isCompiled       path.StringPath
-	sortlen          path.Int64Path
+	collationName    path.String
+	characterSetName path.String
+	id               path.Int64
+	isDefault        path.String
+	isCompiled       path.String
+	sortlen          path.Int64
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QCollations) GetParent() string {
 
 // Column Functions
 
-func (q QCollations) CollationName() path.StringPath {
+func (q QCollations) CollationName() path.String {
 	return q.collationName
 }
 
-func (q QCollations) CharacterSetName() path.StringPath {
+func (q QCollations) CharacterSetName() path.String {
 	return q.characterSetName
 }
 
-func (q QCollations) Id() path.Int64Path {
+func (q QCollations) Id() path.Int64 {
 	return q.id
 }
 
-func (q QCollations) IsDefault() path.StringPath {
+func (q QCollations) IsDefault() path.String {
 	return q.isDefault
 }
 
-func (q QCollations) IsCompiled() path.StringPath {
+func (q QCollations) IsCompiled() path.String {
 	return q.isCompiled
 }
 
-func (q QCollations) Sortlen() path.Int64Path {
+func (q QCollations) Sortlen() path.Int64 {
 	return q.sortlen
 }

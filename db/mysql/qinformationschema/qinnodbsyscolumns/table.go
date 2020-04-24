@@ -28,12 +28,12 @@ func newQInnodbSysColumns(alias string) QInnodbSysColumns {
 
 type QInnodbSysColumns struct {
 	_alias  string
-	tableId path.Int64Path
-	name    path.StringPath
-	pos     path.Int64Path
-	mtype   path.IntPath
-	prtype  path.IntPath
-	len     path.IntPath
+	tableId path.Int64
+	name    path.String
+	pos     path.Int64
+	mtype   path.Int
+	prtype  path.Int
+	len     path.Int
 }
 
 // core.Table Functions
@@ -67,26 +67,26 @@ func (q QInnodbSysColumns) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbSysColumns) TableId() path.Int64Path {
+func (q QInnodbSysColumns) TableId() path.Int64 {
 	return q.tableId
 }
 
-func (q QInnodbSysColumns) Name() path.StringPath {
+func (q QInnodbSysColumns) Name() path.String {
 	return q.name
 }
 
-func (q QInnodbSysColumns) Pos() path.Int64Path {
+func (q QInnodbSysColumns) Pos() path.Int64 {
 	return q.pos
 }
 
-func (q QInnodbSysColumns) Mtype() path.IntPath {
+func (q QInnodbSysColumns) Mtype() path.Int {
 	return q.mtype
 }
 
-func (q QInnodbSysColumns) Prtype() path.IntPath {
+func (q QInnodbSysColumns) Prtype() path.Int {
 	return q.prtype
 }
 
-func (q QInnodbSysColumns) Len() path.IntPath {
+func (q QInnodbSysColumns) Len() path.Int {
 	return q.len
 }

@@ -152,9 +152,9 @@ func createPrivateNewFunc(table string, cols []*column) *jen.Statement {
 // type QResourceGroup struct {
 //    _alias       string
 //    uuid         path.BinaryPath
-//    name         path.StringPath
-//    internalName path.StringPath
-//    description  path.StringPath
+//    name         path.String
+//    internalName path.String
+//    description  path.String
 //    version      path.IntPath
 //    createdAt    path.TimePath
 //    updatedAt    path.TimePath
@@ -166,7 +166,7 @@ func createStruct(table string, cols []*column) *jen.Statement {
 	return jen.Type().Id(structName).StructFunc(func(g *jen.Group) {
 		g.Id(aliasField).String()
 
-		// internalName path.StringPath
+		// internalName path.String
 		for _, col := range cols {
 			g.Id(col.MemberName()).Add(jen.Qual(col.PathTypeName()))
 		}
@@ -265,7 +265,7 @@ func createGetParentSchemaFunc(schema, table string) *jen.Statement {
 //    return q.uuid
 // }
 //
-// func (q QResourceGroup) Name() path.StringPath {
+// func (q QResourceGroup) Name() path.String {
 //    return q.name
 // }
 func createColumnFunctions(table string, cols []*column) <-chan *jen.Statement {

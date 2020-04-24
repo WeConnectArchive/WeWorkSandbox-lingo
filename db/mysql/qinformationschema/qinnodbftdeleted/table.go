@@ -23,7 +23,7 @@ func newQInnodbFtDeleted(alias string) QInnodbFtDeleted {
 
 type QInnodbFtDeleted struct {
 	_alias string
-	docId  path.Int64Path
+	docId  path.Int64
 }
 
 // core.Table Functions
@@ -52,6 +52,6 @@ func (q QInnodbFtDeleted) GetParent() string {
 
 // Column Functions
 
-func (q QInnodbFtDeleted) DocId() path.Int64Path {
+func (q QInnodbFtDeleted) DocId() path.Int64 {
 	return q.docId
 }

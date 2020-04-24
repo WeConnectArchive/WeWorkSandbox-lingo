@@ -10,154 +10,154 @@ func Q() QFiles {
 	return instance
 }
 
-func FileId() path.Int64Path {
+func FileId() path.Int64 {
 	return instance.fileId
 }
 
-func FileName() path.StringPath {
+func FileName() path.String {
 	return instance.fileName
 }
 
-func FileType() path.StringPath {
+func FileType() path.String {
 	return instance.fileType
 }
 
-func TablespaceName() path.StringPath {
+func TablespaceName() path.String {
 	return instance.tablespaceName
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func LogfileGroupName() path.StringPath {
+func LogfileGroupName() path.String {
 	return instance.logfileGroupName
 }
 
-func LogfileGroupNumber() path.Int64Path {
+func LogfileGroupNumber() path.Int64 {
 	return instance.logfileGroupNumber
 }
 
-func Engine() path.StringPath {
+func Engine() path.String {
 	return instance.engine
 }
 
-func FulltextKeys() path.StringPath {
+func FulltextKeys() path.String {
 	return instance.fulltextKeys
 }
 
-func DeletedRows() path.Int64Path {
+func DeletedRows() path.Int64 {
 	return instance.deletedRows
 }
 
-func UpdateCount() path.Int64Path {
+func UpdateCount() path.Int64 {
 	return instance.updateCount
 }
 
-func FreeExtents() path.Int64Path {
+func FreeExtents() path.Int64 {
 	return instance.freeExtents
 }
 
-func TotalExtents() path.Int64Path {
+func TotalExtents() path.Int64 {
 	return instance.totalExtents
 }
 
-func ExtentSize() path.Int64Path {
+func ExtentSize() path.Int64 {
 	return instance.extentSize
 }
 
-func InitialSize() path.Int64Path {
+func InitialSize() path.Int64 {
 	return instance.initialSize
 }
 
-func MaximumSize() path.Int64Path {
+func MaximumSize() path.Int64 {
 	return instance.maximumSize
 }
 
-func AutoextendSize() path.Int64Path {
+func AutoextendSize() path.Int64 {
 	return instance.autoextendSize
 }
 
-func CreationTime() path.TimePath {
+func CreationTime() path.Time {
 	return instance.creationTime
 }
 
-func LastUpdateTime() path.TimePath {
+func LastUpdateTime() path.Time {
 	return instance.lastUpdateTime
 }
 
-func LastAccessTime() path.TimePath {
+func LastAccessTime() path.Time {
 	return instance.lastAccessTime
 }
 
-func RecoverTime() path.Int64Path {
+func RecoverTime() path.Int64 {
 	return instance.recoverTime
 }
 
-func TransactionCounter() path.Int64Path {
+func TransactionCounter() path.Int64 {
 	return instance.transactionCounter
 }
 
-func Version() path.Int64Path {
+func Version() path.Int64 {
 	return instance.version
 }
 
-func RowFormat() path.StringPath {
+func RowFormat() path.String {
 	return instance.rowFormat
 }
 
-func TableRows() path.Int64Path {
+func TableRows() path.Int64 {
 	return instance.tableRows
 }
 
-func AvgRowLength() path.Int64Path {
+func AvgRowLength() path.Int64 {
 	return instance.avgRowLength
 }
 
-func DataLength() path.Int64Path {
+func DataLength() path.Int64 {
 	return instance.dataLength
 }
 
-func MaxDataLength() path.Int64Path {
+func MaxDataLength() path.Int64 {
 	return instance.maxDataLength
 }
 
-func IndexLength() path.Int64Path {
+func IndexLength() path.Int64 {
 	return instance.indexLength
 }
 
-func DataFree() path.Int64Path {
+func DataFree() path.Int64 {
 	return instance.dataFree
 }
 
-func CreateTime() path.TimePath {
+func CreateTime() path.Time {
 	return instance.createTime
 }
 
-func UpdateTime() path.TimePath {
+func UpdateTime() path.Time {
 	return instance.updateTime
 }
 
-func CheckTime() path.TimePath {
+func CheckTime() path.Time {
 	return instance.checkTime
 }
 
-func Checksum() path.Int64Path {
+func Checksum() path.Int64 {
 	return instance.checksum
 }
 
-func Status() path.StringPath {
+func Status() path.String {
 	return instance.status
 }
 
-func Extra() path.StringPath {
+func Extra() path.String {
 	return instance.extra
 }

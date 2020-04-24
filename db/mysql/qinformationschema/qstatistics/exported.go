@@ -10,66 +10,66 @@ func Q() QStatistics {
 	return instance
 }
 
-func TableCatalog() path.StringPath {
+func TableCatalog() path.String {
 	return instance.tableCatalog
 }
 
-func TableSchema() path.StringPath {
+func TableSchema() path.String {
 	return instance.tableSchema
 }
 
-func TableName() path.StringPath {
+func TableName() path.String {
 	return instance.tableName
 }
 
-func NonUnique() path.Int64Path {
+func NonUnique() path.Int64 {
 	return instance.nonUnique
 }
 
-func IndexSchema() path.StringPath {
+func IndexSchema() path.String {
 	return instance.indexSchema
 }
 
-func IndexName() path.StringPath {
+func IndexName() path.String {
 	return instance.indexName
 }
 
-func SeqInIndex() path.Int64Path {
+func SeqInIndex() path.Int64 {
 	return instance.seqInIndex
 }
 
-func ColumnName() path.StringPath {
+func ColumnName() path.String {
 	return instance.columnName
 }
 
-func Collation() path.StringPath {
+func Collation() path.String {
 	return instance.collation
 }
 
-func Cardinality() path.Int64Path {
+func Cardinality() path.Int64 {
 	return instance.cardinality
 }
 
-func SubPart() path.Int64Path {
+func SubPart() path.Int64 {
 	return instance.subPart
 }
 
-func Packed() path.StringPath {
+func Packed() path.String {
 	return instance.packed
 }
 
-func Nullable() path.StringPath {
+func Nullable() path.String {
 	return instance.nullable
 }
 
-func IndexType() path.StringPath {
+func IndexType() path.String {
 	return instance.indexType
 }
 
-func Comment() path.StringPath {
+func Comment() path.String {
 	return instance.comment
 }
 
-func IndexComment() path.StringPath {
+func IndexComment() path.String {
 	return instance.indexComment
 }
