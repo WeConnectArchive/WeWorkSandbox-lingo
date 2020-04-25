@@ -18,8 +18,14 @@ import (
 var _ = Describe("Value", func() {
 
 	Context("Calling `NewValue`", func() {
+		complexTypeErrFmt := "value is complex type '%s' when it should be a simple type " +
+			"or a pointer to a simple type"
+
 		type i interface{}
 		var iFace i = &struct{}{}
+		var myStr = "my string is hereeeeeeeeeee"
+		var myTime = time.Now()
+
 		DescribeTable("`GetSQL`",
 
 			func(d core.Dialect, v interface{}, matchSql, matchErr types.GomegaMatcher) {
@@ -36,26 +42,27 @@ var _ = Describe("Value", func() {
 
 			// Basic Types
 			// - Successful
-			Entry("1", valueDialectSuccess{}, 1, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("-1", valueDialectSuccess{}, -1, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("String", valueDialectSuccess{}, "String", MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("1.55", valueDialectSuccess{}, 1.55, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("1.55", valueDialectSuccess{}, 1.55, MatchSQLString("value sql"), Not(HaveOccurred())),
+			Entry("1", valueDialectSuccess{}, 1, MatchSQLString("[1]"), Not(HaveOccurred())),
+			Entry("-1", valueDialectSuccess{}, -1, MatchSQLString("[-1]"), Not(HaveOccurred())),
+			Entry("String", valueDialectSuccess{}, "String", MatchSQLString("[String]"), Not(HaveOccurred())),
+			Entry("1.55", valueDialectSuccess{}, float32(1.55), MatchSQLString("[1.55]"), Not(HaveOccurred())),
+			Entry("1.55", valueDialectSuccess{}, float64(1.55e19), MatchSQLString("[1.55e+19]"), Not(HaveOccurred())),
 			// - Failures
 			Entry("nil", valueDialectSuccess{}, nil, BeNil(), MatchError("constant is nil, use IsNull instead")),
 
 			// Complex Types
 			// - Successful
-			Entry("string array", valueDialectSuccess{}, [1]string{"aaa"}, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("string slice", valueDialectSuccess{}, []string{"aaa"}, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("int slice", valueDialectSuccess{}, []int{5}, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("time.Time slice", valueDialectSuccess{}, []time.Time{{}, time.Now()}, MatchSQLString("value sql"), Not(HaveOccurred())),
-			Entry("byte slice", valueDialectSuccess{}, []byte{0x01, 0x02, 0x03, 0x04}, MatchSQLString("value sql"), Not(HaveOccurred())),
+			Entry("string array", valueDialectSuccess{}, [1]string{"aaa"}, MatchSQLString("[aaa]"), Not(HaveOccurred())),
+			Entry("string slice", valueDialectSuccess{}, []string{"aaa"}, MatchSQLString("[aaa]"), Not(HaveOccurred())),
+			Entry("int slice", valueDialectSuccess{}, []int{5}, MatchSQLString("[5]"), Not(HaveOccurred())),
+			Entry("time.Time slice", valueDialectSuccess{}, []time.Time{{}, myTime}, MatchSQLString(fmt.Sprintf("[%+v %+v]", time.Time{}, myTime)), Not(HaveOccurred())),
+			Entry("byte slice", valueDialectSuccess{}, []byte{0x20, 0x02, 0x03, 0x04}, MatchSQLString("[[32 2 3 4]]"), Not(HaveOccurred())),
+			Entry("string ptr", valueDialectSuccess{}, &myStr, MatchSQLString("[my string is hereeeeeeeeeee]"), Not(HaveOccurred())),
 			// - Failures
-			Entry("chan", valueDialectSuccess{}, make(chan string), BeNil(), MatchError(fmt.Sprintf("value is complex type '%s' when it should be a simple type", "chan string"))),
-			Entry("func", valueDialectSuccess{}, func() {}, BeNil(), MatchError(fmt.Sprintf("value is complex type '%s' when it should be a simple type", "func()"))),
-			Entry("struct{}", valueDialectSuccess{}, struct{}{}, BeNil(), MatchError(fmt.Sprintf("value is complex type '%s' when it should be a simple type", "struct {}"))),
-			Entry("interface", valueDialectSuccess{}, iFace, BeNil(), MatchError(fmt.Sprintf("value is complex type '%s' when it should be a simple type", "*struct {}"))),
+			Entry("chan", valueDialectSuccess{}, make(chan string), BeNil(), MatchError(fmt.Sprintf(complexTypeErrFmt, "chan string"))),
+			Entry("func", valueDialectSuccess{}, func() {}, BeNil(), MatchError(fmt.Sprintf(complexTypeErrFmt, "func()"))),
+			Entry("struct{}", valueDialectSuccess{}, struct{}{}, BeNil(), MatchError(fmt.Sprintf(complexTypeErrFmt, "struct {}"))),
+			Entry("interface", valueDialectSuccess{}, iFace, BeNil(), MatchError(fmt.Sprintf(complexTypeErrFmt, "struct {}"))),
 		)
 	})
 })
@@ -63,8 +70,8 @@ var _ = Describe("Value", func() {
 type valueDialectSuccess struct{}
 
 func (valueDialectSuccess) GetName() string { return "value by dialect" }
-func (valueDialectSuccess) Value(_ []interface{}) (core.SQL, error) {
-	return core.NewSQLf("value sql"), nil
+func (valueDialectSuccess) Value(i []interface{}) (core.SQL, error) {
+	return core.NewSQLf("%+v", i), nil
 }
 
 type valueDialectFailure struct{ valueDialectSuccess }
