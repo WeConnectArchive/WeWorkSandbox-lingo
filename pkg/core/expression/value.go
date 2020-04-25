@@ -41,22 +41,35 @@ func (v value) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, err
 	}
 
-	splitValues := convertToSlice(v.value)
+	splitValues := convertToSlice(reflectOfV)
 	return constant.Value(splitValues)
 }
 
 func validateOverallKind(reflectOfV reflect.Value) error {
+	reflectOfV = removePtrIfExists(reflectOfV)
+
+	var underlyingType = reflectOfV.Type()
+
 	// If this is a slice or array, check the inner type.
-	var reflectType = reflectOfV.Type()
 	switch reflectOfV.Kind() {
 	case reflect.Slice, reflect.Array:
 		// Pull out the inner type to validate
-		reflectType = reflectOfV.Type().Elem()
+		underlyingType = reflectOfV.Type().Elem()
 	}
-	if !validateSimpleKind(reflectType) {
-		return ValueIsComplexType(reflectType)
+	if !validateSimpleKind(underlyingType) {
+		return ValueIsComplexType(reflectOfV.Type())
 	}
 	return nil
+}
+
+// removePtrIfExists so the underlying type can be exposed. This is helpful
+// when they want to change the value in a loop for example.
+func removePtrIfExists(reflectOfV reflect.Value) reflect.Value {
+	switch reflectOfV.Kind() {
+	case reflect.Ptr:
+		reflectOfV = reflectOfV.Elem()
+	}
+	return reflectOfV
 }
 
 func validateSimpleKind(t reflect.Type) bool {
@@ -73,22 +86,23 @@ func validateSimpleKind(t reflect.Type) bool {
 	return true
 }
 
-func convertToSlice(actual interface{}) []interface{} {
-	refVal := reflect.ValueOf(actual)
-	switch refVal.Kind() {
+func convertToSlice(value reflect.Value) []interface{} {
+	value = removePtrIfExists(value)
+
+	switch value.Kind() {
 	case reflect.Slice, reflect.Array:
 		// If we have byte slice or array, they must mean they want Binary, so include
 		// the entire slice as a single value to do binary lookups.
-		if refVal.Type().Elem().Kind() == reflect.Uint8 {
+		if value.Type().Elem().Kind() == reflect.Uint8 {
 			break
 		}
 
-		var values = make([]interface{}, 0, refVal.Len())
-		for index := 0; index < refVal.Len(); index++ {
-			indexed := refVal.Index(index)
+		var values = make([]interface{}, 0, value.Len())
+		for index := 0; index < value.Len(); index++ {
+			indexed := value.Index(index)
 			values = append(values, indexed.Interface())
 		}
 		return values
 	}
-	return []interface{}{actual}
+	return []interface{}{value.Interface()}
 }

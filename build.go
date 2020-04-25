@@ -18,6 +18,9 @@ import (
 )
 
 const (
+	timeFormatDuration = "15:04:05.999999999"
+
+	// Paths and Files
 	testGenerateSakilaDir = "./internal/test/testdata/sakila"
 	dockerComposeYml      = "docker-compose.yml"
 )
@@ -39,7 +42,26 @@ var (
 
 // Run all the things that CI does
 func All() {
-	mg.SerialDeps(Deps.InstallTools, Deps.ModDownload, Gen.Go, GoFmt, Revive, Build, Test.All, Tidy)
+	s := time.Now()
+	log.Printf("Starting Build - %s", s.Format(timeFormatDuration))
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("ERROR - Took %s", time.Since(s))
+			panic(err)
+		} else {
+			log.Printf("Completed - Took %s", time.Since(s))
+		}
+	}()
+	mg.SerialDeps(
+		Deps.InstallTools,
+		Deps.ModDownload,
+		Gen.Go,
+		GoFmt,
+		Revive,
+		Build,
+		Test.All,
+		Tidy,
+	)
 }
 
 type Deps mg.Namespace

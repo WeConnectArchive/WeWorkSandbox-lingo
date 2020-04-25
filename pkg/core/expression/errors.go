@@ -36,7 +36,8 @@ type valueIsComplexType struct {
 
 func ValueIsComplexType(value reflect.Type) error { return valueIsComplexType{value: value} }
 func (e valueIsComplexType) Error() string {
-	return fmt.Sprintf("value is complex type '%s' when it should be a simple type", e.TypeName())
+	return fmt.Sprintf("value is complex type '%s' when it should be a simple type "+
+		"or a pointer to a simple type", e.TypeName())
 }
 func (e valueIsComplexType) TypeName() string { return e.value.String() }
 

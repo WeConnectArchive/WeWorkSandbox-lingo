@@ -2,6 +2,7 @@ package queries_test
 
 import (
 	. "github.com/onsi/gomega"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qcategory"
@@ -74,13 +75,14 @@ var selectQueries = []Query{
 		},
 	},
 	{
+		// Note this Query uses a pointer to actorID
 		Name:      "MovieTitlesByCategory_ForActor_CategoryAsc",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
 			SQL: func() core.Expression {
-				const (
-					actorID = 10
+				var (
+					actorID = int16(10)
 				)
 
 				fa := qfilmactor.As("fa")
@@ -99,7 +101,7 @@ var selectQueries = []Query{
 				).Join(
 					cat, join.Inner, fc.CategoryId().EqPath(cat.CategoryId()),
 				).Where(
-					fa.ActorId().Eq(actorID),
+					fa.ActorId().EqPath(expression.NewValue(&actorID)),
 				).OrderBy(
 					cat.Name(), sort.Ascending,
 				)
