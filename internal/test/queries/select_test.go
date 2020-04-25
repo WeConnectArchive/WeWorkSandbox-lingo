@@ -2,7 +2,6 @@ package queries_test
 
 import (
 	. "github.com/onsi/gomega"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qcategory"
@@ -12,6 +11,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/query"
