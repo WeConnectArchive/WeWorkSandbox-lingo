@@ -8,6 +8,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/exporters/trace/stdout"
+	"go.opentelemetry.io/otel/sdk/trace"
 
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qactor"
 	"github.com/weworksandbox/lingo/pkg/core"
@@ -29,9 +32,15 @@ var _ = Describe("executor.go", func() {
 			execSQL execute.SQL
 		)
 		BeforeEach(func() {
+			exporter, err := stdout.NewExporter(stdout.Options{})
+			provider, err := trace.NewProvider(
+				trace.WithSyncer(exporter),
+			)
+			Expect(err).ToNot(HaveOccurred())
+			global.SetTraceProvider(provider)
+
 			d = dialect.MySQL{}
 
-			var err error
 			db, err = sql.Open("mysql", "root:lingo@tcp(localhost:9999)/?maxAllowedPacket=0")
 			Expect(err).ToNot(HaveOccurred())
 		})
@@ -48,7 +57,6 @@ var _ = Describe("executor.go", func() {
 				execSQL = execute.NewSQL(db, d)
 
 				ctx := context.Background()
-
 				q := query.Select(qactor.FirstName()).From(qactor.Q()).OrderBy(qactor.LastUpdate(), sort.Descending)
 
 				var a actor

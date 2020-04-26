@@ -53,12 +53,15 @@ func (e execSQL) QueryRow(pCtx context.Context, exp core.Expression, valuePtrs..
 		return err
 	}
 
+	tSQL := lSQL.String()
+	sVals := lSQL.Values()
 	if span.IsRecording() {
-		e.LogSQLAndArgs(ctx, span, lSQL.String(), lSQL.Values()...)
+		e.LogSQLAndArgs(ctx, span, tSQL, sVals...)
 	}
 
-	row := e.db.QueryRowContext(ctx, lSQL.String(), lSQL.Values()...)
-	err = row.Scan(valuePtrs...)
+	err = span.Tracer().WithSpan(ctx, "sql.DB.QueryRowContext", func(ctx context.Context) error {
+		return e.db.QueryRowContext(ctx, tSQL, sVals...).Scan(valuePtrs...)
+	})
 	if err != nil {
 		span.RecordError(ctx, err)
 		return err
