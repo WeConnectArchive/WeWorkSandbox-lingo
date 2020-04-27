@@ -3,6 +3,7 @@ package execute_test
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -53,7 +54,7 @@ var _ = Describe("executor.go", func() {
 		})
 
 		Context("#QueryRow", func() {
-			It("Asdf", func() {
+			It("QueryRow", func() {
 				execSQL = execute.NewSQL(db, d)
 
 				ctx := context.Background()
@@ -62,6 +63,36 @@ var _ = Describe("executor.go", func() {
 				var a actor
 				err := execSQL.QueryRow(ctx, q, &a.FirstName)
 				Expect(err).ToNot(HaveOccurred())
+			})
+			It("Query", func() {
+				execSQL = execute.NewSQL(db, d)
+
+				ctx := context.Background()
+				q := query.Select(qactor.FirstName()).From(qactor.Q()).Where(qactor.ActorId().Eq(1)).OrderBy(qactor.LastUpdate(), sort.Descending)
+
+				var a actor
+				scanner, err := execSQL.Query(ctx, q)
+				Expect(err).ToNot(HaveOccurred())
+				for scanner.ScanRow(&a.FirstName) {
+					log.Printf("Firstname: %s", a.FirstName)
+				}
+				Expect(scanner.Err()).ToNot(HaveOccurred())
+			})
+			FIt("QueryFunc", func() {
+				execSQL = execute.NewSQL(db, d)
+
+				ctx := context.Background()
+				q := query.Select(qactor.FirstName()).From(qactor.Q()).Where(qactor.ActorId().Eq(1)).OrderBy(qactor.LastUpdate(), sort.Descending)
+
+				var a actor
+				scanner, err := execSQL.Query(ctx, q)
+				Expect(err).ToNot(HaveOccurred())
+				for scanner.ScanRow(&a.FirstName) {
+					//for scan := range scanChan {
+					//	more, err := scan(&a.FirstName)
+					log.Printf("Firstname: %s", a.FirstName)
+				}
+				Expect(scanner.Err()).ToNot(HaveOccurred())
 			})
 		})
 	})
