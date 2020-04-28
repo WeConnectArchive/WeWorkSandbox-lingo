@@ -58,7 +58,10 @@ var _ = Describe("executor.go", func() {
 				execSQL = execute.NewSQL(db, d)
 
 				ctx := context.Background()
-				q := query.Select(qactor.FirstName()).From(qactor.Q()).OrderBy(qactor.LastUpdate(), sort.Descending)
+				q := query.
+					Select(qactor.FirstName()).
+					From(qactor.Q()).
+					OrderBy(qactor.LastUpdate(), sort.Descending)
 
 				var a actor
 				err := execSQL.QueryRow(ctx, q, &a.FirstName)
@@ -68,7 +71,11 @@ var _ = Describe("executor.go", func() {
 				execSQL = execute.NewSQL(db, d)
 
 				ctx := context.Background()
-				q := query.Select(qactor.FirstName()).From(qactor.Q()).Where(qactor.ActorId().Eq(1)).OrderBy(qactor.LastUpdate(), sort.Descending)
+				q := query.
+					Select(qactor.FirstName()).
+					From(qactor.Q()).
+					Where(qactor.ActorId().Eq(1)).
+					OrderBy(qactor.LastUpdate(), sort.Descending)
 
 				var a actor
 				scanner, err := execSQL.Query(ctx, q)
@@ -78,21 +85,27 @@ var _ = Describe("executor.go", func() {
 				}
 				Expect(scanner.Err()).ToNot(HaveOccurred())
 			})
-			FIt("QueryFunc", func() {
+			FIt("QueryRoutine", func() {
 				execSQL = execute.NewSQL(db, d)
 
 				ctx := context.Background()
-				q := query.Select(qactor.FirstName()).From(qactor.Q()).Where(qactor.ActorId().Eq(1)).OrderBy(qactor.LastUpdate(), sort.Descending)
+				q := query.
+					Select(qactor.ActorId(), qactor.FirstName(), qactor.LastName()).
+					From(qactor.Q()).
+					OrderBy(qactor.LastUpdate(), sort.Descending)
 
 				var a actor
-				scanner, err := execSQL.Query(ctx, q)
+				scanner, err := execSQL.QueryRoutine(ctx, q)
 				Expect(err).ToNot(HaveOccurred())
-				for scanner.ScanRow(&a.FirstName) {
-					//for scan := range scanChan {
-					//	more, err := scan(&a.FirstName)
-					log.Printf("Firstname: %s", a.FirstName)
+
+				for scan := range scanner {
+					scanErr := scan(&a.ActorId, &a.FirstName, &a.LastName)
+					Expect(scanErr).ToNot(HaveOccurred())
+					log.Println("====================")
+					log.Printf("ID:    %d", a.ActorId)
+					log.Printf("First: %s", a.FirstName)
+					log.Printf("Last:  %s", a.LastName)
 				}
-				Expect(scanner.Err()).ToNot(HaveOccurred())
 			})
 		})
 	})

@@ -3,11 +3,13 @@ package execute
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"log"
 	"reflect"
 	"sync/atomic"
+	"time"
 
-	otelcore "go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/metric"
 	"go.opentelemetry.io/otel/api/trace"
@@ -19,6 +21,7 @@ import (
 type SQL interface {
 	Query(pCtx context.Context, exp core.Expression) (RowScanner, error)
 	QueryRow(pCtx context.Context, exp core.Expression, valuePtrs ...interface{}) error
+	QueryRoutine(pCtx context.Context, exp core.Expression) (<-chan Scan, error)
 }
 
 func NewSQL(db *sql.DB, d core.Dialect) SQL {
@@ -57,7 +60,7 @@ func (e execSQL) QueryRow(pCtx context.Context, exp core.Expression, queryIntoPt
 
 	var rowCount uint64
 	defer func() {
-		e.TraceQuery(ctx, rowCount, tSQL, sVals...)
+		e.TraceQuery(ctx, rowCount, tSQL, sVals)
 	}()
 
 	err = span.Tracer().WithSpan(ctx, "sql.DB.QueryRowContext", func(ctx context.Context) error {
@@ -78,6 +81,7 @@ type RowScanner struct {
 	err      error
 }
 
+// ScanRow
 func (r RowScanner) ScanRow(vals ...interface{}) bool {
 	if !r.rows.Next() {
 		r.err = getDoneErr(r.rows)
@@ -93,8 +97,19 @@ func (r RowScanner) ScanRow(vals ...interface{}) bool {
 	return true
 }
 
+// Err will close the result set (if not closed already) and return whatever errors occurred.
 func (r RowScanner) Err() error {
-	return getDoneErr(r.rows)
+	err := getDoneErr(r.rows)
+	switch {
+	case err != nil && r.err == nil:
+		return err
+	case err == nil && r.err != nil:
+		return r.err
+	case err != nil && r.err != nil:
+		// Wrap the first error to occur
+		return fmt.Errorf("%s: %w", err.Error(), r.err)
+	}
+	return nil
 }
 
 func (e execSQL) Query(pCtx context.Context, exp core.Expression) (RowScanner, error) {
@@ -120,13 +135,9 @@ func (e execSQL) Query(pCtx context.Context, exp core.Expression) (RowScanner, e
 	}, nil
 }
 
-type Scan = func(vals ...interface{}) error
+type Scan func(args... interface{}) error
 
-type ScanOrError struct {
-
-}
-
-func (e execSQL) QueryFunc(pCtx context.Context, exp core.Expression) (Scan, error) {
+func (e execSQL) QueryRoutine(pCtx context.Context, exp core.Expression) (<-chan Scan, error) {
 	ctx, span := e.tr.Start(pCtx, "Query")
 	defer span.End()
 
@@ -144,15 +155,63 @@ func (e execSQL) QueryFunc(pCtx context.Context, exp core.Expression) (Scan, err
 		return nil, err
 	}
 
-	f := func(vals ...interface{}) error {
+	// NOTE: Cannot do buffered scans!
+	scanChan := make(chan Scan)
+	go func() {
+		var rowCount uint64
 		defer func() {
-			// Allowed to close more than once, ensure all resources are released
+			e.TraceQueryEnd(ctx, rowCount)
+			// Ensure we close to release resources.
+			close(scanChan)
+			// Double close is allowed on rows.
 			_ = rows.Close()
 		}()
 
-		return nil
-	}
-	return f, nil
+		const (
+			TRUE = 1
+			FALSE = 0
+		)
+		var isDone int32
+
+		// We use the same Scan function for each iteration. Store it!
+		scanFunc := func(args ...interface{}) error {
+			if atomic.LoadInt32(&isDone) != FALSE {
+				return errors.New("unable to scan from a closed query")
+			}
+
+			if !rows.Next() {
+				atomic.CompareAndSwapInt32(&isDone, FALSE, TRUE)
+				return getDoneErr(rows)
+			}
+			scanErr := rows.Scan(args...)
+			if scanErr != nil {
+				atomic.CompareAndSwapInt32(&isDone, FALSE, TRUE)
+				return scanErr
+			}
+			return nil
+		}
+
+		ticker := time.NewTicker(100 * time.Millisecond)
+		defer ticker.Stop()
+
+		// Keep going until we had an error or are finished reading rows
+		for atomic.LoadInt32(&isDone) == FALSE {
+
+			// We have 3 cases.
+			// (1) If we were told to shutdown, shutdown.
+			// (2) Try to send a scanFunc down scanChan.
+			// (3) If sending down scanChan takes too long, we do another iteration. This is the key
+			//     to allowing this goroutine, channel, and db.Rows to be cleaned up.
+			select {
+			case <-ctx.Done():
+				return
+			case scanChan <-scanFunc:
+			case <-ticker.C:
+				log.Println("Timed out via Ticker")
+			}
+		}
+	}()
+	return scanChan, nil
 }
 
 
