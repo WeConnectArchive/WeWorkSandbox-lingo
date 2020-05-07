@@ -48,7 +48,8 @@ func (sqlExec sqlExpExec) BeginTx(ctx context.Context, opts *sql.TxOptions) (TxS
 }
 
 func (sqlExec sqlExpExec) InTx(ctx context.Context, opts *sql.TxOptions, execThis ExecSQLExpInTx) (err error) {
-	txSQL, err := sqlExec.BeginTx(ctx, opts)
+	var txSQL TxSQLExp
+	txSQL, err = sqlExec.BeginTx(ctx, opts)
 	if err != nil {
 		return err // Already Traced
 	}
