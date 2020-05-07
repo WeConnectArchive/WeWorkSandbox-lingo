@@ -56,10 +56,11 @@ func All() {
 		Deps.ModDownload,
 		Gen.Go,
 		GoFmt,
+		GoVet,
 		Revive,
 		Build,
 		Test.All,
-		Tidy,
+		GoTidy,
 	)
 }
 
@@ -123,6 +124,7 @@ func (Test) Unit() error {
 	return runCmd("go", "test",
 		"-short",
 		"-coverprofile=unit-coverage.out",
+		goRaceFlag(),
 		debug("-v"),
 	)(pathsPlusTestArgs)
 }
@@ -136,6 +138,7 @@ func (Test) Functional() error {
 	return runCmd("go", "test",
 		"-short",
 		"-coverprofile=functional-coverage.out",
+		goRaceFlag(),
 		debug("-v"),
 	)(pathsPlusTestArgs)
 }
@@ -154,14 +157,14 @@ func (Test) Benchmark() error {
 // Builds lingo and then builds codePaths
 func Build() error {
 	if err := run("go", "build",
-		isCGOEnabled("-race"),
+		goRaceFlag(),
 		debug("-v"),
 		"./cmd/lingo/lingo.go",
 	); err != nil {
 		return err
 	}
 	if err := runCmd("go", "build",
-		isCGOEnabled("-race"),
+		goRaceFlag(),
 		debug("-v"),
 	)(codePaths); err != nil {
 		return err
@@ -213,10 +216,17 @@ func (Gen) StopTestSchemaDB() error {
 }
 
 // Runs `go mod tidy` with optional debug logging
-func Tidy() error {
+func GoTidy() error {
 	if err := run("go", "mod", "tidy",
 		debug("-v"),
 	); err != nil {
+		return err
+	}
+	return nil
+}
+
+func GoVet() error {
+	if err := runCmd("go", "vet", debug("-v"))(allPkgs); err != nil {
 		return err
 	}
 	return nil
@@ -277,6 +287,11 @@ func isCGOEnabled(returnIfEnabled string) string {
 func isCI() bool {
 	val, ok := os.LookupEnv("GITHUB_ACTIONS")
 	return ok && val == "true"
+}
+
+// goRaceFlag will return -race if CGO_ENABLED is true
+func goRaceFlag() string {
+	return isCGOEnabled("-race")
 }
 
 // run will take a normal sh.run command argument, filtering any args entries that are empty.

@@ -60,9 +60,4 @@ type ComboExpression interface {
 
 type Dialect interface {
 	Name
-
-}
-
-type Execute interface {
-
 }
