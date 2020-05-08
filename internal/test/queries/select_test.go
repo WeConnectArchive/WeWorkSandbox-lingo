@@ -26,7 +26,7 @@ var selectQueries = []Query{
 			Dialect: dialect.Default{},
 			SQL: func() core.Expression {
 				const (
-					storeId = 2
+					storeID = 2
 				)
 				return query.Select(
 					qinventory.InventoryId(),
@@ -34,7 +34,7 @@ var selectQueries = []Query{
 				).From(
 					qinventory.Q(),
 				).Where(
-					qinventory.StoreId().Eq(storeId),
+					qinventory.StoreId().Eq(storeID),
 				)
 			},
 			SQLAssert: ContainSubstring(trimQuery(`
