@@ -5,9 +5,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
-
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/trace"
 )
 
 type ExecSQLInTx = func(ctx context.Context, s SQLQuery) error
@@ -32,14 +29,12 @@ type SQLQuery interface {
 
 func NewSQL(db TxDBQuery) SQL {
 	return sqlDBExec{
-		db:     db,
-		tracer: global.Tracer("SQL"),
+		db: db,
 	}
 }
 
 type sqlDBExec struct {
-	db     TxDBQuery
-	tracer trace.Tracer
+	db TxDBQuery
 }
 
 func (s sqlDBExec) BeginTx(ctx context.Context, opts *sql.TxOptions) (TxSQL, error) {
@@ -47,7 +42,7 @@ func (s sqlDBExec) BeginTx(ctx context.Context, opts *sql.TxOptions) (TxSQL, err
 	if err != nil {
 		return nil, traceErr(ctx, err)
 	}
-	return sqlActiveTxExec{db: tx}, nil
+	return NewSQLTx(tx), nil
 }
 
 func (s sqlDBExec) Exec(ctx context.Context, tSQL string, sVals ...interface{}) (sql.Result, error) {
@@ -64,20 +59,30 @@ func (s sqlDBExec) Query(ctx context.Context, tSQL string, sVals ...interface{})
 
 func (s sqlDBExec) InTx(ctx context.Context, opts *sql.TxOptions, execThis ExecSQLInTx) (err error) {
 	var txSQL TxSQL
-	txSQL, err = s.BeginTx(ctx, opts)
-	if err != nil {
-		return err // Already Traced
-	}
 
+	panicked := true
 	defer func() {
 		r := recover()
-		if r != nil {
-			err = txSQL.Rollback(ctx, err)
-			panic(r)
+		if r != nil || panicked { // Workaround for if someone throws `nil`
+			panicked = true // Set it to true regardless because we checked r, or panicked was already true.
+			err = fmt.Errorf("panicked with %v", r)
 		}
-		err = txSQL.CommitOrRollback(ctx, err)
+		if txSQL != nil {
+			err = txSQL.CommitOrRollback(ctx, err)
+		}
+
+		if panicked {
+			panic(r) // Throw the same thing we caught. Do not change the type, value, etc.
+		}
 	}()
+
+	txSQL, err = s.BeginTx(ctx, opts)
+	if err != nil {
+		panicked = false // Normal error condition short circuit, no panic happened
+		return err       // Already Traced
+	}
 	err = execThis(ctx, txSQL)
+	panicked = false
 	return
 }
 
@@ -86,7 +91,7 @@ type ActiveDBTx interface {
 	driver.Tx
 }
 
-func NewSQLTx(db ActiveDBTx) SQLQuery {
+func NewSQLTx(db ActiveDBTx) TxSQL {
 	return sqlActiveTxExec{
 		db: db,
 	}
@@ -112,7 +117,11 @@ func (s sqlActiveTxExec) CommitOrRollback(ctx context.Context, err error) error 
 
 func (s sqlActiveTxExec) Rollback(ctx context.Context, err error) error {
 	if rollbackErr := s.db.Rollback(); rollbackErr != nil {
-		err = fmt.Errorf("%s: %w", rollbackErr, err)
+		if err != nil {
+			err = fmt.Errorf("%s: %w", rollbackErr, err)
+		} else {
+			err = rollbackErr
+		}
 		return traceErr(ctx, err)
 	}
 	return err
@@ -134,7 +143,7 @@ func (s sqlActiveTxExec) Query(ctx context.Context, tSQL string, sVals ...interf
 
 func exec(ctx context.Context, db DBQuery, tSQL string, sVals []interface{}) (result sql.Result, err error) {
 	var rowCount int64
-	queryTrace := traceQuery(ctx, queryTypeExec, tSQL, sVals)
+	queryTrace := traceOrNil(ctx, QTExec, tSQL, sVals)
 	defer func() {
 		queryTrace.RowCount(rowCount).Err(err).End(ctx)
 	}()
@@ -155,7 +164,7 @@ func queryRow(
 	ctx context.Context, db DBQuery, tSQL string, sVals []interface{}, queryIntoPtrs []interface{},
 ) (err error) {
 	var rowCount int64
-	queryTrace := traceQuery(ctx, queryTypeRow, tSQL, sVals)
+	queryTrace := traceOrNil(ctx, QTRow, tSQL, sVals)
 	defer func() {
 		queryTrace.RowCount(rowCount).Err(err).End(ctx)
 	}()
@@ -170,7 +179,7 @@ func queryRow(
 }
 
 func query(ctx context.Context, db DBQuery, tSQL string, sVals []interface{}) (RowScanner, error) {
-	queryTrace := traceQuery(ctx, queryTypeRows, tSQL, sVals)
+	queryTrace := traceOrNil(ctx, QTRows, tSQL, sVals)
 
 	var err error
 	defer func() {
@@ -192,4 +201,8 @@ func query(ctx context.Context, db DBQuery, tSQL string, sVals []interface{}) (R
 		rows:       rows,
 		queryTrace: queryTrace,
 	}, nil
+}
+
+func traceOrNil(ctx context.Context, qType QueryType, tSQL string, sVals []interface{}) *TraceQueryInfo {
+	return TraceQuery(ctx, qType, tSQL, sVals)
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -240,7 +241,9 @@ var _ = Context("sql.go", func() {
 
 				err error
 
-				mockBegin *sqlmock.ExpectedBegin
+				didPanic      bool
+				panickedValue interface{}
+				mockBegin     *sqlmock.ExpectedBegin
 			)
 			BeforeEach(func() {
 				ctx = context.Background()
@@ -253,21 +256,32 @@ var _ = Context("sql.go", func() {
 			})
 
 			JustBeforeEach(func() {
+				didPanic = true
+				defer func() {
+					panickedValue = recover()
+				}()
 				err = s.InTx(ctx, opts, execThis)
+				didPanic = false
 			})
 
 			Context("execThis returns nil", func() {
 				var (
 					mockCommit *sqlmock.ExpectedCommit
+					execCalled bool
 				)
 				BeforeEach(func() {
 					execThis = func(ctx context.Context, s execute.SQLQuery) error {
+						execCalled = true
 						return nil
 					}
 
 					mockCommit = mock.ExpectCommit()
 				})
 				It("Returns no error and calls commit", func() {
+					Expect(didPanic).To(BeFalse())
+					Expect(panickedValue).To(BeNil())
+					Expect(execCalled).To(BeTrue())
+
 					Expect(err).ToNot(HaveOccurred())
 					Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
 				})
@@ -277,6 +291,9 @@ var _ = Context("sql.go", func() {
 						mockCommit.WillReturnError(errors.New("random commit error"))
 					})
 					It("Returns no error and calls commit", func() {
+						Expect(didPanic).To(BeFalse())
+						Expect(panickedValue).To(BeNil())
+
 						Expect(err).To(MatchError("random commit error"))
 						Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
 					})
@@ -288,6 +305,9 @@ var _ = Context("sql.go", func() {
 					mockBegin.WillReturnError(errors.New("random begin error"))
 				})
 				It("Returns no error and calls commit", func() {
+					Expect(didPanic).To(BeFalse())
+					Expect(panickedValue).To(BeNil())
+
 					Expect(err).To(MatchError("random begin error"))
 					Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
 				})
@@ -305,6 +325,9 @@ var _ = Context("sql.go", func() {
 					mockRollback = mock.ExpectRollback()
 				})
 				It("Returns the execThis error and calls Rollback", func() {
+					Expect(didPanic).To(BeFalse())
+					Expect(panickedValue).To(BeNil())
+
 					Expect(err).To(MatchError("random error"))
 					Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
 				})
@@ -314,10 +337,52 @@ var _ = Context("sql.go", func() {
 						mockRollback.WillReturnError(errors.New("random rollback error"))
 					})
 					It("Returns the rollback error wrapped around the execThis error", func() {
+						Expect(didPanic).To(BeFalse())
+						Expect(panickedValue).To(BeNil())
+
 						Expect(err).To(MatchError(SatisfyAll(
 							ContainSubstring("random error"),
 							ContainSubstring("random rollback error"),
 						)))
+						Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
+					})
+				})
+			})
+
+			Context("execThis panics", func() {
+				type myType struct {
+					mux   sync.Mutex
+					value interface{}
+				}
+				var (
+					mockRollback  *sqlmock.ExpectedRollback
+					panickedValue *myType
+				)
+				BeforeEach(func() {
+					execThis = func(ctx context.Context, s execute.SQLQuery) error {
+						panickedValue = &myType{
+							value: 99,
+						}
+						panic(panickedValue)
+					}
+
+					mockRollback = mock.ExpectRollback()
+				})
+
+				It("Rolls back the transaction and rethrows the value", func() {
+					Expect(didPanic).To(BeTrue())
+					Expect(panickedValue).To(Equal(panickedValue))
+					Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
+				})
+
+				Context("Rollback returns an error", func() {
+					BeforeEach(func() {
+						mockRollback.WillReturnError(errors.New("my random error"))
+					})
+
+					It("Rolls back the transaction and rethrows the value", func() {
+						Expect(didPanic).To(BeTrue())
+						Expect(panickedValue).To(Equal(panickedValue))
 						Expect(mock.ExpectationsWereMet()).ToNot(HaveOccurred())
 					})
 				})

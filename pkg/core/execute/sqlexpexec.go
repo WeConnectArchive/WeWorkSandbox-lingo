@@ -3,6 +3,7 @@ package execute
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
 )
@@ -49,19 +50,30 @@ func (sqlExec sqlExpExec) BeginTx(ctx context.Context, opts *sql.TxOptions) (TxS
 
 func (sqlExec sqlExpExec) InTx(ctx context.Context, opts *sql.TxOptions, execThis ExecSQLExpInTx) (err error) {
 	var txSQL TxSQLExp
-	txSQL, err = sqlExec.BeginTx(ctx, opts)
-	if err != nil {
-		return err // Already Traced
-	}
 
+	panicked := true
 	defer func() {
 		r := recover()
-		err = txSQL.CommitOrRollback(ctx, err)
-		if r != nil {
-			panic(r)
+		if r != nil || panicked { // Workaround for if someone throws `nil`
+			panicked = true // Set it to true regardless because we checked r, or panicked was already true.
+			err = fmt.Errorf("panicked with %v", r)
+		}
+		if txSQL != nil {
+			err = txSQL.CommitOrRollback(ctx, err)
+		}
+
+		if panicked {
+			panic(r) // Throw the same thing we caught. Do not change the type, value, etc.
 		}
 	}()
+
+	txSQL, err = sqlExec.BeginTx(ctx, opts)
+	if err != nil {
+		panicked = false // Normal error condition short circuit, no panic happened
+		return err       // Already Traced
+	}
 	err = execThis(ctx, txSQL)
+	panicked = false
 	return
 }
 

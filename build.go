@@ -21,6 +21,8 @@ const (
 	// Paths and Files
 	testGenerateSakilaDir = "./internal/test/testdata/sakila"
 	dockerComposeYml      = "docker-compose.yml"
+
+	envCGO_ENABLED = "CGO_ENABLED"
 )
 
 var (
@@ -274,13 +276,18 @@ func debug(debugStr string) string {
 	return ""
 }
 
-// isCGOEnabled returns returnIfEnabled if CGO_ENABLED is true
-func isCGOEnabled(returnIfEnabled string) string {
-	val, ok := os.LookupEnv("CGO_ENABLED")
-	if ok && val == "1" {
-		return returnIfEnabled
+// isCGOEnabled returns true if CGO_ENABLED is not found in env vars, or if its value is equal to string "1".
+func isCGOEnabled() bool {
+	val, ok := os.LookupEnv(envCGO_ENABLED)
+	return !ok || val == "1" // If it is not found, its enabled by default in Go
+}
+
+// ifCGOEnabled returns returnIfEnabled if CGO_ENABLED is true
+func ifCGOEnabled(returnIfEnabled string) string {
+	if !isCGOEnabled() {
+		return ""
 	}
-	return ""
+	return returnIfEnabled
 }
 
 // isCI returns true if an env var for the CI system enabled is present
@@ -291,7 +298,8 @@ func isCI() bool {
 
 // goRaceFlag will return -race if CGO_ENABLED is true
 func goRaceFlag() string {
-	return isCGOEnabled("-race")
+	const flagRace = "-race"
+	return ifCGOEnabled(flagRace)
 }
 
 // run will take a normal sh.run command argument, filtering any args entries that are empty.

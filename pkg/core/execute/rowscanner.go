@@ -17,7 +17,7 @@ type rowScanner struct {
 	err      error
 
 	rows       *sql.Rows
-	queryTrace *traceQueryInfo
+	queryTrace *TraceQueryInfo
 }
 
 // ScanRow will check to see if there is another row to scan, calls rows.Scan, and returns true if successful. If
