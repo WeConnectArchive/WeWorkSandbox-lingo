@@ -113,6 +113,10 @@ var _ = Describe("sqlexpexec.go", func() {
 				pegomock.When(mockTxSQL.CommitOrRollback(
 					matchers.AnyContextContext(), AnyError(),
 				)).ThenReturn(nil)
+
+				// Reset the any values we dont always set above
+				execThisCalled = false
+				err = nil
 			})
 			JustBeforeEach(func() {
 				didPanic = true
@@ -122,15 +126,12 @@ var _ = Describe("sqlexpexec.go", func() {
 				err = execExp.InTx(ctx, &opts, execThis)
 				didPanic = false
 			})
-			AfterEach(func() {
-				err = nil // Reset the error value because we panic in this test! It does not always set err!
-			})
 			It("Returns no error and calls commit", func() {
-				Expect(execThisCalled).To(BeTrue())
-				Expect(err).ToNot(HaveOccurred())
-
 				Expect(didPanic).To(BeFalse())
 				Expect(panickedValue).To(BeNil())
+
+				Expect(execThisCalled).To(BeTrue())
+				Expect(err).ToNot(HaveOccurred())
 
 				inOrder := pegomock.InOrderContext{}
 				s.(*MockSQL).VerifyWasCalledInOrder(pegomock.Once(), &inOrder).BeginTx(ctx, &opts)
@@ -145,7 +146,8 @@ var _ = Describe("sqlexpexec.go", func() {
 				It("Returns the Tx error", func() {
 					Expect(didPanic).To(BeFalse())
 					Expect(panickedValue).To(BeNil())
-					Expect(execThisCalled).To(BeTrue())
+
+					Expect(execThisCalled).To(BeFalse())
 					Expect(err).To(MatchError("begin tx error"))
 				})
 			})

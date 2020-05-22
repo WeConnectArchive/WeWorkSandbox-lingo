@@ -58,7 +58,7 @@ var _ = Describe("log.go", func() {
 				tqi.End(ctx)
 			})
 			It("Calls span.AddsEvent", func() {
-				expectEndCalled(span, qType, queryStr, queryArgs, 0,nil)
+				expectEndCalled(span, qType, queryStr, queryArgs, 0, nil)
 			})
 		})
 
@@ -70,7 +70,7 @@ var _ = Describe("log.go", func() {
 				tqi.RowCount(99).End(ctx)
 			})
 			It("Calls span.AddsEvent", func() {
-				expectEndCalled(span, qType, queryStr, queryArgs, 99,nil)
+				expectEndCalled(span, qType, queryStr, queryArgs, 99, nil)
 			})
 		})
 
@@ -103,7 +103,6 @@ var _ = Describe("log.go", func() {
 		table.DescribeTable("Changing Values",
 			func(arg interface{}) {
 				queryArgs[0] = arg
-
 
 			},
 		)

@@ -183,4 +183,5 @@ func toTraceValue(arg interface{}) core.Value {
 	}
 	return v
 }
+
 //revive:enable:cyclomatic
