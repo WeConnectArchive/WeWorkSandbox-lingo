@@ -231,6 +231,7 @@ func GoTidy() error {
 	return nil
 }
 
+// Runs `go vet` with optional debug logging
 func GoVet() error {
 	if err := runCmd("go", "vet", debug("-v"))(allPkgs); err != nil {
 		return err
