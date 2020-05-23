@@ -17,13 +17,13 @@ func New() QRental {
 
 func newQRental(alias string) QRental {
 	q := QRental{_alias: alias}
-	q.rentalId = path.NewIntPath(q, "rental_id")
-	q.rentalDate = path.NewTimePath(q, "rental_date")
-	q.inventoryId = path.NewInt32Path(q, "inventory_id")
-	q.customerId = path.NewInt16Path(q, "customer_id")
-	q.returnDate = path.NewTimePath(q, "return_date")
-	q.staffId = path.NewInt8Path(q, "staff_id")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.rentalId = path.NewInt(q, "rental_id")
+	q.rentalDate = path.NewTime(q, "rental_date")
+	q.inventoryId = path.NewInt32(q, "inventory_id")
+	q.customerId = path.NewInt16(q, "customer_id")
+	q.returnDate = path.NewTime(q, "return_date")
+	q.staffId = path.NewInt8(q, "staff_id")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

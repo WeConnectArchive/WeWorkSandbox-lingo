@@ -17,13 +17,13 @@ func New() QPayment {
 
 func newQPayment(alias string) QPayment {
 	q := QPayment{_alias: alias}
-	q.paymentId = path.NewInt16Path(q, "payment_id")
-	q.customerId = path.NewInt16Path(q, "customer_id")
-	q.staffId = path.NewInt8Path(q, "staff_id")
-	q.rentalId = path.NewIntPath(q, "rental_id")
-	q.amount = path.NewBinaryPath(q, "amount")
-	q.paymentDate = path.NewTimePath(q, "payment_date")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.paymentId = path.NewInt16(q, "payment_id")
+	q.customerId = path.NewInt16(q, "customer_id")
+	q.staffId = path.NewInt8(q, "staff_id")
+	q.rentalId = path.NewInt(q, "rental_id")
+	q.amount = path.NewBinary(q, "amount")
+	q.paymentDate = path.NewTime(q, "payment_date")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

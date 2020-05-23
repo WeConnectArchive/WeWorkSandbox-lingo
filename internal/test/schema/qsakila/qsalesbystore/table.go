@@ -17,9 +17,9 @@ func New() QSalesByStore {
 
 func newQSalesByStore(alias string) QSalesByStore {
 	q := QSalesByStore{_alias: alias}
-	q.store = path.NewStringPath(q, "store")
-	q.manager = path.NewStringPath(q, "manager")
-	q.totalSales = path.NewBinaryPath(q, "total_sales")
+	q.store = path.NewString(q, "store")
+	q.manager = path.NewString(q, "manager")
+	q.totalSales = path.NewBinary(q, "total_sales")
 	return q
 }
 

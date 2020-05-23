@@ -111,9 +111,13 @@ func GoFmt() error {
 
 type Test mg.Namespace
 
-// Runs both `test:unit` and `test:acceptance` in parallel
+// Runs both `test:unit`, `test:functional` and `test:benchmark` in parallel
 func (Test) All() error {
 	mg.Deps(Test.Unit, Test.Functional, Test.Benchmark)
+
+	if !isCI() {
+		mg.SerialDeps(Gen.TestSchema)
+	}
 	return nil
 }
 

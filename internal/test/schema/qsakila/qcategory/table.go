@@ -17,9 +17,9 @@ func New() QCategory {
 
 func newQCategory(alias string) QCategory {
 	q := QCategory{_alias: alias}
-	q.categoryId = path.NewInt8Path(q, "category_id")
-	q.name = path.NewStringPath(q, "name")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.categoryId = path.NewInt8(q, "category_id")
+	q.name = path.NewString(q, "name")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

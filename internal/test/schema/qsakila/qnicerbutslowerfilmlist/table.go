@@ -17,14 +17,14 @@ func New() QNicerButSlowerFilmList {
 
 func newQNicerButSlowerFilmList(alias string) QNicerButSlowerFilmList {
 	q := QNicerButSlowerFilmList{_alias: alias}
-	q.fid = path.NewInt16Path(q, "FID")
-	q.title = path.NewStringPath(q, "title")
-	q.description = path.NewStringPath(q, "description")
-	q.category = path.NewStringPath(q, "category")
-	q.price = path.NewBinaryPath(q, "price")
-	q.length = path.NewInt16Path(q, "length")
-	q.rating = path.NewStringPath(q, "rating")
-	q.actors = path.NewStringPath(q, "actors")
+	q.fid = path.NewInt16(q, "FID")
+	q.title = path.NewString(q, "title")
+	q.description = path.NewString(q, "description")
+	q.category = path.NewString(q, "category")
+	q.price = path.NewBinary(q, "price")
+	q.length = path.NewInt16(q, "length")
+	q.rating = path.NewString(q, "rating")
+	q.actors = path.NewString(q, "actors")
 	return q
 }
 

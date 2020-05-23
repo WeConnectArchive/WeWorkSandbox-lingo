@@ -17,8 +17,8 @@ func New() QSalesByFilmCategory {
 
 func newQSalesByFilmCategory(alias string) QSalesByFilmCategory {
 	q := QSalesByFilmCategory{_alias: alias}
-	q.category = path.NewStringPath(q, "category")
-	q.totalSales = path.NewBinaryPath(q, "total_sales")
+	q.category = path.NewString(q, "category")
+	q.totalSales = path.NewBinary(q, "total_sales")
 	return q
 }
 

@@ -17,10 +17,10 @@ func New() QActorInfo {
 
 func newQActorInfo(alias string) QActorInfo {
 	q := QActorInfo{_alias: alias}
-	q.actorId = path.NewInt16Path(q, "actor_id")
-	q.firstName = path.NewStringPath(q, "first_name")
-	q.lastName = path.NewStringPath(q, "last_name")
-	q.filmInfo = path.NewStringPath(q, "film_info")
+	q.actorId = path.NewInt16(q, "actor_id")
+	q.firstName = path.NewString(q, "first_name")
+	q.lastName = path.NewString(q, "last_name")
+	q.filmInfo = path.NewString(q, "film_info")
 	return q
 }
 

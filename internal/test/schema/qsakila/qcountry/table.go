@@ -17,9 +17,9 @@ func New() QCountry {
 
 func newQCountry(alias string) QCountry {
 	q := QCountry{_alias: alias}
-	q.countryId = path.NewInt16Path(q, "country_id")
-	q.country = path.NewStringPath(q, "country")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.countryId = path.NewInt16(q, "country_id")
+	q.country = path.NewString(q, "country")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

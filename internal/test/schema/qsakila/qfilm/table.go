@@ -17,19 +17,19 @@ func New() QFilm {
 
 func newQFilm(alias string) QFilm {
 	q := QFilm{_alias: alias}
-	q.filmId = path.NewInt16Path(q, "film_id")
-	q.title = path.NewStringPath(q, "title")
-	q.description = path.NewStringPath(q, "description")
-	q.releaseYear = path.NewUnsupportedPath(q, "release_year")
-	q.languageId = path.NewInt8Path(q, "language_id")
-	q.originalLanguageId = path.NewInt8Path(q, "original_language_id")
-	q.rentalDuration = path.NewInt8Path(q, "rental_duration")
-	q.rentalRate = path.NewBinaryPath(q, "rental_rate")
-	q.length = path.NewInt16Path(q, "length")
-	q.replacementCost = path.NewBinaryPath(q, "replacement_cost")
-	q.rating = path.NewStringPath(q, "rating")
-	q.specialFeatures = path.NewStringPath(q, "special_features")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.filmId = path.NewInt16(q, "film_id")
+	q.title = path.NewString(q, "title")
+	q.description = path.NewString(q, "description")
+	q.releaseYear = path.NewUnsupported(q, "release_year")
+	q.languageId = path.NewInt8(q, "language_id")
+	q.originalLanguageId = path.NewInt8(q, "original_language_id")
+	q.rentalDuration = path.NewInt8(q, "rental_duration")
+	q.rentalRate = path.NewBinary(q, "rental_rate")
+	q.length = path.NewInt16(q, "length")
+	q.replacementCost = path.NewBinary(q, "replacement_cost")
+	q.rating = path.NewString(q, "rating")
+	q.specialFeatures = path.NewString(q, "special_features")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

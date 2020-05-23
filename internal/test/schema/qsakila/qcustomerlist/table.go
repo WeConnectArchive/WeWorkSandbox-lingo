@@ -17,15 +17,15 @@ func New() QCustomerList {
 
 func newQCustomerList(alias string) QCustomerList {
 	q := QCustomerList{_alias: alias}
-	q.id = path.NewInt16Path(q, "ID")
-	q.name = path.NewStringPath(q, "name")
-	q.address = path.NewStringPath(q, "address")
-	q.zipCode = path.NewStringPath(q, "zip code")
-	q.phone = path.NewStringPath(q, "phone")
-	q.city = path.NewStringPath(q, "city")
-	q.country = path.NewStringPath(q, "country")
-	q.notes = path.NewStringPath(q, "notes")
-	q.sid = path.NewInt8Path(q, "SID")
+	q.id = path.NewInt16(q, "ID")
+	q.name = path.NewString(q, "name")
+	q.address = path.NewString(q, "address")
+	q.zipCode = path.NewString(q, "zip code")
+	q.phone = path.NewString(q, "phone")
+	q.city = path.NewString(q, "city")
+	q.country = path.NewString(q, "country")
+	q.notes = path.NewString(q, "notes")
+	q.sid = path.NewInt8(q, "SID")
 	return q
 }
 
