@@ -177,7 +177,9 @@ func toTraceValue(arg interface{}) core.Value {
 	case float64:
 		v = core.Float64(casted)
 	case time.Time:
-		v = core.String(casted.UTC().String())
+		v = core.String(casted.String())
+	case nil:
+		v = core.String("nil")
 	default:
 		v = core.String(fmt.Sprintf("%s", arg))
 	}

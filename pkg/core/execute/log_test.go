@@ -3,10 +3,12 @@ package execute_test
 import (
 	"context"
 	"errors"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/types"
 	"github.com/petergtz/pegomock"
 	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/trace"
@@ -99,14 +101,63 @@ var _ = Describe("log.go", func() {
 				expectEndCalled(span, qType, queryStr, queryArgs, 100, usedErr)
 			})
 		})
-
-		table.DescribeTable("Changing Values",
-			func(arg interface{}) {
-				queryArgs[0] = arg
-
-			},
-		)
 	})
+
+	dateTime := time.Time{}.AddDate(10, 5, 5)
+	table.DescribeTable("Changing Values",
+		func(arg interface{}, matcher types.GomegaMatcher) {
+			// Behavior
+			span := NewMockSpan()
+			pegomock.When(span.IsRecording()).ThenReturn(true)
+
+			ctx := trace.ContextWithSpan(context.Background(), span)
+			queryStr := "my query ?"
+			rows := int64(55)
+
+			// When
+			execute.TraceQuery(ctx, execute.QTExec, queryStr, []interface{}{arg}).RowCount(rows).End(ctx)
+
+			// Then
+			inOrderCtx := pegomock.InOrderContext{}
+			_, _, eventFields := span.
+				VerifyWasCalledInOrder(pegomock.Once(), &inOrderCtx).
+				AddEvent(
+					matchers.AnyContextContext(),
+					pegomock.AnyString(),
+					matchers.AnyCoreKeyValue(), matchers.AnyCoreKeyValue(), matchers.AnyCoreKeyValue(),
+				).
+				GetCapturedArguments()
+
+			Expect(eventFields).To(HaveLen(3))
+			Expect(eventFields).To(ContainElement(core.KeyValue{
+				Key:   "SQL",
+				Value: core.String(queryStr),
+			}))
+			Expect(eventFields).To(ContainElement(core.KeyValue{
+				Key:   "RowCount",
+				Value: core.Int64(rows),
+			}))
+			Expect(eventFields).To(ContainElement(withCoreValue(matcher)))
+		},
+		table.Entry("nil", nil, Equal(core.String("nil"))),
+		table.Entry("[]byte", []byte{0x01, 0x02}, Equal(core.String("0102"))),
+		table.Entry("[][]byte", [][]byte{{0x01, 0x02}, {0x03}}, Equal(core.String("0102,03"))),
+		table.Entry("string", "my string", Equal(core.String("my string"))),
+		table.Entry("bool", true, Equal(core.Bool(true))),
+		table.Entry("int8", int8(-5), Equal(core.Int(-5))),
+		table.Entry("int16", int16(-5), Equal(core.Int(-5))),
+		table.Entry("int", int(-5), Equal(core.Int(-5))),
+		table.Entry("int32", int32(-5), Equal(core.Int32(-5))),
+		table.Entry("int64", int64(-5), Equal(core.Int64(-5))),
+		table.Entry("uint8", uint8(5), Equal(core.Uint(5))),
+		table.Entry("uint16", uint16(5), Equal(core.Uint(5))),
+		table.Entry("uint32", uint32(5), Equal(core.Uint32(5))),
+		table.Entry("uint64", uint64(5), Equal(core.Uint64(5))),
+		table.Entry("float32", float32(5.2), Equal(core.Float32(5.2))),
+		table.Entry("float64", float64(5.25e40), Equal(core.Float64(5.25e40))),
+		table.Entry("time.Time", dateTime, Equal(core.String(dateTime.String()))),
+		table.Entry("customType", struct{ Name string }{Name: "my Name"}, Equal(core.String("{my Name}"))),
+	)
 })
 
 func expectEndCalled(span trace.Span, qType execute.QueryType, sqlStr string, queryArgs []interface{}, rowCount int64, err error) {
@@ -143,4 +194,8 @@ func expectEndCalled(span trace.Span, qType execute.QueryType, sqlStr string, qu
 			GetCapturedArguments()
 		ExpectWithOffset(1, recordedErr).To(MatchError(err))
 	}
+}
+
+func withCoreValue(matcher types.GomegaMatcher) types.GomegaMatcher {
+	return WithTransform(func(kv core.KeyValue) core.Value { return kv.Value }, matcher)
 }
