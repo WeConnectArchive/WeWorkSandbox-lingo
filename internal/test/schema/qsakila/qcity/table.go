@@ -17,10 +17,10 @@ func New() QCity {
 
 func newQCity(alias string) QCity {
 	q := QCity{_alias: alias}
-	q.cityId = path.NewInt16Path(q, "city_id")
-	q.city = path.NewStringPath(q, "city")
-	q.countryId = path.NewInt16Path(q, "country_id")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.cityId = path.NewInt16(q, "city_id")
+	q.city = path.NewString(q, "city")
+	q.countryId = path.NewInt16(q, "country_id")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

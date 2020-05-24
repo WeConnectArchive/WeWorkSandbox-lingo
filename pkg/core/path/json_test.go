@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("JSON", func() {
 
-	Context("NewJSONPathWithAlias", func() {
+	Context("NewJSONWithAlias", func() {
 
 		var (
 			e     core.Table
@@ -29,7 +29,7 @@ var _ = Describe("JSON", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewJSONPathWithAlias(e, name, alias)
+			p = path.NewJSONWithAlias(e, name, alias)
 		})
 
 		It("Returns a `JSON`", func() {
@@ -49,7 +49,7 @@ var _ = Describe("JSON", func() {
 		})
 	})
 
-	Context("NewJSONPath", func() {
+	Context("NewJSON", func() {
 
 		var (
 			e    core.Table
@@ -64,7 +64,7 @@ var _ = Describe("JSON", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewJSONPath(e, name)
+			p = path.NewJSON(e, name)
 		})
 
 		It("Returns a `JSON`", func() {

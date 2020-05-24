@@ -17,10 +17,10 @@ func New() QStore {
 
 func newQStore(alias string) QStore {
 	q := QStore{_alias: alias}
-	q.storeId = path.NewInt8Path(q, "store_id")
-	q.managerStaffId = path.NewInt8Path(q, "manager_staff_id")
-	q.addressId = path.NewInt16Path(q, "address_id")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.storeId = path.NewInt8(q, "store_id")
+	q.managerStaffId = path.NewInt8(q, "manager_staff_id")
+	q.addressId = path.NewInt16(q, "address_id")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

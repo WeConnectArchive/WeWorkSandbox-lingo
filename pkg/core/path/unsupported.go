@@ -2,7 +2,7 @@ package path
 
 import "github.com/weworksandbox/lingo/pkg/core"
 
-func NewUnsupportedPathWithAlias(e core.Table, name, alias string) Unsupported {
+func NewUnsupportedWithAlias(e core.Table, name, alias string) Unsupported {
 	return Unsupported{
 		entity: e,
 		name:   name,
@@ -10,8 +10,8 @@ func NewUnsupportedPathWithAlias(e core.Table, name, alias string) Unsupported {
 	}
 }
 
-func NewUnsupportedPath(e core.Table, name string) Unsupported {
-	return NewUnsupportedPathWithAlias(e, name, "")
+func NewUnsupported(e core.Table, name string) Unsupported {
+	return NewUnsupportedWithAlias(e, name, "")
 }
 
 type Unsupported struct {
@@ -33,6 +33,6 @@ func (i Unsupported) GetAlias() string {
 }
 
 func (Unsupported) GetSQL(_ core.Dialect) (core.SQL, error) {
-	// TODO - Revisit how we want to deal with unsupported columns
+	// TODO - Revisit how we want to deal with unsupported columns. Right now we just ignore them.
 	return core.NewEmptySQL(), nil
 }

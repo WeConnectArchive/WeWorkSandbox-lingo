@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("Bool", func() {
 
-	Context("NewBoolPathWithAlias", func() {
+	Context("NewBoolWithAlias", func() {
 
 		var (
 			e     core.Table
@@ -29,7 +29,7 @@ var _ = Describe("Bool", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewBoolPathWithAlias(e, name, alias)
+			p = path.NewBoolWithAlias(e, name, alias)
 		})
 
 		It("Returns a `Bool`", func() {
@@ -49,7 +49,7 @@ var _ = Describe("Bool", func() {
 		})
 	})
 
-	Context("NewBoolPath", func() {
+	Context("NewBool", func() {
 
 		var (
 			e    core.Table
@@ -64,7 +64,7 @@ var _ = Describe("Bool", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewBoolPath(e, name)
+			p = path.NewBool(e, name)
 		})
 
 		It("Returns a `Bool`", func() {

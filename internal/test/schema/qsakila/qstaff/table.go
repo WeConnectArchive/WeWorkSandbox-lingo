@@ -17,17 +17,17 @@ func New() QStaff {
 
 func newQStaff(alias string) QStaff {
 	q := QStaff{_alias: alias}
-	q.staffId = path.NewInt8Path(q, "staff_id")
-	q.firstName = path.NewStringPath(q, "first_name")
-	q.lastName = path.NewStringPath(q, "last_name")
-	q.addressId = path.NewInt16Path(q, "address_id")
-	q.picture = path.NewUnsupportedPath(q, "picture")
-	q.email = path.NewStringPath(q, "email")
-	q.storeId = path.NewInt8Path(q, "store_id")
-	q.active = path.NewInt8Path(q, "active")
-	q.username = path.NewStringPath(q, "username")
-	q.password = path.NewStringPath(q, "password")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.staffId = path.NewInt8(q, "staff_id")
+	q.firstName = path.NewString(q, "first_name")
+	q.lastName = path.NewString(q, "last_name")
+	q.addressId = path.NewInt16(q, "address_id")
+	q.picture = path.NewUnsupported(q, "picture")
+	q.email = path.NewString(q, "email")
+	q.storeId = path.NewInt8(q, "store_id")
+	q.active = path.NewInt8(q, "active")
+	q.username = path.NewString(q, "username")
+	q.password = path.NewString(q, "password")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

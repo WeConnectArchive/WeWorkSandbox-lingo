@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("Int16", func() {
 
-	Context("NewInt16PathWithAlias", func() {
+	Context("NewInt16WithAlias", func() {
 
 		var (
 			e     core.Table
@@ -31,7 +31,7 @@ var _ = Describe("Int16", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt16PathWithAlias(e, name, alias)
+			p = path.NewInt16WithAlias(e, name, alias)
 		})
 
 		It("Returns a `Int16`", func() {
@@ -51,7 +51,7 @@ var _ = Describe("Int16", func() {
 		})
 	})
 
-	Context("NewInt16Path", func() {
+	Context("NewInt16", func() {
 
 		var (
 			e    core.Table
@@ -66,7 +66,7 @@ var _ = Describe("Int16", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt16Path(e, name)
+			p = path.NewInt16(e, name)
 		})
 
 		It("Returns a `Int16`", func() {

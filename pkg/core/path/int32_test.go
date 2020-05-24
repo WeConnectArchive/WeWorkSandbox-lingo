@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("Int32", func() {
 
-	Context("NewInt32PathWithAlias", func() {
+	Context("NewInt32WithAlias", func() {
 
 		var (
 			e     core.Table
@@ -31,7 +31,7 @@ var _ = Describe("Int32", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt32PathWithAlias(e, name, alias)
+			p = path.NewInt32WithAlias(e, name, alias)
 		})
 
 		It("Returns a `Int32`", func() {
@@ -51,7 +51,7 @@ var _ = Describe("Int32", func() {
 		})
 	})
 
-	Context("NewInt32Path", func() {
+	Context("NewInt32", func() {
 
 		var (
 			e    core.Table
@@ -66,7 +66,7 @@ var _ = Describe("Int32", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt32Path(e, name)
+			p = path.NewInt32(e, name)
 		})
 
 		It("Returns a `Int32`", func() {

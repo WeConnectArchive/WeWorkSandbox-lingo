@@ -17,9 +17,9 @@ func New() QFilmText {
 
 func newQFilmText(alias string) QFilmText {
 	q := QFilmText{_alias: alias}
-	q.filmId = path.NewInt16Path(q, "film_id")
-	q.title = path.NewStringPath(q, "title")
-	q.description = path.NewStringPath(q, "description")
+	q.filmId = path.NewInt16(q, "film_id")
+	q.title = path.NewString(q, "title")
+	q.description = path.NewString(q, "description")
 	return q
 }
 

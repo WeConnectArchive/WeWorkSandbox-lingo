@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("Float64", func() {
 
-	Context("NewFloat64PathWithAlias", func() {
+	Context("NewFloat64WithAlias", func() {
 
 		var (
 			e     core.Table
@@ -29,7 +29,7 @@ var _ = Describe("Float64", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewFloat64PathWithAlias(e, name, alias)
+			p = path.NewFloat64WithAlias(e, name, alias)
 		})
 
 		It("Returns a `Float64`", func() {
@@ -49,7 +49,7 @@ var _ = Describe("Float64", func() {
 		})
 	})
 
-	Context("NewFloat64Path", func() {
+	Context("NewFloat64", func() {
 
 		var (
 			e    core.Table
@@ -64,7 +64,7 @@ var _ = Describe("Float64", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewFloat64Path(e, name)
+			p = path.NewFloat64(e, name)
 		})
 
 		It("Returns a `Float64`", func() {

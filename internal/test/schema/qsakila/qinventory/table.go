@@ -17,10 +17,10 @@ func New() QInventory {
 
 func newQInventory(alias string) QInventory {
 	q := QInventory{_alias: alias}
-	q.inventoryId = path.NewInt32Path(q, "inventory_id")
-	q.filmId = path.NewInt16Path(q, "film_id")
-	q.storeId = path.NewInt8Path(q, "store_id")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.inventoryId = path.NewInt32(q, "inventory_id")
+	q.filmId = path.NewInt16(q, "film_id")
+	q.storeId = path.NewInt8(q, "store_id")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

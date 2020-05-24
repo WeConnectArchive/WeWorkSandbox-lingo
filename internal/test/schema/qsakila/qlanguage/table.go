@@ -17,9 +17,9 @@ func New() QLanguage {
 
 func newQLanguage(alias string) QLanguage {
 	q := QLanguage{_alias: alias}
-	q.languageId = path.NewInt8Path(q, "language_id")
-	q.name = path.NewStringPath(q, "name")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.languageId = path.NewInt8(q, "language_id")
+	q.name = path.NewString(q, "name")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 
