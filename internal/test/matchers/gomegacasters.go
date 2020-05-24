@@ -167,3 +167,14 @@ func isNil(a interface{}) bool {
 
 	return false
 }
+
+func isPtr(a interface{}) bool {
+	if a == nil {
+		return false
+	}
+	switch reflect.TypeOf(a).Kind() {
+	case reflect.Ptr:
+		return true
+	}
+	return false
+}

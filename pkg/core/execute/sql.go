@@ -143,7 +143,7 @@ func (s sqlActiveTxExec) Query(ctx context.Context, tSQL string, sVals ...interf
 
 func exec(ctx context.Context, db DBQuery, tSQL string, sVals []interface{}) (result sql.Result, err error) {
 	var rowCount int64
-	queryTrace := traceOrNil(ctx, QTExec, tSQL, sVals)
+	queryTrace := TraceQuery(ctx, QTExec, tSQL, sVals)
 	defer func() {
 		queryTrace.RowCount(rowCount).Err(err).End(ctx)
 	}()
@@ -164,7 +164,7 @@ func queryRow(
 	ctx context.Context, db DBQuery, tSQL string, sVals []interface{}, queryIntoPtrs []interface{},
 ) (err error) {
 	var rowCount int64
-	queryTrace := traceOrNil(ctx, QTRow, tSQL, sVals)
+	queryTrace := TraceQuery(ctx, QTRow, tSQL, sVals)
 	defer func() {
 		queryTrace.RowCount(rowCount).Err(err).End(ctx)
 	}()
@@ -179,7 +179,7 @@ func queryRow(
 }
 
 func query(ctx context.Context, db DBQuery, tSQL string, sVals []interface{}) (RowScanner, error) {
-	queryTrace := traceOrNil(ctx, QTRows, tSQL, sVals)
+	queryTrace := TraceQuery(ctx, QTRows, tSQL, sVals)
 
 	var err error
 	defer func() {
@@ -201,8 +201,4 @@ func query(ctx context.Context, db DBQuery, tSQL string, sVals []interface{}) (R
 		rows:       rows,
 		queryTrace: queryTrace,
 	}, nil
-}
-
-func traceOrNil(ctx context.Context, qType QueryType, tSQL string, sVals []interface{}) *TraceQueryInfo {
-	return TraceQuery(ctx, qType, tSQL, sVals)
 }

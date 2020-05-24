@@ -2,9 +2,8 @@ package matchers
 
 import (
 	"fmt"
-	"github.com/onsi/gomega"
-	"github.com/spf13/cast"
 
+	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/types"
 )
@@ -24,7 +23,10 @@ func (matcher *AllInSliceMatcher) Match(actual interface{}) (success bool, err e
 		return false, fmt.Errorf("expected an array/slice.  Got:\n%s", format.Object(actual, 1))
 	}
 
-	s := cast.ToSlice(actual)
+	s, err := ToSliceE(actual)
+	if err != nil {
+		return false, fmt.Errorf("unable to convert slice: %w", err)
+	}
 
 	if len(s) != len(matcher.Expected) {
 		return false, fmt.Errorf("had length %d but expected %d elements",
@@ -62,4 +64,26 @@ func (matcher *AllInSliceMatcher) FailureMessage(actual interface{}) (message st
 func (matcher *AllInSliceMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, fmt.Sprintf(
 		"not to match a slice but did at index %d", matcher.idxFailed), matcher.Expected)
+}
+
+// ToSliceE casts an interface to a []interface{} type.
+func ToSliceE(i interface{}) ([]interface{}, error) {
+	var s []interface{}
+
+	switch v := i.(type) {
+	case [][]interface{}:
+		for _, u := range v {
+			s = append(s, u)
+		}
+		return s, nil
+	case []interface{}:
+		return append(s, v...), nil
+	case []map[string]interface{}:
+		for _, u := range v {
+			s = append(s, u)
+		}
+		return s, nil
+	default:
+		return s, fmt.Errorf("unable to cast %#v of type %T to []interface{}", i, i)
+	}
 }

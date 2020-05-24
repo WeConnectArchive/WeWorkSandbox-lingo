@@ -11,28 +11,6 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 )
 
-// QueryType is used as the trace Event name
-type QueryType int
-
-const (
-	QTUnknown QueryType = iota
-	QTRow
-	QTRows
-	QTExec
-)
-
-func (qt QueryType) String() string {
-	switch qt {
-	case QTRow:
-		return "QueryRow"
-	case QTRows:
-		return "QueryRows"
-	case QTExec:
-		return "QueryExec"
-	}
-	return "UnknownQuery"
-}
-
 // TraceQuery will create a struct to hold query execution information. Any members will directly modify the returned
 // pointer. Methods can be chained. End is called to log all query details to End's ctx. View End for more details.
 // If the ctx passed in here is not recording, a nil TraceQueryInfo is returned. All methods are nil safe.

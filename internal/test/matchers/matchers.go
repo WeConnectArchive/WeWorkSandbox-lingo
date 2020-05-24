@@ -29,6 +29,21 @@ func AllInSlice(expected ...interface{}) types.GomegaMatcher {
 	}
 }
 
+// EachElementMust matches each element in the slice, array, or map Value (not map Keys)
+func EachElementMust(expectedMatcher interface{}) types.GomegaMatcher {
+	return &MatchEachElement{
+		Element: expectedMatcher,
+	}
+}
+
+// EqString allows formatting of a string, while still using gomega.Equal.
 func EqString(format string, args ...interface{}) types.GomegaMatcher {
 	return gomega.Equal(fmt.Sprintf(format, args...))
+}
+
+// Ptr expects the value to be a pointer... duh.
+func Ptr(expected types.GomegaMatcher) types.GomegaMatcher {
+	return &PtrMatcher{
+		Expected: expected,
+	}
 }

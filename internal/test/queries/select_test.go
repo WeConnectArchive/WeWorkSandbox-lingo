@@ -1,6 +1,8 @@
 package queries_test
 
 import (
+	"time"
+
 	. "github.com/onsi/gomega"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
@@ -11,6 +13,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
+	"github.com/weworksandbox/lingo/pkg/core/execute"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expressions"
 	"github.com/weworksandbox/lingo/pkg/core/join"
@@ -18,9 +21,9 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
 
-var selectQueries = []Query{
+var selectQueries = []QueryTest{
 	{
-		Name:      "InventoryIDAndFilmID_ForStoreID",
+		Name:      "CountInventoryID_ForStoreID",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
@@ -29,29 +32,27 @@ var selectQueries = []Query{
 					storeID = 2
 				)
 				return query.Select(
-					qinventory.InventoryId(),
-					qinventory.FilmId(),
+					expressions.Count(qinventory.InventoryId()),
 				).From(
 					qinventory.Q(),
 				).Where(
 					qinventory.StoreId().Eq(storeID),
 				)
 			},
-			SQLAssert: ContainSubstring(trimQuery(`
-					SELECT inventory.inventory_id, inventory.film_id
-					FROM sakila.inventory`)),
-			ValuesAssert: AllInSlice(
+			SQLStrAssert: EqString(trimQuery(`
+					SELECT COUNT(inventory.inventory_id)
+					FROM sakila.inventory
+					WHERE inventory.store_id = ?`,
+			)),
+			SQLValuesAssert: AllInSlice(
 				BeEquivalentTo(2),
 			),
-			ErrAssert: BeNil(),
-
-			QueryValuePointers: []interface{}{
-				int32(0), int16(0),
+			ExecuteParams: ExecuteParams{
+				Type:     execute.QTRow,
+				Timeout:  50 * time.Millisecond,
+				ScanData: row(ptrI16(0)),
+				Assert:   rows(row(ptrI16(2311))),
 			},
-			QueryValueAsserts: AllInSlice(
-				Equal(int32(123)),
-				Equal(int16(123)),
-			),
 		},
 	},
 	{
@@ -71,20 +72,25 @@ var selectQueries = []Query{
 					qfilmactor.ActorId().Eq(actorID),
 				)
 			},
-			SQLAssert: ContainSubstring(trimQuery(`
+			SQLStrAssert: EqString(trimQuery(`
 					SELECT COUNT(film_actor.film_id)
 					FROM sakila.film_actor
 					WHERE film_actor.actor_id = ?
 			`)),
-			ValuesAssert: AllInSlice(
+			SQLValuesAssert: AllInSlice(
 				BeEquivalentTo(10),
 			),
-			ErrAssert: BeNil(),
+			ExecuteParams: ExecuteParams{
+				Type:     execute.QTRow,
+				Timeout:  50 * time.Millisecond,
+				ScanData: row(ptrI32(0)),
+				Assert:   rows(row(ptrI32(22))),
+			},
 		},
 	},
 	{
-		// Note this Query uses a pointer to actorID
-		Name:      "MovieTitlesByCategory_ForActor_CategoryAsc",
+		// Note this QueryTest uses a pointer to actorID
+		Name:      "MovieTitlesByCategory_ForActorIdPtr_CategoryAsc",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
@@ -114,7 +120,7 @@ var selectQueries = []Query{
 					cat.Name(), sort.Ascending,
 				)
 			},
-			SQLAssert: ContainSubstring(trimQuery(`
+			SQLStrAssert: ContainSubstring(trimQuery(`
 					SELECT ft.title, cat.name
 					FROM sakila.film_actor AS fa
 					INNER JOIN sakila.film_category AS fc
@@ -125,10 +131,38 @@ var selectQueries = []Query{
 						ON fc.category_id = cat.category_id
 					WHERE fa.actor_id = ?
 					ORDER BY cat.name ASC`)),
-			ValuesAssert: AllInSlice(
+			SQLValuesAssert: AllInSlice(
 				BeEquivalentTo(10),
 			),
-			ErrAssert: BeNil(),
+			ExecuteParams: ExecuteParams{
+				Type:     execute.QTRows,
+				Timeout:  100 * time.Millisecond,
+				ScanData: row(ptrStr(""), ptrStr("")),
+				Assert: rows(
+					row(ptrStr("WATERFRONT DELIVERANCE"), ptrStr("Action")),
+					row(ptrStr("LORD ARIZONA"), ptrStr("Action")),
+					row(ptrStr("PUNK DIVORCE"), ptrStr("Animation")),
+					row(ptrStr("CROOKED FROGMEN"), ptrStr("Children")),
+					row(ptrStr("JEEPERS WEDDING"), ptrStr("Classics")),
+					row(ptrStr("PREJUDICE OLEANDER"), ptrStr("Classics")),
+					row(ptrStr("LIFE TWISTED"), ptrStr("Comedy")),
+					row(ptrStr("ACADEMY DINOSAUR"), ptrStr("Documentary")),
+					row(ptrStr("WEDDING APOLLO"), ptrStr("Documentary")),
+					row(ptrStr("MOD SECRETARY"), ptrStr("Documentary")),
+					row(ptrStr("GOLDFINGER SENSIBILITY"), ptrStr("Drama")),
+					row(ptrStr("USUAL UNTOUCHABLES"), ptrStr("Foreign")),
+					row(ptrStr("DIVINE RESURRECTION"), ptrStr("Games")),
+					row(ptrStr("ALABAMA DEVIL"), ptrStr("Horror")),
+					row(ptrStr("REAP UNFAITHFUL"), ptrStr("Horror")),
+					row(ptrStr("JAWBREAKER BROOKLYN"), ptrStr("Music")),
+					row(ptrStr("WIZARD COLDBLOODED"), ptrStr("Music")),
+					row(ptrStr("WON DARES"), ptrStr("Music")),
+					row(ptrStr("DRAGONFLY STRANGERS"), ptrStr("New")),
+					row(ptrStr("VACATION BOONDOCK"), ptrStr("Sci-Fi")),
+					row(ptrStr("SHAKESPEARE SADDLE"), ptrStr("Sports")),
+					row(ptrStr("TROUBLE DATE"), ptrStr("Travel")),
+				),
+			},
 		},
 	},
 }
