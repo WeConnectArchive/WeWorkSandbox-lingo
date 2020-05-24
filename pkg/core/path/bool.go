@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewBoolPathWithAlias(e core.Table, name, alias string) Bool {
+func NewBoolWithAlias(e core.Table, name, alias string) Bool {
 	return Bool{
 		entity: e,
 		name:   name,
@@ -14,8 +14,8 @@ func NewBoolPathWithAlias(e core.Table, name, alias string) Bool {
 	}
 }
 
-func NewBoolPath(e core.Table, name string) Bool {
-	return NewBoolPathWithAlias(e, name, "")
+func NewBool(e core.Table, name string) Bool {
+	return NewBoolWithAlias(e, name, "")
 }
 
 type Bool struct {

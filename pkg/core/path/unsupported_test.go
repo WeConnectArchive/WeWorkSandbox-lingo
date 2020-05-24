@@ -11,7 +11,7 @@ import (
 
 var _ = Describe("Unsupported", func() {
 
-	Context("NewUnsupportedPathWithAlias", func() {
+	Context("NewUnsupportedWithAlias", func() {
 
 		var (
 			e     core.Table
@@ -28,7 +28,7 @@ var _ = Describe("Unsupported", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewUnsupportedPathWithAlias(e, name, alias)
+			p = path.NewUnsupportedWithAlias(e, name, alias)
 		})
 
 		It("Returns a `Unsupported`", func() {
@@ -48,7 +48,7 @@ var _ = Describe("Unsupported", func() {
 		})
 	})
 
-	Context("NewUnsupportedPath", func() {
+	Context("NewUnsupported", func() {
 
 		var (
 			e    core.Table
@@ -63,7 +63,7 @@ var _ = Describe("Unsupported", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewUnsupportedPath(e, name)
+			p = path.NewUnsupported(e, name)
 		})
 
 		It("Returns a `Unsupported`", func() {

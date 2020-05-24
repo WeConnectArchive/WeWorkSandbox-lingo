@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewBinaryPathWithAlias(e core.Table, name, alias string) Binary {
+func NewBinaryWithAlias(e core.Table, name, alias string) Binary {
 	return Binary{
 		entity: e,
 		name:   name,
@@ -14,8 +14,8 @@ func NewBinaryPathWithAlias(e core.Table, name, alias string) Binary {
 	}
 }
 
-func NewBinaryPath(e core.Table, name string) Binary {
-	return NewBinaryPathWithAlias(e, name, "")
+func NewBinary(e core.Table, name string) Binary {
+	return NewBinaryWithAlias(e, name, "")
 }
 
 type Binary struct {

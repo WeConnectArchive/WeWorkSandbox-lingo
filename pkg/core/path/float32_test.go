@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("Float32", func() {
 
-	Context("NewFloat32PathWithAlias", func() {
+	Context("NewFloat32WithAlias", func() {
 
 		var (
 			e     core.Table
@@ -29,7 +29,7 @@ var _ = Describe("Float32", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewFloat32PathWithAlias(e, name, alias)
+			p = path.NewFloat32WithAlias(e, name, alias)
 		})
 
 		It("Returns a `Float32`", func() {
@@ -49,7 +49,7 @@ var _ = Describe("Float32", func() {
 		})
 	})
 
-	Context("NewFloat32Path", func() {
+	Context("NewFloat32", func() {
 
 		var (
 			e    core.Table
@@ -64,7 +64,7 @@ var _ = Describe("Float32", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewFloat32Path(e, name)
+			p = path.NewFloat32(e, name)
 		})
 
 		It("Returns a `Float32`", func() {

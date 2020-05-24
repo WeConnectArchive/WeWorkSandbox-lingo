@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewStringPathWithAlias(e core.Table, name, alias string) String {
+func NewStringWithAlias(e core.Table, name, alias string) String {
 	return String{
 		entity: e,
 		name:   name,
@@ -14,8 +14,8 @@ func NewStringPathWithAlias(e core.Table, name, alias string) String {
 	}
 }
 
-func NewStringPath(e core.Table, name string) String {
-	return NewStringPathWithAlias(e, name, "")
+func NewString(e core.Table, name string) String {
+	return NewStringWithAlias(e, name, "")
 }
 
 type String struct {

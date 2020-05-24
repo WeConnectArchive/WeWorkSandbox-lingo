@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("Int8", func() {
 
-	Context("NewInt8PathWithAlias", func() {
+	Context("NewInt8WithAlias", func() {
 
 		var (
 			e     core.Table
@@ -31,7 +31,7 @@ var _ = Describe("Int8", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt8PathWithAlias(e, name, alias)
+			p = path.NewInt8WithAlias(e, name, alias)
 		})
 
 		It("Returns a `Int8`", func() {
@@ -51,7 +51,7 @@ var _ = Describe("Int8", func() {
 		})
 	})
 
-	Context("NewInt8Path", func() {
+	Context("NewInt8", func() {
 
 		var (
 			e    core.Table
@@ -66,7 +66,7 @@ var _ = Describe("Int8", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt8Path(e, name)
+			p = path.NewInt8(e, name)
 		})
 
 		It("Returns a `Int8`", func() {

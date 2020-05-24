@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("Binary", func() {
 
-	Context("NewBinaryPathWithAlias", func() {
+	Context("NewBinaryWithAlias", func() {
 
 		var (
 			e     core.Table
@@ -29,7 +29,7 @@ var _ = Describe("Binary", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewBinaryPathWithAlias(e, name, alias)
+			p = path.NewBinaryWithAlias(e, name, alias)
 		})
 
 		It("Returns a `Binary`", func() {
@@ -49,7 +49,7 @@ var _ = Describe("Binary", func() {
 		})
 	})
 
-	Context("NewBinaryPath", func() {
+	Context("NewBinary", func() {
 
 		var (
 			e    core.Table
@@ -64,7 +64,7 @@ var _ = Describe("Binary", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewBinaryPath(e, name)
+			p = path.NewBinary(e, name)
 		})
 
 		It("Returns a `Binary`", func() {

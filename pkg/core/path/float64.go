@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewFloat64PathWithAlias(e core.Table, name, alias string) Float64 {
+func NewFloat64WithAlias(e core.Table, name, alias string) Float64 {
 	return Float64{
 		entity: e,
 		name:   name,
@@ -14,8 +14,8 @@ func NewFloat64PathWithAlias(e core.Table, name, alias string) Float64 {
 	}
 }
 
-func NewFloat64Path(e core.Table, name string) Float64 {
-	return NewFloat64PathWithAlias(e, name, "")
+func NewFloat64(e core.Table, name string) Float64 {
+	return NewFloat64WithAlias(e, name, "")
 }
 
 type Float64 struct {
