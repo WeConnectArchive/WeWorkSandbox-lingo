@@ -1,8 +1,6 @@
 package queries_test
 
 import (
-	"time"
-
 	. "github.com/onsi/gomega"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
@@ -49,14 +47,13 @@ var selectQueries = []QueryTest{
 			),
 			ExecuteParams: ExecuteParams{
 				Type:     execute.QTRow,
-				Timeout:  50 * time.Millisecond,
 				ScanData: row(ptrI16(0)),
 				Assert:   rows(row(ptrI16(2311))),
 			},
 		},
 	},
 	{
-		Name:      "NumFilms_ForActorID",
+		Name:      "CountFilms_ForActorID",
 		Benchmark: true,
 		Params: Params{
 			Dialect: dialect.Default{},
@@ -82,7 +79,6 @@ var selectQueries = []QueryTest{
 			),
 			ExecuteParams: ExecuteParams{
 				Type:     execute.QTRow,
-				Timeout:  50 * time.Millisecond,
 				ScanData: row(ptrI32(0)),
 				Assert:   rows(row(ptrI32(22))),
 			},
@@ -136,7 +132,6 @@ var selectQueries = []QueryTest{
 			),
 			ExecuteParams: ExecuteParams{
 				Type:     execute.QTRows,
-				Timeout:  100 * time.Millisecond,
 				ScanData: row(ptrStr(""), ptrStr("")),
 				Assert: rows(
 					row(ptrStr("WATERFRONT DELIVERANCE"), ptrStr("Action")),

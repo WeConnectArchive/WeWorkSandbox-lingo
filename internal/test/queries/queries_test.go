@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"os"
 	"strings"
 	"testing"
@@ -48,6 +49,7 @@ func (p Params) Validate() {
 	ExpectWithOffset(1, p.SQLStrAssert).ToNot(BeNil(), "SQLStrAssert was nil")
 }
 
+const DefaultTimeout = 3 * time.Millisecond
 type ExecuteParams struct {
 	Type     execute.QueryType
 	Timeout  time.Duration
@@ -57,12 +59,13 @@ type ExecuteParams struct {
 
 func (e ExecuteParams) Validate() {
 	ExpectWithOffset(1, e.Type).To(BeElementOf(execute.QTRow, execute.QTRows, execute.QTExec), "must be a valid QT")
-	ExpectWithOffset(1, e.Timeout).To(BeNumerically(">", time.Duration(0)))
+	// Timeout now has a default. Check out DefaultTimeout.
+	//ExpectWithOffset(1, e.Timeout).To(BeNumerically(">", time.Duration(0)))
 	ExpectWithOffset(1, e.ScanData).ToNot(BeEmpty(), "Requires at ScanData pointers / values")
 }
 
 func (e ExecuteParams) WithTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
-	return context.WithTimeout(ctx, e.Timeout)
+	return context.WithTimeout(ctx, time.Duration(math.Max(float64(e.Timeout), float64(DefaultTimeout))))
 }
 
 func BenchmarkQueries(b *testing.B) {
@@ -134,6 +137,16 @@ func TestExecute(t *testing.T) {
 		}
 	})
 
+	// Setup 1 connection for tests while also checking for db availability.
+	db.SetMaxIdleConns(1)
+
+	pingCtx, pingCf := context.WithTimeout(context.Background(), DefaultTimeout*5) // Give extra time for DB connect
+	pingErr := db.PingContext(pingCtx)
+	pingCf()
+	if pingErr != nil {
+		t.Fatalf("unable to ping database: %s", pingErr)
+	}
+
 	var _ = ginkgo.Describe("Queries", func() {
 		table.DescribeTable("query.go",
 			func(p Params) {
@@ -143,11 +156,11 @@ func TestExecute(t *testing.T) {
 				p.Validate()
 				p.ExecuteParams.Validate()
 
+				ctx, cf := p.ExecuteParams.WithTimeout(context.Background())
+				defer cf()
+
 				sqlExec := execute.NewSQLExp(execute.NewSQL(db), p.Dialect)
 				sqlExp := p.SQL()
-
-				ctx, cf := context.WithTimeout(context.Background(), p.ExecuteParams.Timeout)
-				defer cf()
 
 				switch p.ExecuteParams.Type {
 				case execute.QTExec:

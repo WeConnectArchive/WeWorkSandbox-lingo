@@ -4,11 +4,30 @@
 
 # Lingo <!-- omit in toc -->
 
-Lingo is used to dynamically create type safe SQL queries in Go. 
-It exists to help ease the pain of manually working with SQL.
+Lingo at it's most basic is a type-safe query builder and bundled execution framework that ensures your SQL queries
+ and commands are accurate and safe, and checks all the Go SQL errors for you.
+
+The idea is not to write an ORM. Lingos' main two goals is to (1) help build dynamic queries, and (2) quickly write
+code to execute those queries against a `sql.DB`. The frameworks for the two concepts can be used together, separately,
+or you can use either or. It is up to you!
+
+With Lingos' Query Building, you can interleave business logic with your query building. Need to filter a `SELECT`
+query by different columns based on different request parameters? Lingo lets you do that easily, no manual `string`
+concatenation / `[]interface{}` appending required!
+
+Lingo can also be used as a command line tool which uses code generation to create type safe table representations
+of each table by querying your actual database schema. These generated structs, when used with the various Lingo
+packages, ensure that you create valid SQL queries. Those same structs can be created **manually**, if you don't feel
+like running a code generator in your build process.
+
+With Lingos' Execution Framework, an `execute` package wraps a native `sql.DB`, and provides simple methods to query
+a single row, multiple rows, or executing commands. The `execute` types accept interfaces of the `sql` package types,
+facilitating your custom transactional logic or frameworks. The Query Building and Execution Frameworks can be used
+completely separately.
+
+Lingo was inspired by [Querydsl](http://www.querydsl.com) and [jOOQ](https://www.jooq.org).
 
 # Table of Contents <!-- omit in toc -->
-- [What is Lingo](#what-is-lingo)
 - [Setup](#setup)
   - [Database Support](#database-support)
   - [Generating Table Files](#generating-table-files)
@@ -42,13 +61,6 @@ It exists to help ease the pain of manually working with SQL.
   - [Delete All Rows](#delete-all-rows)
   - [Delete with Where](#delete-with-where)
   - [Delete Left Join Where](#delete-left-join-where)
-
-# What is Lingo
-Lingo at it's most basic is a type-safe query builder that ensures your SQL queries and commands are accurate and safe. Lingo is a command line tool and Go Module that uses code generation to create type safe table representations based on your actual database schema. These generated structs, when used with the various Lingo packages, ensure that you create valid SQL queries.
-
-With Lingo you can interleave business logic with your query building. Need to filter a SELECT query by different columns based on different request parameters? Lingo lets you do that easily, with no string concatenation required!
-
-Lingo was inspird by [Querydsl](http://www.querydsl.com) and [jOOQ](https://www.jooq.org).
 
 # Setup
 Run `mage build` in the root directory of this project to locally build the `lingo` command line tool.
@@ -104,9 +116,24 @@ In each table's `q` package, two files should exist. One of them is named `expor
 ##### Exported.go
 The file `exported.go` is a purpose built `package` shortcut. It helps in quick query building without needing to hold
 on to an instance of the table itself.
+
 For example:
 ```go
-query.DeleteFrom(qcharactersets.Q()).Where(qcharactersets.Maxlen().LT(10)).GetSQL(mysql)
+package inventory
+
+import (
+    "github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
+    "github.com/weworksandbox/lingo/pkg/core"
+    "github.com/weworksandbox/lingo/pkg/core/expressions"
+    "github.com/weworksandbox/lingo/pkg/core/query"
+)
+
+func CountForStore(d core.Dialect, storeID int16) (core.SQL, error) {
+	return query.Select(expressions.Count(qinventory.InventoryId())).
+        From(qinventory.Q()).
+		Where(qinventory.StoreId().Eq(storeID)).
+        GetSQL(d)
+}
 ```
 
 ##### Table.go
@@ -136,21 +163,10 @@ Out of the box, the following Type Safe columns are supported:
 - TimePath
 - ColumnPath (a generic string defined column)
 
-### MySQL Mappings
-When generating, the MySQL type is converted to a Type Safe Column. The default mappings are below:
+### Dialect Column Type Mappings
+When generating, each parser can specify its mappings.
 
-| MySQL Type | Type Safe Column |
-| --- | --- |
-| BIGINT | Int64Path |
-| BINARY | BinaryPath |
-| DATETIME | TimePath |
-| INT | IntPath |
-| JSON | JSONPath |
-| TEXT | StringPath |
-| TINYINT | BoolPath |
-| TIMESTAMP | TimePath |
-| VARCHAR | StringPath |
-
+The default MySQL mappings can be found here: [internal/parse/mysql.go](internal/parse/mysql.go)
 
 # Generating SQL to use with Go's SQL Package
 All of the examples above are useless until you use the `GetSQL()` method of each `Query` type. `GetSQL()` requires
