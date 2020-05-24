@@ -44,6 +44,14 @@ var selectQueries = []Query{
 				BeEquivalentTo(2),
 			),
 			ErrAssert: BeNil(),
+
+			QueryValuePointers: []interface{}{
+				int32(0), int16(0),
+			},
+			QueryValueAsserts: AllInSlice(
+				Equal(int32(123)),
+				Equal(int16(123)),
+			),
 		},
 	},
 	{

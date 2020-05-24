@@ -1,9 +1,14 @@
 package queries_test
 
 import (
+	"context"
+	"database/sql"
+	"os"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -12,6 +17,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/runner"
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/execute"
 )
 
 // Query is used by Functional tests, along with benchmark tests. They are used for setting up common data to
@@ -31,6 +37,9 @@ type Params struct {
 	SQLAssert    types.GomegaMatcher
 	ValuesAssert types.GomegaMatcher
 	ErrAssert    types.GomegaMatcher
+
+	QueryValuePointers []interface{}
+	QueryValueAsserts types.GomegaMatcher
 }
 
 func BenchmarkQueries(b *testing.B) {
@@ -77,6 +86,54 @@ func TestQueries(t *testing.T) {
 	})
 
 	runner.SetupAndRunUnit(t, "Queries", "functional")
+}
+
+func TestExecute(t *testing.T) {
+	t.SkipNow() // Test not completed yet.
+
+	if testing.Short() {
+		t.SkipNow()
+	}
+
+	dsn, ok := os.LookupEnv("SQL_DB_DSN")
+	if !ok {
+		t.Skip("Could not find `SQL_DB_DSN` environment variable")
+	}
+
+	conf, err := mysql.ParseDSN(dsn)
+	if err != nil {
+		t.Fatalf("unable to parse found dsn: %s", err)
+	}
+	db, err := sql.Open("mysql", conf.FormatDSN())
+	if err != nil {
+		t.Fatalf("unable to connect to database: %s", err)
+	}
+	t.Cleanup(func() {
+		if closeErr := db.Close(); closeErr != nil {
+			t.Logf("error while cleaning up database: %s", closeErr)
+		}
+	})
+
+	var _ = ginkgo.Describe("Queries", func() {
+		table.DescribeTable("query.go",
+			func(p Params) {
+				// Sanity check
+				Expect(p).ToNot(BeNil())
+				Expect(p.Dialect).ToNot(BeNil(), "Dialect was nil")
+				Expect(p.SQL).ToNot(BeNil(), "SQL was nil")
+				Expect(p.SQLAssert).ToNot(BeNil(), "SQLAssert was nil")
+				Expect(p.ErrAssert).ToNot(BeNil(), "ErrAssert was nil for ")
+
+				ctx, _ := context.WithTimeout(context.Background(), 100 * time.Millisecond)
+				queryErr := execute.NewSQLExp(execute.NewSQL(db), p.Dialect).QueryRow(ctx, p.SQL(), p.QueryValuePointers...)
+				Expect(queryErr).To(p.ErrAssert)
+				Expect(p.QueryValuePointers).To(p.QueryValueAsserts)
+			},
+			acceptanceEntries...,
+		)
+	})
+
+	runner.SetupAndRunFunctional(t, "Execute")
 }
 
 var (
