@@ -50,6 +50,7 @@ func (p Params) Validate() {
 }
 
 const DefaultTimeout = 3 * time.Millisecond
+
 type ExecuteParams struct {
 	Type     execute.QueryType
 	Timeout  time.Duration
