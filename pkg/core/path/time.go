@@ -8,7 +8,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewTimePathWithAlias(e core.Table, name, alias string) Time {
+func NewTimeWithAlias(e core.Table, name, alias string) Time {
 	return Time{
 		entity: e,
 		name:   name,
@@ -16,8 +16,8 @@ func NewTimePathWithAlias(e core.Table, name, alias string) Time {
 	}
 }
 
-func NewTimePath(e core.Table, name string) Time {
-	return NewTimePathWithAlias(e, name, "")
+func NewTime(e core.Table, name string) Time {
+	return NewTimeWithAlias(e, name, "")
 }
 
 type Time struct {

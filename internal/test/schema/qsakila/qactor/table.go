@@ -17,10 +17,10 @@ func New() QActor {
 
 func newQActor(alias string) QActor {
 	q := QActor{_alias: alias}
-	q.actorId = path.NewInt16Path(q, "actor_id")
-	q.firstName = path.NewStringPath(q, "first_name")
-	q.lastName = path.NewStringPath(q, "last_name")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.actorId = path.NewInt16(q, "actor_id")
+	q.firstName = path.NewString(q, "first_name")
+	q.lastName = path.NewString(q, "last_name")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

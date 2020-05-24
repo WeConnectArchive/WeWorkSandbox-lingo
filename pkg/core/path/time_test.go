@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("Time", func() {
 
-	Context("NewTimePathWithAlias", func() {
+	Context("NewTimeWithAlias", func() {
 
 		var (
 			e     core.Table
@@ -31,7 +31,7 @@ var _ = Describe("Time", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewTimePathWithAlias(e, name, alias)
+			p = path.NewTimeWithAlias(e, name, alias)
 		})
 
 		It("Returns a `Time`", func() {
@@ -51,7 +51,7 @@ var _ = Describe("Time", func() {
 		})
 	})
 
-	Context("NewTimePath", func() {
+	Context("NewTime", func() {
 
 		var (
 			e    core.Table
@@ -66,7 +66,7 @@ var _ = Describe("Time", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewTimePath(e, name)
+			p = path.NewTime(e, name)
 		})
 
 		It("Returns a `Time`", func() {

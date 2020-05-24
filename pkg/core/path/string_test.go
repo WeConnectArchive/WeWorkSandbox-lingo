@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("String", func() {
 
-	Context("NewStringPathWithAlias", func() {
+	Context("NewStringWithAlias", func() {
 
 		var (
 			e     core.Table
@@ -29,7 +29,7 @@ var _ = Describe("String", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewStringPathWithAlias(e, name, alias)
+			p = path.NewStringWithAlias(e, name, alias)
 		})
 
 		It("Returns a `String`", func() {
@@ -49,7 +49,7 @@ var _ = Describe("String", func() {
 		})
 	})
 
-	Context("NewStringPath", func() {
+	Context("NewString", func() {
 
 		var (
 			e    core.Table
@@ -64,7 +64,7 @@ var _ = Describe("String", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewStringPath(e, name)
+			p = path.NewString(e, name)
 		})
 
 		It("Returns a `String`", func() {

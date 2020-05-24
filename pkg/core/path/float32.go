@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewFloat32PathWithAlias(e core.Table, name, alias string) Float32 {
+func NewFloat32WithAlias(e core.Table, name, alias string) Float32 {
 	return Float32{
 		entity: e,
 		name:   name,
@@ -14,8 +14,8 @@ func NewFloat32PathWithAlias(e core.Table, name, alias string) Float32 {
 	}
 }
 
-func NewFloat32Path(e core.Table, name string) Float32 {
-	return NewFloat32PathWithAlias(e, name, "")
+func NewFloat32(e core.Table, name string) Float32 {
+	return NewFloat32WithAlias(e, name, "")
 }
 
 type Float32 struct {

@@ -17,15 +17,15 @@ func New() QAddress {
 
 func newQAddress(alias string) QAddress {
 	q := QAddress{_alias: alias}
-	q.addressId = path.NewInt16Path(q, "address_id")
-	q.address = path.NewStringPath(q, "address")
-	q.address2 = path.NewStringPath(q, "address2")
-	q.district = path.NewStringPath(q, "district")
-	q.cityId = path.NewInt16Path(q, "city_id")
-	q.postalCode = path.NewStringPath(q, "postal_code")
-	q.phone = path.NewStringPath(q, "phone")
-	q.location = path.NewUnsupportedPath(q, "location")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.addressId = path.NewInt16(q, "address_id")
+	q.address = path.NewString(q, "address")
+	q.address2 = path.NewString(q, "address2")
+	q.district = path.NewString(q, "district")
+	q.cityId = path.NewInt16(q, "city_id")
+	q.postalCode = path.NewString(q, "postal_code")
+	q.phone = path.NewString(q, "phone")
+	q.location = path.NewUnsupported(q, "location")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

@@ -17,9 +17,9 @@ func New() QFilmActor {
 
 func newQFilmActor(alias string) QFilmActor {
 	q := QFilmActor{_alias: alias}
-	q.actorId = path.NewInt16Path(q, "actor_id")
-	q.filmId = path.NewInt16Path(q, "film_id")
-	q.lastUpdate = path.NewTimePath(q, "last_update")
+	q.actorId = path.NewInt16(q, "actor_id")
+	q.filmId = path.NewInt16(q, "film_id")
+	q.lastUpdate = path.NewTime(q, "last_update")
 	return q
 }
 

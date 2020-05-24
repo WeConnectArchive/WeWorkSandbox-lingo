@@ -6,14 +6,14 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/json"
 )
 
-func NewJSONPathWithAlias(e core.Table, name, alias string) JSON {
+func NewJSONWithAlias(e core.Table, name, alias string) JSON {
 	return JSON{
-		String: NewStringPathWithAlias(e, name, alias),
+		String: NewStringWithAlias(e, name, alias),
 	}
 }
 
-func NewJSONPath(e core.Table, name string) JSON {
-	return NewJSONPathWithAlias(e, name, "")
+func NewJSON(e core.Table, name string) JSON {
+	return NewJSONWithAlias(e, name, "")
 }
 
 type JSON struct {
