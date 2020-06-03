@@ -29,7 +29,7 @@ Lingo was inspired by [Querydsl](http://www.querydsl.com) and [jOOQ](https://www
 
 # Table of Contents <!-- omit in toc -->
 - [Setup](#setup)
-  - [Database Support](#database-support)
+  - [Database Type Support](#database-type-support)
   - [Generating Table Files](#generating-table-files)
     - [Generate Command](#generate-command)
       - [Config File](#config-file)
@@ -38,7 +38,7 @@ Lingo was inspired by [Querydsl](http://www.querydsl.com) and [jOOQ](https://www
         - [Table.go](#tablego)
 - [Queries](#queries)
   - [Column Type Safety](#column-type-safety)
-    - [MySQL Mappings](#mysql-mappings)
+    - [Dialect Column Type Mappings](#dialect-column-type-mappings)
 - [Generating SQL to use with Go's SQL Package](#generating-sql-to-use-with-gos-sql-package)
   - [Using Generated SQL](#using-generated-sql)
   - [Execution Example](#execution-example)
@@ -61,22 +61,27 @@ Lingo was inspired by [Querydsl](http://www.querydsl.com) and [jOOQ](https://www
   - [Delete All Rows](#delete-all-rows)
   - [Delete with Where](#delete-with-where)
   - [Delete Left Join Where](#delete-left-join-where)
+- [Contributors](#contributors)
+  - [Developer Setup](#developer-setup)
 
 # Setup
-Run `mage build` in the root directory of this project to locally build the `lingo` command line tool.
 
-## Database Support
+Run `go get github.com/weworksandbox/lingo` in the project root. Follow the instructions for [Generate Command](#generate-command).
+
+## Database Type Support
 Currently, only MySQL table structure parsing is supported. Note that you can build your own table files by hand using
 the existing interfaces which can be used with queries.
 
 ## Generating Table Files
 In order to use the library in conjunction with a given database schema, you must
-upgrade your schema to the latest version, and then run the `lingo generate` command.
+upgrade your schema to its latest version, and then run the `lingo generate` command with the appropriate configuration.
+
+You can also manually create the required files that get generated.
 
 ### Generate Command
 You can include this `lingo generate` command as either a `go:generate` or a bash command.
 
-```.text
+```text
 Generate entity table and columns from an existing database schema
 
 Usage:
@@ -464,3 +469,19 @@ ON        character_sets.character_set_name = collations.character_set_name
 WHERE     character_sets.maxlen <= ?
 ```
 Values: `[14]`
+
+
+# Contributors
+Adhering to the code of conduct and license, all help is welcome.
+
+## Developer Setup
+
+**Dependencies**
+- One time install of [`mage` tool](https://github.com/magefile/mage#installation).
+    - You can also install `mage` via `brew install mage` on OSX.
+- Ensure [Docker Compose >= v1.25.5](https://github.com/docker/compose/releases/) is installed to use the 3.8 file format.
+- Ensure [Docker / Docker Engine >= v19.03.0](https://docs.docker.com/compose/compose-file/) is installed to use the 3.8 file format.
+
+Build `lingo` locally by running `mage build` in the root directory of this project.
+
+Run `mage -v` in the root directory to show commands available to run like tests, linters, databases etc.

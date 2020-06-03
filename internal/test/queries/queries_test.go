@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"strings"
@@ -15,7 +16,9 @@ import (
 	"github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
+	"github.com/spf13/viper"
 
+	"github.com/weworksandbox/lingo/internal/config"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/runner"
 	"github.com/weworksandbox/lingo/pkg/core"
@@ -49,7 +52,7 @@ func (p Params) Validate() {
 	ExpectWithOffset(1, p.SQLStrAssert).ToNot(BeNil(), "SQLStrAssert was nil")
 }
 
-const DefaultTimeout = 3 * time.Millisecond
+const DefaultTimeout = 10 * time.Millisecond
 
 type ExecuteParams struct {
 	Type     execute.QueryType
@@ -112,16 +115,17 @@ func TestQueries(t *testing.T) {
 	runner.SetupAndRunUnit(t, "Queries", "functional")
 }
 
+// Run with `-- --config ../testdata/sakila/lingo-config.yml` flags if running from this function.
+// If running from root directory, update the path.
 func TestExecute(t *testing.T) {
-	//t.SkipNow() // Test not completed yet.
-
 	if testing.Short() {
 		t.SkipNow()
 	}
+	loadFunctionalConfigOrFatal()
 
-	dsn, ok := os.LookupEnv("SQL_DB_DSN")
-	if !ok {
-		t.Skip("Could not find `SQL_DB_DSN` environment variable")
+	dsn := viper.GetString("dsn")
+	if dsn == "" {
+		t.Fatalf("'dsn' in config file is not set")
 	}
 
 	conf, err := mysql.ParseDSN(dsn)
@@ -199,6 +203,22 @@ func TestExecute(t *testing.T) {
 	})
 
 	runner.SetupAndRunFunctional(t, "Execute")
+}
+
+func loadFunctionalConfigOrFatal() {
+	// Init Functional Test Args
+	for idx := len(os.Args) - 1; idx >= 0; idx-- {
+		if os.Args[idx] == "--" {
+			subArgs := os.Args[idx+1:]
+			if err := config.FileFlag.Parse(subArgs); err != nil {
+				log.Fatalf("unable to parse the os.Args={%v}: %s", subArgs, err)
+			}
+			if err := config.ReadConfig(); err != nil {
+				log.Fatalf("unable to read config from %s: %s", config.File, err)
+			}
+			break
+		}
+	}
 }
 
 var (
