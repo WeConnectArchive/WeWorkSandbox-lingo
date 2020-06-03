@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/check"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 )
 
 func InsertInto(entity core.Table) *InsertQuery {

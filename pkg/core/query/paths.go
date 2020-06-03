@@ -3,8 +3,8 @@ package query
 import (
 	"fmt"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/check"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 )
 
 func ExpandTables(paths []core.Expression) []core.Expression {

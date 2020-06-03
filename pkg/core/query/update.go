@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/check"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 )
 
 func Update(table core.Table) *UpdateQuery {
