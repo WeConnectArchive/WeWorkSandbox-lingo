@@ -49,6 +49,7 @@ func (MySQL) DBTypesToPaths() map[string][2]string {
 		"SMALLINT":  {pkgCorePath, "Int16"},
 		"TEXT":      {pkgCorePath, "String"},
 		"TINYINT":   {pkgCorePath, "Int8"},
+		"TIME":      {pkgCorePath, "Time"},
 		"TIMESTAMP": {pkgCorePath, "Time"},
 		"VARCHAR":   {pkgCorePath, "String"},
 	}
