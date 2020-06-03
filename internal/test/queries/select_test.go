@@ -13,7 +13,6 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
 	"github.com/weworksandbox/lingo/pkg/core/execute"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/expressions"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
@@ -30,7 +29,7 @@ var selectQueries = []QueryTest{
 					storeID = 2
 				)
 				return query.Select(
-					expressions.Count(qinventory.InventoryId()),
+					expression.Count(qinventory.InventoryId()),
 				).From(
 					qinventory.Q(),
 				).Where(
@@ -62,7 +61,7 @@ var selectQueries = []QueryTest{
 					actorID = 10
 				)
 				return query.Select(
-					expressions.Count(qfilmactor.FilmId()),
+					expression.Count(qfilmactor.FilmId()),
 				).From(
 					qfilmactor.Q(),
 				).Where(

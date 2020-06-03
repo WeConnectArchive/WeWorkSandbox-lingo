@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
 )
 
 func InsertInto(entity core.Table) *InsertQuery {
@@ -63,7 +63,7 @@ func (i *InsertQuery) Select(s *SelectQuery) *InsertQuery {
 func (i InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("INSERT INTO", nil)
 
-	if helpers.IsValueNilOrBlank(i.table) {
+	if check.IsValueNilOrBlank(i.table) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), sql.String())
 	}
 	if i.table.GetAlias() != "" {
@@ -75,7 +75,7 @@ func (i InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	}
 	sql = sql.AppendSQLWithSpace(tableSQL)
 
-	if helpers.IsValueNilOrEmpty(i.columns) {
+	if check.IsValueNilOrEmpty(i.columns) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), sql.String())
 	}
 	pathsSQL, err := CombinePathSQL(d, i.columns)

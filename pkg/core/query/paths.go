@@ -3,8 +3,8 @@ package query
 import (
 	"fmt"
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
 )
 
 func ExpandTables(paths []core.Expression) []core.Expression {
@@ -25,7 +25,7 @@ func ExpandTables(paths []core.Expression) []core.Expression {
 func CombinePathSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
 	var sql = core.NewEmptySQL()
 	for _, p := range paths {
-		if helpers.IsValueNilOrBlank(p) {
+		if check.IsValueNilOrBlank(p) {
 			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("path entry"), sql.String())
 		}
 
@@ -48,7 +48,7 @@ func CombinePathSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
 func CombineSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
 	var sql = core.NewEmptySQL()
 	for idx, p := range paths {
-		if helpers.IsValueNilOrBlank(p) {
+		if check.IsValueNilOrBlank(p) {
 			entry := fmt.Sprintf("path entry[%d]", idx)
 			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil(entry), sql.String())
 		}
