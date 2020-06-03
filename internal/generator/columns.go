@@ -47,8 +47,8 @@ func convertCols(
 	replace replaceFieldName,
 	dbTypeToPathType dbTypeToPathTypeFunc,
 ) ([]*column, error) {
-	var cols []*column
-	for _, col := range columns {
+	var cols = make([]*column, len(columns))
+	for idx, col := range columns {
 		value, err := dbTypeToPathType(col.Type().DatabaseTypeName())
 		if err != nil {
 			return nil, fmt.Errorf("unable to find lingo path type for column named %s and type %s: %w",
@@ -60,7 +60,7 @@ func convertCols(
 			replace:  replace,
 			pathType: value,
 		}
-		cols = append(cols, &genCol)
+		cols[idx] = &genCol
 	}
 	return cols, nil
 }

@@ -150,7 +150,7 @@ func (s *sql) InjectValues() string {
 		trimmedSQL := questionMarkSQL[:i]
 		if i = strings.LastIndex(trimmedSQL, "?"); i != -1 {
 			// Decrement since we found a question mark
-			currentValueIndex = currentValueIndex - 1
+			currentValueIndex--
 			valueToInsert := values[currentValueIndex]
 
 			pre := questionMarkSQL[:i]
@@ -193,9 +193,9 @@ func stringify(v interface{}) string {
 		for index := 0; index < value.Len(); index++ {
 			indexedValue := value.Index(index)
 			if str != "" {
-				str = str + ", "
+				str += ", "
 			}
-			str = str + stringify(indexedValue)
+			str += stringify(indexedValue)
 		}
 		return str
 
@@ -208,6 +208,6 @@ func stringify(v interface{}) string {
 func (s *sql) ensureSingleSpace() {
 	r, _ := utf8.DecodeLastRuneInString(s.sql)
 	if r == utf8.RuneError || !unicode.IsSpace(r) {
-		s.sql = s.sql + " "
+		s.sql += " "
 	}
 }

@@ -3,10 +3,13 @@
 package main
 
 import (
+	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,12 +22,19 @@ import (
 
 const (
 	// Paths and Files
-	testGenerateSakilaDir = "./internal/test/testdata/sakila"
-	dockerComposeYml      = "docker-compose.yml"
+	testGenerateSakilaDir            = "./internal/test/testdata/sakila"
+	testGenerateSakilaConfigFileName = "lingo-config.yml"
+	dockerComposeYml                 = "docker-compose.yml"
+
+	envCGO_ENABLED = "CGO_ENABLED"
+
+	// messages
+	msgSkippingDockerCommandInCI = "Skipping - Unable to run Docker commands within CI"
 )
 
 var (
-	testGenerateSakilaDC = filepath.Join(testGenerateSakilaDir, dockerComposeYml)
+	testSchemaSakilaLingoConfigFile = filepath.Join(testGenerateSakilaDir, testGenerateSakilaConfigFileName)
+	testGenerateSakilaDC            = filepath.Join(testGenerateSakilaDir, dockerComposeYml)
 	// allFiles has the current directory `.` plus all subsequent directories `./...`.
 	// Note: `...` does not work as it tries to do EVERYTHING including random GOPATH stuff.
 	allFiles = append(allPkgs, ".")
@@ -56,10 +66,13 @@ func All() {
 		Deps.ModDownload,
 		Gen.Go,
 		GoFmt,
+		GoVet,
 		Revive,
 		Build,
+		Gen.TestSchema,
 		Test.All,
-		Tidy,
+		GoTidy,
+		Gen.StopTestSchemaDB,
 	)
 }
 
@@ -99,7 +112,7 @@ func (Gen) Go() error {
 // Runs `go fmt` with optional debug logging
 func GoFmt() error {
 	if err := runCmd("go", "fmt",
-		debug("-v"),
+		debug("-x"),
 	)(allFiles); err != nil {
 		return err
 	}
@@ -108,9 +121,10 @@ func GoFmt() error {
 
 type Test mg.Namespace
 
-// Runs both `test:unit` and `test:acceptance` in parallel
+// Runs both `test:unit`, `test:functional` and `test:benchmark` in parallel. If not in CI, it will start the
+// test schema DB, generate the schema, run the tests, and stop the db.
 func (Test) All() error {
-	mg.Deps(Test.Unit, Test.Functional, Test.Benchmark)
+	mg.SerialDeps(Test.Unit, Test.Functional, Test.Benchmark, Test.IntegrationWithDB)
 	return nil
 }
 
@@ -123,6 +137,7 @@ func (Test) Unit() error {
 	return runCmd("go", "test",
 		"-short",
 		"-coverprofile=unit-coverage.out",
+		goRaceFlag(),
 		debug("-v"),
 	)(pathsPlusTestArgs)
 }
@@ -136,15 +151,48 @@ func (Test) Functional() error {
 	return runCmd("go", "test",
 		"-short",
 		"-coverprofile=functional-coverage.out",
+		goRaceFlag(),
 		debug("-v"),
 	)(pathsPlusTestArgs)
+}
+
+func (Test) Integration() error {
+	absConfig, err := filepath.Abs(testSchemaSakilaLingoConfigFile)
+	if err != nil {
+		return fmt.Errorf("unable to find absolute path for config file: %w", err)
+	}
+
+	pathsPlusTestArgs := append(codePaths,
+		"-ginkgo.randomizeAllSpecs",
+		debug("-ginkgo.progress"),
+		"--",
+		"--config", absConfig,
+	)
+	return runCmd("go", "test",
+		"-coverprofile=integration-coverage.out",
+		goRaceFlag(),
+		debug("-v"),
+	)(pathsPlusTestArgs)
+}
+
+// Runs the test schema database, the integration tests, and then cleans up the DB. Does nothing if in CI.
+func (Test) IntegrationWithDB() {
+	if isCI() {
+		log.Println("Cannot run docker containers in CI")
+		return
+	}
+
+	mg.SerialDeps(Gen.StartTestSchemaDB, Test.Integration)
 }
 
 // Runs all benchmark tests with -benchmem
 func (Test) Benchmark() error {
 	if err := runCmd("go", "test",
-		"-bench", "Benchmark.",
+		"-run=XXX", // Random fake test name
+		"-bench", "Benchmark",
+		"-short",
 		"-benchmem",
+		debug("-v"),
 	)(allPkgs); err != nil {
 		return err
 	}
@@ -154,14 +202,14 @@ func (Test) Benchmark() error {
 // Builds lingo and then builds codePaths
 func Build() error {
 	if err := run("go", "build",
-		isCGOEnabled("-race"),
+		goRaceFlag(),
 		debug("-v"),
 		"./cmd/lingo/lingo.go",
 	); err != nil {
 		return err
 	}
 	if err := runCmd("go", "build",
-		isCGOEnabled("-race"),
+		goRaceFlag(),
 		debug("-v"),
 	)(codePaths); err != nil {
 		return err
@@ -169,20 +217,21 @@ func Build() error {
 	return nil
 }
 
-// Starts the test db, installs the schema, then runs lingo to generate the files. If successful, the db
-// is shutdown and deleted.
+// Starts the test db, installs the schema, then runs lingo to generate the files
 func (Gen) TestSchema() error {
-	mg.SerialDeps(Gen.StartTestSchemaDB, Run.LingoGenTestSchema, Gen.StopTestSchemaDB)
+	mg.SerialDeps(Gen.StartTestSchemaDB, Run.LingoGenTestSchema)
 	return nil
 }
 
 // This will start the DB then installs the schema & data.
 // The test schema and data comes from MySQL: https://dev.mysql.com/doc/index-other.html
-func (Gen) StartTestSchemaDB() error {
+func (Gen) StartTestSchemaDB(ctx context.Context) error {
 	if isCI() {
-		log.Println("Skipping - Unable to run Docker commands within CI")
+		log.Println(msgSkippingDockerCommandInCI)
 		return nil
 	}
+
+	started := time.Now()
 	if err := run("docker-compose",
 		"-f", testGenerateSakilaDC,
 		"--env-file", filepath.Join(testGenerateSakilaDir, ".env"),
@@ -193,13 +242,22 @@ func (Gen) StartTestSchemaDB() error {
 	); err != nil {
 		return err
 	}
-	time.Sleep(3 * time.Second)
-	log.Println("Database should be completed")
+
+	log.Println("Waiting for schema script to complete")
+	if err := waitForContainerExit(ctx, "recreate-schema-script", started, 1*time.Second, 30*time.Second); err != nil {
+		return fmt.Errorf("failed to run test schema script successfully: %w", err)
+	}
+	log.Println("Database setup completed")
 	return nil
 }
 
 // Stop the test containers used to sakila our schema
 func (Gen) StopTestSchemaDB() error {
+	if isCI() {
+		log.Println(msgSkippingDockerCommandInCI)
+		return nil
+	}
+
 	if err := run("docker-compose",
 		"-f", testGenerateSakilaDC,
 		"rm",
@@ -213,10 +271,18 @@ func (Gen) StopTestSchemaDB() error {
 }
 
 // Runs `go mod tidy` with optional debug logging
-func Tidy() error {
+func GoTidy() error {
 	if err := run("go", "mod", "tidy",
 		debug("-v"),
 	); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Runs `go vet` with optional debug logging
+func GoVet() error {
+	if err := runCmd("go", "vet", debug("-v"))(allPkgs); err != nil {
 		return err
 	}
 	return nil
@@ -250,8 +316,13 @@ type Run mg.Namespace
 func (Run) LingoGenTestSchema() error {
 	mg.SerialDeps(Build)
 
+	if isCI() {
+		log.Println(msgSkippingDockerCommandInCI)
+		return nil
+	}
+
 	return run("./lingo", "generate",
-		"--config", filepath.Join(testGenerateSakilaDir, "lingo-config.yml"),
+		"--config", testSchemaSakilaLingoConfigFile,
 	)
 }
 
@@ -264,19 +335,30 @@ func debug(debugStr string) string {
 	return ""
 }
 
-// isCGOEnabled returns returnIfEnabled if CGO_ENABLED is true
-func isCGOEnabled(returnIfEnabled string) string {
-	val, ok := os.LookupEnv("CGO_ENABLED")
-	if ok && val == "1" {
-		return returnIfEnabled
+// isCGOEnabled returns true if CGO_ENABLED is not found in env vars, or if its value is equal to string "1".
+func isCGOEnabled() bool {
+	val, ok := os.LookupEnv(envCGO_ENABLED)
+	return !ok || val == "1" // If it is not found, its enabled by default in Go
+}
+
+// ifCGOEnabled returns returnIfEnabled if CGO_ENABLED is true
+func ifCGOEnabled(returnIfEnabled string) string {
+	if !isCGOEnabled() {
+		return ""
 	}
-	return ""
+	return returnIfEnabled
 }
 
 // isCI returns true if an env var for the CI system enabled is present
 func isCI() bool {
 	val, ok := os.LookupEnv("GITHUB_ACTIONS")
 	return ok && val == "true"
+}
+
+// goRaceFlag will return -race if CGO_ENABLED is true
+func goRaceFlag() string {
+	const flagRace = "-race"
+	return ifCGOEnabled(flagRace)
 }
 
 // run will take a normal sh.run command argument, filtering any args entries that are empty.
@@ -352,4 +434,50 @@ func copyToTempFile(r io.ReadCloser, tempFilePattern string) (string, int64, err
 		return "", 0, fmt.Errorf("unable to close file: %w", err)
 	}
 	return outFile.Name(), size, nil
+}
+
+func waitForContainerExit(ctx context.Context, name string, started time.Time, skew time.Duration, timeout time.Duration) error {
+	timeoutCtx, _ := context.WithTimeout(ctx, timeout)
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			//docker ps -a --filter 'exited=0' --filter name=$name --format "{{.CreatedAt}}"
+			output, err := sh.Output("docker",
+				"ps", "-a", "--filter", "exited=0", "--filter", fmt.Sprintf("name=%s", name), "--format", `"{{.CreatedAt}}"`)
+			if err != nil {
+				return fmt.Errorf("unable to query if container %s is completed: %w", name, err)
+			}
+
+			scanner := bufio.NewScanner(strings.NewReader(output))
+			for scanner.Scan() {
+				cleanText := strings.Trim(scanner.Text(), `" `)
+
+				// FORMAT: 2020-05-24 17:30:09 -0700 PDT
+				const format = "2006-01-02 15:04:05 -0700 MST"
+				createdAtTime, err := time.Parse(format, cleanText)
+				if err != nil {
+					return fmt.Errorf("unable to parse text={%s}: %w", cleanText, err)
+				}
+
+				ensureSkewDirection := time.Duration(math.Abs(float64(skew)))
+
+				logStr := fmt.Sprintf("Command Started At: %d Container Started At: %d Skew: %d, Accepted",
+					started.Unix(), createdAtTime.Unix(), ensureSkewDirection.Milliseconds())
+
+				if createdAtTime.After(started.Add(-ensureSkewDirection)) {
+					log.Println(logStr, "- Successful")
+					return nil
+				}
+				log.Println(logStr, "- Invalid Container Time")
+			}
+			if err = scanner.Err(); err != nil {
+				return fmt.Errorf("unable to read output from docker: %w", err)
+			}
+		case <-timeoutCtx.Done():
+			return timeoutCtx.Err()
+		}
+	}
 }
