@@ -5,7 +5,7 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 )
 
 func Update(table core.Table) *UpdateQuery {
@@ -34,7 +34,7 @@ func (u UpdateQuery) Set(exp ...core.Set) *UpdateQuery {
 func (u UpdateQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("UPDATE", nil)
 
-	if helpers.IsValueNilOrBlank(u.table) {
+	if check.IsValueNilOrBlank(u.table) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), sql.String())
 	}
 	if u.table.GetAlias() != "" {
@@ -46,7 +46,7 @@ func (u UpdateQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 	}
 	sql = sql.AppendSQLWithSpace(tableSQL)
 
-	if helpers.IsValueNilOrEmpty(u.set) {
+	if check.IsValueNilOrEmpty(u.set) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("set"), sql.String())
 	}
 	pathsSQL, err := CombinePathSQL(d, u.set)

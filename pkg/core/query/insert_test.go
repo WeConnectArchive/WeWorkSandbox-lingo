@@ -10,7 +10,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
-	"github.com/weworksandbox/lingo/pkg/core/expressions"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
 )
@@ -235,7 +235,7 @@ var _ = Describe("Insert", func() {
 				sTable = NewMockTable()
 				pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("select.sql"), nil)
 
-				sq = query.Select(expressions.Star()).From(sTable)
+				sq = query.Select(expression.Star()).From(sTable)
 			})
 
 			JustBeforeEach(func() {

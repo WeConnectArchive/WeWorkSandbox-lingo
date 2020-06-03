@@ -3,7 +3,7 @@ package query
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 )
 
@@ -38,7 +38,7 @@ func (d DeleteQuery) Join(left core.Expression, jt join.Type, on core.Expression
 func (d DeleteQuery) GetSQL(dialect core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("DELETE FROM", nil)
 
-	if helpers.IsValueNilOrEmpty(d.from) {
+	if check.IsValueNilOrEmpty(d.from) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("from"), sql.String())
 	}
 	fromSQL, err := CombinePathSQL(dialect, d.from)

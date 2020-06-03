@@ -3,7 +3,7 @@ package query
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
@@ -81,7 +81,7 @@ func (s *SelectQuery) GetSQL(d core.Dialect) (core.SQL, error) {
 
 func (s *SelectQuery) selectFrom(d core.Dialect) (core.SQL, error) {
 	var sql = core.NewSQL("SELECT ", nil)
-	if helpers.IsValueNilOrEmpty(s.paths) {
+	if check.IsValueNilOrEmpty(s.paths) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), sql.String())
 	}
 	pathsSQL, err := CombinePathSQL(d, ExpandTables(s.paths))
@@ -90,7 +90,7 @@ func (s *SelectQuery) selectFrom(d core.Dialect) (core.SQL, error) {
 	}
 	sql = sql.AppendSQLWithSpace(pathsSQL)
 
-	if helpers.IsValueNilOrBlank(s.from) {
+	if check.IsValueNilOrBlank(s.from) {
 		return nil, expression.ExpressionIsNil("from")
 	}
 	return sql, nil

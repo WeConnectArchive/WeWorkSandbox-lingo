@@ -2,7 +2,7 @@ package expression
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 )
 
 type Set interface {
@@ -30,7 +30,7 @@ func (c set) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, DialectFunctionNotSupported("Set")
 	}
 
-	if helpers.IsValueNilOrEmpty(c.left) {
+	if check.IsValueNilOrEmpty(c.left) {
 		return nil, ExpressionIsNil("left")
 	}
 	left, lerr := c.left.GetSQL(d)
@@ -38,7 +38,7 @@ func (c set) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, lerr
 	}
 
-	if helpers.IsValueNilOrEmpty(c.value) {
+	if check.IsValueNilOrEmpty(c.value) {
 		return nil, ErrorAroundSQL(ExpressionIsNil("value"), left.String())
 	}
 	value, verr := c.value.GetSQL(d)

@@ -1,4 +1,4 @@
-package expressions_test
+package expression_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expressions"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 )
 
 var _ = Describe("Star", func() {
@@ -18,7 +18,7 @@ var _ = Describe("Star", func() {
 		)
 
 		JustBeforeEach(func() {
-			star = expressions.Star()
+			star = expression.Star()
 		})
 
 		It("Returns non nil", func() {

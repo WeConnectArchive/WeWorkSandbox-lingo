@@ -5,7 +5,7 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
@@ -41,10 +41,10 @@ type ValueFormatter interface {
 }
 
 func Value(formatter ValueFormatter, values []interface{}) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(values) {
+	if check.IsValueNilOrBlank(values) {
 		return nil, expression.ConstantIsNil()
 	}
-	if helpers.IsValueNilOrBlank(formatter) {
+	if check.IsValueNilOrBlank(formatter) {
 		return nil, errors.New("ValueFormatter is nil or the interface pointer is nil")
 	}
 
@@ -71,13 +71,13 @@ func Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, 
 }
 
 func Join(left core.SQL, joinType string, on core.SQL) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(left.String()) {
+	if check.IsValueNilOrBlank(left.String()) {
 		return nil, expression.ExpressionIsNil("left")
 	}
-	if helpers.IsValueNilOrBlank(on.String()) {
+	if check.IsValueNilOrBlank(on.String()) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("on"), left.String())
 	}
-	if helpers.IsValueNilOrEmpty(joinType) {
+	if check.IsValueNilOrEmpty(joinType) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("joinType"), left.String())
 	}
 
@@ -90,13 +90,13 @@ type SetFormatter interface {
 }
 
 func Set(format SetFormatter, left core.SQL, value core.SQL) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(format) {
+	if check.IsValueNilOrBlank(format) {
 		return nil, errors.New("SetFormatter is nil or the interface pointer is nil")
 	}
-	if helpers.IsValueNilOrBlank(left.String()) {
+	if check.IsValueNilOrBlank(left.String()) {
 		return nil, expression.ExpressionIsNil("left")
 	}
-	if helpers.IsValueNilOrBlank(value.String()) {
+	if check.IsValueNilOrBlank(value.String()) {
 		return nil, expression.ExpressionIsNil("value")
 	}
 
@@ -104,7 +104,7 @@ func Set(format SetFormatter, left core.SQL, value core.SQL) (core.SQL, error) {
 }
 
 func OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(left.String()) {
+	if check.IsValueNilOrBlank(left.String()) {
 		return nil, expression.ExpressionIsNil("left")
 	}
 	switch direction {

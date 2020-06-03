@@ -2,7 +2,7 @@ package expression
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 )
 
@@ -33,7 +33,7 @@ func (j joinOn) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, DialectFunctionNotSupported("Joiner")
 	}
 
-	if helpers.IsValueNilOrEmpty(j.on) {
+	if check.IsValueNilOrEmpty(j.on) {
 		return nil, ExpressionIsNil("on")
 	}
 	on, oerr := j.on.GetSQL(d)
@@ -41,7 +41,7 @@ func (j joinOn) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, oerr
 	}
 
-	if helpers.IsValueNilOrEmpty(j.left) {
+	if check.IsValueNilOrEmpty(j.left) {
 		return nil, ExpressionIsNil("left")
 	}
 	left, lerr := j.left.GetSQL(d)

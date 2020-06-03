@@ -1,9 +1,8 @@
-package expressions
+package expression
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 )
 
 func Count(countOn core.Expression) core.Expression {
@@ -17,8 +16,8 @@ type count struct {
 }
 
 func (c count) GetSQL(d core.Dialect) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(c.countOn) {
-		return nil, expression.ExpressionIsNil("countOn")
+	if check.IsValueNilOrBlank(c.countOn) {
+		return nil, ExpressionIsNil("countOn")
 	}
 
 	countOn, countOnErr := c.countOn.GetSQL(d)

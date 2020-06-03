@@ -3,7 +3,7 @@ package dialect
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/json"
 )
 
@@ -23,7 +23,7 @@ func (m MySQL) JSONOperator(left core.SQL, op json.Operand, values []core.SQL) (
 }
 
 func (MySQL) multiPathJSON(left core.SQL, op json.Operand, values []core.SQL) (core.SQL, error) {
-	if helpers.IsValueNilOrBlank(left) {
+	if check.IsValueNilOrBlank(left) {
 		return nil, expression.ExpressionIsNil("left")
 	}
 

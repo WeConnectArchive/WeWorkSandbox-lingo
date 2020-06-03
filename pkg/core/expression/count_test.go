@@ -1,4 +1,4 @@
-package expressions_test
+package expression_test
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expressions"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 )
 
 var _ = Describe("Count", func() {
@@ -27,7 +27,7 @@ var _ = Describe("Count", func() {
 		})
 
 		JustBeforeEach(func() {
-			count = expressions.Count(countOn)
+			count = expression.Count(countOn)
 		})
 
 		It("Returns non nil", func() {

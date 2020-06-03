@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/json"
 )
 
@@ -35,7 +35,7 @@ func (o jsonOperate) GetSQL(d core.Dialect) (core.SQL, error) {
 		return nil, DialectFunctionNotSupported("JSONOperation")
 	}
 
-	if helpers.IsValueNilOrEmpty(o.left) {
+	if check.IsValueNilOrEmpty(o.left) {
 		return nil, ExpressionIsNil("left")
 	}
 	left, lerr := o.left.GetSQL(d)
@@ -45,7 +45,7 @@ func (o jsonOperate) GetSQL(d core.Dialect) (core.SQL, error) {
 
 	var sqlArr = make([]core.SQL, 0, len(o.expressions))
 	for index, ex := range o.expressions {
-		if helpers.IsValueNilOrEmpty(ex) {
+		if check.IsValueNilOrEmpty(ex) {
 			return nil, ErrorAroundSQL(ExpressionIsNil(fmt.Sprintf("expressions[%d]", index)), left.String())
 		}
 

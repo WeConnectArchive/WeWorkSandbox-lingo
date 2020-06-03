@@ -2,7 +2,7 @@ package query
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/helpers"
+	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/path"
 )
 
@@ -38,13 +38,13 @@ func (stringParent) GetColumns() []core.Column { return []core.Column{} }
 func (stringParent) GetParent() string         { return "" }
 
 func convertToStringColumns(columns []core.Column) []core.Expression {
-	if helpers.IsValueNilOrBlank(columns) {
+	if check.IsValueNilOrBlank(columns) {
 		return nil
 	}
 
 	var expressions = make([]core.Expression, 0, len(columns))
 	for _, column := range columns {
-		if helpers.IsValueNilOrBlank(column) {
+		if check.IsValueNilOrBlank(column) {
 			return nil
 		}
 		// TODO we might not even need this entire function or file... maybe remove?
