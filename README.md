@@ -7,7 +7,7 @@
 Lingo at it's most basic is a type-safe query builder and bundled execution framework that ensures your SQL queries
  and commands are accurate and safe, and checks all the Go SQL errors for you.
 
-The idea is not to write an ORM. Lingos' main two goals is to (1) help build dynamic queries, and (2) quickly write
+The idea is not to write an ORM but instead to help (1) build dynamic queries, and (2) quickly write
 code to execute those queries against a `sql.DB`. The frameworks for the two concepts can be used together, separately,
 or you can use either or. It is up to you!
 
@@ -26,6 +26,8 @@ facilitating your custom transactional logic or frameworks. The Query Building a
 completely separately.
 
 Lingo was inspired by [Querydsl](http://www.querydsl.com) and [jOOQ](https://www.jooq.org).
+
+<!-- TODO - Everything below should be refactored to go docs with examples!!! -->
 
 # Table of Contents <!-- omit in toc -->
 - [Setup](#setup)

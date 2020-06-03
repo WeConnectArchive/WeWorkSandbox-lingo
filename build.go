@@ -27,6 +27,9 @@ const (
 	dockerComposeYml                 = "docker-compose.yml"
 
 	envCGO_ENABLED = "CGO_ENABLED"
+
+	// messages
+	msgSkippingDockerCommandInCI = "Skipping - Unable to run Docker commands within CI"
 )
 
 var (
@@ -224,7 +227,7 @@ func (Gen) TestSchema() error {
 // The test schema and data comes from MySQL: https://dev.mysql.com/doc/index-other.html
 func (Gen) StartTestSchemaDB(ctx context.Context) error {
 	if isCI() {
-		log.Println("Skipping - Unable to run Docker commands within CI")
+		log.Println(msgSkippingDockerCommandInCI)
 		return nil
 	}
 
@@ -250,6 +253,11 @@ func (Gen) StartTestSchemaDB(ctx context.Context) error {
 
 // Stop the test containers used to sakila our schema
 func (Gen) StopTestSchemaDB() error {
+	if isCI() {
+		log.Println(msgSkippingDockerCommandInCI)
+		return nil
+	}
+
 	if err := run("docker-compose",
 		"-f", testGenerateSakilaDC,
 		"rm",
@@ -307,6 +315,11 @@ type Run mg.Namespace
 // Runs Lingo for the Sakila test DB
 func (Run) LingoGenTestSchema() error {
 	mg.SerialDeps(Build)
+
+	if isCI() {
+		log.Println(msgSkippingDockerCommandInCI)
+		return nil
+	}
 
 	return run("./lingo", "generate",
 		"--config", testSchemaSakilaLingoConfigFile,
