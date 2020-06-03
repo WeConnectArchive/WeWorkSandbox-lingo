@@ -10,7 +10,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
 	"github.com/petergtz/pegomock"
-	"go.opentelemetry.io/otel/api/core"
+	"go.opentelemetry.io/otel/api/kv"
+	"go.opentelemetry.io/otel/api/kv/value"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/weworksandbox/lingo/pkg/core/execute"
@@ -124,47 +125,41 @@ var _ = Describe("log.go", func() {
 				AddEvent(
 					matchers.AnyContextContext(),
 					pegomock.AnyString(),
-					matchers.AnyCoreKeyValue(), matchers.AnyCoreKeyValue(), matchers.AnyCoreKeyValue(),
+					matchers.AnyKvKeyValue(), matchers.AnyKvKeyValue(), matchers.AnyKvKeyValue(),
 				).
 				GetCapturedArguments()
 
 			Expect(eventFields).To(HaveLen(3))
-			Expect(eventFields).To(ContainElement(core.KeyValue{
-				Key:   "SQL",
-				Value: core.String(queryStr),
-			}))
-			Expect(eventFields).To(ContainElement(core.KeyValue{
-				Key:   "RowCount",
-				Value: core.Int64(rows),
-			}))
-			Expect(eventFields).To(ContainElement(withCoreValue(matcher)))
+			Expect(eventFields).To(ContainElement(kv.String("SQL", queryStr)))
+			Expect(eventFields).To(ContainElement(kv.Int64("RowCount", rows)))
+			Expect(eventFields).To(ContainElement(withKvValue(matcher)))
 		},
-		table.Entry("nil", nil, Equal(core.String("nil"))),
-		table.Entry("[]byte", []byte{0x01, 0x02}, Equal(core.String("0102"))),
-		table.Entry("[][]byte", [][]byte{{0x01, 0x02}, {0x03}}, Equal(core.String("0102,03"))),
-		table.Entry("string", "my string", Equal(core.String("my string"))),
-		table.Entry("bool", true, Equal(core.Bool(true))),
-		table.Entry("int8", int8(-5), Equal(core.Int(-5))),
-		table.Entry("int16", int16(-5), Equal(core.Int(-5))),
-		table.Entry("int", int(-5), Equal(core.Int(-5))),
-		table.Entry("int32", int32(-5), Equal(core.Int32(-5))),
-		table.Entry("int64", int64(-5), Equal(core.Int64(-5))),
-		table.Entry("uint8", uint8(5), Equal(core.Uint(5))),
-		table.Entry("uint16", uint16(5), Equal(core.Uint(5))),
-		table.Entry("uint32", uint32(5), Equal(core.Uint32(5))),
-		table.Entry("uint64", uint64(5), Equal(core.Uint64(5))),
-		table.Entry("float32", float32(5.2), Equal(core.Float32(5.2))),
-		table.Entry("float64", float64(5.25e40), Equal(core.Float64(5.25e40))),
-		table.Entry("time.Time", dateTime, Equal(core.String(dateTime.String()))),
-		table.Entry("customType", struct{ Name string }{Name: "my Name"}, Equal(core.String("{my Name}"))),
+		table.Entry("nil", nil, Equal(value.String("nil"))),
+		table.Entry("[]byte", []byte{0x01, 0x02}, Equal(value.String("0102"))),
+		table.Entry("[][]byte", [][]byte{{0x01, 0x02}, {0x03}}, Equal(value.String("0102,03"))),
+		table.Entry("string", "my string", Equal(value.String("my string"))),
+		table.Entry("bool", true, Equal(value.Bool(true))),
+		table.Entry("int8", int8(-5), Equal(value.Int(-5))),
+		table.Entry("int16", int16(-5), Equal(value.Int(-5))),
+		table.Entry("int", int(-5), Equal(value.Int(-5))),
+		table.Entry("int32", int32(-5), Equal(value.Int32(-5))),
+		table.Entry("int64", int64(-5), Equal(value.Int64(-5))),
+		table.Entry("uint8", uint8(5), Equal(value.Uint(5))),
+		table.Entry("uint16", uint16(5), Equal(value.Uint(5))),
+		table.Entry("uint32", uint32(5), Equal(value.Uint32(5))),
+		table.Entry("uint64", uint64(5), Equal(value.Uint64(5))),
+		table.Entry("float32", float32(5.2), Equal(value.Float32(5.2))),
+		table.Entry("float64", float64(5.25e40), Equal(value.Float64(5.25e40))),
+		table.Entry("time.Time", dateTime, Equal(value.String(dateTime.String()))),
+		table.Entry("customType", struct{ Name string }{Name: "my Name"}, Equal(value.String("{my Name}"))),
 	)
 })
 
 func expectEndCalled(span trace.Span, qType execute.QueryType, sqlStr string, queryArgs []interface{}, rowCount int64, err error) {
-	makeKVP := func() []core.KeyValue {
-		keyVals := make([]core.KeyValue, len(queryArgs)+2)
+	makeKVP := func() []kv.KeyValue {
+		keyVals := make([]kv.KeyValue, len(queryArgs)+2)
 		for idx := range keyVals {
-			keyVals[idx] = matchers.AnyCoreKeyValue()
+			keyVals[idx] = matchers.AnyKvKeyValue()
 		}
 		return keyVals
 	}
@@ -179,14 +174,8 @@ func expectEndCalled(span trace.Span, qType execute.QueryType, sqlStr string, qu
 	ExpectWithOffset(1, eventCtx).ToNot(BeNil())
 	ExpectWithOffset(1, eventQType).To(BeEquivalentTo(qType.String()))
 	ExpectWithOffset(1, eventFields).To(HaveLen(len(queryArgs) + 2))
-	ExpectWithOffset(1, eventFields).To(ContainElement(core.KeyValue{
-		Key:   "SQL",
-		Value: core.String(sqlStr),
-	}))
-	ExpectWithOffset(1, eventFields).To(ContainElement(core.KeyValue{
-		Key:   "RowCount",
-		Value: core.Int64(rowCount),
-	}))
+	ExpectWithOffset(1, eventFields).To(ContainElement(kv.String("SQL", sqlStr)))
+	ExpectWithOffset(1, eventFields).To(ContainElement(kv.Int64("RowCount", rowCount)))
 
 	if err != nil {
 		_, recordedErr, _ := mockSpan.VerifyWasCalledInOrder(pegomock.Once(), &inOrderCtx).
@@ -196,6 +185,6 @@ func expectEndCalled(span trace.Span, qType execute.QueryType, sqlStr string, qu
 	}
 }
 
-func withCoreValue(matcher types.GomegaMatcher) types.GomegaMatcher {
-	return WithTransform(func(kv core.KeyValue) core.Value { return kv.Value }, matcher)
+func withKvValue(matcher types.GomegaMatcher) types.GomegaMatcher {
+	return WithTransform(func(kv kv.KeyValue) value.Value { return kv.Value }, matcher)
 }
