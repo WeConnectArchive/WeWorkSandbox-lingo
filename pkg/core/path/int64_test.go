@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("Int64", func() {
 
-	Context("NewInt64PathWithAlias", func() {
+	Context("NewInt64WithAlias", func() {
 
 		var (
 			e     core.Table
@@ -31,7 +31,7 @@ var _ = Describe("Int64", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt64PathWithAlias(e, name, alias)
+			p = path.NewInt64WithAlias(e, name, alias)
 		})
 
 		It("Returns a `Int64`", func() {
@@ -51,7 +51,7 @@ var _ = Describe("Int64", func() {
 		})
 	})
 
-	Context("NewInt64Path", func() {
+	Context("NewInt64", func() {
 
 		var (
 			e    core.Table
@@ -66,7 +66,7 @@ var _ = Describe("Int64", func() {
 		})
 
 		JustBeforeEach(func() {
-			p = path.NewInt64Path(e, name)
+			p = path.NewInt64(e, name)
 		})
 
 		It("Returns a `Int64`", func() {

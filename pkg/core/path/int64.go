@@ -6,7 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 )
 
-func NewInt64PathWithAlias(e core.Table, name, alias string) Int64 {
+func NewInt64WithAlias(e core.Table, name, alias string) Int64 {
 	return Int64{
 		entity: e,
 		name:   name,
@@ -14,8 +14,8 @@ func NewInt64PathWithAlias(e core.Table, name, alias string) Int64 {
 	}
 }
 
-func NewInt64Path(e core.Table, name string) Int64 {
-	return NewInt64PathWithAlias(e, name, "")
+func NewInt64(e core.Table, name string) Int64 {
+	return NewInt64WithAlias(e, name, "")
 }
 
 type Int64 struct {
