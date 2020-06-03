@@ -7,7 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"go.opentelemetry.io/otel/api/core"
+	"go.opentelemetry.io/otel/api/kv"
+	"go.opentelemetry.io/otel/api/kv/value"
 	"go.opentelemetry.io/otel/api/trace"
 )
 
@@ -54,7 +55,7 @@ func (q *TraceQueryInfo) RowCount(rowCount int64) *TraceQueryInfo {
 	return q
 }
 
-// End will log the trace info to the span within ctx. If the TraceQueryInfo is valid, it appends all information it
+// End will log the TraceQueryInfo to the span within ctx. If the TraceQueryInfo is valid, it appends all information it
 // has collected into an event named by the QueryType. If an error occurred, it is logged after the QueryType event.
 func (q *TraceQueryInfo) End(ctx context.Context) {
 	if q == nil {
@@ -70,20 +71,10 @@ func (q *TraceQueryInfo) End(ctx context.Context) {
 			return
 		}
 
-		sqlQuery := core.KeyValue{
-			Key:   "SQL",
-			Value: core.String(q.query),
-		}
-		rowCountAttr := core.KeyValue{
-			Key:   "RowCount",
-			Value: core.Int64(q.count),
-		}
-
-		// Adding +2 so it all can be logged in one call, for:
-		//  (1) the SQLExp query string Field itself
-		//  (2) the rowsRetrieved int64 Field itself
-		fields := make([]core.KeyValue, 0, len(q.args)+2)
-		fields = append(appendArgs(fields, q.args), sqlQuery, rowCountAttr)
+		fields := append(argsToKV(q.args),
+			kv.String("SQL", q.query),     // the SQLExp query string Field itself
+			kv.Int64("RowCount", q.count), // the rowsRetrieved int64 Field itself
+		)
 		span.AddEvent(ctx, q.qType.String(), fields...)
 
 		// If we had an error, log it!
@@ -101,65 +92,66 @@ func traceErr(ctx context.Context, errToRecord error) error {
 	return errToRecord
 }
 
-// appendArgs will convert each arg to an OpenTelemetry core.Values and append the args to attrs,
+// appendArgs will convert each arg to an OpenTelemetry kv.Values and append the args to attrs,
 // returning the resulting slice.
-func appendArgs(attrs []core.KeyValue, args []interface{}) []core.KeyValue {
+func argsToKV(args []interface{}) []kv.KeyValue {
+	var kvs = make([]kv.KeyValue, len(args))
 	for idx, arg := range args {
 		logName := fmt.Sprintf("Arg[%d]", idx)
-		attrs = append(attrs, core.KeyValue{
-			Key:   core.Key(logName),
+		kvs[idx] = kv.KeyValue{
+			Key:   kv.Key(logName),
 			Value: toTraceValue(arg),
-		})
+		}
 	}
-	return attrs
+	return kvs
 }
 
 //revive:disable:cyclomatic - toTraceValue has a high complexity score of 16, and cannot find a great way to break
 // this up into smaller chunks. 🤷‍♂️ Shrug.
 
-func toTraceValue(arg interface{}) core.Value {
-	var v core.Value
+func toTraceValue(arg interface{}) value.Value {
+	var v value.Value
 	switch casted := arg.(type) {
 	case []byte:
-		v = core.String(fmt.Sprintf("%x", casted))
+		v = value.String(fmt.Sprintf("%x", casted))
 	case [][]byte:
 		values := make([]string, len(casted))
 		for vi, castedVal := range casted {
 			values[vi] = fmt.Sprintf("%x", castedVal)
 		}
-		v = core.String(strings.Join(values, ","))
+		v = value.String(strings.Join(values, ","))
 	case string:
-		v = core.String(casted)
+		v = value.String(casted)
 	case bool:
-		v = core.Bool(casted)
+		v = value.Bool(casted)
 	case int8:
-		v = core.Int(int(casted))
+		v = value.Int(int(casted))
 	case int16:
-		v = core.Int(int(casted))
+		v = value.Int(int(casted))
 	case int:
-		v = core.Int(casted)
+		v = value.Int(casted)
 	case int32:
-		v = core.Int32(casted)
+		v = value.Int32(casted)
 	case int64:
-		v = core.Int64(casted)
+		v = value.Int64(casted)
 	case uint8:
-		v = core.Uint(uint(casted))
+		v = value.Uint(uint(casted))
 	case uint16:
-		v = core.Uint(uint(casted))
+		v = value.Uint(uint(casted))
 	case uint32:
-		v = core.Uint32(casted)
+		v = value.Uint32(casted)
 	case uint64:
-		v = core.Uint64(casted)
+		v = value.Uint64(casted)
 	case float32:
-		v = core.Float32(casted)
+		v = value.Float32(casted)
 	case float64:
-		v = core.Float64(casted)
+		v = value.Float64(casted)
 	case time.Time:
-		v = core.String(casted.String())
+		v = value.String(casted.String())
 	case nil:
-		v = core.String("nil")
+		v = value.String("nil")
 	default:
-		v = core.String(fmt.Sprintf("%s", arg))
+		v = value.String(fmt.Sprintf("%s", arg))
 	}
 	return v
 }
