@@ -18,10 +18,13 @@ var genericJoinTypeToStr = map[join.Type]string{
 	join.Right: "RIGHT JOIN",
 }
 
-func ExpandEntity(entity core.Table) (core.SQL, error) {
-	sql := core.NewSQLf("%s.%s", entity.GetParent(), entity.GetName())
-	if entity.GetAlias() != "" {
-		return sql.AppendFormat(" AS %s", entity.GetAlias()), nil
+func ExpandEntity(entity core.Table, withParent, withAlias bool) (core.SQL, error) {
+	sql := core.NewEmptySQL()
+	if withParent {
+		sql = sql.AppendFormat("%s.%s", entity.GetParent(), entity.GetName())
+	}
+	if withAlias && entity.GetAlias() != "" {
+		sql = sql.AppendFormat(" AS %s", entity.GetAlias())
 	}
 	return sql, nil
 }

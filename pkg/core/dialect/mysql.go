@@ -1,12 +1,26 @@
 package dialect
 
 import (
+	"fmt"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/json"
 )
 
+// NewMySQL takes options to configure a MySQL schema
+func NewMySQL(opts ...Option) (core.Dialect, error) {
+	dialect, err := NewDefault(opts...)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create MySQL dialect: %w", err)
+	}
+	return MySQL{
+		Default: dialect,
+	}, nil
+}
+
+// MySQL schema has extra MySQL specific features like JSONExtract.
 type MySQL struct{ Default }
 
 func (MySQL) GetName() string {
