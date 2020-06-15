@@ -2,6 +2,7 @@ package dialect
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
@@ -18,25 +19,47 @@ var genericJoinTypeToStr = map[join.Type]string{
 	join.Right: "RIGHT JOIN",
 }
 
-func ExpandEntity(entity core.Table, withParent, withAlias bool) (core.SQL, error) {
-	sql := core.NewEmptySQL()
-	if withParent {
-		sql = sql.AppendFormat("%s.%s", entity.GetParent(), entity.GetName())
+// AliasElseName will use the core.Alias if non-empty, else the Name is used.
+func AliasElseName(n core.Name) core.SQL {
+	alias, ok := n.(core.Alias)
+	if aliasStr := alias.GetAlias(); ok && aliasStr != "" {
+		return core.NewSQLString(aliasStr)
 	}
-	if withAlias && entity.GetAlias() != "" {
-		sql = sql.AppendFormat(" AS %s", entity.GetAlias())
+	return core.NewSQLString(n.GetName())
+}
+
+func ExpandTable(entity core.Table) (core.SQL, error) {
+	sql := core.NewSQLString(entity.GetName())
+	if alias := entity.GetAlias(); alias != "" {
+		sql = sql.AppendFormat(" AS %s", alias)
 	}
 	return sql, nil
 }
 
+func ExpandTableWithSchema(entity core.Table) (core.SQL, error) {
+	sql, err := ExpandTable(entity)
+	if err != nil {
+		return nil, fmt.Errorf("unable to expand table before schema: %w", err)
+	}
+	return core.NewSQLf("%s.", entity.GetParent()).AppendSQL(sql), nil
+}
+
 func ExpandColumn(column core.Column) (core.SQL, error) {
-	if column.GetAlias() != "" {
-		return core.NewSQLf("%s.%s AS %s", column.GetParent().GetAlias(), column.GetName(), column.GetAlias()), nil
+	sql := core.NewSQLString(column.GetName())
+	if a := column.GetAlias(); a != "" {
+		sql = sql.AppendFormat(" AS %s", a)
 	}
-	if column.GetParent().GetAlias() != "" {
-		return core.NewSQLf("%s.%s", column.GetParent().GetAlias(), column.GetName()), nil
+	return sql, nil
+}
+
+func ExpandColumnWithParent(column core.Column) (core.SQL, error) {
+	table := AliasElseName(column.GetParent())
+	colSQL, err := ExpandColumn(column)
+	if err != nil {
+		return nil, fmt.Errorf("unable to expand column: %w", err)
 	}
-	return core.NewSQLf("%s.%s", column.GetParent().GetName(), column.GetName()), nil
+	// Append separator prior to column: `table.column`
+	return table.AppendString(".").AppendSQL(colSQL), nil
 }
 
 type ValueFormatter interface {

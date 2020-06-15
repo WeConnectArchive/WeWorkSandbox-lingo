@@ -37,7 +37,7 @@ type QueryTest struct {
 }
 
 type Params struct {
-	Dialect         core.Dialect
+	Dialect         func() (core.Dialect, error)
 	SQL             func() core.Expression
 	SQLStrAssert    types.GomegaMatcher
 	SQLValuesAssert types.GomegaMatcher
@@ -75,20 +75,35 @@ func (e ExecuteParams) WithTimeout(ctx context.Context) (context.Context, contex
 func BenchmarkQueries(b *testing.B) {
 	b.ReportAllocs()
 
+	hasFocus := false
 	for _, query := range allQueries {
-		if !query.Benchmark {
-			b.Skip("Benchmark turned off for query ", query.Name)
+		if query.Benchmark && query.Focus {
+			hasFocus = true
+			break
 		}
+	}
 
-		if query.Params.Dialect == nil {
-			b.Errorf("QueryTest '%s' does not have a Dialect", query.Name)
-		}
-
+	for _, query := range allQueries {
 		b.Run(query.Name, func(parallel *testing.B) {
+			if !query.Benchmark {
+				b.Skip("Benchmark turned off for query ", query.Name)
+			}
+			if hasFocus && !query.Focus {
+				b.Skip("Focus not enabled for query ", query.Name)
+			}
+			if query.Params.Dialect == nil {
+				b.Errorf("QueryTest '%s' does not have a Dialect", query.Name)
+			}
+
+			d, err := query.Params.Dialect()
+			if err != nil {
+				b.Errorf("unable to create dialect for query %s: %w", query.Name, err)
+			}
+
 			parallel.ReportAllocs()
 			parallel.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
-					_, _ = query.Params.SQL().GetSQL(query.Params.Dialect)
+					_, _ = query.Params.SQL().GetSQL(d)
 				}
 			})
 		})
@@ -102,8 +117,10 @@ func TestQueries(t *testing.T) {
 				// Sanity check
 				Expect(p).ToNot(BeNil())
 				p.Validate()
+				d, err := p.Dialect()
+				Expect(err).ToNot(HaveOccurred())
 
-				sqlStr, err := p.SQL().GetSQL(p.Dialect)
+				sqlStr, err := p.SQL().GetSQL(d)
 				Expect(err).To(Not(HaveOccurred()))
 				Expect(sqlStr).To(MatchSQLString(p.SQLStrAssert))
 				Expect(sqlStr).To(MatchSQLValues(p.SQLValuesAssert))
@@ -164,7 +181,10 @@ func TestExecute(t *testing.T) {
 				ctx, cf := p.ExecuteParams.WithTimeout(context.Background())
 				defer cf()
 
-				sqlExec := execute.NewSQLExp(execute.NewSQL(db), p.Dialect)
+				d, err := p.Dialect()
+				Expect(err).ToNot(HaveOccurred())
+
+				sqlExec := execute.NewSQLExp(execute.NewSQL(db), d)
 				sqlExp := p.SQL()
 
 				switch p.ExecuteParams.Type {

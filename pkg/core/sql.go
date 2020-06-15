@@ -37,6 +37,10 @@ func NewSQLf(format string, values ...interface{}) SQL {
 	return NewSQL(fmt.Sprintf(format, values...), nil)
 }
 
+func NewSQLString(s string) SQL {
+	return NewSQL(s, nil)
+}
+
 func (s *sql) String() string {
 	if s == nil {
 		return ""
@@ -83,7 +87,7 @@ func (s *sql) AppendFormat(format string, values ...interface{}) SQL {
 
 func (s *sql) AppendValuesWithFormat(appendValues []interface{}, format string, values ...interface{}) SQL {
 	if s == nil {
-		return NewSQLf(format, values...).AppendValues(appendValues)
+		return NewSQL(fmt.Sprintf(format, values...), appendValues)
 	}
 	return s.AppendFormat(format, values...).AppendValues(appendValues)
 }

@@ -43,11 +43,14 @@ func (Default) SetValueFormat() string {
 }
 
 func (d Default) ExpandTable(table core.Table) (core.SQL, error) {
-	return ExpandEntity(table, d.includeSchemaName, true)
+	if d.includeSchemaName {
+		return ExpandTableWithSchema(table)
+	}
+	return ExpandTable(table)
 }
 
 func (Default) ExpandColumn(column core.Column) (core.SQL, error) {
-	return ExpandColumn(column)
+	return ExpandColumnWithParent(column)
 }
 
 func (Default) Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
