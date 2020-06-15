@@ -1,6 +1,7 @@
 package dialect
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/weworksandbox/lingo/pkg/core"
@@ -9,7 +10,23 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 )
 
-type Default struct{}
+// NewDefault takes options to configure a Default schema
+func NewDefault(opts ...Option) (Default, error) {
+	var o options
+	for idx := range opts {
+		if err := opts[idx](&o); err != nil {
+			return Default{}, fmt.Errorf("unable to create default dialect: %w", err)
+		}
+	}
+	return Default{
+		includeSchemaName: o.includeSchemaName,
+	}, nil
+}
+
+// Default schema uses the generic schema methods to work as a basic ANSI schema.
+type Default struct {
+	includeSchemaName bool
+}
 
 func (Default) GetName() string {
 	return "Default"
@@ -25,12 +42,15 @@ func (Default) SetValueFormat() string {
 	return "="
 }
 
-func (Default) ExpandTable(table core.Table) (core.SQL, error) {
-	return ExpandEntity(table)
+func (d Default) ExpandTable(table core.Table) (core.SQL, error) {
+	if d.includeSchemaName {
+		return ExpandTableWithSchema(table)
+	}
+	return ExpandTable(table)
 }
 
 func (Default) ExpandColumn(column core.Column) (core.SQL, error) {
-	return ExpandColumn(column)
+	return ExpandColumnWithParent(column)
 }
 
 func (Default) Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
@@ -38,8 +58,8 @@ func (Default) Operator(left core.SQL, op operator.Operand, values []core.SQL) (
 	return Operator(left, op, values)
 }
 
-func (m Default) Value(value []interface{}) (core.SQL, error) {
-	return Value(m, value)
+func (d Default) Value(value []interface{}) (core.SQL, error) {
+	return Value(d, value)
 }
 
 func (Default) Join(left core.SQL, joinType join.Type, on core.SQL) (core.SQL, error) {
@@ -50,6 +70,6 @@ func (Default) OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error
 	return OrderBy(left, direction)
 }
 
-func (m Default) Set(left core.SQL, value core.SQL) (core.SQL, error) {
-	return Set(m, left, value)
+func (d Default) Set(left core.SQL, value core.SQL) (core.SQL, error) {
+	return Set(d, left, value)
 }

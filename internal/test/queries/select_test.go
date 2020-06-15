@@ -10,7 +10,6 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmtext"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/dialect"
 	"github.com/weworksandbox/lingo/pkg/core/execute"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/join"
@@ -23,7 +22,39 @@ var selectQueries = []QueryTest{
 		Name:      "CountInventoryID_ForStoreID",
 		Benchmark: true,
 		Params: Params{
-			Dialect: dialect.Default{},
+			Dialect: DefaultDialect,
+			SQL: func() core.Expression {
+				const (
+					storeID = 2
+				)
+				return query.Select(
+					expression.Count(qinventory.InventoryId()),
+				).From(
+					qinventory.Q(),
+				).Where(
+					qinventory.StoreId().Eq(storeID),
+				)
+			},
+			SQLStrAssert: EqString(trimQuery(`
+					SELECT COUNT(inventory.inventory_id)
+					FROM inventory
+					WHERE inventory.store_id = ?`,
+			)),
+			SQLValuesAssert: AllInSlice(
+				BeEquivalentTo(2),
+			),
+			ExecuteParams: ExecuteParams{
+				Type:     execute.QTRow,
+				ScanData: row(ptrI16(0)),
+				Assert:   rows(row(ptrI16(2311))),
+			},
+		},
+	},
+	{
+		Name:      "CountInventoryID_ForStoreID",
+		Benchmark: true,
+		Params: Params{
+			Dialect: DefaultDialectWithSchema,
 			SQL: func() core.Expression {
 				const (
 					storeID = 2
@@ -55,7 +86,7 @@ var selectQueries = []QueryTest{
 		Name:      "CountFilms_ForActorID",
 		Benchmark: true,
 		Params: Params{
-			Dialect: dialect.Default{},
+			Dialect: DefaultDialect,
 			SQL: func() core.Expression {
 				const (
 					actorID = 10
@@ -70,7 +101,7 @@ var selectQueries = []QueryTest{
 			},
 			SQLStrAssert: EqString(trimQuery(`
 					SELECT COUNT(film_actor.film_id)
-					FROM sakila.film_actor
+					FROM film_actor
 					WHERE film_actor.actor_id = ?
 			`)),
 			SQLValuesAssert: AllInSlice(
@@ -88,7 +119,7 @@ var selectQueries = []QueryTest{
 		Name:      "MovieTitlesByCategory_ForActorIdPtr_CategoryAsc",
 		Benchmark: true,
 		Params: Params{
-			Dialect: dialect.Default{},
+			Dialect: DefaultDialect,
 			SQL: func() core.Expression {
 				var (
 					actorID = int16(10)
@@ -117,12 +148,12 @@ var selectQueries = []QueryTest{
 			},
 			SQLStrAssert: ContainSubstring(trimQuery(`
 					SELECT ft.title, cat.name
-					FROM sakila.film_actor AS fa
-					INNER JOIN sakila.film_category AS fc
+					FROM film_actor AS fa
+					INNER JOIN film_category AS fc
 						ON fc.film_id = fa.film_id
-					INNER JOIN sakila.film_text AS ft
+					INNER JOIN film_text AS ft
 						ON ft.film_id = fa.film_id
-					INNER JOIN sakila.category AS cat
+					INNER JOIN category AS cat
 						ON fc.category_id = cat.category_id
 					WHERE fa.actor_id = ?
 					ORDER BY cat.name ASC`)),
