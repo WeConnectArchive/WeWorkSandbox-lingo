@@ -38,7 +38,6 @@ func CombinePathSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
 			sql = sql.AppendSQL(pathSQL)
 		} else {
 			sql = sql.AppendValuesWithFormat(pathSQL.Values(), ", %s", pathSQL.String())
-			//sql = sql.AppendFormat(", %s", pathSQL.String()).AppendValues(pathSQL.Values())
 		}
 	}
 	return sql, nil
