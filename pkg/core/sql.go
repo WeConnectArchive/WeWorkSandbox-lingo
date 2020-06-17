@@ -99,13 +99,6 @@ func (s *sql) AppendString(str string) SQL {
 	return NewSQL(s.String()+str, s.Values())
 }
 
-func (s *sql) AppendSQLValues(sql SQL) SQL {
-	if s == nil {
-		return NewSQL("", sql.Values())
-	}
-	return s.AppendValues(sql.Values())
-}
-
 func (s *sql) AppendValues(values []interface{}) SQL {
 	if s == nil {
 		return NewEmptySQL()
@@ -128,7 +121,8 @@ func (s *sql) CombinePaths(sqls []SQL) SQL {
 		if i == 0 {
 			previousSQL = previousSQL.AppendSQL(rangeSQL)
 		} else {
-			previousSQL = previousSQL.AppendSQLValues(rangeSQL).AppendFormat("%s%s", ", ", rangeSQL.String())
+			previousSQL = previousSQL.
+				AppendValuesWithFormat(rangeSQL.Values(), "%s%s", ", ", rangeSQL.String())
 		}
 	}
 	return previousSQL

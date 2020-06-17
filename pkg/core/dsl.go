@@ -40,7 +40,6 @@ type SQL interface {
 	Values() []interface{}
 	AppendSQL(right SQL) SQL
 	AppendSQLWithSpace(right SQL) SQL
-	AppendSQLValues(sql SQL) SQL
 	AppendString(str string) SQL
 	AppendStringWithSpace(str string) SQL
 	AppendFormat(format string, values ...interface{}) SQL
