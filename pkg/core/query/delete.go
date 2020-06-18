@@ -5,17 +5,18 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/join"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 // Delete allows deletion of an entity
 func Delete(t core.Table) *DeleteQuery {
-	d := DeleteQuery{}
-	d.from = []core.Expression{t}
-	return &d
+	return &DeleteQuery{
+		from: t,
+	}
 }
 
 type DeleteQuery struct {
-	from  []core.Expression
+	from  core.Expression
 	join  []core.Expression
 	where []core.Expression
 }
@@ -35,31 +36,32 @@ func (d DeleteQuery) Join(left core.Expression, jt join.Type, on core.Expression
 	return &d
 }
 
-func (d DeleteQuery) GetSQL(dialect core.Dialect) (core.SQL, error) {
-	var sql = core.NewSQL("DELETE FROM", nil)
+func (d DeleteQuery) ToSQL(dialect core.Dialect) (sql.Data, error) {
+	var s = sql.String("DELETE FROM")
 
-	if check.IsValueNilOrEmpty(d.from) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("from"), sql.String())
+	if check.IsValueNilOrBlank(d.from) {
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("from"), s.String())
 	}
-	fromSQL, err := CombinePathSQL(dialect, d.from)
+
+	from, err := d.from.ToSQL(dialect)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
-	sql = sql.AppendSQLWithSpace(fromSQL)
+	s = s.AppendWithSpace(from)
 
-	if joinSQL, err := CombineSQL(dialect, d.join); err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+	if joinSQL, err := JoinToSQL(dialect, sepSpace, d.join); err != nil {
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	} else if joinSQL.String() != "" {
-		sql = sql.AppendSQLWithSpace(joinSQL)
+		s = s.AppendWithSpace(joinSQL)
 	}
 
 	whereSQL, err := BuildWhereSQL(dialect, d.where)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
 	if whereSQL.String() != "" {
-		sql = sql.AppendSQLWithSpace(whereSQL)
+		s = s.AppendWithSpace(whereSQL)
 	}
 
-	return sql, nil
+	return s, nil
 }

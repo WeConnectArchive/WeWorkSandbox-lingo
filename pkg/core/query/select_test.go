@@ -14,6 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("select", func() {
@@ -37,18 +38,18 @@ var _ = Describe("select", func() {
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(paths[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("path[0].sql"), nil)
-			pegomock.When(paths[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("path[1].sql"), nil)
+			pegomock.When(paths[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("path[0].sql"), nil)
+			pegomock.When(paths[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("path[1].sql"), nil)
 
 			from = NewMockTable()
-			pegomock.When(from.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("from.sql"), nil)
+			pegomock.When(from.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("from.sql"), nil)
 
 			where = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(where[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("where[0].sql"), nil)
-			pegomock.When(where[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("where[1].sql"), nil)
+			pegomock.When(where[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[0].sql"), nil)
+			pegomock.When(where[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[1].sql"), nil)
 
 			orderBy = []core.Expression{
 				NewMockExpression(),
@@ -58,8 +59,8 @@ var _ = Describe("select", func() {
 				sort.Ascending,
 				sort.Descending,
 			}
-			pegomock.When(orderBy[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("orderBy[0].sql"), nil)
-			pegomock.When(orderBy[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("orderBy[1].sql"), nil)
+			pegomock.When(orderBy[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("orderBy[0].sql"), nil)
+			pegomock.When(orderBy[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("orderBy[1].sql"), nil)
 
 			joins = [][]core.Expression{
 				{
@@ -75,10 +76,10 @@ var _ = Describe("select", func() {
 				join.Left,
 				join.Right,
 			}
-			pegomock.When(joins[0][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[0][0].sql"), nil)
-			pegomock.When(joins[0][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[0][1].sql"), nil)
-			pegomock.When(joins[1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[1][0].sql"), nil)
-			pegomock.When(joins[1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("joins[1][1].sql"), nil)
+			pegomock.When(joins[0][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[0][0].sql"), nil)
+			pegomock.When(joins[0][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[0][1].sql"), nil)
+			pegomock.When(joins[1][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[1][0].sql"), nil)
+			pegomock.When(joins[1][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[1][1].sql"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -91,12 +92,12 @@ var _ = Describe("select", func() {
 			}
 		})
 
-		Context("#GetSQL", func() {
+		Context("#ToSQL", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				sql sql.Data
 				err error
 			)
 
@@ -105,7 +106,7 @@ var _ = Describe("select", func() {
 			})
 
 			JustBeforeEach(func() {
-				sql, err = q.GetSQL(d)
+				sql, err = q.ToSQL(d)
 			})
 
 			It("Returns a valid SQL string", func() {
@@ -134,7 +135,7 @@ var _ = Describe("select", func() {
 			Context("Error build path SQL", func() {
 
 				BeforeEach(func() {
-					pegomock.When(paths[len(paths)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("path error"))
+					pegomock.When(paths[len(paths)-1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("path error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -164,7 +165,7 @@ var _ = Describe("select", func() {
 			Context("Error building from SQL", func() {
 
 				BeforeEach(func() {
-					pegomock.When(from.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("from error"))
+					pegomock.When(from.ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("from error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -194,7 +195,7 @@ var _ = Describe("select", func() {
 			Context("Error on left side of joins", func() {
 
 				BeforeEach(func() {
-					pegomock.When(joins[len(joins)-1][0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left joins error"))
+					pegomock.When(joins[len(joins)-1][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left joins error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -209,7 +210,7 @@ var _ = Describe("select", func() {
 			Context("Error on on of joins", func() {
 
 				BeforeEach(func() {
-					pegomock.When(joins[len(joins)-1][1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("on joins error"))
+					pegomock.When(joins[len(joins)-1][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("on joins error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -239,7 +240,7 @@ var _ = Describe("select", func() {
 			Context("Where has error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(where[len(where)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("where error"))
+					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("where error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -269,7 +270,7 @@ var _ = Describe("select", func() {
 			Context("Order By has error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(orderBy[len(where)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("order by error"))
+					pegomock.When(orderBy[len(where)-1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("order by error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -297,11 +298,11 @@ var _ = Describe("select", func() {
 				NewMockColumn(),
 				NewMockColumn(),
 			}
-			pegomock.When(cols[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("cols[0].sql"), nil)
-			pegomock.When(cols[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("cols[1].sql"), nil)
+			pegomock.When(cols[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[0].sql"), nil)
+			pegomock.When(cols[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[1].sql"), nil)
 
 			from = NewMockTable()
-			pegomock.When(from.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("from.sql"), nil)
+			pegomock.When(from.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("from.sql"), nil)
 			pegomock.When(from.GetColumns()).ThenReturn(cols)
 		})
 
@@ -309,12 +310,12 @@ var _ = Describe("select", func() {
 			q = query.SelectFrom(from)
 		})
 
-		Context("#GetSQL", func() {
+		Context("#ToSQL", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				sql sql.Data
 				err error
 			)
 
@@ -323,7 +324,7 @@ var _ = Describe("select", func() {
 			})
 
 			JustBeforeEach(func() {
-				sql, err = q.GetSQL(d)
+				sql, err = q.ToSQL(d)
 			})
 
 			It("Returns a valid SQL string", func() {

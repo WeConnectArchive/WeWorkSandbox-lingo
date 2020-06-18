@@ -4,8 +4,9 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/join"
+	j "github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func Select(paths ...core.Expression) *SelectQuery {
@@ -26,72 +27,71 @@ type SelectQuery struct {
 	paths []core.Expression
 }
 
-func (s *SelectQuery) From(e core.Table) *SelectQuery {
-	s.from = e
-	return s
+func (q *SelectQuery) From(e core.Table) *SelectQuery {
+	q.from = e
+	return q
 }
 
-func (s *SelectQuery) Where(exp ...core.Expression) *SelectQuery {
-	s.where = append(s.where, exp...)
-	return s
+func (q *SelectQuery) Where(exp ...core.Expression) *SelectQuery {
+	q.where = append(q.where, exp...)
+	return q
 }
 
-func (s *SelectQuery) OrderBy(exp core.Expression, direction sort.Direction) *SelectQuery {
-	s.order = append(s.order, expression.NewOrderBy(exp, direction))
-	return s
+func (q *SelectQuery) OrderBy(exp core.Expression, direction sort.Direction) *SelectQuery {
+	q.order = append(q.order, expression.NewOrderBy(exp, direction))
+	return q
 }
 
-func (s *SelectQuery) Join(left core.Expression, jt join.Type, on core.Expression) *SelectQuery {
-	s.join = append(s.join, expression.NewJoinOn(left, jt, on))
-	return s
+func (q *SelectQuery) Join(left core.Expression, joinType j.Type, on core.Expression) *SelectQuery {
+	q.join = append(q.join, expression.NewJoinOn(left, joinType, on))
+	return q
 }
 
-func (s *SelectQuery) GetSQL(d core.Dialect) (core.SQL, error) {
-	sql, err := s.selectFrom(d)
+func (q *SelectQuery) ToSQL(d core.Dialect) (sql.Data, error) {
+	s, err := q.selectFrom(d)
 	if err != nil {
 		return nil, err
 	}
 
-	fromSQL, err := s.from.GetSQL(d)
+	from, err := q.from.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
-	sql = sql.AppendStringWithSpace("FROM").AppendSQLWithSpace(fromSQL)
+	s = s.AppendWithSpace(sql.String("FROM")).AppendWithSpace(from)
 
-	if joinSQL, err := CombineSQL(d, s.join); err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
-	} else if joinSQL.String() != "" {
-		sql = sql.AppendSQLWithSpace(joinSQL)
-	}
-
-	if whereSQL, err := BuildWhereSQL(d, s.where); err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
-	} else if whereSQL.String() != "" {
-		sql = sql.AppendSQLWithSpace(whereSQL)
+	if join, err := JoinToSQL(d, sepSpace, q.join); err != nil {
+		return nil, expression.ErrorAroundSQL(err, s.String())
+	} else if join.String() != "" {
+		s = s.AppendWithSpace(join)
 	}
 
-	if orderBySQL, err := CombinePathSQL(d, s.order); err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
-	} else if orderBySQL.String() != "" {
-		sql = sql.AppendStringWithSpace("ORDER BY").AppendSQLWithSpace(orderBySQL)
+	if where, err := BuildWhereSQL(d, q.where); err != nil {
+		return nil, expression.ErrorAroundSQL(err, s.String())
+	} else if where.String() != "" {
+		s = s.AppendWithSpace(where)
 	}
 
-	return sql, nil
+	if orderBy, err := JoinToSQL(d, sepPathComma, q.order); err != nil {
+		return nil, expression.ErrorAroundSQL(err, s.String())
+	} else if orderBy.String() != "" {
+		s = s.AppendWithSpace(sql.String("ORDER BY")).AppendWithSpace(orderBy)
+	}
+	return s, nil
 }
 
-func (s *SelectQuery) selectFrom(d core.Dialect) (core.SQL, error) {
-	var sql = core.NewSQL("SELECT ", nil)
-	if check.IsValueNilOrEmpty(s.paths) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), sql.String())
+func (q *SelectQuery) selectFrom(d core.Dialect) (sql.Data, error) {
+	var s = sql.String("SELECT")
+	if check.IsValueNilOrEmpty(q.paths) {
+		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), s.String())
 	}
-	pathsSQL, err := CombinePathSQL(d, ExpandTables(s.paths))
+	pathsSQL, err := JoinToSQL(d, sepPathComma, ExpandTables(q.paths))
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
-	sql = sql.AppendSQLWithSpace(pathsSQL)
+	s = s.AppendWithSpace(pathsSQL)
 
-	if check.IsValueNilOrBlank(s.from) {
+	if check.IsValueNilOrBlank(q.from) {
 		return nil, expression.ExpressionIsNil("from")
 	}
-	return sql, nil
+	return s, nil
 }

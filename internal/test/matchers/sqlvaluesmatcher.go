@@ -6,23 +6,24 @@ import (
 
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/types"
+
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-// SQLValuesMatcher matches a `core.SQL` `Values()` value
+// SQLValuesMatcher matches a `sql.Data` `Values()` value
 type SQLValuesMatcher struct {
 	Expected interface{}
 }
 
 func (matcher *SQLValuesMatcher) Match(actual interface{}) (success bool, err error) {
 	if isNil(actual) {
-		return false, fmt.Errorf("expected a core.SQL, got nil")
+		return false, fmt.Errorf("expected a sql.Data, got nil")
 	}
 
-	if !isSQL(actual) {
-		return false, fmt.Errorf("expected a core.SQL.  Got:\n%s", format.Object(actual, 1))
+	s, ok := actual.(sql.Data)
+	if !ok {
+		return false, fmt.Errorf("expected a sql.Data.  Got:\n%s", format.Object(actual, 1))
 	}
-
-	s := toSQL(actual)
 
 	var subMatcher types.GomegaMatcher
 	var hasSubMatcher bool
@@ -40,9 +41,9 @@ func (matcher *SQLValuesMatcher) Match(actual interface{}) (success bool, err er
 }
 
 func (matcher *SQLValuesMatcher) FailureMessage(actual interface{}) (message string) {
-	return format.Message(actual, "to match core.SQL values", matcher.Expected)
+	return format.Message(actual, "to match sql.Data values", matcher.Expected)
 }
 
 func (matcher *SQLValuesMatcher) NegatedFailureMessage(actual interface{}) (message string) {
-	return format.Message(actual, "not to match core.SQL values", matcher.Expected)
+	return format.Message(actual, "not to match sql.Data values", matcher.Expected)
 }

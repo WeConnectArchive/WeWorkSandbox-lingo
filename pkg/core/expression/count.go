@@ -3,6 +3,7 @@ package expression
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func Count(countOn core.Expression) core.Expression {
@@ -15,15 +16,15 @@ type count struct {
 	countOn core.Expression
 }
 
-func (c count) GetSQL(d core.Dialect) (core.SQL, error) {
+func (c count) ToSQL(d core.Dialect) (sql.Data, error) {
 	if check.IsValueNilOrBlank(c.countOn) {
 		return nil, ExpressionIsNil("countOn")
 	}
 
-	countOn, countOnErr := c.countOn.GetSQL(d)
+	countOn, countOnErr := c.countOn.ToSQL(d)
 	if countOnErr != nil {
 		return nil, countOnErr
 	}
 
-	return core.NewSQL("COUNT", nil).AppendSQL(countOn.SurroundWithParens()), nil
+	return sql.String("COUNT").SurroundAppend("(", ")", countOn), nil
 }

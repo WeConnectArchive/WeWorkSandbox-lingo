@@ -10,6 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Count", func() {
@@ -34,30 +35,30 @@ var _ = Describe("Count", func() {
 			Expect(count).ShouldNot(BeNil())
 		})
 
-		Context("Calling `GetSQL`", func() {
+		Context("Calling `ToSQL`", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				s   sql.Data
 				err error
 			)
 
 			BeforeEach(func() {
 				d = NewMockDialect()
-				pegomock.When(countOn.GetSQL(d)).ThenReturn(core.NewSQL("countOn sql ?", []interface{}{10}), nil)
+				pegomock.When(countOn.ToSQL(d)).ThenReturn(sql.New("countOn s ?", []interface{}{10}), nil)
 			})
 
 			JustBeforeEach(func() {
-				sql, err = count.GetSQL(d)
+				s, err = count.ToSQL(d)
 			})
 
 			It("SQL should match `COUNT()`", func() {
-				Expect(sql).Should(matchers.MatchSQLString(MatchRegexp(`COUNT\(.+\)`)))
+				Expect(s).Should(matchers.MatchSQLString(MatchRegexp(`COUNT\(.+\)`)))
 			})
 
 			It("SQL should have no values", func() {
-				Expect(sql).Should(matchers.MatchSQLValues(matchers.AllInSlice(10)))
+				Expect(s).Should(matchers.MatchSQLValues(matchers.AllInSlice(10)))
 			})
 
 			It("Returns nil error", func() {
@@ -71,7 +72,7 @@ var _ = Describe("Count", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -82,11 +83,11 @@ var _ = Describe("Count", func() {
 			Context("expression returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(countOn.GetSQL(d)).ThenReturn(nil, errors.New("countOn error"))
+					pegomock.When(countOn.ToSQL(d)).ThenReturn(nil, errors.New("countOn error"))
 				})
 
 				It("Returns a nil SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns the expression error", func() {

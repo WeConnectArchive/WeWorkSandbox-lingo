@@ -2,6 +2,7 @@ package sort
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 type Direction int
@@ -22,6 +23,6 @@ func (d Direction) String() string {
 	return _names[d]
 }
 
-func (d Direction) GetSQL(_ core.Dialect) (core.SQL, error) {
-	return core.NewSQL(d.String(), nil), nil
+func (d Direction) ToSQL(_ core.Dialect) (sql.Data, error) {
+	return sql.String(d.String()), nil
 }

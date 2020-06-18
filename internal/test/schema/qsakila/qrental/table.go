@@ -5,6 +5,7 @@ package qrental
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QRental {
@@ -52,7 +53,7 @@ func (q QRental) GetColumns() []core.Column {
 	}
 }
 
-func (q QRental) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QRental) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

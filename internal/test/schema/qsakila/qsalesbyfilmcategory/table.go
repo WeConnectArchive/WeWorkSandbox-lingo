@@ -5,6 +5,7 @@ package qsalesbyfilmcategory
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QSalesByFilmCategory {
@@ -37,7 +38,7 @@ func (q QSalesByFilmCategory) GetColumns() []core.Column {
 	}
 }
 
-func (q QSalesByFilmCategory) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QSalesByFilmCategory) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

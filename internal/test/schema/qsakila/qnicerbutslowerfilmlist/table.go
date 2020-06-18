@@ -5,6 +5,7 @@ package qnicerbutslowerfilmlist
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QNicerButSlowerFilmList {
@@ -55,7 +56,7 @@ func (q QNicerButSlowerFilmList) GetColumns() []core.Column {
 	}
 }
 
-func (q QNicerButSlowerFilmList) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QNicerButSlowerFilmList) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

@@ -1,6 +1,9 @@
 package path
 
-import "github.com/weworksandbox/lingo/pkg/core"
+import (
+	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
+)
 
 func NewUnsupportedWithAlias(e core.Table, name, alias string) Unsupported {
 	return Unsupported{
@@ -32,7 +35,7 @@ func (i Unsupported) GetAlias() string {
 	return i.alias
 }
 
-func (Unsupported) GetSQL(_ core.Dialect) (core.SQL, error) {
+func (Unsupported) ToSQL(_ core.Dialect) (sql.Data, error) {
 	// TODO - Revisit how we want to deal with unsupported columns. Right now we just ignore them.
-	return core.NewEmptySQL(), nil
+	return sql.Empty(), nil
 }

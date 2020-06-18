@@ -6,6 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func Update(table core.Table) *UpdateQuery {
@@ -31,41 +32,41 @@ func (u UpdateQuery) Set(exp ...core.Set) *UpdateQuery {
 	return &u
 }
 
-func (u UpdateQuery) GetSQL(d core.Dialect) (core.SQL, error) {
-	var sql = core.NewSQL("UPDATE", nil)
+func (u UpdateQuery) ToSQL(d core.Dialect) (sql.Data, error) {
+	var s = sql.String("UPDATE")
 
 	if check.IsValueNilOrBlank(u.table) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), s.String())
 	}
 	if u.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), sql.String())
+		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), s.String())
 	}
-	tableSQL, err := u.table.GetSQL(d)
+	table, err := u.table.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
-	sql = sql.AppendSQLWithSpace(tableSQL)
+	s = s.AppendWithSpace(table)
 
 	if check.IsValueNilOrEmpty(u.set) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("set"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("set"), s.String())
 	}
-	pathsSQL, err := CombinePathSQL(d, u.set)
+	pathsSQL, err := JoinToSQL(d, sepPathComma, u.set)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
 	if pathsSQL.String() != "" {
-		sql = sql.AppendStringWithSpace("SET").AppendSQLWithSpace(pathsSQL)
+		s = s.AppendWithSpace(sql.String("SET")).AppendWithSpace(pathsSQL)
 	}
 
 	whereSQL, err := BuildWhereSQL(d, u.where)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
 	if whereSQL.String() != "" {
-		sql = sql.AppendSQLWithSpace(whereSQL)
+		s = s.AppendWithSpace(whereSQL)
 	}
 
-	return sql, nil
+	return s, nil
 }
 
 func castSetsToExpressions(sets []core.Set) []core.Expression {

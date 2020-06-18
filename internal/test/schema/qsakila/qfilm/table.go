@@ -5,6 +5,7 @@ package qfilm
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QFilm {
@@ -70,7 +71,7 @@ func (q QFilm) GetColumns() []core.Column {
 	}
 }
 
-func (q QFilm) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QFilm) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

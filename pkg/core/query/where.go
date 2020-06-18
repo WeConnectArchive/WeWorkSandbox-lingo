@@ -4,27 +4,28 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 // BuildWhereSQL is to be used by custom queries to build a WHERE clause.
-func BuildWhereSQL(d core.Dialect, values []core.Expression) (core.SQL, error) {
-	var where = core.NewSQL("WHERE ", nil)
+func BuildWhereSQL(d core.Dialect, values []core.Expression) (sql.Data, error) {
+	var where = sql.String("WHERE ")
 
 	switch length := len(values); {
 	case length == 1:
-		whereSQL, err := values[0].GetSQL(d)
+		whereSQL, err := values[0].ToSQL(d)
 		if err != nil {
 			return nil, err
 		}
-		return where.AppendSQL(whereSQL), nil
+		return where.Append(whereSQL), nil
 
 	case length > 1:
 		andOperator := expression.NewOperator(values[0], operator.And, values[1:]...)
-		whereSQL, err := andOperator.GetSQL(d)
+		whereSQL, err := andOperator.ToSQL(d)
 		if err != nil {
 			return nil, err
 		}
-		return where.AppendSQL(whereSQL), nil
+		return where.Append(whereSQL), nil
 	}
-	return core.NewSQL("", nil), nil
+	return sql.Empty(), nil
 }

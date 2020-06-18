@@ -133,13 +133,14 @@ import (
     "github.com/weworksandbox/lingo/pkg/core"
     "github.com/weworksandbox/lingo/pkg/core/expressions"
     "github.com/weworksandbox/lingo/pkg/core/query"
+    "github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-func CountForStore(d core.Dialect, storeID int16) (core.SQL, error) {
+func CountForStore(d core.Dialect, storeID int16) (sql.Data, error) {
 	return query.Select(expressions.Count(qinventory.InventoryId())).
         From(qinventory.Q()).
 		Where(qinventory.StoreId().Eq(storeID)).
-        GetSQL(d)
+        ToSQL(d)
 }
 ```
 
@@ -176,12 +177,12 @@ When generating, each parser can specify its mappings.
 The default MySQL mappings can be found here: [internal/parse/mysql.go](internal/parse/mysql.go)
 
 # Generating SQL to use with Go's SQL Package
-All of the examples above are useless until you use the `GetSQL()` method of each `Query` type. `GetSQL()` requires
+The examples above are useless until you use the `ToSQL()` method of each `Query` type. `ToSQL()` requires
 a Query `Dialect` to be passed in. Doing so will either (1) generate a SQL query string and arguments or (2) return an
 error because your syntax or construction of the SQL query is incorrect.
 
 ## Using Generated SQL
-When `GetSQL()` is called and no error occurs, you get a `core.SQL` object back. This has two methods which are useful
+When `ToSQL()` is called and no error occurs, you get a `sql.Data` object back. This has two methods which are useful
 for querying a database. The first is `String() string` which returns a SQL string with `?` for parameters. The second
 is an array of empty interface (`interface{}`) types.
 
@@ -195,7 +196,7 @@ func getCount() int {
 
     gT := qcharactersets.As("gT")
     var getCountByNameAndDescQuery = Select(Count(Star())).From(gT).Where(gT.DefaultCollateName().IsNull().And(gT.Description().Eq("uuidByte")))
-    querySql, err1 := getCountByNameAndDescQuery.GetSQL(d)
+    querySql, err1 := getCountByNameAndDescQuery.ToSQL(d)
     Expect(err1).ShouldNot(HaveOccurred())
 
     db, dbErr := sql.Open("mysql", "DSN")
@@ -219,7 +220,7 @@ func getCount() int {
 ```
 
 ## Query Dialects
-Every time one attempts to serialize a query using `GetSQL(core.Dialect) (core.SQL, error)`, you are required to pass
+Every time one attempts to serialize a query using `ToSQL(core.Dialect) (sql.Data, error)`, you are required to pass
 in a dialect. These dialects aid in building the SQL properly for the systems the query is to run against.
 
 Right now, only `dialect.MySQL` is built / supported, however, anyone can build their own dialect.

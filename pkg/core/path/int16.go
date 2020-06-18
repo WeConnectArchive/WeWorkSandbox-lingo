@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func NewInt16WithAlias(e core.Table, name, alias string) Int16 {
@@ -41,7 +42,7 @@ func (i Int16) As(alias string) Int16 {
 	return i
 }
 
-func (i Int16) GetSQL(d core.Dialect) (core.SQL, error) {
+func (i Int16) ToSQL(d core.Dialect) (sql.Data, error) {
 	return ExpandColumnWithDialect(d, i)
 }
 

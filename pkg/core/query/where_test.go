@@ -11,6 +11,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/query"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("where", func() {
@@ -21,7 +22,7 @@ var _ = Describe("where", func() {
 			d      core.Dialect
 			values []core.Expression
 
-			sql core.SQL
+			s   sql.Data
 			err error
 		)
 
@@ -32,17 +33,17 @@ var _ = Describe("where", func() {
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(values[0].GetSQL(d)).ThenReturn(core.NewSQLf("where 0 sql"), nil)
-			pegomock.When(values[1].GetSQL(d)).ThenReturn(core.NewSQLf("where 1 sql"), nil)
-			pegomock.When(values[2].GetSQL(d)).ThenReturn(core.NewSQLf("where 2 sql"), nil)
+			pegomock.When(values[0].ToSQL(d)).ThenReturn(sql.String("where 0 sql"), nil)
+			pegomock.When(values[1].ToSQL(d)).ThenReturn(sql.String("where 1 sql"), nil)
+			pegomock.When(values[2].ToSQL(d)).ThenReturn(sql.String("where 2 sql"), nil)
 		})
 
 		JustBeforeEach(func() {
-			sql, err = query.BuildWhereSQL(d, values)
+			s, err = query.BuildWhereSQL(d, values)
 		})
 
 		It("Combines all SQL with commas and `WHERE`", func() {
-			Expect(sql).To(matchers.MatchSQLString("WHERE where 0 sql AND where 1 sql AND where 2 sql"))
+			Expect(s).To(matchers.MatchSQLString("WHERE where 0 sql AND where 1 sql AND where 2 sql"))
 		})
 
 		It("Returns no error", func() {
@@ -52,11 +53,11 @@ var _ = Describe("where", func() {
 		Context("With an error returning", func() {
 
 			BeforeEach(func() {
-				pegomock.When(values[2].GetSQL(d)).ThenReturn(nil, errors.New("last error"))
+				pegomock.When(values[2].ToSQL(d)).ThenReturn(nil, errors.New("last error"))
 			})
 
 			It("Returns a nil SQL", func() {
-				Expect(sql).To(BeNil())
+				Expect(s).To(BeNil())
 			})
 
 			It("Returns the error", func() {
@@ -71,7 +72,7 @@ var _ = Describe("where", func() {
 			})
 
 			It("Combines all SQL with commas and `WHERE`", func() {
-				Expect(sql).To(matchers.MatchSQLString("WHERE where 0 sql AND where 1 sql"))
+				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sql AND where 1 sql"))
 			})
 
 			It("Returns no error", func() {
@@ -86,7 +87,7 @@ var _ = Describe("where", func() {
 			})
 
 			It("Combines all SQL with commas and `WHERE`", func() {
-				Expect(sql).To(matchers.MatchSQLString("WHERE where 0 sql"))
+				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sql"))
 			})
 
 			It("Returns no error", func() {
@@ -96,11 +97,11 @@ var _ = Describe("where", func() {
 			Context("With an error returning", func() {
 
 				BeforeEach(func() {
-					pegomock.When(values[0].GetSQL(d)).ThenReturn(nil, errors.New("last error"))
+					pegomock.When(values[0].ToSQL(d)).ThenReturn(nil, errors.New("last error"))
 				})
 
 				It("Returns a nil SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns the error", func() {
@@ -116,7 +117,7 @@ var _ = Describe("where", func() {
 			})
 
 			It("Combines all SQL with commas and `WHERE`", func() {
-				Expect(sql).To(matchers.MatchSQLString(""))
+				Expect(s).To(matchers.MatchSQLString(""))
 			})
 
 			It("Returns no error", func() {
@@ -129,10 +130,10 @@ var _ = Describe("where", func() {
 type whereDialectSuccess struct{}
 
 func (whereDialectSuccess) GetName() string { return "where dialect success" }
-func (whereDialectSuccess) Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error) {
-	var sql = left
+func (whereDialectSuccess) Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, error) {
+	var s = left
 	for _, value := range values {
-		sql = sql.AppendStringWithSpace(op.String()).AppendSQLWithSpace(value)
+		s = s.AppendWithSpace(sql.String(op.String())).AppendWithSpace(value)
 	}
-	return sql, nil
+	return s, nil
 }

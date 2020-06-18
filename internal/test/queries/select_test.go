@@ -51,7 +51,7 @@ var selectQueries = []QueryTest{
 		},
 	},
 	{
-		Name:      "CountInventoryID_ForStoreID",
+		Name:      "CountSakilaInventoryID_ForStoreID", // Includes schema in output
 		Benchmark: true,
 		Params: Params{
 			Dialect: DefaultDialectWithSchema,

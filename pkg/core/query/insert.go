@@ -7,6 +7,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func InsertInto(entity core.Table) *InsertQuery {
@@ -55,75 +56,75 @@ func (i *InsertQuery) Values(values ...core.Expression) *InsertQuery {
 // FROM table2 as a
 // LEFT JOIN table1 as b ON a.name=b.remote_name
 // WHERE b.remote_name = 'other_table';
-func (i *InsertQuery) Select(s *SelectQuery) *InsertQuery {
-	i.selectPart = s
+func (i *InsertQuery) Select(q *SelectQuery) *InsertQuery {
+	i.selectPart = q
 	return i
 }
 
-func (i InsertQuery) GetSQL(d core.Dialect) (core.SQL, error) {
-	var sql = core.NewSQL("INSERT INTO", nil)
+func (i InsertQuery) ToSQL(d core.Dialect) (sql.Data, error) {
+	var s = sql.String("INSERT INTO")
 
 	if check.IsValueNilOrBlank(i.table) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), s.String())
 	}
 	if i.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), sql.String())
+		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), s.String())
 	}
-	tableSQL, err := i.table.GetSQL(d)
+	tableSQL, err := i.table.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
-	sql = sql.AppendSQLWithSpace(tableSQL)
+	s = s.AppendWithSpace(tableSQL)
 
 	if check.IsValueNilOrEmpty(i.columns) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), sql.String())
+		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), s.String())
 	}
-	pathsSQL, err := CombinePathSQL(d, i.columns)
+	pathsSQL, err := JoinToSQL(d, sepPathComma, i.columns)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
-	sql = sql.AppendSQLWithSpace(pathsSQL.SurroundWithParens())
+	s = s.SurroundAppend(" (", ")", pathsSQL) // Include space before first paren!
 
 	if i.selectPart != nil {
-		sql, err = i.buildSelectFrom(d, sql)
+		s, err = i.buildSelectFrom(d, s)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		sql, err = i.buildValues(d, sql)
+		s, err = i.buildValues(d, s)
 		if err != nil {
-			return sql, err
+			return s, err
 		}
 	}
 
-	return sql, nil
+	return s, nil
 }
 
-func (i InsertQuery) buildSelectFrom(d core.Dialect, sql core.SQL) (core.SQL, error) {
-	selectSQL, err := i.selectPart.GetSQL(d)
+func (i InsertQuery) buildSelectFrom(d core.Dialect, s sql.Data) (sql.Data, error) {
+	selectSQL, err := i.selectPart.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
 	if selectSQL.String() != "" {
-		sql = sql.AppendSQLWithSpace(selectSQL)
+		s = s.AppendWithSpace(selectSQL)
 	}
-	return sql, nil
+	return s, nil
 }
 
-func (i InsertQuery) buildValues(d core.Dialect, sql core.SQL) (core.SQL, error) {
+func (i InsertQuery) buildValues(d core.Dialect, s sql.Data) (sql.Data, error) {
 	colsLen := len(i.columns)
 	valuesLen := len(i.values)
 	if colsLen != valuesLen {
 		err := fmt.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
 
-	valuesSQL, err := CombinePathSQL(d, i.values)
+	valuesSQL, err := JoinToSQL(d, sepPathComma, i.values)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, sql.String())
+		return nil, expression.ErrorAroundSQL(err, s.String())
 	}
 	if valuesSQL.String() != "" {
-		sql = sql.AppendStringWithSpace("VALUES").AppendSQLWithSpace(valuesSQL.SurroundWithParens())
+		s = s.AppendWithSpace(sql.String("VALUES")).SurroundAppend(" (", ")", valuesSQL)
 	}
-	return sql, nil
+	return s, nil
 }

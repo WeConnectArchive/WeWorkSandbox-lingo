@@ -5,6 +5,7 @@ package qcustomer
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QCustomer {
@@ -58,7 +59,7 @@ func (q QCustomer) GetColumns() []core.Column {
 	}
 }
 
-func (q QCustomer) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QCustomer) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

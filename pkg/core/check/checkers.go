@@ -31,3 +31,21 @@ func IsValueNilOrBlank(c interface{}) bool {
 	}
 	return false
 }
+
+func AreValuesNilOrBlank(c interface{}) bool {
+	if c == nil {
+		return true
+	}
+
+	value := reflect.ValueOf(c)
+	switch value.Kind() {
+	case reflect.Array, reflect.Slice:
+		valuesLen := value.Len()
+		for idx := 0; idx < valuesLen; idx++ {
+			if IsValueNilOrBlank(value.Index(idx).Interface()) {
+				return true
+			}
+		}
+	}
+	return IsValueNilOrBlank(c)
+}

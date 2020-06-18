@@ -2,6 +2,7 @@ package expression
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func Star() core.Expression {
@@ -10,6 +11,6 @@ func Star() core.Expression {
 
 type star struct{}
 
-func (star) GetSQL(_ core.Dialect) (core.SQL, error) {
-	return core.NewSQL("*", nil), nil
+func (star) ToSQL(_ core.Dialect) (sql.Data, error) {
+	return sql.String("*"), nil
 }

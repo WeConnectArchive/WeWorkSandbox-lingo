@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func NewBinaryWithAlias(e core.Table, name, alias string) Binary {
@@ -41,7 +42,7 @@ func (b Binary) As(alias string) Binary {
 	return b
 }
 
-func (b Binary) GetSQL(d core.Dialect) (core.SQL, error) {
+func (b Binary) ToSQL(d core.Dialect) (sql.Data, error) {
 	return ExpandColumnWithDialect(d, b)
 }
 

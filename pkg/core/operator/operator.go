@@ -1,9 +1,5 @@
 package operator
 
-import (
-	"github.com/weworksandbox/lingo/pkg/core"
-)
-
 type Operand int
 
 const (
@@ -53,8 +49,4 @@ var _names = map[Operand]string{
 
 func (o Operand) String() string {
 	return _names[o]
-}
-
-func (o Operand) GetSQL(_ core.Dialect) (core.SQL, error) {
-	return core.NewSQL(o.String(), nil), nil
 }

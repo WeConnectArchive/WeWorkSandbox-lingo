@@ -122,7 +122,7 @@ func (txExec sqlExpTxExec) Query(ctx context.Context, exp core.Expression) (RowS
 }
 
 func expandSQL(dialect core.Dialect, exp core.Expression) (string, []interface{}, error) {
-	lSQL, err := exp.GetSQL(dialect)
+	lSQL, err := exp.ToSQL(dialect)
 	if err != nil {
 		return "", nil, err
 	}
