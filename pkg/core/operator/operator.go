@@ -1,9 +1,5 @@
 package operator
 
-import (
-	"github.com/weworksandbox/lingo/pkg/core/sql"
-)
-
 type Operand int
 
 const (
@@ -32,25 +28,25 @@ const (
 	NotBetween
 )
 
-var _names = map[Operand]sql.Data{
-	And:                sql.String("AND"),
-	Or:                 sql.String("OR"),
-	Eq:                 sql.String("="),
-	NotEq:              sql.String("<>"),
-	LessThan:           sql.String("<"),
-	LessThanOrEqual:    sql.String("<="),
-	GreaterThan:        sql.String(">"),
-	GreaterThanOrEqual: sql.String(">="),
-	Like:               sql.String("LIKE"),
-	NotLike:            sql.String("NOT LIKE"),
-	Null:               sql.String("IS NULL"),
-	NotNull:            sql.String("IS NOT NULL"),
-	In:                 sql.String("IN"),
-	NotIn:              sql.String("NOT IN"),
-	Between:            sql.String("BETWEEN"),
-	NotBetween:         sql.String("NOT BETWEEN"),
+var _names = map[Operand]string{
+	And:                "AND",
+	Or:                 "OR",
+	Eq:                 "=",
+	NotEq:              "<>",
+	LessThan:           "<",
+	LessThanOrEqual:    "<=",
+	GreaterThan:        ">",
+	GreaterThanOrEqual: ">=",
+	Like:               "LIKE",
+	NotLike:            "NOT LIKE",
+	Null:               "IS NULL",
+	NotNull:            "IS NOT NULL",
+	In:                 "IN",
+	NotIn:              "NOT IN",
+	Between:            "BETWEEN",
+	NotBetween:         "NOT BETWEEN",
 }
 
 func (o Operand) String() string {
-	return _names[o].String()
+	return _names[o]
 }
