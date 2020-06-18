@@ -23,10 +23,22 @@ var _ = Describe("data.go", func() {
 			BeEmpty(),
 		),
 		table.Entry(
+			"sql.New - empty",
+			sql.New("", nil),
+			Equal(""),
+			BeEmpty(),
+		),
+		table.Entry(
+			"sql.New - '', {1}",
+			sql.New("", []interface{}{1}),
+			Equal(""),
+			Equal([]interface{}{1}),
+		),
+		table.Entry(
 			"sql.New - {}",
 			sql.New("myString", []interface{}{}),
 			Equal("myString"),
-			Equal([]interface{}{}),
+			BeEmpty(),
 		),
 		table.Entry(
 			"sql.New - d,s,f",
@@ -53,10 +65,28 @@ var _ = Describe("data.go", func() {
 			BeEmpty(),
 		),
 		table.Entry(
+			"sql.Values - nil",
+			sql.Values(nil),
+			BeEmpty(),
+			BeEmpty(),
+		),
+		table.Entry(
+			"sql.Values - {}",
+			sql.Values([]interface{}{}),
+			BeEmpty(),
+			BeEmpty(),
+		),
+		table.Entry(
 			"sql.Values - d,s,f",
 			sql.Values([]interface{}{0x02, "str", 10.0}),
 			BeEmpty(),
 			Equal([]interface{}{0x02, "str", 10.0}),
+		),
+		table.Entry(
+			"sql.Surround - l,r, s+d",
+			sql.Surround("l.", ".r", sql.New("str", []interface{}{15})),
+			Equal("l.str.r"),
+			Equal([]interface{}{15}),
 		),
 		table.Entry(
 			"sql.Join - empty",
@@ -92,23 +122,60 @@ var _ = Describe("data.go", func() {
 			Equal("myString!@myString 18, str, 10.00!@myThirdString"),
 			Equal([]interface{}{0x02, "str", 10.0}),
 		),
+		// Member Functions
 		table.Entry(
-			"sql.Append - s+d - s+s",
+			"sql.data.Append - s+d - s+s",
 			sql.New("abc1", []interface{}{1}).Append(sql.New("2cba", []interface{}{"a"})),
 			Equal("abc12cba"),
 			Equal([]interface{}{1, "a"}),
 		),
 		table.Entry(
-			"sql.AppendWithSpace - s+d - s+s",
+			"sql.data.AppendWithSpace - s+d - s+s",
 			sql.New("abc1", []interface{}{1}).AppendWithSpace(sql.New("2cba", []interface{}{"a"})),
 			Equal("abc1 2cba"),
 			Equal([]interface{}{1, "a"}),
 		),
 		table.Entry(
-			"sql.AppendWithSpace - s+d - s+s",
+			"sql.data.AppendWithSpace - s+d - s+s",
 			sql.New("abc1", []interface{}{1}).SurroundAppend("firstBang!", "!secondBang", sql.New("2cba", []interface{}{"a"})),
 			Equal("abc1firstBang!2cba!secondBang"),
 			Equal([]interface{}{1, "a"}),
+		),
+		table.Entry(
+			"sql.stringData.Append",
+			sql.String("string").Append(sql.New("other", []interface{}{15})),
+			Equal("stringother"),
+			Equal([]interface{}{15}),
+		),
+		table.Entry(
+			"sql.stringData.AppendWithSpace",
+			sql.String("string").AppendWithSpace(sql.New("other", []interface{}{15})),
+			Equal("string other"),
+			Equal([]interface{}{15}),
+		),
+		table.Entry(
+			"sql.stringData.SurroundAppend",
+			sql.String("string").SurroundAppend("l.", ".r", sql.New("other", []interface{}{15})),
+			Equal("stringl.other.r"),
+			Equal([]interface{}{15}),
+		),
+		table.Entry(
+			"sql.valuesData.Append",
+			sql.Values([]interface{}{'a'}).Append(sql.New("other", []interface{}{15})),
+			Equal("other"),
+			Equal([]interface{}{'a', 15}),
+		),
+		table.Entry(
+			"sql.valuesData.AppendWithSpace",
+			sql.Values([]interface{}{'a'}).AppendWithSpace(sql.New("other", []interface{}{15})),
+			Equal(" other"),
+			Equal([]interface{}{'a', 15}),
+		),
+		table.Entry(
+			"sql.valuesData.SurroundAppend",
+			sql.Values([]interface{}{'a'}).SurroundAppend("l.", ".r", sql.New("other", []interface{}{15})),
+			Equal("l.other.r"),
+			Equal([]interface{}{'a', 15}),
 		),
 	)
 })

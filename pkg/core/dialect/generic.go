@@ -60,7 +60,7 @@ func ExpandColumnWithParent(column core.Column) (sql.Data, error) {
 		return nil, fmt.Errorf("unable to expand column: %w", err)
 	}
 	// Append separator prior to column: `table.column`
-	return table.Append(sql.String(".")).Append(colSQL), nil
+	return table.Append(sql.String(".").Append(colSQL)), nil
 }
 
 type ValueFormatter interface {
