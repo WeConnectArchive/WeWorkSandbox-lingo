@@ -9,7 +9,7 @@ require (
 	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
 	github.com/magefile/mage v1.9.0
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
-	github.com/onsi/ginkgo v1.12.3
+	github.com/onsi/ginkgo v1.13.0
 	github.com/onsi/gomega v1.10.1
 	github.com/pelletier/go-toml v1.7.0 // indirect
 	github.com/petergtz/pegomock v2.7.0+incompatible
