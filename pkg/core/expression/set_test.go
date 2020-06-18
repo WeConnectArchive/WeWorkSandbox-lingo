@@ -11,6 +11,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Set", func() {
@@ -37,28 +38,28 @@ var _ = Describe("Set", func() {
 			Expect(set).ToNot(BeNil())
 		})
 
-		Context("Calling `GetSQL`", func() {
+		Context("Calling `ToSQL`", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				s   sql.Data
 				err error
 			)
 
 			BeforeEach(func() {
 				d = setDialectSuccess{}
-				pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("left sql"), nil)
-				pegomock.When(value.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("value sql"), nil)
+				pegomock.When(left.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
+				pegomock.When(value.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("value sql"), nil)
 			})
 
 			JustBeforeEach(func() {
-				sql, err = set.GetSQL(d)
+				s, err = set.ToSQL(d)
 			})
 
 			It("Returns Set SQL string", func() {
-				Expect(sql).ToNot(BeNil())
-				Expect(sql).To(MatchSQLString("set sql"))
+				Expect(s).ToNot(BeNil())
+				Expect(s).To(MatchSQLString("set sql"))
 			})
 
 			It("Returns no errors", func() {
@@ -72,7 +73,7 @@ var _ = Describe("Set", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -87,7 +88,7 @@ var _ = Describe("Set", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -98,11 +99,11 @@ var _ = Describe("Set", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left error"))
+					pegomock.When(left.ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -117,7 +118,7 @@ var _ = Describe("Set", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -128,11 +129,11 @@ var _ = Describe("Set", func() {
 			Context("value returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(value.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("value error"))
+					pegomock.When(value.ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("value error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -147,7 +148,7 @@ var _ = Describe("Set", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -161,12 +162,12 @@ var _ = Describe("Set", func() {
 type setDialectSuccess struct{}
 
 func (setDialectSuccess) GetName() string { return "dialect name" }
-func (setDialectSuccess) Set(left, value core.SQL) (core.SQL, error) {
-	return core.NewSQLf("set sql"), nil
+func (setDialectSuccess) Set(left, value sql.Data) (sql.Data, error) {
+	return sql.String("set sql"), nil
 }
 
 type setDialectFailure struct{ setDialectSuccess }
 
-func (setDialectFailure) Set(left, value core.SQL) (core.SQL, error) {
+func (setDialectFailure) Set(left, value sql.Data) (sql.Data, error) {
 	return nil, errors.New("set error")
 }

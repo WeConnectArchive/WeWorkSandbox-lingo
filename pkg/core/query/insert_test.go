@@ -13,6 +13,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Insert", func() {
@@ -35,24 +36,24 @@ var _ = Describe("Insert", func() {
 				NewMockColumn(),
 				NewMockColumn(),
 			}
-			pegomock.When(cols[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("cols[0].sql"), nil)
+			pegomock.When(cols[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[0].sql"), nil)
 			pegomock.When(cols[0].GetAlias()).ThenReturn("col[0].alias")
 			pegomock.When(cols[0].GetName()).ThenReturn("col[0].name")
 			pegomock.When(cols[0].GetParent()).ThenReturn(table)
-			pegomock.When(cols[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("cols[1].sql"), nil)
+			pegomock.When(cols[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[1].sql"), nil)
 			pegomock.When(cols[1].GetAlias()).ThenReturn("col[1].alias")
 			pegomock.When(cols[1].GetName()).ThenReturn("col[1].name")
 			pegomock.When(cols[1].GetParent()).ThenReturn(table)
 
 			pegomock.When(table.GetColumns()).ThenReturn(cols)
-			pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("table.sql"), nil)
+			pegomock.When(table.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("table.sql"), nil)
 
 			valueExpressions = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(valueExpressions[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("valueExpressions[0].sql"), nil)
-			pegomock.When(valueExpressions[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("valueExpressions[1].sql"), nil)
+			pegomock.When(valueExpressions[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("valueExpressions[0].sql"), nil)
+			pegomock.When(valueExpressions[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("valueExpressions[1].sql"), nil)
 
 			// Ensure we reset valueConstants. Had random test failures due to this. Only happened on certain
 			// random num test seeds.
@@ -66,12 +67,12 @@ var _ = Describe("Insert", func() {
 			}
 		})
 
-		Context("#GetSQL", func() {
+		Context("#ToSQL", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				sql sql.Data
 				err error
 			)
 
@@ -80,7 +81,7 @@ var _ = Describe("Insert", func() {
 			})
 
 			JustBeforeEach(func() {
-				sql, err = q.GetSQL(d)
+				sql, err = q.ToSQL(d)
 			})
 
 			It("Returns a valid SQL string", func() {
@@ -121,10 +122,10 @@ var _ = Describe("Insert", func() {
 				})
 			})
 
-			Context("Table GetSQL has an error", func() {
+			Context("Table ToSQL has an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(table.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("table error"))
+					pegomock.When(table.ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("table error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -157,7 +158,7 @@ var _ = Describe("Insert", func() {
 			XContext("Columns return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(cols[len(cols)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("col error"))
+					pegomock.When(cols[len(cols)-1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("col error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -187,7 +188,7 @@ var _ = Describe("Insert", func() {
 			Context("Values return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(valueExpressions[len(valueExpressions)-1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("valueExpressions error"))
+					pegomock.When(valueExpressions[len(valueExpressions)-1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("valueExpressions error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -233,7 +234,7 @@ var _ = Describe("Insert", func() {
 
 			BeforeEach(func() {
 				sTable = NewMockTable()
-				pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("select.sql"), nil)
+				pegomock.When(sTable.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("select.sql"), nil)
 
 				sq = query.Select(expression.Star()).From(sTable)
 			})
@@ -242,12 +243,12 @@ var _ = Describe("Insert", func() {
 				q = q.Select(sq)
 			})
 
-			Context("#GetSQL", func() {
+			Context("#ToSQL", func() {
 
 				var (
 					d core.Dialect
 
-					sql core.SQL
+					sql sql.Data
 					err error
 				)
 
@@ -256,7 +257,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				JustBeforeEach(func() {
-					sql, err = q.GetSQL(d)
+					sql, err = q.ToSQL(d)
 				})
 
 				It("Returns a valid SQL string", func() {
@@ -270,7 +271,7 @@ var _ = Describe("Insert", func() {
 				Context("Select returns an error", func() {
 
 					BeforeEach(func() {
-						pegomock.When(sTable.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("select error"))
+						pegomock.When(sTable.ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("select error"))
 					})
 
 					It("Returns a nil SQL", func() {

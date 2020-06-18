@@ -9,6 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	. "github.com/weworksandbox/lingo/pkg/core/expression/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("ComboExpression", func() {
@@ -23,7 +24,7 @@ var _ = Describe("ComboExpression", func() {
 
 		BeforeEach(func() {
 			exp = NewMockExpression()
-			pegomock.When(exp.GetSQL(AnyCoreDialect())).ThenReturn(core.NewSQLf("expression sql"), nil)
+			pegomock.When(exp.ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expression sql"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -44,19 +45,19 @@ var _ = Describe("ComboExpression", func() {
 
 			BeforeEach(func() {
 				withExp = NewMockExpression()
-				pegomock.When(withExp.GetSQL(AnyCoreDialect())).ThenReturn(core.NewSQLf("with expression sql"), nil)
+				pegomock.When(withExp.ToSQL(AnyCoreDialect())).ThenReturn(sql.String("with expression sql"), nil)
 			})
 
 			JustBeforeEach(func() {
 				combined = combo.And(withExp)
 			})
 
-			Context("`GetSQL`", func() {
+			Context("`ToSQL`", func() {
 
 				var (
 					d core.Dialect
 
-					sql core.SQL
+					sql sql.Data
 					err error
 				)
 
@@ -65,7 +66,7 @@ var _ = Describe("ComboExpression", func() {
 				})
 
 				JustBeforeEach(func() {
-					sql, err = combined.GetSQL(d)
+					sql, err = combined.ToSQL(d)
 				})
 
 				It("returns a valid `SQL`", func() {
@@ -88,19 +89,19 @@ var _ = Describe("ComboExpression", func() {
 
 			BeforeEach(func() {
 				withExp = NewMockExpression()
-				pegomock.When(withExp.GetSQL(AnyCoreDialect())).ThenReturn(core.NewSQLf("with expression sql"), nil)
+				pegomock.When(withExp.ToSQL(AnyCoreDialect())).ThenReturn(sql.String("with expression sql"), nil)
 			})
 
 			JustBeforeEach(func() {
 				combined = combo.Or(withExp)
 			})
 
-			Context("`GetSQL`", func() {
+			Context("`ToSQL`", func() {
 
 				var (
 					d core.Dialect
 
-					sql core.SQL
+					sql sql.Data
 					err error
 				)
 
@@ -109,7 +110,7 @@ var _ = Describe("ComboExpression", func() {
 				})
 
 				JustBeforeEach(func() {
-					sql, err = combined.GetSQL(d)
+					sql, err = combined.ToSQL(d)
 				})
 
 				It("returns a valid `SQL`", func() {

@@ -4,10 +4,11 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 // NewNamedOnlyColumn creates a `core.Column` of which only the name of the column is filled out.
-// Thus, when `GetSQL()` is called, only a single SQL with the value of `name` is returned.
+// Thus, when `ToSQL()` is called, only a single SQL with the value of `name` is returned.
 func NewNamedOnlyColumn(name, parent string) core.Column {
 	return &stringColumn{name: name, parent: stringParent{name: parent}}
 }
@@ -17,8 +18,8 @@ type stringColumn struct {
 	parent stringParent
 }
 
-func (s stringColumn) GetSQL(_ core.Dialect) (core.SQL, error) {
-	return core.NewSQL(s.GetName(), nil), nil
+func (s stringColumn) ToSQL(_ core.Dialect) (sql.Data, error) {
+	return sql.String(s.GetName()), nil
 }
 func (s stringColumn) GetName() string       { return s.name }
 func (s stringColumn) GetParent() core.Table { return s.parent }
@@ -28,7 +29,7 @@ type stringParent struct {
 	name string
 }
 
-func (s stringParent) GetSQL(d core.Dialect) (core.SQL, error) {
+func (s stringParent) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, s)
 }
 

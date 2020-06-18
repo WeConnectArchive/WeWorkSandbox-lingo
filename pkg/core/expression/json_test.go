@@ -12,6 +12,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	. "github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/json"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("JSON", func() {
@@ -28,15 +29,15 @@ var _ = Describe("JSON", func() {
 
 		BeforeEach(func() {
 			left = NewMockExpression()
-			pegomock.When(left.GetSQL(AnyCoreDialect())).ThenReturn(core.NewSQLf("left sql"), nil)
+			pegomock.When(left.ToSQL(AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
 
 			op = json.Extract
 			expressions = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(expressions[0].GetSQL(AnyCoreDialect())).ThenReturn(core.NewSQLf("expressions[0]"), nil)
-			pegomock.When(expressions[1].GetSQL(AnyCoreDialect())).ThenReturn(core.NewSQLf("expressions[1]"), nil)
+			pegomock.When(expressions[0].ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expressions[0]"), nil)
+			pegomock.When(expressions[1].ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expressions[1]"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -47,12 +48,12 @@ var _ = Describe("JSON", func() {
 			Expect(operation).ToNot(BeNil())
 		})
 
-		Context("#GetSQL", func() {
+		Context("#ToSQL", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				sql sql.Data
 				err error
 			)
 
@@ -61,7 +62,7 @@ var _ = Describe("JSON", func() {
 			})
 
 			JustBeforeEach(func() {
-				sql, err = operation.GetSQL(d)
+				sql, err = operation.ToSQL(d)
 			})
 
 			It("Returns a valid SQL", func() {
@@ -106,7 +107,7 @@ var _ = Describe("JSON", func() {
 
 				BeforeEach(func() {
 					leftErr := errors.New("left error")
-					pegomock.When(left.GetSQL(AnyCoreDialect())).ThenReturn(nil, leftErr)
+					pegomock.When(left.ToSQL(AnyCoreDialect())).ThenReturn(nil, leftErr)
 				})
 
 				It("Returns a nil SQL", func() {
@@ -137,7 +138,7 @@ var _ = Describe("JSON", func() {
 
 				BeforeEach(func() {
 					expErr := errors.New("exp error")
-					pegomock.When(expressions[1].GetSQL(AnyCoreDialect())).ThenReturn(nil, expErr)
+					pegomock.When(expressions[1].ToSQL(AnyCoreDialect())).ThenReturn(nil, expErr)
 				})
 
 				It("Returns a nil SQL", func() {
@@ -170,12 +171,12 @@ var _ = Describe("JSON", func() {
 type jsonDialectSuccess struct{}
 
 func (jsonDialectSuccess) GetName() string { return "json success" }
-func (jsonDialectSuccess) JSONOperator(core.SQL, json.Operand, []core.SQL) (core.SQL, error) {
-	return core.NewSQLf("json sql"), nil
+func (jsonDialectSuccess) JSONOperator(sql.Data, json.Operand, []sql.Data) (sql.Data, error) {
+	return sql.String("json sql"), nil
 }
 
 type jsonDialectFailure struct{ jsonDialectSuccess }
 
-func (jsonDialectFailure) JSONOperator(core.SQL, json.Operand, []core.SQL) (core.SQL, error) {
+func (jsonDialectFailure) JSONOperator(sql.Data, json.Operand, []sql.Data) (sql.Data, error) {
 	return nil, errors.New("json failure")
 }

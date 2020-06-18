@@ -82,8 +82,8 @@ var _ = Describe("Unsupported", func() {
 			Expect(p.GetAlias()).To(BeEmpty())
 		})
 
-		It("Has empty SQL for GetSQL", func() {
-			Expect(p.GetSQL(nil)).To(matchers.MatchSQLString(""))
+		It("Has empty SQL for ToSQL", func() {
+			Expect(p.ToSQL(nil)).To(matchers.MatchSQLString(""))
 		})
 	})
 })

@@ -1,10 +1,9 @@
 package query
 
 import (
-	"fmt"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func ExpandTables(paths []core.Expression) []core.Expression {
@@ -21,48 +20,24 @@ func ExpandTables(paths []core.Expression) []core.Expression {
 	return expanded
 }
 
-// CombinePathSQL will validate each path is not nil, and will append n+1 with a comma separating them
-func CombinePathSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
-	var sql = core.NewEmptySQL()
-	for _, p := range paths {
-		if check.IsValueNilOrBlank(p) {
-			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("path entry"), sql.String())
-		}
+// JoinToSQL will call ToSQL on each exp, returning the error if one occurs, and then joins the SQL together with sep
+// in between each sql.Data.
+func JoinToSQL(d core.Dialect, sep string, exp []core.Expression) (sql.Data, error) {
+	// TODO - explore if we could (or really should) pull some of the sql.Data logic into here, or this ToSQL / error
+	//  checking logic into the sql.Data logic. Right now, using sql.Join keeps the the copying / appending in one
+	//  place, and efficient. However, if broken out, either by using a func closure or something else, then we only
+	//  need to loop over each expression once. Currently, it happens twice, once here to generate the SQL, and once
+	//  to join the SQL.
 
-		pathSQL, err := p.GetSQL(d)
+	var sqlData = make([]sql.Data, len(exp))
+	for idx := range exp {
+		data, err := exp[idx].ToSQL(d)
 		if err != nil {
-			return nil, expression.ErrorAroundSQL(err, sql.String())
+			// Join all the data up until this point (slice idx) to produce a somewhat meaningful error message.
+			s := sql.Join(sep, sqlData[:idx])
+			return nil, expression.ErrorAroundSQL(err, s.String())
 		}
-
-		if sql.String() == "" {
-			sql = sql.AppendSQL(pathSQL)
-		} else {
-			sql = sql.AppendValuesWithFormat(pathSQL.Values(), ", %s", pathSQL.String())
-		}
+		sqlData[idx] = data
 	}
-	return sql, nil
-}
-
-// CombineSQL will validate each path is not nil, and will append each SQL to the previous
-// with a single space between each.
-func CombineSQL(d core.Dialect, paths []core.Expression) (core.SQL, error) {
-	var sql = core.NewEmptySQL()
-	for idx, p := range paths {
-		if check.IsValueNilOrBlank(p) {
-			entry := fmt.Sprintf("path entry[%d]", idx)
-			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil(entry), sql.String())
-		}
-
-		pathSQL, err := p.GetSQL(d)
-		if err != nil {
-			return nil, expression.ErrorAroundSQL(err, sql.String())
-		}
-
-		if sql.String() == "" {
-			sql = sql.AppendSQL(pathSQL)
-		} else {
-			sql = sql.AppendSQLWithSpace(pathSQL)
-		}
-	}
-	return sql, nil
+	return sql.Join(sep, sqlData), nil
 }

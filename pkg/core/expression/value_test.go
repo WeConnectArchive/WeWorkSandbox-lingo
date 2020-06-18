@@ -13,6 +13,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Value", func() {
@@ -26,11 +27,11 @@ var _ = Describe("Value", func() {
 		var myStr = "my string is hereeeeeeeeeee"
 		var myTime = time.Now()
 
-		DescribeTable("`GetSQL`",
+		DescribeTable("`ToSQL`",
 
 			func(d core.Dialect, v interface{}, matchSql, matchErr types.GomegaMatcher) {
 				value := expression.NewValue(v)
-				sql, err := value.GetSQL(d)
+				sql, err := value.ToSQL(d)
 
 				Expect(err).To(matchErr)
 				Expect(sql).To(matchSql)
@@ -70,12 +71,12 @@ var _ = Describe("Value", func() {
 type valueDialectSuccess struct{}
 
 func (valueDialectSuccess) GetName() string { return "value by dialect" }
-func (valueDialectSuccess) Value(i []interface{}) (core.SQL, error) {
-	return core.NewSQLf("%+v", i), nil
+func (valueDialectSuccess) Value(i []interface{}) (sql.Data, error) {
+	return sql.Format("%+v", i), nil
 }
 
 type valueDialectFailure struct{ valueDialectSuccess }
 
-func (valueDialectFailure) Value(_ []interface{}) (core.SQL, error) {
+func (valueDialectFailure) Value(_ []interface{}) (sql.Data, error) {
 	return nil, errors.New("value failure")
 }

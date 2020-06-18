@@ -5,6 +5,7 @@ package qsalesbystore
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QSalesByStore {
@@ -40,7 +41,7 @@ func (q QSalesByStore) GetColumns() []core.Column {
 	}
 }
 
-func (q QSalesByStore) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QSalesByStore) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

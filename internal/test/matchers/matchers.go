@@ -7,7 +7,7 @@ import (
 	"github.com/onsi/gomega/types"
 )
 
-// MatchSQLString creates a matcher to test if a given `core.SQL` string output
+// MatchSQLString creates a matcher to test if a given `sql.Data` string output
 // has a specific string or a matcher of a string.
 func MatchSQLString(expected interface{}) types.GomegaMatcher {
 	return &SQLStringMatcher{

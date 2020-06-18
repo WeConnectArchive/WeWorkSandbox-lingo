@@ -7,6 +7,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/json"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 // NewMySQL takes options to configure a MySQL schema
@@ -31,7 +32,7 @@ func (MySQL) GetName() string {
 	return "MySQL"
 }
 
-func (m MySQL) JSONOperator(left core.SQL, op json.Operand, values []core.SQL) (core.SQL, error) {
+func (m MySQL) JSONOperator(left sql.Data, op json.Operand, values []sql.Data) (sql.Data, error) {
 	switch op {
 	case json.Extract:
 		return m.multiPathJSON(left, op, values)
@@ -40,7 +41,7 @@ func (m MySQL) JSONOperator(left core.SQL, op json.Operand, values []core.SQL) (
 	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("json.Operator", op), left.String())
 }
 
-func (MySQL) multiPathJSON(left core.SQL, op json.Operand, values []core.SQL) (core.SQL, error) {
+func (MySQL) multiPathJSON(left sql.Data, op json.Operand, values []sql.Data) (sql.Data, error) {
 	if check.IsValueNilOrBlank(left) {
 		return nil, expression.ExpressionIsNil("left")
 	}
@@ -50,7 +51,10 @@ func (MySQL) multiPathJSON(left core.SQL, op json.Operand, values []core.SQL) (c
 		return nil, expression.EnumIsInvalid("json.Operator", op)
 	}
 
-	return core.NewSQLf(opStr).AppendSQL(left.AppendString(", ").CombinePaths(values).SurroundWithParens()), nil
+	return sql.String(opStr).
+		Append(left.Append(sql.String(", ")).
+			SurroundAppend("(", ")", sql.Join(", ", values)),
+		), nil
 }
 
 var mysqlJSONOperatorToString = map[json.Operand]string{

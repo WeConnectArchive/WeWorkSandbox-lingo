@@ -9,6 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Table", func() {
@@ -19,7 +20,7 @@ var _ = Describe("Table", func() {
 			d     core.Dialect
 			table core.Table
 
-			sql core.SQL
+			sql sql.Data
 			err error
 		)
 
@@ -75,12 +76,12 @@ var _ = Describe("Table", func() {
 type expandTableDialectSuccess struct{}
 
 func (expandTableDialectSuccess) GetName() string { return "expand table dialect" }
-func (expandTableDialectSuccess) ExpandTable(entity core.Table) (core.SQL, error) {
-	return core.NewSQLf("expand table sql"), nil
+func (expandTableDialectSuccess) ExpandTable(entity core.Table) (sql.Data, error) {
+	return sql.String("expand table sql"), nil
 }
 
 type expandTableDialectFailure struct{ expandTableDialectSuccess }
 
-func (expandTableDialectFailure) ExpandTable(entity core.Table) (core.SQL, error) {
+func (expandTableDialectFailure) ExpandTable(entity core.Table) (sql.Data, error) {
 	return nil, errors.New("expand table error")
 }

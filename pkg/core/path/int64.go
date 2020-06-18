@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func NewInt64PathWithAlias(e core.Table, name, alias string) Int64 {
@@ -41,7 +42,7 @@ func (i Int64) As(alias string) Int64 {
 	return i
 }
 
-func (i Int64) GetSQL(d core.Dialect) (core.SQL, error) {
+func (i Int64) ToSQL(d core.Dialect) (sql.Data, error) {
 	return ExpandColumnWithDialect(d, i)
 }
 

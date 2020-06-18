@@ -10,6 +10,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/query"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Paths", func() {
@@ -57,36 +58,53 @@ var _ = Describe("Paths", func() {
 		})
 	})
 
-	Context("CombinePathSQL", func() {
+	Context("#JoinToSQL", func() {
 
 		var (
 			d     core.Dialect
+			sep   string
 			paths []core.Expression
 
-			sql core.SQL
+			s   sql.Data
 			err error
 		)
 
 		BeforeEach(func() {
 			d = NewMockDialect()
+			sep = ".SEP."
 			paths = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(paths[0].GetSQL(d)).ThenReturn(core.NewSQLf("exp 1 sql"), nil)
-			pegomock.When(paths[1].GetSQL(d)).ThenReturn(core.NewSQLf("exp 2 sql"), nil)
+			pegomock.When(paths[0].ToSQL(d)).ThenReturn(sql.String("exp 1 sql"), nil)
+			pegomock.When(paths[1].ToSQL(d)).ThenReturn(sql.String("exp 2 sql"), nil)
 		})
 
 		JustBeforeEach(func() {
-			sql, err = query.CombinePathSQL(d, paths)
+			s, err = query.JoinToSQL(d, sep, paths)
 		})
 
 		It("Returns a combined SQL", func() {
-			Expect(sql).To(MatchSQLString("exp 1 sql, exp 2 sql"))
+			Expect(s).To(MatchSQLString("exp 1 sql.SEP.exp 2 sql"))
 		})
 
 		It("Returns no error", func() {
 			Expect(err).ToNot(HaveOccurred())
+		})
+
+		Context("With one column", func() {
+
+			BeforeEach(func() {
+				paths = paths[:1]
+			})
+
+			It("Returns the original SQL with no sep", func() {
+				Expect(s).To(MatchSQLString("exp 1 sql"))
+			})
+
+			It("Returns no error", func() {
+				Expect(err).ToNot(HaveOccurred())
+			})
 		})
 
 		Context("With nil columns", func() {
@@ -96,7 +114,7 @@ var _ = Describe("Paths", func() {
 			})
 
 			It("Returns an empty SQL", func() {
-				Expect(sql).To(MatchSQLString(""))
+				Expect(s).To(MatchSQLString(""))
 			})
 
 			It("Returns a nil error", func() {
@@ -107,92 +125,14 @@ var _ = Describe("Paths", func() {
 		Context("With an error on the second expression", func() {
 
 			BeforeEach(func() {
-				pegomock.When(paths[1].GetSQL(d)).ThenReturn(nil, errors.New("second exp error"))
+				pegomock.When(paths[1].ToSQL(d)).ThenReturn(nil, errors.New("second exp error"))
 			})
 
 			It("Returns a nil SQL", func() {
-				Expect(sql).To(BeNil())
+				Expect(s).To(BeNil())
 			})
 
 			It("Returns the second error", func() {
-				Expect(err).To(MatchError(ContainSubstring("second exp error")))
-			})
-		})
-	})
-
-	Context("CombineSQL", func() {
-
-		var (
-			d     core.Dialect
-			paths []core.Expression
-
-			sql core.SQL
-			err error
-		)
-
-		BeforeEach(func() {
-			d = NewMockDialect()
-			paths = []core.Expression{
-				NewMockExpression(),
-				NewMockExpression(),
-			}
-			pegomock.When(paths[0].GetSQL(d)).ThenReturn(core.NewSQLf("exp 1 sql"), nil)
-			pegomock.When(paths[1].GetSQL(d)).ThenReturn(core.NewSQLf("exp 2 sql"), nil)
-		})
-
-		JustBeforeEach(func() {
-			sql, err = query.CombineSQL(d, paths)
-		})
-
-		It("Returns a combined SQL", func() {
-			Expect(sql).To(MatchSQLString("exp 1 sql exp 2 sql"))
-		})
-
-		It("Returns no error", func() {
-			Expect(err).ToNot(HaveOccurred())
-		})
-
-		Context("With nil columns", func() {
-
-			BeforeEach(func() {
-				paths = nil
-			})
-
-			It("Returns an empty SQL", func() {
-				Expect(sql).To(MatchSQLString(""))
-			})
-
-			It("Returns a nil error", func() {
-				Expect(err).ToNot(HaveOccurred())
-			})
-		})
-
-		Context("With an embedded empty path", func() {
-
-			BeforeEach(func() {
-				paths[len(paths)-1] = nil
-			})
-
-			It("Returns a nil SQL", func() {
-				Expect(sql).To(BeNil())
-			})
-
-			It("Returns a nil expression error", func() {
-				Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "path entry[1]")))
-			})
-		})
-
-		Context("With an error on the second expression", func() {
-
-			BeforeEach(func() {
-				pegomock.When(paths[1].GetSQL(d)).ThenReturn(nil, errors.New("second exp error"))
-			})
-
-			It("Returns a nil SQL", func() {
-				Expect(sql).To(BeNil())
-			})
-
-			It("Returns the second SQL error", func() {
 				Expect(err).To(MatchError(ContainSubstring("second exp error")))
 			})
 		})

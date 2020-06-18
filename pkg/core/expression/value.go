@@ -5,12 +5,13 @@ import (
 	"time"
 
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var timeType = reflect.TypeOf(time.Time{})
 
 type Value interface {
-	Value(value []interface{}) (core.SQL, error)
+	Value(value []interface{}) (sql.Data, error)
 }
 
 func NewValue(v interface{}) core.ComboExpression {
@@ -26,7 +27,7 @@ type value struct {
 	value interface{}
 }
 
-func (v value) GetSQL(d core.Dialect) (core.SQL, error) {
+func (v value) ToSQL(d core.Dialect) (sql.Data, error) {
 	constant, ok := d.(Value)
 	if !ok {
 		return nil, DialectFunctionNotSupported("Value")

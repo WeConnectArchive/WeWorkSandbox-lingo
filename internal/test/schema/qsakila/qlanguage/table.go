@@ -5,6 +5,7 @@ package qlanguage
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QLanguage {
@@ -40,7 +41,7 @@ func (q QLanguage) GetColumns() []core.Column {
 	}
 }
 
-func (q QLanguage) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QLanguage) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

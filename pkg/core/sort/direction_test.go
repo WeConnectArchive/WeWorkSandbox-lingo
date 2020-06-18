@@ -13,9 +13,10 @@ var _ = DescribeTable("Direction",
 		opStr := dir.String()
 		Expect(opStr).To(Equal(sqlStr))
 
-		sql, err := dir.GetSQL(NewMockDialect())
+		sql, err := dir.ToSQL(NewMockDialect())
 		Expect(err).ToNot(HaveOccurred())
 		Expect(sql).To(matchers.MatchSQLString(sqlStr))
+		Expect(sql).To(matchers.MatchSQLValues(BeEmpty()))
 	},
 
 	Entry("Ascending", sort.Ascending, "ASC"),

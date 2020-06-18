@@ -5,6 +5,7 @@ package qactor
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QActor {
@@ -43,7 +44,7 @@ func (q QActor) GetColumns() []core.Column {
 	}
 }
 
-func (q QActor) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QActor) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

@@ -15,7 +15,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/execute"
 )
 
-var _ = Context("sql.go", func() {
+var _ = Context("data.go", func() {
 
 	Context("#NewSQL", func() {
 		var (

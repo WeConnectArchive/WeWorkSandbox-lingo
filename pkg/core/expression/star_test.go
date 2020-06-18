@@ -7,6 +7,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Star", func() {
@@ -25,12 +26,12 @@ var _ = Describe("Star", func() {
 			Expect(star).ShouldNot(BeNil())
 		})
 
-		Context("Calling `GetSQL`", func() {
+		Context("Calling `ToSQL`", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				s   sql.Data
 				err error
 			)
 
@@ -39,15 +40,15 @@ var _ = Describe("Star", func() {
 			})
 
 			JustBeforeEach(func() {
-				sql, err = star.GetSQL(d)
+				s, err = star.ToSQL(d)
 			})
 
 			It("SQL should match `*`", func() {
-				Expect(sql).Should(matchers.MatchSQLString("*"))
+				Expect(s).Should(matchers.MatchSQLString("*"))
 			})
 
 			It("SQL should have no values", func() {
-				Expect(sql).Should(matchers.MatchSQLValues(BeEmpty()))
+				Expect(s).Should(matchers.MatchSQLValues(BeEmpty()))
 			})
 
 			It("Returns nil error", func() {

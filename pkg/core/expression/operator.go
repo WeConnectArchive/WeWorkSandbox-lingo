@@ -6,10 +6,11 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 type Operator interface {
-	Operator(left core.SQL, op operator.Operand, values []core.SQL) (core.SQL, error)
+	Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, error)
 }
 
 func NewOperator(left core.Expression, op operator.Operand, expressions ...core.Expression) core.ComboExpression {
@@ -29,7 +30,7 @@ type operate struct {
 	expressions []core.Expression
 }
 
-func (o operate) GetSQL(d core.Dialect) (core.SQL, error) {
+func (o operate) ToSQL(d core.Dialect) (sql.Data, error) {
 	operand, ok := d.(Operator)
 	if !ok {
 		return nil, DialectFunctionNotSupported("Operator")
@@ -38,22 +39,22 @@ func (o operate) GetSQL(d core.Dialect) (core.SQL, error) {
 	if check.IsValueNilOrEmpty(o.left) {
 		return nil, ExpressionIsNil("left")
 	}
-	left, lerr := o.left.GetSQL(d)
+	left, lerr := o.left.ToSQL(d)
 	if lerr != nil {
 		return nil, lerr
 	}
 
-	var sqlArr = make([]core.SQL, 0, len(o.expressions))
+	var sqlArr = make([]sql.Data, 0, len(o.expressions))
 	for index, ex := range o.expressions {
 		if check.IsValueNilOrEmpty(ex) {
 			return nil, ErrorAroundSQL(ExpressionIsNil(fmt.Sprintf("expressions[%d]", index)), left.String())
 		}
 
-		sql, err := ex.GetSQL(d)
+		s, err := ex.ToSQL(d)
 		if err != nil {
 			return nil, ErrorAroundSQL(err, left.String())
 		}
-		sqlArr = append(sqlArr, sql)
+		sqlArr = append(sqlArr, s)
 	}
 
 	return operand.Operator(left, o.operand, sqlArr)

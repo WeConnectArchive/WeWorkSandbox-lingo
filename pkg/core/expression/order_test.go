@@ -12,6 +12,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Order", func() {
@@ -38,27 +39,27 @@ var _ = Describe("Order", func() {
 			Expect(orderBy).ToNot(BeNil())
 		})
 
-		Context("Calling `GetSQL`", func() {
+		Context("Calling `ToSQL`", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				s   sql.Data
 				err error
 			)
 
 			BeforeEach(func() {
 				d = orderDialectSuccess{}
-				pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("left sql"), nil)
+				pegomock.When(left.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
 			})
 
 			JustBeforeEach(func() {
-				sql, err = orderBy.GetSQL(d)
+				s, err = orderBy.ToSQL(d)
 			})
 
 			It("Returns Set SQL string", func() {
-				Expect(sql).ToNot(BeNil())
-				Expect(sql).To(MatchSQLString("order by sql"))
+				Expect(s).ToNot(BeNil())
+				Expect(s).To(MatchSQLString("order by sql"))
 			})
 
 			It("Returns no errors", func() {
@@ -72,7 +73,7 @@ var _ = Describe("Order", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -87,7 +88,7 @@ var _ = Describe("Order", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -98,11 +99,11 @@ var _ = Describe("Order", func() {
 			Context("left return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left error"))
+					pegomock.When(left.ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -117,7 +118,7 @@ var _ = Describe("Order", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -132,7 +133,7 @@ var _ = Describe("Order", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -146,12 +147,12 @@ var _ = Describe("Order", func() {
 type orderDialectSuccess struct{}
 
 func (orderDialectSuccess) GetName() string { return "order by dialect" }
-func (orderDialectSuccess) OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error) {
-	return core.NewSQLf("order by sql"), nil
+func (orderDialectSuccess) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
+	return sql.String("order by sql"), nil
 }
 
 type orderDialectFailure struct{ orderDialectSuccess }
 
-func (orderDialectFailure) OrderBy(left core.SQL, direction sort.Direction) (core.SQL, error) {
+func (orderDialectFailure) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
 	return nil, errors.New("order by failure")
 }

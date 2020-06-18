@@ -5,6 +5,7 @@ package qinventory
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/path"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func As(alias string) QInventory {
@@ -43,7 +44,7 @@ func (q QInventory) GetColumns() []core.Column {
 	}
 }
 
-func (q QInventory) GetSQL(d core.Dialect) (core.SQL, error) {
+func (q QInventory) ToSQL(d core.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

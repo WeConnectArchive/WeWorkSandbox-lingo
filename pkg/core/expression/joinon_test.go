@@ -12,6 +12,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/join"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("JoinOn", func() {
@@ -40,28 +41,28 @@ var _ = Describe("JoinOn", func() {
 			Expect(joinOn).ToNot(BeNil())
 		})
 
-		Context("`GetSQL`", func() {
+		Context("`ToSQL`", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				s   sql.Data
 				err error
 			)
 
 			BeforeEach(func() {
 				d = joinerDialectSuccess{}
-				pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("left sql"), nil)
-				pegomock.When(on.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("on sql"), nil)
+				pegomock.When(left.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
+				pegomock.When(on.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("on sql"), nil)
 			})
 
 			JustBeforeEach(func() {
-				sql, err = joinOn.GetSQL(d)
+				s, err = joinOn.ToSQL(d)
 			})
 
 			It("Returns Join SQL string", func() {
-				Expect(sql).ToNot(BeNil())
-				Expect(sql).To(MatchSQLString("joiner sql"))
+				Expect(s).ToNot(BeNil())
+				Expect(s).To(MatchSQLString("joiner sql"))
 			})
 
 			It("Returns no errors", func() {
@@ -75,7 +76,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -90,7 +91,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -101,11 +102,11 @@ var _ = Describe("JoinOn", func() {
 			Context("on returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(on.GetSQL(d)).ThenReturn(nil, errors.New("on error"))
+					pegomock.When(on.ToSQL(d)).ThenReturn(nil, errors.New("on error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -120,7 +121,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -131,11 +132,11 @@ var _ = Describe("JoinOn", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(d)).ThenReturn(nil, errors.New("left error"))
+					pegomock.When(left.ToSQL(d)).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -150,7 +151,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -164,12 +165,12 @@ var _ = Describe("JoinOn", func() {
 type joinerDialectSuccess struct{}
 
 func (joinerDialectSuccess) GetName() string { return "joiner success" }
-func (joinerDialectSuccess) Join(core.SQL, join.Type, core.SQL) (core.SQL, error) {
-	return core.NewSQLf("joiner sql"), nil
+func (joinerDialectSuccess) Join(sql.Data, join.Type, sql.Data) (sql.Data, error) {
+	return sql.String("joiner sql"), nil
 }
 
 type joinerDialectFailure struct{ joinerDialectSuccess }
 
-func (joinerDialectFailure) Join(core.SQL, join.Type, core.SQL) (core.SQL, error) {
+func (joinerDialectFailure) Join(sql.Data, join.Type, sql.Data) (sql.Data, error) {
 	return nil, errors.New("joiner failure")
 }

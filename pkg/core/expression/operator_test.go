@@ -12,6 +12,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("Operator", func() {
@@ -40,29 +41,29 @@ var _ = Describe("Operator", func() {
 			Expect(newOperator).ToNot(BeNil())
 		})
 
-		Context("`GetSQL`", func() {
+		Context("`ToSQL`", func() {
 
 			var (
 				d core.Dialect
 
-				sql core.SQL
+				s   sql.Data
 				err error
 			)
 
 			BeforeEach(func() {
 				d = operatorDialectSuccess{}
-				pegomock.When(left.GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("left sql"), nil)
-				pegomock.When(values[0].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("values[0] sql"), nil)
-				pegomock.When(values[1].GetSQL(matchers.AnyCoreDialect())).ThenReturn(core.NewSQLf("values[1] sql"), nil)
+				pegomock.When(left.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
+				pegomock.When(values[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("values[0] sql"), nil)
+				pegomock.When(values[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("values[1] sql"), nil)
 			})
 
 			JustBeforeEach(func() {
-				sql, err = newOperator.GetSQL(d)
+				s, err = newOperator.ToSQL(d)
 			})
 
 			It("Returns Operator SQL string", func() {
-				Expect(sql).ToNot(BeNil())
-				Expect(sql).To(MatchSQLString("operator sql"))
+				Expect(s).ToNot(BeNil())
+				Expect(s).To(MatchSQLString("operator sql"))
 			})
 
 			It("Returns no errors", func() {
@@ -76,7 +77,7 @@ var _ = Describe("Operator", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -91,7 +92,7 @@ var _ = Describe("Operator", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -102,11 +103,11 @@ var _ = Describe("Operator", func() {
 			Context("left returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(left.GetSQL(d)).ThenReturn(nil, errors.New("left error"))
+					pegomock.When(left.ToSQL(d)).ThenReturn(nil, errors.New("left error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -121,7 +122,7 @@ var _ = Describe("Operator", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -132,11 +133,11 @@ var _ = Describe("Operator", func() {
 			Context("first value returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(values[0].GetSQL(d)).ThenReturn(nil, errors.New("values[0] error"))
+					pegomock.When(values[0].ToSQL(d)).ThenReturn(nil, errors.New("values[0] error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -151,7 +152,7 @@ var _ = Describe("Operator", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -162,11 +163,11 @@ var _ = Describe("Operator", func() {
 			Context("second value returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(values[1].GetSQL(d)).ThenReturn(nil, errors.New("values[1] error"))
+					pegomock.When(values[1].ToSQL(d)).ThenReturn(nil, errors.New("values[1] error"))
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -181,7 +182,7 @@ var _ = Describe("Operator", func() {
 				})
 
 				It("Returns no SQL", func() {
-					Expect(sql).To(BeNil())
+					Expect(s).To(BeNil())
 				})
 
 				It("Returns an error", func() {
@@ -195,12 +196,12 @@ var _ = Describe("Operator", func() {
 type operatorDialectSuccess struct{}
 
 func (operatorDialectSuccess) GetName() string { return "operator success" }
-func (operatorDialectSuccess) Operator(core.SQL, operator.Operand, []core.SQL) (core.SQL, error) {
-	return core.NewSQLf("operator sql"), nil
+func (operatorDialectSuccess) Operator(sql.Data, operator.Operand, []sql.Data) (sql.Data, error) {
+	return sql.String("operator sql"), nil
 }
 
 type operatorDialectFailure struct{ operatorDialectSuccess }
 
-func (operatorDialectFailure) Operator(core.SQL, operator.Operand, []core.SQL) (core.SQL, error) {
+func (operatorDialectFailure) Operator(sql.Data, operator.Operand, []sql.Data) (sql.Data, error) {
 	return nil, errors.New("operator failure")
 }

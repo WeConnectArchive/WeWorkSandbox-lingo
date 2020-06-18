@@ -6,6 +6,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 func NewTimeWithAlias(e core.Table, name, alias string) Time {
@@ -43,7 +44,7 @@ func (t Time) As(alias string) Time {
 	return t
 }
 
-func (t Time) GetSQL(d core.Dialect) (core.SQL, error) {
+func (t Time) ToSQL(d core.Dialect) (sql.Data, error) {
 	return ExpandColumnWithDialect(d, t)
 }
 

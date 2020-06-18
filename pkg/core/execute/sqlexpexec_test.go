@@ -2,7 +2,7 @@ package execute_test
 
 import (
 	"context"
-	"database/sql"
+	gosql "database/sql"
 	"errors"
 	"fmt"
 	"sync"
@@ -15,6 +15,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/execute"
 	"github.com/weworksandbox/lingo/pkg/core/execute/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var _ = Describe("sqlexpexec.go", func() {
@@ -43,7 +44,7 @@ var _ = Describe("sqlexpexec.go", func() {
 		Context("#BeginTx", func() {
 			var (
 				ctx  context.Context
-				opts sql.TxOptions
+				opts gosql.TxOptions
 
 				txSQLExp execute.TxSQLExp
 				err      error
@@ -52,8 +53,8 @@ var _ = Describe("sqlexpexec.go", func() {
 			)
 			BeforeEach(func() {
 				ctx = context.Background()
-				opts = sql.TxOptions{
-					Isolation: sql.LevelLinearizable,
+				opts = gosql.TxOptions{
+					Isolation: gosql.LevelLinearizable,
 					ReadOnly:  true,
 				}
 
@@ -84,7 +85,7 @@ var _ = Describe("sqlexpexec.go", func() {
 		Context("#InTx", func() {
 			var (
 				ctx      context.Context
-				opts     sql.TxOptions
+				opts     gosql.TxOptions
 				execThis execute.ExecSQLExpInTx
 
 				err error
@@ -97,8 +98,8 @@ var _ = Describe("sqlexpexec.go", func() {
 			)
 			BeforeEach(func() {
 				ctx = context.Background()
-				opts = sql.TxOptions{
-					Isolation: sql.LevelLinearizable,
+				opts = gosql.TxOptions{
+					Isolation: gosql.LevelLinearizable,
 					ReadOnly:  true,
 				}
 				execThis = func(ctx context.Context, s execute.ExpQuery) error {
@@ -222,7 +223,7 @@ var _ = Describe("sqlexpexec.go", func() {
 				rowScanner execute.RowScanner
 				err        error
 
-				expSQL core.SQL
+				expSQL sql.Data
 				tSQL   string
 				sVals  []interface{}
 			)
@@ -236,11 +237,11 @@ var _ = Describe("sqlexpexec.go", func() {
 					"string value",
 				}
 
-				expSQL = NewMockCoreSQL()
+				expSQL = NewMockData()
 				pegomock.When(expSQL.String()).ThenReturn(tSQL)
 				pegomock.When(expSQL.Values()).ThenReturn(sVals)
 
-				pegomock.When(exp.GetSQL(matchers.AnyCoreDialect())).
+				pegomock.When(exp.ToSQL(matchers.AnyCoreDialect())).
 					ThenReturn(expSQL, nil)
 
 				pegomock.When(s.Query(
@@ -255,9 +256,9 @@ var _ = Describe("sqlexpexec.go", func() {
 				Expect(rowScanner).ToNot(BeNil())
 			})
 
-			Context("GetSQL returns an error", func() {
+			Context("ToSQL returns an error", func() {
 				BeforeEach(func() {
-					pegomock.When(exp.GetSQL(matchers.AnyCoreDialect())).
+					pegomock.When(exp.ToSQL(matchers.AnyCoreDialect())).
 						ThenReturn(nil, errors.New("random error"))
 				})
 				It("Returns an error", func() {
@@ -276,7 +277,7 @@ var _ = Describe("sqlexpexec.go", func() {
 				sVal string
 				err  error
 
-				expSQL core.SQL
+				expSQL sql.Data
 				tSQL   string
 				sVals  []interface{}
 			)
@@ -290,11 +291,11 @@ var _ = Describe("sqlexpexec.go", func() {
 					"string value",
 				}
 
-				expSQL = NewMockCoreSQL()
+				expSQL = NewMockData()
 				pegomock.When(expSQL.String()).ThenReturn(tSQL)
 				pegomock.When(expSQL.Values()).ThenReturn(sVals)
 
-				pegomock.When(exp.GetSQL(matchers.AnyCoreDialect())).
+				pegomock.When(exp.ToSQL(matchers.AnyCoreDialect())).
 					ThenReturn(expSQL, nil)
 
 				pegomock.When(s.QueryRow(
@@ -330,9 +331,9 @@ var _ = Describe("sqlexpexec.go", func() {
 				))
 			})
 
-			Context("GetSQL returns an error", func() {
+			Context("ToSQL returns an error", func() {
 				BeforeEach(func() {
-					pegomock.When(exp.GetSQL(matchers.AnyCoreDialect())).
+					pegomock.When(exp.ToSQL(matchers.AnyCoreDialect())).
 						ThenReturn(nil, errors.New("random error"))
 				})
 				It("Returns an error", func() {
@@ -347,10 +348,10 @@ var _ = Describe("sqlexpexec.go", func() {
 				ctx context.Context
 				exp core.Expression
 
-				result sql.Result
+				result gosql.Result
 				err    error
 
-				expSQL core.SQL
+				expSQL sql.Data
 				tSQL   string
 				sVals  []interface{}
 			)
@@ -364,11 +365,11 @@ var _ = Describe("sqlexpexec.go", func() {
 					"string value",
 				}
 
-				expSQL = NewMockCoreSQL()
+				expSQL = NewMockData()
 				pegomock.When(expSQL.String()).ThenReturn(tSQL)
 				pegomock.When(expSQL.Values()).ThenReturn(sVals)
 
-				pegomock.When(exp.GetSQL(matchers.AnyCoreDialect())).
+				pegomock.When(exp.ToSQL(matchers.AnyCoreDialect())).
 					ThenReturn(expSQL, nil)
 
 				sqlResult := NewMockResult()
@@ -387,9 +388,9 @@ var _ = Describe("sqlexpexec.go", func() {
 				Expect(result).ToNot(BeNil())
 			})
 
-			Context("GetSQL returns an error", func() {
+			Context("ToSQL returns an error", func() {
 				BeforeEach(func() {
-					pegomock.When(exp.GetSQL(matchers.AnyCoreDialect())).
+					pegomock.When(exp.ToSQL(matchers.AnyCoreDialect())).
 						ThenReturn(nil, errors.New("random error"))
 				})
 				It("Returns an error", func() {
