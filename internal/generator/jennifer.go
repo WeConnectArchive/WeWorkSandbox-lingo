@@ -52,3 +52,19 @@ func transformErr(e error) error {
 
 	return errors.New(originalErrorStr + "\n" + newErrStr.String())
 }
+
+func createBuildTag(tags ...string) string {
+	//revive:disable:unhandled-error This is a string builder, never errors.
+	var s strings.Builder
+	s.WriteString(buildTag)
+	s.WriteRune(' ')
+
+	for idx, t := range tags {
+		if idx > 0 {
+			s.WriteRune(',')
+		}
+		s.WriteString(t)
+	}
+	//revive:enable:unhandled-error
+	return s.String()
+}
