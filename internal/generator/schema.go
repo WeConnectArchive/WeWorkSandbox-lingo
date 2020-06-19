@@ -9,6 +9,7 @@ import (
 func GenerateSchema(schema string) (string, error) {
 	f := jen.NewFile(ToPackageName(schema))
 	f.HeaderComment(fmt.Sprintf(fmtSchemaHeaderComment, schema))
+	f.HeaderComment(createBuildTag(tagNoLingo))
 	f.Add(createSchemaInstance(schema))
 	f.Line()
 	f.Add(createGetSchema())
