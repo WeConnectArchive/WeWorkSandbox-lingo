@@ -34,9 +34,25 @@ func (Default) GetName() string {
 }
 
 func (Default) ValueFormat(count int) sql.Data {
-	s := strings.Repeat("?, ", count)
-	s = strings.TrimSuffix(s, ", ")
-	return sql.String(s)
+	if count == 0 {
+		return sql.Empty()
+	}
+
+	const (
+		qMark = "?"
+		comSp = ", " + qMark
+	)
+
+	var s strings.Builder
+
+	numCommas := (count - 1) * len(comSp) // Subtract 1 cuz we add the len of the first question mark next
+	s.Grow(numCommas + len(qMark))        // Add the first question mark
+
+	s.WriteString(qMark)
+	for idx := 1; idx < count; idx++ {
+		s.WriteString(comSp)
+	}
+	return sql.String(s.String())
 }
 
 func (Default) SetValueFormat() string {

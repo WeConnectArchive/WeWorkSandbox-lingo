@@ -4,7 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	j "github.com/weworksandbox/lingo/pkg/core/join"
+	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
@@ -20,11 +20,12 @@ func SelectFrom(e core.Table) *SelectQuery {
 }
 
 type SelectQuery struct {
-	from  core.Expression
-	join  []core.Expression
-	where []core.Expression
-	order []core.Expression
-	paths []core.Expression
+	from     core.Expression
+	join     []core.Expression
+	where    []core.Expression
+	order    []core.Expression
+	paths    []core.Expression
+	modifier *Modifier
 }
 
 func (q *SelectQuery) From(e core.Table) *SelectQuery {
@@ -42,8 +43,15 @@ func (q *SelectQuery) OrderBy(exp core.Expression, direction sort.Direction) *Se
 	return q
 }
 
-func (q *SelectQuery) Join(left core.Expression, joinType j.Type, on core.Expression) *SelectQuery {
+// Join an expression with a specific joinType using an on statement.
+func (q *SelectQuery) Join(left core.Expression, joinType join.Type, on core.Expression) *SelectQuery {
 	q.join = append(q.join, expression.NewJoinOn(left, joinType, on))
+	return q
+}
+
+// Restrict the query with things like limits and offsets.
+func (q *SelectQuery) Restrict(m Modifier) *SelectQuery {
+	q.modifier = &m
 	return q
 }
 
@@ -59,10 +67,10 @@ func (q *SelectQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 	}
 	s = s.AppendWithSpace(sql.String("FROM")).AppendWithSpace(from)
 
-	if join, err := JoinToSQL(d, sepSpace, q.join); err != nil {
+	if joinSQL, err := JoinToSQL(d, sepSpace, q.join); err != nil {
 		return nil, expression.ErrorAroundSQL(err, s.String())
-	} else if join.String() != "" {
-		s = s.AppendWithSpace(join)
+	} else if joinSQL.String() != "" {
+		s = s.AppendWithSpace(joinSQL)
 	}
 
 	if where, err := BuildWhereSQL(d, q.where); err != nil {
@@ -76,6 +84,9 @@ func (q *SelectQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 	} else if orderBy.String() != "" {
 		s = s.AppendWithSpace(sql.String("ORDER BY")).AppendWithSpace(orderBy)
 	}
+
+	// TODO driver stuffs to see if it can do the modifiers.
+	//q.modifier
 	return s, nil
 }
 
