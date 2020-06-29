@@ -8,16 +8,34 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/query"
 )
 
-func ExampleSelectFrom() {
+func ExampleSelectQuery_From_where() {
 	d, _ := dialect.NewDefault()
 
-	pageNum := int64(2)
-	pageSize := int64(5)
-
-	modify := query.Page(pageSize, pageNum * pageSize)
-
 	fa := qfilmactor.As("fa")
-	s, _ := query.SelectFrom(fa).Restrict(modify).ToSQL(d)
-	fmt.Println(s)
-	// Output: SELECT fa.actor_id, fa.film_id, fa.last_update FROM film_actor AS fa LIMIT ? OFFSET ?
+	s, _ := query.Select(fa.FilmId()).From(fa).Where(fa.ActorId().Between(1, 10)).ToSQL(d)
+
+	fmt.Println(s.String())
+	fmt.Println(s.Values())
+	// Output:
+	//SELECT fa.film_id FROM film_actor AS fa WHERE fa.actor_id BETWEEN (? AND ?)
+	//[1 10]
+}
+
+func ExampleSelectQuery_Restrict() {
+	d, _ := dialect.NewDefault()
+
+	const maxPageNum = 1 // To limit output for example
+	pageSize := uint64(150)
+	fa := qfilmactor.As("fa")
+	q := query.SelectFrom(fa)
+
+	for page := uint64(0); page < maxPageNum; page++ {
+		s, _ := q.Restrict(query.Page(pageSize, page*pageSize)).ToSQL(d)
+
+		fmt.Println(s.String())
+		fmt.Println(s.Values())
+		// Output:
+		//SELECT fa.actor_id, fa.film_id, fa.last_update FROM film_actor AS fa LIMIT ? OFFSET ?
+		//[150 0]
+	}
 }

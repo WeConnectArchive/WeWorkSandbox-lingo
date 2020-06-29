@@ -29,6 +29,7 @@ var _ = Describe("select", func() {
 			direction []sort.Direction
 			joins     [][]core.Expression
 			joinType  []join.Type
+			modifier  query.Modifier
 
 			q *query.SelectQuery
 		)
@@ -80,10 +81,15 @@ var _ = Describe("select", func() {
 			pegomock.When(joins[0][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[0][1].sql"), nil)
 			pegomock.When(joins[1][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[1][0].sql"), nil)
 			pegomock.When(joins[1][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joins[1][1].sql"), nil)
+
+			modifier = NewMockModifier()
+			pegomock.When(modifier.IsZero()).ThenReturn(false)
+			pegomock.When(modifier.Limit()).ThenReturn(uint64(10), true)
+			pegomock.When(modifier.Offset()).ThenReturn(uint64(3), true)
 		})
 
 		JustBeforeEach(func() {
-			q = query.Select(paths...).From(from).Where(where...)
+			q = query.Select(paths...).From(from).Where(where...).Restrict(modifier)
 			for i, order := range orderBy {
 				q = q.OrderBy(order, direction[i])
 			}
@@ -110,7 +116,7 @@ var _ = Describe("select", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
+				Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC LIMIT ? OFFSET ?"))
 			})
 
 			It("Returns no error", func() {
@@ -184,7 +190,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC LIMIT ? OFFSET ?"))
 				})
 
 				It("Returns no error", func() {
@@ -229,7 +235,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC LIMIT ? OFFSET ?"))
 				})
 
 				It("Returns no error", func() {
@@ -259,7 +265,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql)"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql) LIMIT ? OFFSET ?"))
 				})
 
 				It("Returns no error", func() {
@@ -279,6 +285,22 @@ var _ = Describe("select", func() {
 
 				It("Returns a order by error", func() {
 					Expect(err).To(MatchError(ContainSubstring("order by error")))
+				})
+			})
+
+			Context("modifier IsZero = true", func() {
+
+				BeforeEach(func() {
+					modifier = NewMockModifier()
+					pegomock.When(modifier.IsZero()).ThenReturn(true)
+				})
+
+				It("Returns a valid SQL", func() {
+					Expect(sql).To(MatchSQLString("SELECT path[0].sql, path[1].sql FROM from.sql LEFT JOIN joins[0][0].sql ON joins[0][1].sql RIGHT JOIN joins[1][0].sql ON joins[1][1].sql WHERE (where[0].sql AND where[1].sql) ORDER BY orderBy[0].sql ASC, orderBy[1].sql DESC"))
+				})
+
+				It("Returns no error", func() {
+					Expect(err).ToNot(HaveOccurred())
 				})
 			})
 		})

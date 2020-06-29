@@ -10,13 +10,13 @@ import (
 
 var _ = Describe("modifier.go", func() {
 	const (
-		zero = int64(0)
-		limit = int64(12)
-		offset = int64(56)
+		zero   = uint64(0)
+		limit  = uint64(12)
+		offset = uint64(56)
 	)
 	table.DescribeTable(
 		"Modifier",
-		func(m query.Modifier, l int64, lSet bool, o int64, oSet bool) {
+		func(m query.Modifier, l uint64, lSet bool, o uint64, oSet bool) {
 			value, ok := m.Limit()
 			Expect(ok).To(Equal(lSet))
 			Expect(value).To(Equal(l))

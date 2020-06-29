@@ -7,7 +7,6 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/json"
-	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -31,30 +30,6 @@ type MySQL struct{ Default }
 
 func (MySQL) GetName() string {
 	return "MySQL"
-}
-
-// Modify will build: LIMIT [offset,]row_count
-func (d Default) Modify(m query.Modifier) (sql.Data, error) {
-	limit, lWasSet := m.Limit()
-	offset, oWasSet := m.Offset()
-
-	if !lWasSet && !oWasSet {
-		return sql.Empty(), nil
-	}
-
-	s := sql.String("LIMIT ")
-	if oWasSet {
-		offsetSQL, err := d.Value([]interface{}{offset})
-		if err != nil {
-			return nil, expression.ErrorAroundSQL(err, s.String())
-		}
-		s = s.Append(offsetSQL).Append(sql.String(","))
-	}
-	limitSQL, err := d.Value([]interface{}{limit})
-	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
-	}
-	return s.Append(limitSQL), nil
 }
 
 func (m MySQL) JSONOperator(left sql.Data, op json.Operand, values []sql.Data) (sql.Data, error) {
