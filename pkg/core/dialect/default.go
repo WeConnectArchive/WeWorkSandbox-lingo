@@ -5,8 +5,10 @@ import (
 	"strings"
 
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/join"
 	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
@@ -34,9 +36,25 @@ func (Default) GetName() string {
 }
 
 func (Default) ValueFormat(count int) sql.Data {
-	s := strings.Repeat("?, ", count)
-	s = strings.TrimSuffix(s, ", ")
-	return sql.String(s)
+	if count == 0 {
+		return sql.Empty()
+	}
+
+	const (
+		qMark = "?"
+		comSp = ", " + qMark
+	)
+
+	var s strings.Builder
+
+	numCommas := (count - 1) * len(comSp) // Subtract 1 cuz we add the len of the first question mark next
+	s.Grow(numCommas + len(qMark))        // Add the first question mark
+
+	_, _ = s.WriteString(qMark)
+	for idx := 1; idx < count; idx++ {
+		_, _ = s.WriteString(comSp)
+	}
+	return sql.String(s.String())
 }
 
 func (Default) SetValueFormat() string {
@@ -73,4 +91,27 @@ func (Default) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error
 
 func (d Default) Set(left sql.Data, value sql.Data) (sql.Data, error) {
 	return Set(d, left, value)
+}
+
+// Modify will build: [LIMIT limit] [OFFSET offset]
+func (d Default) Modify(m query.Modifier) (sql.Data, error) {
+	limit, lWasSet := m.Limit()
+	offset, oWasSet := m.Offset()
+
+	s := sql.Empty()
+	if lWasSet {
+		limitSQL, err := d.Value([]interface{}{limit})
+		if err != nil {
+			return nil, err
+		}
+		s = sql.String("LIMIT").AppendWithSpace(limitSQL)
+	}
+	if oWasSet {
+		offsetSQL, err := d.Value([]interface{}{offset})
+		if err != nil {
+			return nil, expression.ErrorAroundSQL(err, s.String())
+		}
+		s = s.AppendWithSpace(sql.String("OFFSET").AppendWithSpace(offsetSQL))
+	}
+	return s, nil
 }

@@ -156,6 +156,7 @@ func (Test) Functional() error {
 	)(pathsPlusTestArgs)
 }
 
+// Runs just the integration tests against an already running DB instance.
 func (Test) Integration() error {
 	absConfig, err := filepath.Abs(testSchemaSakilaLingoConfigFile)
 	if err != nil {
@@ -288,7 +289,7 @@ func GoVet() error {
 	return nil
 }
 
-// Run `revive` with the appropriate configs
+// Runs `revive` with the appropriate configs
 func Revive() error {
 	// Allows for Cmd + Click on the line in logs to go directly to it
 	var formatter = "friendly"
