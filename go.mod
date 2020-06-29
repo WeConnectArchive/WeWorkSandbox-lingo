@@ -19,8 +19,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.0
-	go.opentelemetry.io/otel v0.6.0
+	go.opentelemetry.io/otel v0.7.0
 	golang.org/x/tools v0.0.0-20200225230052-807dcd883420 // indirect
-	google.golang.org/grpc v1.29.1
+	google.golang.org/grpc v1.30.0
 	gopkg.in/ini.v1 v1.55.0 // indirect
 )
