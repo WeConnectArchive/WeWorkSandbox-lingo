@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/join"
+	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -12,20 +13,25 @@ type Joiner interface {
 }
 
 func NewJoinOn(left core.Expression, joinType join.Type, on core.Expression) core.ComboExpression {
-	j := &joinOn{
+	return joinOn{
 		left:     left,
 		on:       on,
 		joinType: joinType,
 	}
-	j.exp = j
-	return j
 }
 
 type joinOn struct {
-	ComboExpression
 	left     core.Expression
 	on       core.Expression
 	joinType join.Type
+}
+
+func (j joinOn) And(exp core.Expression) core.ComboExpression {
+	return NewOperator(j, operator.And, exp)
+}
+
+func (j joinOn) Or(exp core.Expression) core.ComboExpression {
+	return NewOperator(j, operator.Or, exp)
 }
 
 func (j joinOn) ToSQL(d core.Dialect) (sql.Data, error) {

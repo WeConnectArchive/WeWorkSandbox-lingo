@@ -11,16 +11,13 @@ type Order interface {
 }
 
 func NewOrderBy(left core.Expression, direction sort.Direction) core.OrderBy {
-	e := &orderBy{
+	return orderBy{
 		left:      left,
 		direction: direction,
 	}
-	e.exp = e
-	return e
 }
 
 type orderBy struct {
-	ComboExpression
 	left      core.Expression
 	direction sort.Direction
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/weworksandbox/lingo/pkg/core"
+	"github.com/weworksandbox/lingo/pkg/core/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -15,16 +16,21 @@ type Value interface {
 }
 
 func NewValue(v interface{}) core.ComboExpression {
-	e := &value{
+	return value{
 		value: v,
 	}
-	e.exp = e
-	return e
 }
 
 type value struct {
-	ComboExpression
 	value interface{}
+}
+
+func (v value) And(exp core.Expression) core.ComboExpression {
+	return NewOperator(v, operator.And, exp)
+}
+
+func (v value) Or(exp core.Expression) core.ComboExpression {
+	return NewOperator(v, operator.Or, exp)
 }
 
 func (v value) ToSQL(d core.Dialect) (sql.Data, error) {

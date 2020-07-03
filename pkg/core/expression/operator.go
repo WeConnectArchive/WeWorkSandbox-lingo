@@ -14,20 +14,25 @@ type Operator interface {
 }
 
 func NewOperator(left core.Expression, op operator.Operand, expressions ...core.Expression) core.ComboExpression {
-	e := &operate{
+	return operate{
 		left:        left,
 		operand:     op,
 		expressions: expressions,
 	}
-	e.exp = e
-	return e
 }
 
 type operate struct {
-	ComboExpression
 	left        core.Expression
 	operand     operator.Operand
 	expressions []core.Expression
+}
+
+func (o operate) And(exp core.Expression) core.ComboExpression {
+	return NewOperator(o, operator.And, exp)
+}
+
+func (o operate) Or(exp core.Expression) core.ComboExpression {
+	return NewOperator(o, operator.Or, exp)
 }
 
 func (o operate) ToSQL(d core.Dialect) (sql.Data, error) {
