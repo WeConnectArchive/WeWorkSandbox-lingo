@@ -161,7 +161,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Eq, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Eq, expression.NewValue(value))))
 			})
 		})
 
@@ -182,7 +182,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Eq, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Eq, value)))
 			})
 		})
 
@@ -203,7 +203,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotEq, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotEq, expression.NewValue(value))))
 			})
 		})
 
@@ -224,7 +224,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotEq, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotEq, value)))
 			})
 		})
 
@@ -240,7 +240,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Null)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Null)))
 			})
 		})
 
@@ -256,7 +256,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotNull)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotNull)))
 			})
 		})
 
@@ -277,7 +277,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Like, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Like, expression.NewValue(value))))
 			})
 		})
 
@@ -298,7 +298,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Like, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Like, value)))
 			})
 		})
 
@@ -319,7 +319,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotLike, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotLike, expression.NewValue(value))))
 			})
 		})
 
@@ -340,7 +340,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotLike, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotLike, value)))
 			})
 		})
 
@@ -365,7 +365,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.In, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.In, expression.NewValue(value))))
 			})
 		})
 
@@ -389,7 +389,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.In, value[0], value[1])))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.In, value[0], value[1])))
 			})
 		})
 
@@ -414,7 +414,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotIn, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotIn, expression.NewValue(value))))
 			})
 		})
 
@@ -438,7 +438,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotIn, value[0], value[1])))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotIn, value[0], value[1])))
 			})
 		})
 	})

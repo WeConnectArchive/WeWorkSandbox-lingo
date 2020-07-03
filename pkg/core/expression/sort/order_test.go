@@ -1,4 +1,4 @@
-package expression_test
+package sort_test
 
 import (
 	"errors"
@@ -9,7 +9,6 @@ import (
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
@@ -32,7 +31,7 @@ var _ = Describe("Order", func() {
 		})
 
 		JustBeforeEach(func() {
-			orderBy = expression.NewOrderBy(left, direction)
+			orderBy = sort.NewOrderBy(left, direction)
 		})
 
 		It("Returns a `core.OrderBy`", func() {

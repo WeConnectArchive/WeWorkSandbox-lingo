@@ -1,4 +1,4 @@
-package expression_test
+package json_test
 
 import (
 	"errors"
@@ -21,27 +21,27 @@ var _ = Describe("JSON", func() {
 
 		var (
 			left        core.Expression
-			op          json.Operand
+			op          Operand
 			expressions []core.Expression
 
 			operation core.ComboExpression
 		)
 
 		BeforeEach(func() {
-			left = NewMockExpression()
+			left = expression.NewMockExpression()
 			pegomock.When(left.ToSQL(AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
 
-			op = json.Extract
+			op = Extract
 			expressions = []core.Expression{
-				NewMockExpression(),
-				NewMockExpression(),
+				expression.NewMockExpression(),
+				expression.NewMockExpression(),
 			}
 			pegomock.When(expressions[0].ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expressions[0]"), nil)
 			pegomock.When(expressions[1].ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expressions[1]"), nil)
 		})
 
 		JustBeforeEach(func() {
-			operation = expression.NewJSONOperation(left, op, expressions...)
+			operation = json.NewJSONOperation(left, op, expressions...)
 		})
 
 		It("Creates a valid operation", func() {
@@ -76,7 +76,7 @@ var _ = Describe("JSON", func() {
 			Context("Dialect does not support `JSONOperator`", func() {
 
 				BeforeEach(func() {
-					d = NewMockDialect()
+					d = expression.NewMockDialect()
 				})
 
 				It("Returns a nil SQL", func() {
@@ -171,12 +171,12 @@ var _ = Describe("JSON", func() {
 type jsonDialectSuccess struct{}
 
 func (jsonDialectSuccess) GetName() string { return "json success" }
-func (jsonDialectSuccess) JSONOperator(sql.Data, json.Operand, []sql.Data) (sql.Data, error) {
+func (jsonDialectSuccess) JSONOperator(sql.Data, Operand, []sql.Data) (sql.Data, error) {
 	return sql.String("json sql"), nil
 }
 
 type jsonDialectFailure struct{ jsonDialectSuccess }
 
-func (jsonDialectFailure) JSONOperator(sql.Data, json.Operand, []sql.Data) (sql.Data, error) {
+func (jsonDialectFailure) JSONOperator(sql.Data, Operand, []sql.Data) (sql.Data, error) {
 	return nil, errors.New("json failure")
 }

@@ -55,89 +55,89 @@ func (b Binary) ToExpression(setExp core.Expression) core.Set {
 }
 
 func (b Binary) Eq(equalTo []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.Eq, expression.NewValue(equalTo))
+	return operator.NewOperator(b, operator.Eq, expression.NewValue(equalTo))
 }
 
 func (b Binary) EqPath(equalTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.Eq, equalTo)
+	return operator.NewOperator(b, operator.Eq, equalTo)
 }
 
 func (b Binary) NotEq(notEqualTo []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotEq, expression.NewValue(notEqualTo))
+	return operator.NewOperator(b, operator.NotEq, expression.NewValue(notEqualTo))
 }
 
 func (b Binary) NotEqPath(notEqualTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotEq, notEqualTo)
+	return operator.NewOperator(b, operator.NotEq, notEqualTo)
 }
 
 func (b Binary) LT(lessThan []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.LessThan, expression.NewValue(lessThan))
+	return operator.NewOperator(b, operator.LessThan, expression.NewValue(lessThan))
 }
 
 func (b Binary) LTPath(lessThan core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.LessThan, lessThan)
+	return operator.NewOperator(b, operator.LessThan, lessThan)
 }
 
 func (b Binary) LTOrEq(lessThanOrEqual []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.LessThanOrEqual, expression.NewValue(lessThanOrEqual))
+	return operator.NewOperator(b, operator.LessThanOrEqual, expression.NewValue(lessThanOrEqual))
 }
 
 func (b Binary) LTOrEqPath(lessThanOrEqual core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.LessThanOrEqual, lessThanOrEqual)
+	return operator.NewOperator(b, operator.LessThanOrEqual, lessThanOrEqual)
 }
 
 func (b Binary) GT(greaterThan []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.GreaterThan, expression.NewValue(greaterThan))
+	return operator.NewOperator(b, operator.GreaterThan, expression.NewValue(greaterThan))
 }
 
 func (b Binary) GTPath(greaterThan core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.GreaterThan, greaterThan)
+	return operator.NewOperator(b, operator.GreaterThan, greaterThan)
 }
 
 func (b Binary) GTOrEq(greaterThanOrEqual []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.GreaterThanOrEqual, expression.NewValue(greaterThanOrEqual))
+	return operator.NewOperator(b, operator.GreaterThanOrEqual, expression.NewValue(greaterThanOrEqual))
 }
 
 func (b Binary) GTOrEqPath(greaterThanOrEqual core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.GreaterThanOrEqual, greaterThanOrEqual)
+	return operator.NewOperator(b, operator.GreaterThanOrEqual, greaterThanOrEqual)
 }
 
 func (b Binary) IsNull() core.ComboExpression {
-	return expression.NewOperator(b, operator.Null)
+	return operator.NewOperator(b, operator.Null)
 }
 
 func (b Binary) IsNotNull() core.ComboExpression {
-	return expression.NewOperator(b, operator.NotNull)
+	return operator.NewOperator(b, operator.NotNull)
 }
 
 func (b Binary) In(values ...[]byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.In, expression.NewValue(values))
+	return operator.NewOperator(b, operator.In, expression.NewValue(values))
 }
 
 func (b Binary) InPaths(values ...core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.In, values...)
+	return operator.NewOperator(b, operator.In, values...)
 }
 
 func (b Binary) NotIn(values ...[]byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotIn, expression.NewValue(values))
+	return operator.NewOperator(b, operator.NotIn, expression.NewValue(values))
 }
 
 func (b Binary) NotInPaths(values ...core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotIn, values...)
+	return operator.NewOperator(b, operator.NotIn, values...)
 }
 
 func (b Binary) Between(first, second []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.Between, expression.NewValue(first).And(expression.NewValue(second)))
+	return operator.NewOperator(b, operator.Between, expression.NewValue(first).And(expression.NewValue(second)))
 }
 
 func (b Binary) BetweenPaths(first, second core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.Between, expression.NewOperator(first, operator.And, second))
+	return operator.NewOperator(b, operator.Between, operator.NewOperator(first, operator.And, second))
 }
 
 func (b Binary) NotBetween(first, second []byte) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotBetween, expression.NewValue(first).And(expression.NewValue(second)))
+	return operator.NewOperator(b, operator.NotBetween, expression.NewValue(first).And(expression.NewValue(second)))
 }
 
 func (b Binary) NotBetweenPaths(first, second core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotBetween, expression.NewOperator(first, operator.And, second))
+	return operator.NewOperator(b, operator.NotBetween, operator.NewOperator(first, operator.And, second))
 }

@@ -39,13 +39,13 @@ func (q *SelectQuery) Where(exp ...core.Expression) *SelectQuery {
 }
 
 func (q *SelectQuery) OrderBy(exp core.Expression, direction sort.Direction) *SelectQuery {
-	q.order = append(q.order, expression.NewOrderBy(exp, direction))
+	q.order = append(q.order, sort.NewOrderBy(exp, direction))
 	return q
 }
 
 // Join an expression with a specific joinType using an on statement.
 func (q *SelectQuery) Join(left core.Expression, joinType join.Type, on core.Expression) *SelectQuery {
-	q.join = append(q.join, expression.NewJoinOn(left, joinType, on))
+	q.join = append(q.join, join.NewJoinOn(left, joinType, on))
 	return q
 }
 

@@ -20,6 +20,11 @@ var genericJoinTypeToStr = map[join.Type]string{
 	join.Right: "RIGHT JOIN",
 }
 
+var sortDirectionToStr = map[sort.Direction]string{
+	sort.Ascending:  "ASC",
+	sort.Descending: "DESC",
+}
+
 // AliasElseName will use the core.Alias if non-empty, else the Name is used.
 func AliasElseName(n core.Name) sql.Data {
 	alias, ok := n.(core.Alias)
@@ -103,21 +108,22 @@ func Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, 
 		opSQL := sql.String(op.String())
 		return left.AppendWithSpace(opSQL), nil
 	}
-	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("Operator", op), left.String())
+	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("operator.Operand", op), left.String())
 }
 
-func Join(left sql.Data, joinType string, on sql.Data) (sql.Data, error) {
+func Join(left sql.Data, joinType join.Type, on sql.Data) (sql.Data, error) {
 	if check.IsValueNilOrBlank(left.String()) {
 		return nil, expression.ExpressionIsNil("left")
 	}
 	if check.IsValueNilOrBlank(on.String()) {
 		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("on"), left.String())
 	}
-	if check.IsValueNilOrEmpty(joinType) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("joinType"), left.String())
+	jTypeStr, ok := genericJoinTypeToStr[joinType]
+	if !ok {
+		return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("join.Type", joinType), left.String())
 	}
 
-	return sql.String(joinType).
+	return sql.String(jTypeStr).
 		AppendWithSpace(left).
 		AppendWithSpace(sql.String("ON")).
 		AppendWithSpace(on), nil
@@ -145,9 +151,11 @@ func OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
 	if check.IsValueNilOrBlank(left.String()) {
 		return nil, expression.ExpressionIsNil("left")
 	}
-	switch direction {
-	case sort.Ascending, sort.Descending:
-		return left.AppendWithSpace(sql.String(direction.String())), nil
+
+	dirStr, ok := sortDirectionToStr[direction]
+	if !ok {
+		return nil, expression.EnumIsInvalid("direction", direction)
 	}
-	return nil, expression.EnumIsInvalid("direction", direction)
+
+	return left.AppendWithSpace(sql.String(dirStr)), nil
 }

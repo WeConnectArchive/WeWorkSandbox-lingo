@@ -1,4 +1,4 @@
-package expression_test
+package join_test
 
 import (
 	"errors"
@@ -9,7 +9,6 @@ import (
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/join"
 	"github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
@@ -34,7 +33,7 @@ var _ = Describe("JoinOn", func() {
 		})
 
 		JustBeforeEach(func() {
-			joinOn = expression.NewJoinOn(left, joinType, on)
+			joinOn = join.NewJoinOn(left, joinType, on)
 		})
 
 		It("Returns a `core.JoinOn`", func() {

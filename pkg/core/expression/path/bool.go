@@ -55,25 +55,25 @@ func (b Bool) ToExpression(setExp core.Expression) core.Set {
 }
 
 func (b Bool) Eq(equalTo bool) core.ComboExpression {
-	return expression.NewOperator(b, operator.Eq, expression.NewValue(equalTo))
+	return operator.NewOperator(b, operator.Eq, expression.NewValue(equalTo))
 }
 
 func (b Bool) EqPath(equalTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.Eq, equalTo)
+	return operator.NewOperator(b, operator.Eq, equalTo)
 }
 
 func (b Bool) NotEq(notEqualTo bool) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotEq, expression.NewValue(notEqualTo))
+	return operator.NewOperator(b, operator.NotEq, expression.NewValue(notEqualTo))
 }
 
 func (b Bool) NotEqPath(notEqualTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(b, operator.NotEq, notEqualTo)
+	return operator.NewOperator(b, operator.NotEq, notEqualTo)
 }
 
 func (b Bool) IsNull() core.ComboExpression {
-	return expression.NewOperator(b, operator.Null)
+	return operator.NewOperator(b, operator.Null)
 }
 
 func (b Bool) IsNotNull() core.ComboExpression {
-	return expression.NewOperator(b, operator.NotNull)
+	return operator.NewOperator(b, operator.NotNull)
 }

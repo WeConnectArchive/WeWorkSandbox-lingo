@@ -161,7 +161,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Eq, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Eq, expression.NewValue(value))))
 			})
 		})
 
@@ -182,7 +182,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Eq, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Eq, value)))
 			})
 		})
 
@@ -203,7 +203,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotEq, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotEq, expression.NewValue(value))))
 			})
 		})
 
@@ -224,7 +224,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotEq, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotEq, value)))
 			})
 		})
 
@@ -245,7 +245,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.LessThan, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.LessThan, expression.NewValue(value))))
 			})
 		})
 
@@ -266,7 +266,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.LessThan, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.LessThan, value)))
 			})
 		})
 
@@ -287,7 +287,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.LessThanOrEqual, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.LessThanOrEqual, expression.NewValue(value))))
 			})
 		})
 
@@ -308,7 +308,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.LessThanOrEqual, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.LessThanOrEqual, value)))
 			})
 		})
 
@@ -329,7 +329,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.GreaterThan, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.GreaterThan, expression.NewValue(value))))
 			})
 		})
 
@@ -350,7 +350,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.GreaterThan, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.GreaterThan, value)))
 			})
 		})
 
@@ -371,7 +371,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.GreaterThanOrEqual, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.GreaterThanOrEqual, expression.NewValue(value))))
 			})
 		})
 
@@ -392,7 +392,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.GreaterThanOrEqual, value)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.GreaterThanOrEqual, value)))
 			})
 		})
 
@@ -408,7 +408,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Null)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Null)))
 			})
 		})
 
@@ -424,7 +424,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotNull)))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotNull)))
 			})
 		})
 
@@ -449,7 +449,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.In, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.In, expression.NewValue(value))))
 			})
 		})
 
@@ -473,7 +473,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.In, value[0], value[1])))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.In, value[0], value[1])))
 			})
 		})
 
@@ -498,7 +498,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotIn, expression.NewValue(value))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotIn, expression.NewValue(value))))
 			})
 		})
 
@@ -522,7 +522,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotIn, value[0], value[1])))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotIn, value[0], value[1])))
 			})
 		})
 
@@ -545,7 +545,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Between, expression.NewValue(firstValue).And(expression.NewValue(secondValue)))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Between, expression.NewValue(firstValue).And(expression.NewValue(secondValue)))))
 			})
 		})
 
@@ -568,7 +568,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.Between, expression.NewOperator(firstValue, operator.And, secondValue))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.Between, operator.NewOperator(firstValue, operator.And, secondValue))))
 			})
 		})
 
@@ -591,7 +591,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotBetween, expression.NewValue(firstValue).And(expression.NewValue(secondValue)))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotBetween, expression.NewValue(firstValue).And(expression.NewValue(secondValue)))))
 			})
 		})
 
@@ -614,7 +614,7 @@ var _ = Describe("Float32", func() {
 
 			It("Returns a valid `core.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(expression.NewOperator(p, operator.NotBetween, expression.NewOperator(firstValue, operator.And, secondValue))))
+				Expect(result).To(Equal(operator.NewOperator(p, operator.NotBetween, operator.NewOperator(firstValue, operator.And, secondValue))))
 			})
 		})
 	})

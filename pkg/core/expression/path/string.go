@@ -55,57 +55,57 @@ func (s String) ToExpression(setExp core.Expression) core.Set {
 }
 
 func (s String) Eq(equalTo string) core.ComboExpression {
-	return expression.NewOperator(s, operator.Eq, expression.NewValue(equalTo))
+	return operator.NewOperator(s, operator.Eq, expression.NewValue(equalTo))
 }
 
 func (s String) EqPath(equalTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(s, operator.Eq, equalTo)
+	return operator.NewOperator(s, operator.Eq, equalTo)
 }
 
 func (s String) NotEq(notEqualTo string) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotEq, expression.NewValue(notEqualTo))
+	return operator.NewOperator(s, operator.NotEq, expression.NewValue(notEqualTo))
 }
 
 func (s String) NotEqPath(notEqualTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotEq, notEqualTo)
+	return operator.NewOperator(s, operator.NotEq, notEqualTo)
 }
 
 func (s String) Like(like string) core.ComboExpression {
-	return expression.NewOperator(s, operator.Like, expression.NewValue(like))
+	return operator.NewOperator(s, operator.Like, expression.NewValue(like))
 }
 
 func (s String) LikePath(likePath core.Expression) core.ComboExpression {
-	return expression.NewOperator(s, operator.Like, likePath)
+	return operator.NewOperator(s, operator.Like, likePath)
 }
 
 func (s String) NotLike(like string) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotLike, expression.NewValue(like))
+	return operator.NewOperator(s, operator.NotLike, expression.NewValue(like))
 }
 
 func (s String) NotLikePath(notLikePath core.Expression) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotLike, notLikePath)
+	return operator.NewOperator(s, operator.NotLike, notLikePath)
 }
 
 func (s String) IsNull() core.ComboExpression {
-	return expression.NewOperator(s, operator.Null)
+	return operator.NewOperator(s, operator.Null)
 }
 
 func (s String) IsNotNull() core.ComboExpression {
-	return expression.NewOperator(s, operator.NotNull)
+	return operator.NewOperator(s, operator.NotNull)
 }
 
 func (s String) In(values ...string) core.ComboExpression {
-	return expression.NewOperator(s, operator.In, expression.NewValue(values))
+	return operator.NewOperator(s, operator.In, expression.NewValue(values))
 }
 
 func (s String) InPaths(values ...core.Expression) core.ComboExpression {
-	return expression.NewOperator(s, operator.In, values...)
+	return operator.NewOperator(s, operator.In, values...)
 }
 
 func (s String) NotIn(values ...string) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotIn, expression.NewValue(values))
+	return operator.NewOperator(s, operator.NotIn, expression.NewValue(values))
 }
 
 func (s String) NotInPaths(values ...core.Expression) core.ComboExpression {
-	return expression.NewOperator(s, operator.NotIn, values...)
+	return operator.NewOperator(s, operator.NotIn, values...)
 }

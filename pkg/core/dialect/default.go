@@ -82,7 +82,7 @@ func (d Default) Value(value []interface{}) (sql.Data, error) {
 }
 
 func (Default) Join(left sql.Data, joinType join.Type, on sql.Data) (sql.Data, error) {
-	return Join(left, genericJoinTypeToStr[joinType], on)
+	return Join(left, joinType, on)
 }
 
 func (Default) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {

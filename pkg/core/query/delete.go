@@ -32,7 +32,7 @@ func (d DeleteQuery) Where(exp ...core.Expression) *DeleteQuery {
 // ON EmployeeRun=EmployeeNo
 // WHERE w.Company = '1' AND e.Date = '2013-05-06'
 func (d DeleteQuery) Join(left core.Expression, jt join.Type, on core.Expression) *DeleteQuery {
-	d.join = append(d.join, expression.NewJoinOn(left, jt, on))
+	d.join = append(d.join, join.NewJoinOn(left, jt, on))
 	return &d
 }
 

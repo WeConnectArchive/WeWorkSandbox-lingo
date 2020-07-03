@@ -1,17 +1,17 @@
-package expression
+package join
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression/join"
+	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 type Joiner interface {
-	Join(left sql.Data, joinType join.Type, on sql.Data) (sql.Data, error)
+	Join(left sql.Data, joinType Type, on sql.Data) (sql.Data, error)
 }
 
-func NewJoinOn(left core.Expression, joinType join.Type, on core.Expression) core.ComboExpression {
+func NewJoinOn(left core.Expression, joinType Type, on core.Expression) core.ComboExpression {
 	j := &joinOn{
 		left:     left,
 		on:       on,
@@ -22,20 +22,20 @@ func NewJoinOn(left core.Expression, joinType join.Type, on core.Expression) cor
 }
 
 type joinOn struct {
-	ComboExpression
+	expression.ComboExpression
 	left     core.Expression
 	on       core.Expression
-	joinType join.Type
+	joinType Type
 }
 
 func (j joinOn) ToSQL(d core.Dialect) (sql.Data, error) {
 	joiner, ok := d.(Joiner)
 	if !ok {
-		return nil, DialectFunctionNotSupported("Joiner")
+		return nil, expression.DialectFunctionNotSupported("Joiner")
 	}
 
 	if check.IsValueNilOrEmpty(j.on) {
-		return nil, ExpressionIsNil("on")
+		return nil, expression.ExpressionIsNil("on")
 	}
 	on, oerr := j.on.ToSQL(d)
 	if oerr != nil {
@@ -43,11 +43,11 @@ func (j joinOn) ToSQL(d core.Dialect) (sql.Data, error) {
 	}
 
 	if check.IsValueNilOrEmpty(j.left) {
-		return nil, ExpressionIsNil("left")
+		return nil, expression.ExpressionIsNil("left")
 	}
 	left, lerr := j.left.ToSQL(d)
 	if lerr != nil {
-		return nil, ErrorAroundSQL(lerr, on.String())
+		return nil, expression.ErrorAroundSQL(lerr, on.String())
 	}
 
 	return joiner.Join(left, j.joinType, on)

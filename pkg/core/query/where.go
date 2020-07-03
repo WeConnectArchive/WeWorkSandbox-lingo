@@ -2,7 +2,6 @@ package query
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
@@ -20,7 +19,7 @@ func BuildWhereSQL(d core.Dialect, values []core.Expression) (sql.Data, error) {
 		return where.Append(whereSQL), nil
 
 	case length > 1:
-		andOperator := expression.NewOperator(values[0], operator.And, values[1:]...)
+		andOperator := operator.NewOperator(values[0], operator.And, values[1:]...)
 		whereSQL, err := andOperator.ToSQL(d)
 		if err != nil {
 			return nil, err

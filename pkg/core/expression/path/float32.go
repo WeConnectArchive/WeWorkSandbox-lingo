@@ -55,89 +55,89 @@ func (f Float32) ToExpression(setExp core.Expression) core.Set {
 }
 
 func (f Float32) Eq(equalTo float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.Eq, expression.NewValue(equalTo))
+	return operator.NewOperator(f, operator.Eq, expression.NewValue(equalTo))
 }
 
 func (f Float32) EqPath(equalTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.Eq, equalTo)
+	return operator.NewOperator(f, operator.Eq, equalTo)
 }
 
 func (f Float32) NotEq(notEqualTo float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.NotEq, expression.NewValue(notEqualTo))
+	return operator.NewOperator(f, operator.NotEq, expression.NewValue(notEqualTo))
 }
 
 func (f Float32) NotEqPath(notEqualTo core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.NotEq, notEqualTo)
+	return operator.NewOperator(f, operator.NotEq, notEqualTo)
 }
 
 func (f Float32) LT(lessThan float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.LessThan, expression.NewValue(lessThan))
+	return operator.NewOperator(f, operator.LessThan, expression.NewValue(lessThan))
 }
 
 func (f Float32) LTPath(lessThan core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.LessThan, lessThan)
+	return operator.NewOperator(f, operator.LessThan, lessThan)
 }
 
 func (f Float32) LTOrEq(lessThanOrEqual float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.LessThanOrEqual, expression.NewValue(lessThanOrEqual))
+	return operator.NewOperator(f, operator.LessThanOrEqual, expression.NewValue(lessThanOrEqual))
 }
 
 func (f Float32) LTOrEqPath(lessThanOrEqual core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.LessThanOrEqual, lessThanOrEqual)
+	return operator.NewOperator(f, operator.LessThanOrEqual, lessThanOrEqual)
 }
 
 func (f Float32) GT(greaterThan float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.GreaterThan, expression.NewValue(greaterThan))
+	return operator.NewOperator(f, operator.GreaterThan, expression.NewValue(greaterThan))
 }
 
 func (f Float32) GTPath(greaterThan core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.GreaterThan, greaterThan)
+	return operator.NewOperator(f, operator.GreaterThan, greaterThan)
 }
 
 func (f Float32) GTOrEq(greaterThanOrEqual float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.GreaterThanOrEqual, expression.NewValue(greaterThanOrEqual))
+	return operator.NewOperator(f, operator.GreaterThanOrEqual, expression.NewValue(greaterThanOrEqual))
 }
 
 func (f Float32) GTOrEqPath(greaterThanOrEqual core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.GreaterThanOrEqual, greaterThanOrEqual)
+	return operator.NewOperator(f, operator.GreaterThanOrEqual, greaterThanOrEqual)
 }
 
 func (f Float32) IsNull() core.ComboExpression {
-	return expression.NewOperator(f, operator.Null)
+	return operator.NewOperator(f, operator.Null)
 }
 
 func (f Float32) IsNotNull() core.ComboExpression {
-	return expression.NewOperator(f, operator.NotNull)
+	return operator.NewOperator(f, operator.NotNull)
 }
 
 func (f Float32) In(values ...float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.In, expression.NewValue(values))
+	return operator.NewOperator(f, operator.In, expression.NewValue(values))
 }
 
 func (f Float32) InPaths(values ...core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.In, values...)
+	return operator.NewOperator(f, operator.In, values...)
 }
 
 func (f Float32) NotIn(values ...float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.NotIn, expression.NewValue(values))
+	return operator.NewOperator(f, operator.NotIn, expression.NewValue(values))
 }
 
 func (f Float32) NotInPaths(values ...core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.NotIn, values...)
+	return operator.NewOperator(f, operator.NotIn, values...)
 }
 
 func (f Float32) Between(first, second float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.Between, expression.NewValue(first).And(expression.NewValue(second)))
+	return operator.NewOperator(f, operator.Between, expression.NewValue(first).And(expression.NewValue(second)))
 }
 
 func (f Float32) BetweenPaths(first, second core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.Between, expression.NewOperator(first, operator.And, second))
+	return operator.NewOperator(f, operator.Between, operator.NewOperator(first, operator.And, second))
 }
 
 func (f Float32) NotBetween(first, second float32) core.ComboExpression {
-	return expression.NewOperator(f, operator.NotBetween, expression.NewValue(first).And(expression.NewValue(second)))
+	return operator.NewOperator(f, operator.NotBetween, expression.NewValue(first).And(expression.NewValue(second)))
 }
 
 func (f Float32) NotBetweenPaths(first, second core.Expression) core.ComboExpression {
-	return expression.NewOperator(f, operator.NotBetween, expression.NewOperator(first, operator.And, second))
+	return operator.NewOperator(f, operator.NotBetween, operator.NewOperator(first, operator.And, second))
 }

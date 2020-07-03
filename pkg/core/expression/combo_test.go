@@ -9,6 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
 	. "github.com/weworksandbox/lingo/pkg/core/expression/matchers"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -19,7 +20,7 @@ var _ = Describe("ComboExpression", func() {
 		var (
 			exp core.Expression
 
-			combo *expression.ComboExpression
+			combo expression.ComboExpression
 		)
 
 		BeforeEach(func() {
@@ -62,7 +63,7 @@ var _ = Describe("ComboExpression", func() {
 				)
 
 				BeforeEach(func() {
-					d = operatorDialectSuccess{}
+					d = operator.operatorDialectSuccess{}
 				})
 
 				JustBeforeEach(func() {
@@ -106,7 +107,7 @@ var _ = Describe("ComboExpression", func() {
 				)
 
 				BeforeEach(func() {
-					d = operatorDialectSuccess{}
+					d = operator.operatorDialectSuccess{}
 				})
 
 				JustBeforeEach(func() {
