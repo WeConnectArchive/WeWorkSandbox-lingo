@@ -2,7 +2,7 @@ package expression
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 )
 
 type ComboExpression struct {

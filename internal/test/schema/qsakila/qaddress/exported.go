@@ -4,7 +4,7 @@
 
 package qaddress
 
-import "github.com/weworksandbox/lingo/pkg/core/path"
+import "github.com/weworksandbox/lingo/pkg/core/expression/path"
 
 var instance = New()
 

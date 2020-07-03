@@ -4,8 +4,8 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/join"
-	"github.com/weworksandbox/lingo/pkg/core/sort"
+	"github.com/weworksandbox/lingo/pkg/core/expression/join"
+	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 

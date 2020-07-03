@@ -3,7 +3,7 @@ package query
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/json"
+	"github.com/weworksandbox/lingo/pkg/core/expression/json"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 

@@ -12,7 +12,7 @@ func GeneratePackageMembers(info TableInfo, columns []*column) (string, error) {
 	f := jen.NewFile(ToPackageName(tableName))
 	f.HeaderComment(fmt.Sprintf(fmtTableHeaderComment, info.Schema(), tableName))
 	f.HeaderComment(createBuildTag(tagNoLingo))
-	f.ImportName(pkgCorePath, "path")
+	f.ImportName(pkgCoreExpPath, "path")
 	f.Var().Id(packageInstance).Op("=").Id("New").Call()
 	f.Line()
 	f.Add(createExportedQFunc(tableName))
