@@ -1,47 +1,41 @@
 package sort
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-type Order interface {
+type OrderDialect interface {
 	OrderBy(left sql.Data, direction Direction) (sql.Data, error)
 }
 
 func NewOrderBy(left core.Expression, direction Direction) core.OrderBy {
-	e := &orderBy{
+	return orderBy{
 		left:      left,
 		direction: direction,
 	}
-	e.ComboExpression = expression.NewComboExpression(e)
-	return e
 }
 
 type orderBy struct {
-	expression.ComboExpression
 	left      core.Expression
 	direction Direction
 }
 
 func (o orderBy) ToSQL(d core.Dialect) (sql.Data, error) {
-	order, ok := d.(Order)
+	order, ok := d.(OrderDialect)
 	if !ok {
-		return nil, expression.DialectFunctionNotSupported("Order")
+		return nil, fmt.Errorf("dialect '%s' does not support 'OrderDialect'", d.GetName())
 	}
 
 	if o.left == nil {
-		return nil, expression.ExpressionIsNil("left")
+		return nil, errors.New("left of order by cannot be empty")
 	}
 	left, lerr := o.left.ToSQL(d)
 	if lerr != nil {
 		return nil, lerr
 	}
-
-	if o.direction == Unknown {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("direction"), left.String())
-	}
-
 	return order.OrderBy(left, o.direction)
 }

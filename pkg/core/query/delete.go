@@ -1,17 +1,18 @@
 package query
 
 import (
+	"errors"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/join"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 // Delete allows deletion of an entity
-func Delete(t core.Table) *DeleteQuery {
+func Delete(from core.Table) *DeleteQuery {
 	return &DeleteQuery{
-		from: t,
+		from: from,
 	}
 }
 
@@ -40,24 +41,24 @@ func (d DeleteQuery) ToSQL(dialect core.Dialect) (sql.Data, error) {
 	var s = sql.String("DELETE FROM")
 
 	if check.IsValueNilOrBlank(d.from) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("from"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("from cannot be empty"))
 	}
 
 	from, err := d.from.ToSQL(dialect)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	s = s.AppendWithSpace(from)
 
 	if joinSQL, err := JoinToSQL(dialect, sepSpace, d.join); err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	} else if joinSQL.String() != "" {
 		s = s.AppendWithSpace(joinSQL)
 	}
 
 	whereSQL, err := BuildWhereSQL(dialect, d.where)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	if whereSQL.String() != "" {
 		s = s.AppendWithSpace(whereSQL)

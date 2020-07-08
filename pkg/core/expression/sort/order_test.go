@@ -14,7 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("Order", func() {
+var _ = Describe("OrderDialect", func() {
 
 	Context("Calling `NewOrderBy`", func() {
 
@@ -65,7 +65,7 @@ var _ = Describe("Order", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support `Order`", func() {
+			Context("Dialect does not support `OrderDialect`", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
@@ -76,7 +76,7 @@ var _ = Describe("Order", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "Order")))
+					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "OrderDialect")))
 				})
 			})
 
@@ -146,12 +146,12 @@ var _ = Describe("Order", func() {
 type orderDialectSuccess struct{}
 
 func (orderDialectSuccess) GetName() string { return "order by dialect" }
-func (orderDialectSuccess) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
+func (orderDialectSuccess) OrderBy(_ sql.Data, _ sort.Direction) (sql.Data, error) {
 	return sql.String("order by sql"), nil
 }
 
 type orderDialectFailure struct{ orderDialectSuccess }
 
-func (orderDialectFailure) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
+func (orderDialectFailure) OrderBy(_ sql.Data, _ sort.Direction) (sql.Data, error) {
 	return nil, errors.New("order by failure")
 }

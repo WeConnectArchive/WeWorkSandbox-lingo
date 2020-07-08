@@ -68,7 +68,7 @@ var _ = Describe("JoinOn", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support `Joiner`", func() {
+			Context("Dialect does not support `JoinDialect`", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
@@ -79,7 +79,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "Joiner")))
+					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "JoinDialect")))
 				})
 			})
 

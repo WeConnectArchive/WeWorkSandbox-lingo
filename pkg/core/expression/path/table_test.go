@@ -41,7 +41,7 @@ var _ = Describe("Table", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		Context("`Dialect` does not support `ExpandTable`", func() {
+		Context("`Dialect` does not support `ExpandTableDialect`", func() {
 
 			BeforeEach(func() {
 				d = NewMockDialect()
@@ -52,7 +52,7 @@ var _ = Describe("Table", func() {
 			})
 
 			It("Returns a Dialect not supported error", func() {
-				Expect(err).To(MatchError(matchers.EqString("dialect function '%s' not supported", "ExpandTable")))
+				Expect(err).To(MatchError(matchers.EqString("dialect function '%s' not supported", "ExpandTableDialect")))
 			})
 		})
 
@@ -66,7 +66,7 @@ var _ = Describe("Table", func() {
 				Expect(sql).To(BeNil())
 			})
 
-			It("Returns the `Dialect` `ExpandTable` error", func() {
+			It("Returns the `Dialect` `ExpandTableDialect` error", func() {
 				Expect(err).To(MatchError("expand table error"))
 			})
 		})
@@ -76,12 +76,12 @@ var _ = Describe("Table", func() {
 type expandTableDialectSuccess struct{}
 
 func (expandTableDialectSuccess) GetName() string { return "expand table dialect" }
-func (expandTableDialectSuccess) ExpandTable(entity core.Table) (sql.Data, error) {
+func (expandTableDialectSuccess) ExpandTable(_ core.Table) (sql.Data, error) {
 	return sql.String("expand table sql"), nil
 }
 
 type expandTableDialectFailure struct{ expandTableDialectSuccess }
 
-func (expandTableDialectFailure) ExpandTable(entity core.Table) (sql.Data, error) {
+func (expandTableDialectFailure) ExpandTable(_ core.Table) (sql.Data, error) {
 	return nil, errors.New("expand table error")
 }

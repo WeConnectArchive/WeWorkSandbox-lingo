@@ -16,7 +16,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("Value", func() {
+var _ = Describe("ValueDialect", func() {
 
 	Context("Calling `NewValue`", func() {
 		complexTypeErrFmt := "value is complex type '%s' when it should be a simple type " +
@@ -38,8 +38,8 @@ var _ = Describe("Value", func() {
 			},
 
 			// Edge Cases / Odd balls - Failures
-			Entry("dialect does not support `Value`", NewMockDialect(), 1, BeNil(), MatchError(EqString("dialect function '%s' not supported", "Value"))),
-			Entry("`Value` fails", valueDialectFailure{}, 1, BeNil(), MatchError("value failure")),
+			Entry("dialect does not support `ValueDialect`", NewMockDialect(), 1, BeNil(), MatchError(EqString("dialect function '%s' not supported", "ValueDialect"))),
+			Entry("`ValueDialect` fails", valueDialectFailure{}, 1, BeNil(), MatchError("value failure")),
 
 			// Basic Types
 			// - Successful

@@ -29,21 +29,21 @@ var _ = Describe("Update", func() {
 
 		BeforeEach(func() {
 			table = NewMockTable()
-			pegomock.When(table.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("table.sql"), nil)
+			pegomock.When(table.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("table.sqlStr"), nil)
 
 			where = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(where[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[0].sql"), nil)
-			pegomock.When(where[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[1].sql"), nil)
+			pegomock.When(where[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[0].sqlStr"), nil)
+			pegomock.When(where[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[1].sqlStr"), nil)
 
 			set = []core.Set{
 				NewMockSet(),
 				NewMockSet(),
 			}
-			pegomock.When(set[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("set[0].sql"), nil)
-			pegomock.When(set[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("set[1].sql"), nil)
+			pegomock.When(set[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("set[0].sqlStr"), nil)
+			pegomock.When(set[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("set[1].sqlStr"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -68,7 +68,7 @@ var _ = Describe("Update", func() {
 			})
 
 			It("returns SQL", func() {
-				Expect(sql).To(MatchSQLString("UPDATE table.sql SET set[0].sql, set[1].sql WHERE (where[0].sql AND where[1].sql)"))
+				Expect(sql).To(MatchSQLString("UPDATE table.sqlStr SET set[0].sqlStr, set[1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr)"))
 			})
 
 			It("should not error", func() {
@@ -157,7 +157,7 @@ var _ = Describe("Update", func() {
 				})
 
 				It("Returns a valid SQL", func() {
-					Expect(sql).To(MatchSQLString("UPDATE table.sql SET set[0].sql, set[1].sql"))
+					Expect(sql).To(MatchSQLString("UPDATE table.sqlStr SET set[0].sqlStr, set[1].sqlStr"))
 				})
 
 				It("should not error", func() {

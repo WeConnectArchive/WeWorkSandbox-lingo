@@ -1,6 +1,8 @@
 package expression
 
 import (
+	"errors"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
@@ -18,7 +20,7 @@ type count struct {
 
 func (c count) ToSQL(d core.Dialect) (sql.Data, error) {
 	if check.IsValueNilOrBlank(c.countOn) {
-		return nil, ExpressionIsNil("countOn")
+		return nil, errors.New("countOn cannot be empty")
 	}
 
 	countOn, countOnErr := c.countOn.ToSQL(d)

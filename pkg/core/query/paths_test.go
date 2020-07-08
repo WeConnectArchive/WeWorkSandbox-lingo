@@ -76,8 +76,8 @@ var _ = Describe("Paths", func() {
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(paths[0].ToSQL(d)).ThenReturn(sql.String("exp 1 sql"), nil)
-			pegomock.When(paths[1].ToSQL(d)).ThenReturn(sql.String("exp 2 sql"), nil)
+			pegomock.When(paths[0].ToSQL(d)).ThenReturn(sql.String("exp 1 sqlStr"), nil)
+			pegomock.When(paths[1].ToSQL(d)).ThenReturn(sql.String("exp 2 sqlStr"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -85,7 +85,7 @@ var _ = Describe("Paths", func() {
 		})
 
 		It("Returns a combined SQL", func() {
-			Expect(s).To(MatchSQLString("exp 1 sql.SEP.exp 2 sql"))
+			Expect(s).To(MatchSQLString("exp 1 sqlStr.SEP.exp 2 sqlStr"))
 		})
 
 		It("Returns no error", func() {
@@ -99,7 +99,7 @@ var _ = Describe("Paths", func() {
 			})
 
 			It("Returns the original SQL with no sep", func() {
-				Expect(s).To(MatchSQLString("exp 1 sql"))
+				Expect(s).To(MatchSQLString("exp 1 sqlStr"))
 			})
 
 			It("Returns no error", func() {

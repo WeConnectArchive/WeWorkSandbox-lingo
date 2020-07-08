@@ -1,61 +1,67 @@
 package json
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-type Operation interface {
+type JSONDialect interface {
 	JSONOperator(left sql.Data, op Operand, values []sql.Data) (sql.Data, error)
 }
 
 func NewJSONOperation(left core.Expression, op Operand, expressions ...core.Expression) core.ComboExpression {
-	e := &jsonOperate{
+	return jsonOperate{
 		left:        left,
 		operand:     op,
 		expressions: expressions,
 	}
-	e.ComboExpression = expression.NewComboExpression(e)
-	return e
 }
 
 type jsonOperate struct {
-	expression.ComboExpression
 	left        core.Expression
 	operand     Operand
 	expressions []core.Expression
 }
 
-func (o jsonOperate) ToSQL(d core.Dialect) (sql.Data, error) {
-	operate, ok := d.(Operation)
+func (j jsonOperate) And(exp core.Expression) core.ComboExpression {
+	return operator.NewOperator(j, operator.And, exp)
+}
+
+func (j jsonOperate) Or(exp core.Expression) core.ComboExpression {
+	return operator.NewOperator(j, operator.Or, exp)
+}
+
+func (j jsonOperate) ToSQL(d core.Dialect) (sql.Data, error) {
+	operate, ok := d.(JSONDialect)
 	if !ok {
-		return nil, expression.DialectFunctionNotSupported("JSONOperation")
+		return nil, fmt.Errorf("dialect '%s' does not support 'JSONDialect'", d.GetName())
 	}
 
-	if check.IsValueNilOrEmpty(o.left) {
-		return nil, expression.ExpressionIsNil("left")
+	if check.IsValueNilOrEmpty(j.left) {
+		return nil, errors.New("left of json cannot be empty")
 	}
-	left, lerr := o.left.ToSQL(d)
+	left, lerr := j.left.ToSQL(d)
 	if lerr != nil {
 		return nil, lerr
 	}
 
-	var sqlArr = make([]sql.Data, 0, len(o.expressions))
-	for index, ex := range o.expressions {
+	var sqlArr = make([]sql.Data, 0, len(j.expressions))
+	for index, ex := range j.expressions {
 		if check.IsValueNilOrEmpty(ex) {
-			return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil(fmt.Sprintf("expressions[%d]", index)), left.String())
+			return nil, fmt.Errorf("expressions[%d] of json cannot be empty", index)
 		}
 
 		s, err := ex.ToSQL(d)
 		if err != nil {
-			return nil, expression.ErrorAroundSQL(err, left.String())
+			return nil, err
 		}
 		sqlArr = append(sqlArr, s)
 	}
 
-	return operate.JSONOperator(left, o.operand, sqlArr)
+	return operate.JSONOperator(left, j.operand, sqlArr)
 }

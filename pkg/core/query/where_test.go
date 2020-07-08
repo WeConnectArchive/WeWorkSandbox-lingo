@@ -33,9 +33,9 @@ var _ = Describe("where", func() {
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(values[0].ToSQL(d)).ThenReturn(sql.String("where 0 sql"), nil)
-			pegomock.When(values[1].ToSQL(d)).ThenReturn(sql.String("where 1 sql"), nil)
-			pegomock.When(values[2].ToSQL(d)).ThenReturn(sql.String("where 2 sql"), nil)
+			pegomock.When(values[0].ToSQL(d)).ThenReturn(sql.String("where 0 sqlStr"), nil)
+			pegomock.When(values[1].ToSQL(d)).ThenReturn(sql.String("where 1 sqlStr"), nil)
+			pegomock.When(values[2].ToSQL(d)).ThenReturn(sql.String("where 2 sqlStr"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -43,7 +43,7 @@ var _ = Describe("where", func() {
 		})
 
 		It("Combines all SQL with commas and `WHERE`", func() {
-			Expect(s).To(matchers.MatchSQLString("WHERE where 0 sql AND where 1 sql AND where 2 sql"))
+			Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr AND where 1 sqlStr AND where 2 sqlStr"))
 		})
 
 		It("Returns no error", func() {
@@ -72,7 +72,7 @@ var _ = Describe("where", func() {
 			})
 
 			It("Combines all SQL with commas and `WHERE`", func() {
-				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sql AND where 1 sql"))
+				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr AND where 1 sqlStr"))
 			})
 
 			It("Returns no error", func() {
@@ -87,7 +87,7 @@ var _ = Describe("where", func() {
 			})
 
 			It("Combines all SQL with commas and `WHERE`", func() {
-				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sql"))
+				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr"))
 			})
 
 			It("Returns no error", func() {
@@ -130,10 +130,10 @@ var _ = Describe("where", func() {
 type whereDialectSuccess struct{}
 
 func (whereDialectSuccess) GetName() string { return "where dialect success" }
-func (whereDialectSuccess) Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, error) {
+func (whereDialectSuccess) Operator(left sql.Data, _ operator.Operand, values []sql.Data) (sql.Data, error) {
 	var s = left
 	for _, value := range values {
-		s = s.AppendWithSpace(sql.String(op.String())).AppendWithSpace(value)
+		s = s.AppendWithSpace(sql.String("op")).AppendWithSpace(value)
 	}
 	return s, nil
 }

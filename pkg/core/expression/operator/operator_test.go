@@ -14,7 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("Operator", func() {
+var _ = Describe("OperatorDialect", func() {
 
 	Context("Calling `NewOperator`", func() {
 
@@ -60,7 +60,7 @@ var _ = Describe("Operator", func() {
 				s, err = newOperator.ToSQL(d)
 			})
 
-			It("Returns Operator SQL string", func() {
+			It("Returns OperatorDialect SQL string", func() {
 				Expect(s).ToNot(BeNil())
 				Expect(s).To(MatchSQLString("operator sql"))
 			})
@@ -69,7 +69,7 @@ var _ = Describe("Operator", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support `Operator`", func() {
+			Context("Dialect does not support `OperatorDialect`", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
@@ -80,7 +80,7 @@ var _ = Describe("Operator", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "Operator")))
+					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "OperatorDialect")))
 				})
 			})
 
@@ -174,7 +174,7 @@ var _ = Describe("Operator", func() {
 				})
 			})
 
-			Context("dialect `Operator` returns an error", func() {
+			Context("dialect `OperatorDialect` returns an error", func() {
 
 				BeforeEach(func() {
 					d = operatorDialectFailure{}

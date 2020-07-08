@@ -14,7 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("Set", func() {
+var _ = Describe("SetDialect", func() {
 
 	Context("Calling `NewSet`", func() {
 
@@ -34,7 +34,7 @@ var _ = Describe("Set", func() {
 			set = expression.NewSet(left, value)
 		})
 
-		It("Returns a `core.Set`", func() {
+		It("Returns a `core.SetDialect`", func() {
 			Expect(set).ToNot(BeNil())
 		})
 
@@ -57,16 +57,16 @@ var _ = Describe("Set", func() {
 				s, err = set.ToSQL(d)
 			})
 
-			It("Returns Set SQL string", func() {
+			It("Returns SetDialect SQL string", func() {
 				Expect(s).ToNot(BeNil())
-				Expect(s).To(MatchSQLString("set sql"))
+				Expect(s).To(MatchSQLString("Set sql"))
 			})
 
 			It("Returns no errors", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support Set", func() {
+			Context("Dialect does not support SetDialect", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
@@ -77,7 +77,7 @@ var _ = Describe("Set", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "Set")))
+					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "SetDialect")))
 				})
 			})
 
@@ -141,7 +141,7 @@ var _ = Describe("Set", func() {
 				})
 			})
 
-			Context("`Set` fails", func() {
+			Context("`SetDialect` fails", func() {
 
 				BeforeEach(func() {
 					d = setDialectFailure{}
@@ -152,7 +152,7 @@ var _ = Describe("Set", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError("set error"))
+					Expect(err).To(MatchError("Set error"))
 				})
 			})
 		})
@@ -162,12 +162,12 @@ var _ = Describe("Set", func() {
 type setDialectSuccess struct{}
 
 func (setDialectSuccess) GetName() string { return "dialect name" }
-func (setDialectSuccess) Set(left, value sql.Data) (sql.Data, error) {
-	return sql.String("set sql"), nil
+func (setDialectSuccess) Set(_, _ sql.Data) (sql.Data, error) {
+	return sql.String("Set sql"), nil
 }
 
 type setDialectFailure struct{ setDialectSuccess }
 
-func (setDialectFailure) Set(left, value sql.Data) (sql.Data, error) {
-	return nil, errors.New("set error")
+func (setDialectFailure) Set(_, _ sql.Data) (sql.Data, error) {
+	return nil, errors.New("Set error")
 }

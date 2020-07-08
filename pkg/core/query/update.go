@@ -5,7 +5,6 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -36,23 +35,23 @@ func (u UpdateQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 	var s = sql.String("UPDATE")
 
 	if check.IsValueNilOrBlank(u.table) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("table cannot be empty"))
 	}
 	if u.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("table alias must be unset"))
 	}
 	table, err := u.table.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	s = s.AppendWithSpace(table)
 
 	if check.IsValueNilOrEmpty(u.set) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("set"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("set cannot be empty"))
 	}
 	pathsSQL, err := JoinToSQL(d, sepPathComma, u.set)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	if pathsSQL.String() != "" {
 		s = s.AppendWithSpace(sql.String("SET")).AppendWithSpace(pathsSQL)
@@ -60,7 +59,7 @@ func (u UpdateQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 
 	whereSQL, err := BuildWhereSQL(d, u.where)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	if whereSQL.String() != "" {
 		s = s.AppendWithSpace(whereSQL)

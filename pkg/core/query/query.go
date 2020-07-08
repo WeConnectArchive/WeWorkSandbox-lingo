@@ -1,3 +1,4 @@
+// Package query is used to build SQL queries with Lingo tables / columns.
 package query
 
 const (

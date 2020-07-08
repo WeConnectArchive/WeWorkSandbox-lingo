@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/json"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
@@ -38,17 +36,13 @@ func (m MySQL) JSONOperator(left sql.Data, op json.Operand, values []sql.Data) (
 		return m.multiPathJSON(left, op, values)
 	}
 
-	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("json.Operator", op), left.String())
+	return nil, EnumIsInvalid("json.Operand", op)
 }
 
 func (MySQL) multiPathJSON(left sql.Data, op json.Operand, values []sql.Data) (sql.Data, error) {
-	if check.IsValueNilOrBlank(left) {
-		return nil, expression.ExpressionIsNil("left")
-	}
-
 	opStr, ok := mysqlJSONOperatorToString[op]
 	if !ok {
-		return nil, expression.EnumIsInvalid("json.Operator", op)
+		return nil, EnumIsInvalid("json.Operand", op)
 	}
 
 	return sql.String(opStr).

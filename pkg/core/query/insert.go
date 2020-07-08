@@ -65,23 +65,23 @@ func (i InsertQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 	var s = sql.String("INSERT INTO")
 
 	if check.IsValueNilOrBlank(i.table) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("table"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("table cannot be empty"))
 	}
 	if i.table.GetAlias() != "" {
-		return nil, expression.ErrorAroundSQL(errors.New("table alias must be unset"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("table alias must be unset"))
 	}
 	tableSQL, err := i.table.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	s = s.AppendWithSpace(tableSQL)
 
 	if check.IsValueNilOrEmpty(i.columns) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("expression 'columns' cannot be empty"))
 	}
 	pathsSQL, err := JoinToSQL(d, sepPathComma, i.columns)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}
 	}
 	s = s.SurroundAppend(" (", ")", pathsSQL) // Include space before first paren!
 
@@ -103,7 +103,7 @@ func (i InsertQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 func (i InsertQuery) buildSelectFrom(d core.Dialect, s sql.Data) (sql.Data, error) {
 	selectSQL, err := i.selectPart.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}
 	}
 	if selectSQL.String() != "" {
 		s = s.AppendWithSpace(selectSQL)
@@ -116,12 +116,12 @@ func (i InsertQuery) buildValues(d core.Dialect, s sql.Data) (sql.Data, error) {
 	valuesLen := len(i.values)
 	if colsLen != valuesLen {
 		err := fmt.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}
 	}
 
 	valuesSQL, err := JoinToSQL(d, sepPathComma, i.values)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}
 	}
 	if valuesSQL.String() != "" {
 		s = s.AppendWithSpace(sql.String("VALUES")).SurroundAppend(" (", ")", valuesSQL)

@@ -1,9 +1,11 @@
 package query
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/join"
 	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
@@ -58,29 +60,32 @@ func (q *SelectQuery) Restrict(m Modifier) *SelectQuery {
 func (q *SelectQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 	s, err := q.selectFrom(d)
 	if err != nil {
-		return nil, err
+		return nil, err // Already wrapped
 	}
 
+	if check.IsValueNilOrBlank(q.from) {
+		return nil, NewErrAroundSQL(s, errors.New("from cannot be empty"))
+	}
 	from, err := q.from.ToSQL(d)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	s = s.AppendWithSpace(sql.String("FROM")).AppendWithSpace(from)
 
 	if joinSQL, err := JoinToSQL(d, sepSpace, q.join); err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	} else if joinSQL.String() != "" {
 		s = s.AppendWithSpace(joinSQL)
 	}
 
 	if where, err := BuildWhereSQL(d, q.where); err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	} else if where.String() != "" {
 		s = s.AppendWithSpace(where)
 	}
 
 	if orderBy, err := JoinToSQL(d, sepPathComma, q.order); err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	} else if orderBy.String() != "" {
 		s = s.AppendWithSpace(sql.String("ORDER BY")).AppendWithSpace(orderBy)
 	}
@@ -94,35 +99,30 @@ func (q *SelectQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 func (q *SelectQuery) selectFrom(d core.Dialect) (sql.Data, error) {
 	var s = sql.String("SELECT")
 	if check.IsValueNilOrEmpty(q.paths) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionCannotBeEmpty("columns"), s.String())
+		return nil, NewErrAroundSQL(s, errors.New("columns cannot be empty"))
 	}
 	pathsSQL, err := JoinToSQL(d, sepPathComma, ExpandTables(q.paths))
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
-	s = s.AppendWithSpace(pathsSQL)
-
-	if check.IsValueNilOrBlank(q.from) {
-		return nil, expression.ExpressionIsNil("from")
-	}
-	return s, nil
+	return s.AppendWithSpace(pathsSQL), nil
 }
 
 // buildModifier will determine if the modifier was set / needs to be built, and return the resulting SQL. This will
-// check if the dialect support Modify on queries, if it is not & a modifier was set, it errors.
+// check if the dialect support ModifyDialect on queries, if it is not & a modifier was set, it errors.
 func (q *SelectQuery) buildModifier(d core.Dialect, s sql.Data) (sql.Data, error) {
 	if q.modifier == nil || q.modifier.IsZero() {
 		return s, nil
 	}
 
-	modifyDialect, ok := d.(Modify)
+	modifyDialect, ok := d.(ModifyDialect)
 	if !ok {
-		return nil, expression.DialectFunctionNotSupported("Modify")
+		return nil, fmt.Errorf("dialect '%s' does not support 'ModifyDialect'", d.GetName())
 	}
 
 	modify, err := modifyDialect.Modify(q.modifier)
 	if err != nil {
-		return nil, expression.ErrorAroundSQL(err, s.String())
+		return nil, NewErrAroundSQL(s, err)
 	}
 	return s.AppendWithSpace(modify), nil
 }

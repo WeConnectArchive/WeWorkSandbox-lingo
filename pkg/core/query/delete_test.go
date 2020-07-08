@@ -31,7 +31,7 @@ var _ = Describe("Delete", func() {
 
 		BeforeEach(func() {
 			from = NewMockTable()
-			pegomock.When(from.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("from.sql"), nil)
+			pegomock.When(from.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("from.sqlStr"), nil)
 
 			joinOn = [][]core.Expression{
 				{
@@ -47,17 +47,17 @@ var _ = Describe("Delete", func() {
 				join.Left,
 				join.Right,
 			}
-			pegomock.When(joinOn[0][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[0][0].sql"), nil)
-			pegomock.When(joinOn[0][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[0][1].sql"), nil)
-			pegomock.When(joinOn[1][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[1][0].sql"), nil)
-			pegomock.When(joinOn[1][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[1][1].sql"), nil)
+			pegomock.When(joinOn[0][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[0][0].sqlStr"), nil)
+			pegomock.When(joinOn[0][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[0][1].sqlStr"), nil)
+			pegomock.When(joinOn[1][0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[1][0].sqlStr"), nil)
+			pegomock.When(joinOn[1][1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("joinOn[1][1].sqlStr"), nil)
 
 			where = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(where[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[0].sql"), nil)
-			pegomock.When(where[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[1].sql"), nil)
+			pegomock.When(where[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[0].sqlStr"), nil)
+			pegomock.When(where[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("where[1].sqlStr"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -85,7 +85,7 @@ var _ = Describe("Delete", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("DELETE FROM from.sql LEFT JOIN joinOn[0][0].sql ON joinOn[0][1].sql RIGHT JOIN joinOn[1][0].sql ON joinOn[1][1].sql WHERE (where[0].sql AND where[1].sql)"))
+				Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr LEFT JOIN joinOn[0][0].sqlStr ON joinOn[0][1].sqlStr RIGHT JOIN joinOn[1][0].sqlStr ON joinOn[1][1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr)"))
 			})
 
 			It("Returns no error", func() {
@@ -129,7 +129,7 @@ var _ = Describe("Delete", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("DELETE FROM from.sql WHERE (where[0].sql AND where[1].sql)"))
+					Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr)"))
 				})
 
 				It("Returns no error", func() {
@@ -174,7 +174,7 @@ var _ = Describe("Delete", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("DELETE FROM from.sql LEFT JOIN joinOn[0][0].sql ON joinOn[0][1].sql RIGHT JOIN joinOn[1][0].sql ON joinOn[1][1].sql"))
+					Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr LEFT JOIN joinOn[0][0].sqlStr ON joinOn[0][1].sqlStr RIGHT JOIN joinOn[1][0].sqlStr ON joinOn[1][1].sqlStr"))
 				})
 
 				It("Returns no error", func() {

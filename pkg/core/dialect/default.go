@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/join"
 	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
@@ -109,7 +108,7 @@ func (d Default) Modify(m query.Modifier) (sql.Data, error) {
 	if oWasSet {
 		offsetSQL, err := d.Value([]interface{}{offset})
 		if err != nil {
-			return nil, expression.ErrorAroundSQL(err, s.String())
+			return nil, err
 		}
 		s = s.AppendWithSpace(sql.String("OFFSET").AppendWithSpace(offsetSQL))
 	}
