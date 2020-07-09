@@ -5,9 +5,9 @@
 package qcustomerlist
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QCustomerList {
@@ -45,10 +45,10 @@ type QCustomerList struct {
 	sid     path.Int8
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QCustomerList) GetColumns() []core.Column {
-	return []core.Column{
+func (q QCustomerList) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.id,
 		q.name,
 		q.address,
@@ -61,7 +61,7 @@ func (q QCustomerList) GetColumns() []core.Column {
 	}
 }
 
-func (q QCustomerList) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QCustomerList) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

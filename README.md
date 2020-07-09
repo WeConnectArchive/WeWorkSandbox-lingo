@@ -130,14 +130,14 @@ package inventory
 
 import (
     "github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
-    "github.com/weworksandbox/lingo/pkg/core"
-    "github.com/weworksandbox/lingo/pkg/core/expressions"
-    "github.com/weworksandbox/lingo/pkg/core/query"
-    "github.com/weworksandbox/lingo/pkg/core/sql"
+    "github.com/weworksandbox/lingo"
+    "github.com/weworksandbox/lingo/expr"
+    "github.com/weworksandbox/lingo/query"
+    "github.com/weworksandbox/lingo/sql"
 )
 
-func CountForStore(d core.Dialect, storeID int16) (sql.Data, error) {
-	return query.Select(expressions.Count(qinventory.InventoryId())).
+func CountForStore(d lingo.Dialect, storeID int16) (sql.Data, error) {
+	return query.Select(expr.Count(qinventory.InventoryId())).
         From(qinventory.Q()).
 		Where(qinventory.StoreId().Eq(storeID)).
         ToSQL(d)
@@ -192,7 +192,7 @@ Lingo SQL generated, and then pass the arguments of your Query into `QueryRow`.
 
 ```go
 func getCount() int {
-    var d core.Dialect = dialect.MySQL{}
+    var d lingo.Dialect = dialect.MySQL{}
 
     gT := qcharactersets.As("gT")
     var getCountByNameAndDescQuery = Select(Count(Star())).From(gT).Where(gT.DefaultCollateName().IsNull().And(gT.Description().Eq("uuidByte")))
@@ -220,7 +220,7 @@ func getCount() int {
 ```
 
 ## Query Dialects
-Every time one attempts to serialize a query using `ToSQL(core.Dialect) (sql.Data, error)`, you are required to pass
+Every time one attempts to serialize a query using `ToSQL(lingo.Dialect) (sql.Data, error)`, you are required to pass
 in a dialect. These dialects aid in building the SQL properly for the systems the query is to run against.
 
 Right now, only `dialect.MySQL` is built / supported, however, anyone can build their own dialect.

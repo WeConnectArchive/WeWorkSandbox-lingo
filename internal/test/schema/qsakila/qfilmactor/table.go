@@ -5,9 +5,9 @@
 package qfilmactor
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QFilmActor {
@@ -33,17 +33,17 @@ type QFilmActor struct {
 	lastUpdate path.Time
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QFilmActor) GetColumns() []core.Column {
-	return []core.Column{
+func (q QFilmActor) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.actorId,
 		q.filmId,
 		q.lastUpdate,
 	}
 }
 
-func (q QFilmActor) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QFilmActor) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

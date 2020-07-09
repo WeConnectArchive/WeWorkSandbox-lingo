@@ -18,11 +18,11 @@ import (
 	"github.com/onsi/gomega/types"
 	"github.com/spf13/viper"
 
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/execute"
 	"github.com/weworksandbox/lingo/internal/config"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/runner"
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/execute"
 )
 
 // QueryTest is used by Functional tests, along with benchmark tests. They are used for setting up common data to
@@ -37,8 +37,8 @@ type QueryTest struct {
 }
 
 type Params struct {
-	Dialect         func() (core.Dialect, error)
-	SQL             func() core.Expression
+	Dialect         func() (lingo.Dialect, error)
+	SQL             func() lingo.Expression
 	SQLStrAssert    types.GomegaMatcher
 	SQLValuesAssert types.GomegaMatcher
 

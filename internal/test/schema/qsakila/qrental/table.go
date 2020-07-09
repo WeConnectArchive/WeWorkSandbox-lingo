@@ -5,9 +5,9 @@
 package qrental
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QRental {
@@ -41,10 +41,10 @@ type QRental struct {
 	lastUpdate  path.Time
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QRental) GetColumns() []core.Column {
-	return []core.Column{
+func (q QRental) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.rentalId,
 		q.rentalDate,
 		q.inventoryId,
@@ -55,7 +55,7 @@ func (q QRental) GetColumns() []core.Column {
 	}
 }
 
-func (q QRental) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QRental) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

@@ -5,9 +5,9 @@
 package qactor
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QActor {
@@ -35,10 +35,10 @@ type QActor struct {
 	lastUpdate path.Time
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QActor) GetColumns() []core.Column {
-	return []core.Column{
+func (q QActor) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.actorId,
 		q.firstName,
 		q.lastName,
@@ -46,7 +46,7 @@ func (q QActor) GetColumns() []core.Column {
 	}
 }
 
-func (q QActor) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QActor) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

@@ -5,9 +5,9 @@
 package qactorinfo
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QActorInfo {
@@ -35,10 +35,10 @@ type QActorInfo struct {
 	filmInfo  path.String
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QActorInfo) GetColumns() []core.Column {
-	return []core.Column{
+func (q QActorInfo) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.actorId,
 		q.firstName,
 		q.lastName,
@@ -46,7 +46,7 @@ func (q QActorInfo) GetColumns() []core.Column {
 	}
 }
 
-func (q QActorInfo) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QActorInfo) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

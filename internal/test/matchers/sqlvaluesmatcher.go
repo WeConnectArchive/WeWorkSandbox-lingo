@@ -7,7 +7,7 @@ import (
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/types"
 
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 // SQLValuesMatcher matches a `sql.Data` `Values()` value

@@ -4,7 +4,7 @@
 
 package qactorinfo
 
-import "github.com/weworksandbox/lingo/pkg/core/expr/path"
+import "github.com/weworksandbox/lingo/expr/path"
 
 var instance = New()
 

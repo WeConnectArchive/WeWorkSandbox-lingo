@@ -5,9 +5,9 @@
 package qstore
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QStore {
@@ -35,10 +35,10 @@ type QStore struct {
 	lastUpdate     path.Time
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QStore) GetColumns() []core.Column {
-	return []core.Column{
+func (q QStore) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.storeId,
 		q.managerStaffId,
 		q.addressId,
@@ -46,7 +46,7 @@ func (q QStore) GetColumns() []core.Column {
 	}
 }
 
-func (q QStore) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QStore) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 
