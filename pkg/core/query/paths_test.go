@@ -122,7 +122,7 @@ var _ = Describe("Paths", func() {
 			})
 		})
 
-		Context("With an error on the second expression", func() {
+		Context("With an error on the second expr", func() {
 
 			BeforeEach(func() {
 				pegomock.When(paths[1].ToSQL(d)).ThenReturn(nil, errors.New("second exp error"))

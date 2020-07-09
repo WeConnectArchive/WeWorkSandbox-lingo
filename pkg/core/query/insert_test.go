@@ -10,7 +10,7 @@ import (
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/dialect"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/expr"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 	"github.com/weworksandbox/lingo/pkg/core/query/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
@@ -148,7 +148,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns a columns is nil error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be empty", "columns")))
+					Expect(err).To(MatchError(ContainSubstring("expr '%s' cannot be empty", "columns")))
 				})
 			})
 
@@ -236,7 +236,7 @@ var _ = Describe("Insert", func() {
 				sTable = NewMockTable()
 				pegomock.When(sTable.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("select.sqlStr"), nil)
 
-				sq = query.Select(expression.Star()).From(sTable)
+				sq = query.Select(expr.Star()).From(sTable)
 			})
 
 			JustBeforeEach(func() {

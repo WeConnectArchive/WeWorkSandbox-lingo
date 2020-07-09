@@ -32,7 +32,7 @@ func transformErr(e error) error {
 		return e
 	}
 
-	// Index 0 is always the full expression, so we want the first match
+	// Index 0 is always the full expr, so we want the first match
 	lineNum, err := strconv.Atoi(subMatch[1])
 	if err != nil {
 		return e

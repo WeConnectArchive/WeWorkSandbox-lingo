@@ -11,9 +11,9 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/execute"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/expression/join"
-	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
+	"github.com/weworksandbox/lingo/pkg/core/expr"
+	"github.com/weworksandbox/lingo/pkg/core/expr/join"
+	"github.com/weworksandbox/lingo/pkg/core/expr/sort"
 	"github.com/weworksandbox/lingo/pkg/core/query"
 )
 
@@ -28,7 +28,7 @@ var selectQueries = []QueryTest{
 					storeID = 2
 				)
 				return query.Select(
-					expression.Count(qinventory.InventoryId()),
+					expr.Count(qinventory.InventoryId()),
 				).From(
 					qinventory.Q(),
 				).Where(
@@ -60,7 +60,7 @@ var selectQueries = []QueryTest{
 					storeID = 2
 				)
 				return query.Select(
-					expression.Count(qinventory.InventoryId()),
+					expr.Count(qinventory.InventoryId()),
 				).From(
 					qinventory.Q(),
 				).Where(
@@ -92,7 +92,7 @@ var selectQueries = []QueryTest{
 					actorID = 10
 				)
 				return query.Select(
-					expression.Count(qfilmactor.FilmId()),
+					expr.Count(qfilmactor.FilmId()),
 				).From(
 					qfilmactor.Q(),
 				).Where(
@@ -141,7 +141,7 @@ var selectQueries = []QueryTest{
 				).Join(
 					cat, join.Inner, fc.CategoryId().EqPath(cat.CategoryId()),
 				).Where(
-					fa.ActorId().EqPath(expression.NewValue(&actorID)),
+					fa.ActorId().EqPath(expr.NewValue(&actorID)),
 				).OrderBy(
 					cat.Name(), sort.Ascending,
 				)

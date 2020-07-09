@@ -18,7 +18,7 @@ import (
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core/execute -m RowScanner
 //go:generate pegomock generate github.com/weworksandbox/lingo/pkg/core/execute -m TxSQL
 func TestExecute(t *testing.T) {
-	runner.SetupAndRunUnit(t, "expression", "unit")
+	runner.SetupAndRunUnit(t, "execute", "unit")
 }
 
 func AnyError() error {
