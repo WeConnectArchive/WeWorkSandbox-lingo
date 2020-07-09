@@ -3,7 +3,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -16,6 +15,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/client"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
@@ -271,11 +273,14 @@ func (Gen) StartTestSchemaDB(ctx context.Context) error {
 		return err
 	}
 
-	log.Println("Waiting for schema script to complete")
-	if err := waitForContainerExit(ctx, "recreate-schema-script", started, 1*time.Second, 30*time.Second); err != nil {
+	timeout := 30 * time.Second
+	log.Printf("Waiting up to %s for schema script to complete", timeout)
+	if err := waitForContainerExit(ctx, "recreate-schema-script", started, 1*time.Second, timeout, func() {
+		fmt.Print(".")
+	}); err != nil {
 		return fmt.Errorf("failed to run test schema script successfully: %w", err)
 	}
-	log.Println("Database setup completed")
+	log.Println("\nDatabase setup completed")
 	return nil
 }
 
@@ -464,45 +469,54 @@ func copyToTempFile(r io.ReadCloser, tempFilePattern string) (string, int64, err
 	return outFile.Name(), size, nil
 }
 
-func waitForContainerExit(ctx context.Context, name string, started time.Time, skew time.Duration, timeout time.Duration) error {
+func waitForContainerExit(
+	ctx context.Context, name string, started time.Time, skew time.Duration, timeout time.Duration, onTick func(),
+) error {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return fmt.Errorf("unable to create docker Go SDK client from env vars: %w", err)
+	}
+
+	listArgs := filters.NewArgs()
+	listArgs.Add("name", name)
+
 	timeoutCtx, _ := context.WithTimeout(ctx, timeout)
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
+	ensureSkewDirection := time.Duration(math.Abs(float64(skew)))
 	for {
 		select {
 		case <-ticker.C:
-			//docker ps -a --filter 'exited=0' --filter name=$name --format "{{.CreatedAt}}"
-			output, err := sh.Output("docker",
-				"ps", "-a", "--filter", "exited=0", "--filter", fmt.Sprintf("name=%s", name), "--format", `"{{.CreatedAt}}"`)
+			if onTick != nil {
+				onTick()
+			}
+
+			clo := types.ContainerListOptions{
+				Latest:  true,
+				All:     true,
+				Filters: listArgs,
+			}
+
+			containers, err := cli.ContainerList(context.Background(), clo)
 			if err != nil {
-				return fmt.Errorf("unable to query if container %s is completed: %w", name, err)
+				return fmt.Errorf("unable to query if docker container %s is completed: %w", name, err)
 			}
 
-			scanner := bufio.NewScanner(strings.NewReader(output))
-			for scanner.Scan() {
-				cleanText := strings.Trim(scanner.Text(), `" `)
+			for _, container := range containers {
+				createdAt := time.Unix(container.Created, 0)
 
-				// FORMAT: 2020-05-24 17:30:09 -0700 PDT
-				const format = "2006-01-02 15:04:05 -0700 MST"
-				createdAtTime, err := time.Parse(format, cleanText)
-				if err != nil {
-					return fmt.Errorf("unable to parse text={%s}: %w", cleanText, err)
+				if createdAt.Before(started.Add(-ensureSkewDirection)) {
+					continue
 				}
-
-				ensureSkewDirection := time.Duration(math.Abs(float64(skew)))
-
-				logStr := fmt.Sprintf("Command Started At: %d Container Started At: %d Skew: %d, Accepted",
-					started.Unix(), createdAtTime.Unix(), ensureSkewDirection.Milliseconds())
-
-				if createdAtTime.After(started.Add(-ensureSkewDirection)) {
-					log.Println(logStr, "- Successful")
-					return nil
+				if !strings.EqualFold(container.State, "exited") {
+					continue
 				}
-				log.Println(logStr, "- Invalid Container Time")
-			}
-			if err = scanner.Err(); err != nil {
-				return fmt.Errorf("unable to read output from docker: %w", err)
+				if !strings.HasPrefix(container.Status, "Exited (0)") {
+					return fmt.Errorf("expected contianer to exit with status prefix 'Exited (0)', "+
+						"but container exited with status %s", container.Status)
+				}
+				return nil
 			}
 		case <-timeoutCtx.Done():
 			return timeoutCtx.Err()
