@@ -9,7 +9,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-type OperatorDialect interface {
+type Dialect interface {
 	Operator(left sql.Data, op Operand, values []sql.Data) (sql.Data, error)
 }
 
@@ -36,9 +36,9 @@ func (o operate) Or(exp core.Expression) core.ComboExpression {
 }
 
 func (o operate) ToSQL(d core.Dialect) (sql.Data, error) {
-	operand, ok := d.(OperatorDialect)
+	operand, ok := d.(Dialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'OperatorDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'json.Dialect'", d.GetName())
 	}
 
 	if check.IsValueNilOrEmpty(o.left) {

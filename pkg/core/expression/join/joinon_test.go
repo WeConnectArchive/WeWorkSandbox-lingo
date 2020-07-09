@@ -68,10 +68,11 @@ var _ = Describe("JoinOn", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support `JoinDialect`", func() {
+			Context("Dialect does not support `Dialect`", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
+					pegomock.When(d.GetName()).ThenReturn("mock")
 				})
 
 				It("Returns no SQL", func() {
@@ -79,7 +80,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "JoinDialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "join.Dialect")))
 				})
 			})
 
@@ -94,7 +95,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "on")))
+					Expect(err).To(MatchError("join 'on' cannot be empty"))
 				})
 			})
 
@@ -124,7 +125,7 @@ var _ = Describe("JoinOn", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "left")))
+					Expect(err).To(MatchError("left of join cannot be empty"))
 				})
 			})
 

@@ -10,7 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-type JoinDialect interface {
+type Dialect interface {
 	Join(left sql.Data, joinType Type, on sql.Data) (sql.Data, error)
 }
 
@@ -37,9 +37,9 @@ func (j joinOn) Or(exp core.Expression) core.ComboExpression {
 }
 
 func (j joinOn) ToSQL(d core.Dialect) (sql.Data, error) {
-	joiner, ok := d.(JoinDialect)
+	joiner, ok := d.(Dialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'JoinDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'join.Dialect'", d.GetName())
 	}
 
 	if check.IsValueNilOrEmpty(j.on) {

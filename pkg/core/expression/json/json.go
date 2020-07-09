@@ -10,7 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-type JSONDialect interface {
+type Dialect interface {
 	JSONOperator(left sql.Data, op Operand, values []sql.Data) (sql.Data, error)
 }
 
@@ -37,13 +37,13 @@ func (j jsonOperate) Or(exp core.Expression) core.ComboExpression {
 }
 
 func (j jsonOperate) ToSQL(d core.Dialect) (sql.Data, error) {
-	operate, ok := d.(JSONDialect)
+	operate, ok := d.(Dialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'JSONDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'json.Dialect'", d.GetName())
 	}
 
 	if check.IsValueNilOrEmpty(j.left) {
-		return nil, errors.New("left of json cannot be empty")
+		return nil, errors.New("left of 'json' cannot be empty")
 	}
 	left, lerr := j.left.ToSQL(d)
 	if lerr != nil {

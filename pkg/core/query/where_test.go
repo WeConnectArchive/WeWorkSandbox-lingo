@@ -43,7 +43,7 @@ var _ = Describe("where", func() {
 		})
 
 		It("Combines all SQL with commas and `WHERE`", func() {
-			Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr AND where 1 sqlStr AND where 2 sqlStr"))
+			Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr op where 1 sqlStr op where 2 sqlStr"))
 		})
 
 		It("Returns no error", func() {
@@ -72,7 +72,7 @@ var _ = Describe("where", func() {
 			})
 
 			It("Combines all SQL with commas and `WHERE`", func() {
-				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr AND where 1 sqlStr"))
+				Expect(s).To(matchers.MatchSQLString("WHERE where 0 sqlStr op where 1 sqlStr"))
 			})
 
 			It("Returns no error", func() {

@@ -14,7 +14,7 @@ type ExpandColumnDialect interface {
 func ExpandColumnWithDialect(d core.Dialect, path core.Column) (sql.Data, error) {
 	expand, ok := d.(ExpandColumnDialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'ExpandColumnDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'path.ExpandColumnDialect'", d.GetName())
 	}
 	return expand.ExpandColumn(path)
 }

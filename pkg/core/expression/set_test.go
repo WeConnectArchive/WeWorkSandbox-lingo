@@ -70,6 +70,7 @@ var _ = Describe("SetDialect", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
+					pegomock.When(d.GetName()).ThenReturn("mock")
 				})
 
 				It("Returns no SQL", func() {
@@ -77,7 +78,7 @@ var _ = Describe("SetDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "SetDialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "expression.SetDialect")))
 				})
 			})
 
@@ -92,7 +93,7 @@ var _ = Describe("SetDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("expression '%s' cannot be nil", "left")))
+					Expect(err).To(MatchError(EqString("left of 'set' cannot be empty")))
 				})
 			})
 
@@ -122,7 +123,7 @@ var _ = Describe("SetDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "value")))
+					Expect(err).To(MatchError("set 'value' cannot be empty"))
 				})
 			})
 
@@ -137,7 +138,7 @@ var _ = Describe("SetDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("value error")))
+					Expect(err).To(MatchError("value error"))
 				})
 			})
 

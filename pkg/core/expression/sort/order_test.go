@@ -14,7 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("OrderDialect", func() {
+var _ = Describe("Dialect", func() {
 
 	Context("Calling `NewOrderBy`", func() {
 
@@ -65,10 +65,11 @@ var _ = Describe("OrderDialect", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support `OrderDialect`", func() {
+			Context("Dialect does not support `Dialect`", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
+					pegomock.When(d.GetName()).ThenReturn("mock")
 				})
 
 				It("Returns no SQL", func() {
@@ -76,7 +77,7 @@ var _ = Describe("OrderDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "OrderDialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "sort.Dialect")))
 				})
 			})
 
@@ -91,7 +92,7 @@ var _ = Describe("OrderDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "left")))
+					Expect(err).To(MatchError("left of 'order by' cannot be empty"))
 				})
 			})
 
@@ -107,21 +108,6 @@ var _ = Describe("OrderDialect", func() {
 
 				It("Returns an error", func() {
 					Expect(err).To(MatchError(ContainSubstring("left error")))
-				})
-			})
-
-			Context("direction is `Unknown`", func() {
-
-				BeforeEach(func() {
-					direction = sort.Unknown
-				})
-
-				It("Returns no SQL", func() {
-					Expect(s).To(BeNil())
-				})
-
-				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "direction")))
 				})
 			})
 

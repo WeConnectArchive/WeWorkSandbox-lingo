@@ -20,7 +20,7 @@ type count struct {
 
 func (c count) ToSQL(d core.Dialect) (sql.Data, error) {
 	if check.IsValueNilOrBlank(c.countOn) {
-		return nil, errors.New("countOn cannot be empty")
+		return nil, errors.New("countOn value cannot be empty")
 	}
 
 	countOn, countOnErr := c.countOn.ToSQL(d)

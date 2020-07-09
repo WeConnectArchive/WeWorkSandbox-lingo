@@ -38,7 +38,7 @@ func (v value) Or(exp core.Expression) core.ComboExpression {
 func (v value) ToSQL(d core.Dialect) (sql.Data, error) {
 	constant, ok := d.(ValueDialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'ValueDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'expression.ValueDialect'", d.GetName())
 	}
 
 	if v.value == nil {

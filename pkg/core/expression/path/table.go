@@ -14,7 +14,7 @@ type ExpandTableDialect interface {
 func ExpandTableWithDialect(d core.Dialect, entity core.Table) (sql.Data, error) {
 	expand, ok := d.(ExpandTableDialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'ExpandTableDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'path.ExpandTableDialect'", d.GetName())
 	}
 	return expand.ExpandTable(entity)
 }

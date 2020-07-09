@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/petergtz/pegomock"
 
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
@@ -45,6 +46,7 @@ var _ = Describe("Table", func() {
 
 			BeforeEach(func() {
 				d = NewMockDialect()
+				pegomock.When(d.GetName()).ThenReturn("mock")
 			})
 
 			It("Returns a nil SQL", func() {
@@ -52,7 +54,7 @@ var _ = Describe("Table", func() {
 			})
 
 			It("Returns a Dialect not supported error", func() {
-				Expect(err).To(MatchError(matchers.EqString("dialect function '%s' not supported", "ExpandTableDialect")))
+				Expect(err).To(MatchError(matchers.EqString("dialect '%s' does not support '%s'", "mock", "path.ExpandTableDialect")))
 			})
 		})
 

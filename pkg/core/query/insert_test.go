@@ -103,7 +103,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns a table is nil error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "table")))
+					Expect(err).To(MatchError(ContainSubstring("table cannot be empty")))
 				})
 			})
 

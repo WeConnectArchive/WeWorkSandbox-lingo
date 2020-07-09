@@ -76,7 +76,7 @@ var _ = Describe("Count", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "countOn")))
+					Expect(err).To(MatchError("countOn value cannot be empty"))
 				})
 			})
 

@@ -86,7 +86,7 @@ var _ = Describe("Update", func() {
 				})
 
 				It("Returns a table is nil error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "table")))
+					Expect(err).To(MatchError(ContainSubstring("table cannot be empty")))
 				})
 			})
 
@@ -131,7 +131,7 @@ var _ = Describe("Update", func() {
 				})
 
 				It("Returns a set is empty error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "set")))
+					Expect(err).To(MatchError(ContainSubstring("set cannot be empty")))
 				})
 			})
 

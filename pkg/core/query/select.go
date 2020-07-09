@@ -63,14 +63,10 @@ func (q *SelectQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 		return nil, err // Already wrapped
 	}
 
-	if check.IsValueNilOrBlank(q.from) {
-		return nil, NewErrAroundSQL(s, errors.New("from cannot be empty"))
-	}
-	from, err := q.from.ToSQL(d)
+	s, err = q.buildFrom(d, s)
 	if err != nil {
-		return nil, NewErrAroundSQL(s, err)
+		return nil, err // Already wrapped
 	}
-	s = s.AppendWithSpace(sql.String("FROM")).AppendWithSpace(from)
 
 	if joinSQL, err := JoinToSQL(d, sepSpace, q.join); err != nil {
 		return nil, NewErrAroundSQL(s, err)
@@ -101,11 +97,24 @@ func (q *SelectQuery) selectFrom(d core.Dialect) (sql.Data, error) {
 	if check.IsValueNilOrEmpty(q.paths) {
 		return nil, NewErrAroundSQL(s, errors.New("columns cannot be empty"))
 	}
+
 	pathsSQL, err := JoinToSQL(d, sepPathComma, ExpandTables(q.paths))
 	if err != nil {
 		return nil, NewErrAroundSQL(s, err)
 	}
 	return s.AppendWithSpace(pathsSQL), nil
+}
+
+func (q *SelectQuery) buildFrom(d core.Dialect, s sql.Data) (sql.Data, error) {
+	if check.IsValueNilOrBlank(q.from) {
+		return nil, NewErrAroundSQL(s, errors.New("from cannot be empty"))
+	}
+	from, err := q.from.ToSQL(d)
+	if err != nil {
+		return nil, NewErrAroundSQL(s, err)
+	}
+	s = s.AppendWithSpace(sql.String("FROM")).AppendWithSpace(from)
+	return s, nil
 }
 
 // buildModifier will determine if the modifier was set / needs to be built, and return the resulting SQL. This will

@@ -14,7 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("OperatorDialect", func() {
+var _ = Describe("Dialect", func() {
 
 	Context("Calling `NewOperator`", func() {
 
@@ -60,7 +60,7 @@ var _ = Describe("OperatorDialect", func() {
 				s, err = newOperator.ToSQL(d)
 			})
 
-			It("Returns OperatorDialect SQL string", func() {
+			It("Returns Dialect SQL string", func() {
 				Expect(s).ToNot(BeNil())
 				Expect(s).To(MatchSQLString("operator sql"))
 			})
@@ -69,10 +69,11 @@ var _ = Describe("OperatorDialect", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support `OperatorDialect`", func() {
+			Context("Dialect does not support `Dialect`", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
+					pegomock.When(d.GetName()).ThenReturn("mock")
 				})
 
 				It("Returns no SQL", func() {
@@ -80,7 +81,7 @@ var _ = Describe("OperatorDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect function '%s' not supported", "OperatorDialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "json.Dialect")))
 				})
 			})
 
@@ -95,7 +96,7 @@ var _ = Describe("OperatorDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "left")))
+					Expect(err).To(MatchError("left of operator cannot be empty"))
 				})
 			})
 
@@ -125,7 +126,7 @@ var _ = Describe("OperatorDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "expressions[0]")))
+					Expect(err).To(MatchError("expressions[0] of operator cannot be empty"))
 				})
 			})
 
@@ -155,7 +156,7 @@ var _ = Describe("OperatorDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "expressions[1]")))
+					Expect(err).To(MatchError("expressions[1] of operator cannot be empty"))
 				})
 			})
 
@@ -174,7 +175,7 @@ var _ = Describe("OperatorDialect", func() {
 				})
 			})
 
-			Context("dialect `OperatorDialect` returns an error", func() {
+			Context("dialect `Dialect` returns an error", func() {
 
 				BeforeEach(func() {
 					d = operatorDialectFailure{}

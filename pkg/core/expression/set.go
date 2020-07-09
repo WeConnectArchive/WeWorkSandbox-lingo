@@ -37,11 +37,11 @@ func (s Set) Or(exp core.Expression) core.ComboExpression {
 func (s Set) ToSQL(d core.Dialect) (sql.Data, error) {
 	setFunc, ok := d.(SetDialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'SetDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'expression.SetDialect'", d.GetName())
 	}
 
 	if check.IsValueNilOrEmpty(s.left) {
-		return nil, errors.New("left of set cannot be empty")
+		return nil, errors.New("left of 'set' cannot be empty")
 	}
 	left, lerr := s.left.ToSQL(d)
 	if lerr != nil {
@@ -49,7 +49,7 @@ func (s Set) ToSQL(d core.Dialect) (sql.Data, error) {
 	}
 
 	if check.IsValueNilOrEmpty(s.value) {
-		return nil, errors.New("set value cannot be empty")
+		return nil, errors.New("set 'value' cannot be empty")
 	}
 	v, verr := s.value.ToSQL(d)
 	if verr != nil {

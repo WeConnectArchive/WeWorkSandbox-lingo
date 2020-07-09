@@ -9,7 +9,6 @@ import (
 
 	"github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
 	"github.com/weworksandbox/lingo/pkg/core/expression/json"
 	. "github.com/weworksandbox/lingo/pkg/core/expression/matchers"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
@@ -21,20 +20,20 @@ var _ = Describe("JSON", func() {
 
 		var (
 			left        core.Expression
-			op          Operand
+			op          json.Operand
 			expressions []core.Expression
 
 			operation core.ComboExpression
 		)
 
 		BeforeEach(func() {
-			left = expression.NewMockExpression()
+			left = NewMockExpression()
 			pegomock.When(left.ToSQL(AnyCoreDialect())).ThenReturn(sql.String("left sql"), nil)
 
-			op = Extract
+			op = json.Extract
 			expressions = []core.Expression{
-				expression.NewMockExpression(),
-				expression.NewMockExpression(),
+				NewMockExpression(),
+				NewMockExpression(),
 			}
 			pegomock.When(expressions[0].ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expressions[0]"), nil)
 			pegomock.When(expressions[1].ToSQL(AnyCoreDialect())).ThenReturn(sql.String("expressions[1]"), nil)
@@ -76,15 +75,16 @@ var _ = Describe("JSON", func() {
 			Context("Dialect does not support `JSONOperator`", func() {
 
 				BeforeEach(func() {
-					d = expression.NewMockDialect()
+					d = NewMockDialect()
+					pegomock.When(d.GetName()).ThenReturn("mock")
 				})
 
 				It("Returns a nil SQL", func() {
 					Expect(sql).To(BeNil())
 				})
 
-				It("Returns an error that dialect does not support `JSONOperator`", func() {
-					Expect(err).To(MatchError(ContainSubstring("dialect function '%s' not supported", "JSONOperation")))
+				It("Returns an error", func() {
+					Expect(err).To(MatchError(ContainSubstring("dialect '%s' does not support '%s'", "mock", "json.Dialect")))
 				})
 			})
 
@@ -99,7 +99,7 @@ var _ = Describe("JSON", func() {
 				})
 
 				It("Returns an error that left is nil", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "left")))
+					Expect(err).To(MatchError("left of 'json' cannot be empty"))
 				})
 			})
 
@@ -130,7 +130,7 @@ var _ = Describe("JSON", func() {
 				})
 
 				It("Returns an error that an expression is nil", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "expressions[1]")))
+					Expect(err).To(MatchError("expressions[1] of json cannot be empty"))
 				})
 			})
 
@@ -171,12 +171,12 @@ var _ = Describe("JSON", func() {
 type jsonDialectSuccess struct{}
 
 func (jsonDialectSuccess) GetName() string { return "json success" }
-func (jsonDialectSuccess) JSONOperator(sql.Data, Operand, []sql.Data) (sql.Data, error) {
+func (jsonDialectSuccess) JSONOperator(sql.Data, json.Operand, []sql.Data) (sql.Data, error) {
 	return sql.String("json sql"), nil
 }
 
 type jsonDialectFailure struct{ jsonDialectSuccess }
 
-func (jsonDialectFailure) JSONOperator(sql.Data, Operand, []sql.Data) (sql.Data, error) {
+func (jsonDialectFailure) JSONOperator(sql.Data, json.Operand, []sql.Data) (sql.Data, error) {
 	return nil, errors.New("json failure")
 }

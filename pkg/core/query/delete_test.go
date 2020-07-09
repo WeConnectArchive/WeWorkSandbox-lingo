@@ -103,7 +103,7 @@ var _ = Describe("Delete", func() {
 				})
 
 				It("Returns a path entry is nil error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "from")))
+					Expect(err).To(MatchError(ContainSubstring("from cannot be empty")))
 				})
 			})
 

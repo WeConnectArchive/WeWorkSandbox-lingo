@@ -134,7 +134,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns an columns cannot be empty error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be empty", "columns")))
+					Expect(err).To(MatchError(ContainSubstring("columns cannot be empty")))
 				})
 			})
 
@@ -164,7 +164,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a from cannot be nil error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "from")))
+					Expect(err).To(MatchError(ContainSubstring("from cannot be empty")))
 				})
 			})
 
@@ -258,7 +258,7 @@ var _ = Describe("select", func() {
 				})
 			})
 
-			Context("OrderDialect By is nil", func() {
+			Context("Dialect By is nil", func() {
 
 				BeforeEach(func() {
 					orderBy = nil
@@ -273,7 +273,7 @@ var _ = Describe("select", func() {
 				})
 			})
 
-			Context("OrderDialect By has error", func() {
+			Context("Dialect By has error", func() {
 
 				BeforeEach(func() {
 					pegomock.When(orderBy[len(where)-1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(nil, errors.New("order by error"))
