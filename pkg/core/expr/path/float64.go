@@ -50,7 +50,7 @@ func (f Float64) To(value float64) core.Set {
 	return expr.NewSet(f, expr.NewValue(value))
 }
 
-func (f Float64) ToExpression(setExp core.Expression) core.Set {
+func (f Float64) ToExpr(setExp core.Expression) core.Set {
 	return expr.NewSet(f, setExp)
 }
 

@@ -52,7 +52,7 @@ func (t Time) To(value time.Time) core.Set {
 	return expr.NewSet(t, expr.NewValue(value))
 }
 
-func (t Time) ToExpression(setExp core.Expression) core.Set {
+func (t Time) ToExpr(setExp core.Expression) core.Set {
 	return expr.NewSet(t, setExp)
 }
 

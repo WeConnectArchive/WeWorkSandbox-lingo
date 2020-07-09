@@ -50,7 +50,7 @@ func (b Binary) To(value []byte) core.Set {
 	return expr.NewSet(b, expr.NewValue(value))
 }
 
-func (b Binary) ToExpression(setExp core.Expression) core.Set {
+func (b Binary) ToExpr(setExp core.Expression) core.Set {
 	return expr.NewSet(b, setExp)
 }
 
