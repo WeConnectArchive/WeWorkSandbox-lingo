@@ -29,7 +29,7 @@ type MySQL struct {
 }
 
 func (MySQL) DBTypesToPaths() map[string][2]string {
-	const pkgCorePath = "github.com/weworksandbox/lingo/pkg/core/expression/path"
+	const pkgCorePath = "github.com/weworksandbox/lingo/pkg/core/expr/path"
 	// TODO - Need to do further changes to Paths. Right now, every Path can have nullable operations against it.
 	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends
 	//  and adds the nullable methods? https://github.com/go-sql-driver/mysql/blob/master/fields.go

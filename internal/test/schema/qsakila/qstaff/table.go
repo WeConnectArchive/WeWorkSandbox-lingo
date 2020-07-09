@@ -6,7 +6,7 @@ package qstaff
 
 import (
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression/path"
+	"github.com/weworksandbox/lingo/pkg/core/expr/path"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 

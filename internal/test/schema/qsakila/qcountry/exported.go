@@ -4,7 +4,7 @@
 
 package qcountry
 
-import "github.com/weworksandbox/lingo/pkg/core/expression/path"
+import "github.com/weworksandbox/lingo/pkg/core/expr/path"
 
 var instance = New()
 

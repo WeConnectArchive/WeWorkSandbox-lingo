@@ -6,8 +6,8 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression/join"
-	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
+	"github.com/weworksandbox/lingo/pkg/core/expr/join"
+	"github.com/weworksandbox/lingo/pkg/core/expr/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -45,7 +45,7 @@ func (q *SelectQuery) OrderBy(exp core.Expression, direction sort.Direction) *Se
 	return q
 }
 
-// Join an expression with a specific joinType using an on statement.
+// Join an expr with a specific joinType using an on statement.
 func (q *SelectQuery) Join(left core.Expression, joinType join.Type, on core.Expression) *SelectQuery {
 	q.join = append(q.join, join.NewJoinOn(left, joinType, on))
 	return q

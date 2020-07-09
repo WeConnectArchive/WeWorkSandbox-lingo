@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression/json"
+	"github.com/weworksandbox/lingo/pkg/core/expr/json"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 

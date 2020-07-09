@@ -6,9 +6,9 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression/join"
-	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
-	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
+	"github.com/weworksandbox/lingo/pkg/core/expr/join"
+	"github.com/weworksandbox/lingo/pkg/core/expr/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expr/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 

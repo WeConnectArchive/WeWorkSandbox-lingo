@@ -25,7 +25,7 @@ func JoinToSQL(d core.Dialect, sep string, exp []core.Expression) (sql.Data, err
 	// TODO - explore if we could (or really should) pull some of the sqlStr.Data logic into here, or this ToSQL / error
 	//  checking logic into the sqlStr.Data logic. Right now, using sqlStr.Join keeps the the copying / appending in one
 	//  place, and efficient. However, if broken out, either by using a func closure or something else, then we only
-	//  need to loop over each expression once. Currently, it happens twice, once here to generate the SQL, and once
+	//  need to loop over each expr once. Currently, it happens twice, once here to generate the SQL, and once
 	//  to join the SQL.
 
 	var sqlData = make([]sql.Data, len(exp))

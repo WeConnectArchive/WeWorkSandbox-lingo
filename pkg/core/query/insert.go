@@ -6,7 +6,7 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
+	"github.com/weworksandbox/lingo/pkg/core/expr"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -35,7 +35,7 @@ func (i *InsertQuery) Columns(columns ...core.Column) *InsertQuery {
 // values (123456, 'name1', 'internal_name');
 func (i *InsertQuery) ValuesConstants(values ...interface{}) *InsertQuery {
 	for _, value := range values {
-		i.values = append(i.values, expression.NewValue(value))
+		i.values = append(i.values, expr.NewValue(value))
 	}
 	return i
 }
@@ -77,7 +77,7 @@ func (i InsertQuery) ToSQL(d core.Dialect) (sql.Data, error) {
 	s = s.AppendWithSpace(tableSQL)
 
 	if check.IsValueNilOrEmpty(i.columns) {
-		return nil, NewErrAroundSQL(s, errors.New("expression 'columns' cannot be empty"))
+		return nil, NewErrAroundSQL(s, errors.New("expr 'columns' cannot be empty"))
 	}
 	pathsSQL, err := JoinToSQL(d, sepPathComma, i.columns)
 	if err != nil {
