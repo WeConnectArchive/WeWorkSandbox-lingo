@@ -26,7 +26,9 @@ const (
 	testGenerateSakilaConfigFileName = "lingo-config.yml"
 	dockerComposeYml                 = "docker-compose.yml"
 
-	envCGO_ENABLED = "CGO_ENABLED"
+	// Go stuffs
+	envCGO_ENABLED  = "CGO_ENABLED"
+	cliArgSeparator = "--"
 
 	// messages
 	msgSkippingDockerCommandInCI = "Skipping - Unable to run Docker commands within CI"
@@ -133,8 +135,9 @@ func (Test) All() error {
 // Runs all unit tests (using `-short` flag) with code coverage and optional debug logging
 func (Test) Unit() error {
 	pathsPlusTestArgs := append(codePaths,
-		"-ginkgo.randomizeAllSpecs",
-		debug("-ginkgo.progress"),
+		cliArgSeparator,
+		"--ginkgo.randomizeAllSpecs",
+		debug("--ginkgo.progress"),
 	)
 	return runCmd("go", "test",
 		"-short",
@@ -147,8 +150,9 @@ func (Test) Unit() error {
 // Runs all functional tests with code coverage and optional debug logging
 func (Test) Functional() error {
 	pathsPlusTestArgs := append(codePaths,
-		"-ginkgo.randomizeAllSpecs",
-		debug("-ginkgo.progress"),
+		cliArgSeparator,
+		"--ginkgo.randomizeAllSpecs",
+		debug("--ginkgo.progress"),
 	)
 	return runCmd("go", "test",
 		"-short",
@@ -166,8 +170,9 @@ func (Test) Integration() error {
 	}
 
 	pathsPlusTestArgs := append(codePaths,
-		"-ginkgo.randomizeAllSpecs",
-		debug("-ginkgo.progress"),
+		cliArgSeparator,
+		"--ginkgo.randomizeAllSpecs",
+		debug("--ginkgo.progress"),
 		"--",
 		"--config", absConfig,
 	)
