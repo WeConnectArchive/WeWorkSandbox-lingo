@@ -135,7 +135,7 @@ var _ = Describe("Bool", func() {
 			})
 
 			JustBeforeEach(func() {
-				set = p.ToExpression(value)
+				set = p.ToExpr(value)
 			})
 
 			It("Returns a valid `core.SetDialect`", func() {
