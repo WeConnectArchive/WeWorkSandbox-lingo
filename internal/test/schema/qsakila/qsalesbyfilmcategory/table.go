@@ -5,9 +5,9 @@
 package qsalesbyfilmcategory
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QSalesByFilmCategory {
@@ -31,16 +31,16 @@ type QSalesByFilmCategory struct {
 	totalSales path.Binary
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QSalesByFilmCategory) GetColumns() []core.Column {
-	return []core.Column{
+func (q QSalesByFilmCategory) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.category,
 		q.totalSales,
 	}
 }
 
-func (q QSalesByFilmCategory) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QSalesByFilmCategory) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

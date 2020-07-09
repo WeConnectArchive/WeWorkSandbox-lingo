@@ -45,11 +45,6 @@ var (
 	allPkgs  = []string{
 		"./...",
 	}
-	codePaths = []string{
-		"./cmd/...",
-		"./internal/...",
-		"./pkg/...",
-	}
 )
 
 // Run all the things that CI does
@@ -112,7 +107,7 @@ type Gen mg.Namespace
 func (Gen) Go() error {
 	return runCmd("go", "generate",
 		debug("-v"),
-	)(codePaths)
+	)(allFiles)
 }
 
 // Runs `go fmt` with optional debug logging
@@ -136,7 +131,7 @@ func (Test) All() error {
 
 // Runs all unit tests (using `-short` flag) with code coverage and optional debug logging
 func (Test) Unit() error {
-	pathsPlusTestArgs := append(codePaths,
+	pathsPlusTestArgs := append(allPkgs,
 		cliArgSeparator,
 		"--ginkgo.randomizeAllSpecs",
 		debug("--ginkgo.progress"),
@@ -151,7 +146,7 @@ func (Test) Unit() error {
 
 // Runs all functional tests with code coverage and optional debug logging
 func (Test) Functional() error {
-	pathsPlusTestArgs := append(codePaths,
+	pathsPlusTestArgs := append(allPkgs,
 		cliArgSeparator,
 		"--ginkgo.randomizeAllSpecs",
 		debug("--ginkgo.progress"),
@@ -171,7 +166,7 @@ func (Test) Integration() error {
 		return fmt.Errorf("unable to find absolute path for config file: %w", err)
 	}
 
-	pathsPlusTestArgs := append(codePaths,
+	pathsPlusTestArgs := append(allPkgs,
 		cliArgSeparator,
 		"--ginkgo.randomizeAllSpecs",
 		debug("--ginkgo.progress"),
@@ -209,7 +204,7 @@ func (Test) Benchmark() error {
 	return nil
 }
 
-// Builds lingo CLI and then builds codePaths
+// Builds lingo CLI and then builds allFiles
 func Build() error {
 	if err := run("go", "build",
 		goRaceFlag(),
@@ -221,13 +216,13 @@ func Build() error {
 	if err := runCmd("go", "build",
 		goRaceFlag(),
 		debug("-v"),
-	)(codePaths); err != nil {
+	)(allFiles); err != nil {
 		return err
 	}
 	return nil
 }
 
-// Builds lingo CLI and then builds all codePaths without building any generated lingo files.
+// Builds lingo CLI and then builds all allFiles without building any generated lingo files.
 func BuildNoLingoGens() error {
 	if err := run("go", "build",
 		goRaceFlag(),
@@ -241,7 +236,7 @@ func BuildNoLingoGens() error {
 		debug("-v"),
 		"-tags",
 		"nolingo",
-	)(codePaths); err != nil {
+	)(allFiles); err != nil {
 		return err
 	}
 	return nil
@@ -315,7 +310,7 @@ func GoTidy() error {
 
 // Runs `go vet` with optional debug logging
 func GoVet() error {
-	if err := runCmd("go", "vet", debug("-v"))(allPkgs); err != nil {
+	if err := runCmd("go", "vet", debug("-v"))(allFiles); err != nil {
 		return err
 	}
 	return nil
@@ -336,7 +331,7 @@ func Revive() error {
 		"-exclude", "./db/...",
 		"-exclude", "./internal/test/schema/...",
 		"-formatter", formatter,
-	)(codePaths); err != nil {
+	)(allFiles); err != nil {
 		return err
 	}
 	return nil

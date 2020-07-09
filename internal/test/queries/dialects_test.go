@@ -1,20 +1,20 @@
 package queries_test
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/dialect"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/dialect"
 )
 
-func DefaultDialect() (core.Dialect, error) {
+func DefaultDialect() (lingo.Dialect, error) {
 	return dialect.NewDefault()
 }
 
-func DefaultDialectWithSchema() (core.Dialect, error) {
+func DefaultDialectWithSchema() (lingo.Dialect, error) {
 	return dialect.NewDefault(
 		dialect.WithSchemaNameIncluded(true),
 	)
 }
 
-func MySQLDialect() (core.Dialect, error) {
+func MySQLDialect() (lingo.Dialect, error) {
 	return dialect.NewMySQL()
 }

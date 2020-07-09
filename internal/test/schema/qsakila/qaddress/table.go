@@ -5,9 +5,9 @@
 package qaddress
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QAddress {
@@ -45,10 +45,10 @@ type QAddress struct {
 	lastUpdate path.Time
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QAddress) GetColumns() []core.Column {
-	return []core.Column{
+func (q QAddress) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.addressId,
 		q.address,
 		q.address2,
@@ -61,7 +61,7 @@ func (q QAddress) GetColumns() []core.Column {
 	}
 }
 
-func (q QAddress) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QAddress) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 

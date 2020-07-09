@@ -3,18 +3,18 @@ package queries_test
 import (
 	. "github.com/onsi/gomega"
 
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/execute"
+	"github.com/weworksandbox/lingo/expr"
+	"github.com/weworksandbox/lingo/expr/join"
+	"github.com/weworksandbox/lingo/expr/sort"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qcategory"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmactor"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmcategory"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmtext"
 	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/execute"
-	"github.com/weworksandbox/lingo/pkg/core/expr"
-	"github.com/weworksandbox/lingo/pkg/core/expr/join"
-	"github.com/weworksandbox/lingo/pkg/core/expr/sort"
-	"github.com/weworksandbox/lingo/pkg/core/query"
+	"github.com/weworksandbox/lingo/query"
 )
 
 var selectQueries = []QueryTest{
@@ -23,7 +23,7 @@ var selectQueries = []QueryTest{
 		Benchmark: true,
 		Params: Params{
 			Dialect: DefaultDialect,
-			SQL: func() core.Expression {
+			SQL: func() lingo.Expression {
 				const (
 					storeID = 2
 				)
@@ -55,7 +55,7 @@ var selectQueries = []QueryTest{
 		Benchmark: true,
 		Params: Params{
 			Dialect: DefaultDialectWithSchema,
-			SQL: func() core.Expression {
+			SQL: func() lingo.Expression {
 				const (
 					storeID = 2
 				)
@@ -87,7 +87,7 @@ var selectQueries = []QueryTest{
 		Benchmark: true,
 		Params: Params{
 			Dialect: DefaultDialect,
-			SQL: func() core.Expression {
+			SQL: func() lingo.Expression {
 				const (
 					actorID = 10
 				)
@@ -120,7 +120,7 @@ var selectQueries = []QueryTest{
 		Benchmark: true,
 		Params: Params{
 			Dialect: DefaultDialect,
-			SQL: func() core.Expression {
+			SQL: func() lingo.Expression {
 				var (
 					actorID = int16(10)
 				)

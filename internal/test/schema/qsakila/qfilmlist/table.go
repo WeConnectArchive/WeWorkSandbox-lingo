@@ -5,9 +5,9 @@
 package qfilmlist
 
 import (
-	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expr/path"
-	"github.com/weworksandbox/lingo/pkg/core/sql"
+	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) QFilmList {
@@ -43,10 +43,10 @@ type QFilmList struct {
 	actors      path.String
 }
 
-// core.Table Functions
+// lingo.Table Functions
 
-func (q QFilmList) GetColumns() []core.Column {
-	return []core.Column{
+func (q QFilmList) GetColumns() []lingo.Column {
+	return []lingo.Column{
 		q.fid,
 		q.title,
 		q.description,
@@ -58,7 +58,7 @@ func (q QFilmList) GetColumns() []core.Column {
 	}
 }
 
-func (q QFilmList) ToSQL(d core.Dialect) (sql.Data, error) {
+func (q QFilmList) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return path.ExpandTableWithDialect(d, q)
 }
 
