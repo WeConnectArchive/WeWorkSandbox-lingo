@@ -1,17 +1,19 @@
 package expression
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
 var timeType = reflect.TypeOf(time.Time{})
 
-type Value interface {
+type ValueDialect interface {
 	Value(value []interface{}) (sql.Data, error)
 }
 
@@ -26,21 +28,21 @@ type value struct {
 }
 
 func (v value) And(exp core.Expression) core.ComboExpression {
-	return NewOperator(v, operator.And, exp)
+	return operator.NewOperator(v, operator.And, exp)
 }
 
 func (v value) Or(exp core.Expression) core.ComboExpression {
-	return NewOperator(v, operator.Or, exp)
+	return operator.NewOperator(v, operator.Or, exp)
 }
 
 func (v value) ToSQL(d core.Dialect) (sql.Data, error) {
-	constant, ok := d.(Value)
+	constant, ok := d.(ValueDialect)
 	if !ok {
-		return nil, DialectFunctionNotSupported("Value")
+		return nil, fmt.Errorf("dialect '%s' does not support 'expression.ValueDialect'", d.GetName())
 	}
 
 	if v.value == nil {
-		return nil, ConstantIsNil()
+		return nil, errors.New("constant is nil, use IsNull instead")
 	}
 
 	reflectOfV := reflect.ValueOf(v.value)
@@ -48,7 +50,7 @@ func (v value) ToSQL(d core.Dialect) (sql.Data, error) {
 		return nil, err
 	}
 
-	splitValues := convertToSlice(reflectOfV)
+	splitValues := convertToISlice(reflectOfV)
 	return constant.Value(splitValues)
 }
 
@@ -64,7 +66,8 @@ func validateOverallKind(reflectOfV reflect.Value) error {
 		underlyingType = reflectOfV.Type().Elem()
 	}
 	if !validateSimpleKind(underlyingType) {
-		return ValueIsComplexType(reflectOfV.Type())
+		return fmt.Errorf("value is complex type '%s' when it should be a simple type "+
+			"or a pointer to a simple type", reflectOfV.Type().String())
 	}
 	return nil
 }
@@ -93,7 +96,8 @@ func validateSimpleKind(t reflect.Type) bool {
 	return true
 }
 
-func convertToSlice(value reflect.Value) []interface{} {
+// convertToISlice
+func convertToISlice(value reflect.Value) []interface{} {
 	value = removePtrIfExists(value)
 
 	switch value.Kind() {

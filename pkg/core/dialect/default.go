@@ -5,11 +5,10 @@ import (
 	"strings"
 
 	"github.com/weworksandbox/lingo/pkg/core"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/join"
-	"github.com/weworksandbox/lingo/pkg/core/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expression/join"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
 	"github.com/weworksandbox/lingo/pkg/core/query"
-	"github.com/weworksandbox/lingo/pkg/core/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
@@ -82,7 +81,7 @@ func (d Default) Value(value []interface{}) (sql.Data, error) {
 }
 
 func (Default) Join(left sql.Data, joinType join.Type, on sql.Data) (sql.Data, error) {
-	return Join(left, genericJoinTypeToStr[joinType], on)
+	return Join(left, joinType, on)
 }
 
 func (Default) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
@@ -109,7 +108,7 @@ func (d Default) Modify(m query.Modifier) (sql.Data, error) {
 	if oWasSet {
 		offsetSQL, err := d.Value([]interface{}{offset})
 		if err != nil {
-			return nil, expression.ErrorAroundSQL(err, s.String())
+			return nil, err
 		}
 		s = s.AppendWithSpace(sql.String("OFFSET").AppendWithSpace(offsetSQL))
 	}

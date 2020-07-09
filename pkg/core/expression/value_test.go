@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
+	"github.com/petergtz/pegomock"
 
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/pkg/core"
@@ -16,7 +17,7 @@ import (
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
 
-var _ = Describe("Value", func() {
+var _ = Describe("ValueDialect", func() {
 
 	Context("Calling `NewValue`", func() {
 		complexTypeErrFmt := "value is complex type '%s' when it should be a simple type " +
@@ -26,6 +27,11 @@ var _ = Describe("Value", func() {
 		var iFace i = &struct{}{}
 		var myStr = "my string is hereeeeeeeeeee"
 		var myTime = time.Now()
+		var newDialect = func() core.Dialect {
+			d := NewMockDialect()
+			pegomock.When(d.GetName()).ThenReturn("mock")
+			return d
+		}
 
 		DescribeTable("`ToSQL`",
 
@@ -38,8 +44,8 @@ var _ = Describe("Value", func() {
 			},
 
 			// Edge Cases / Odd balls - Failures
-			Entry("dialect does not support `Value`", NewMockDialect(), 1, BeNil(), MatchError(EqString("dialect function '%s' not supported", "Value"))),
-			Entry("`Value` fails", valueDialectFailure{}, 1, BeNil(), MatchError("value failure")),
+			Entry("dialect '%s' does not support 'expression.ValueDialect'", newDialect(), 1, BeNil(), MatchError(EqString("dialect '%s' does not support '%s'", "mock", "expression.ValueDialect"))),
+			Entry("`ValueDialect` fails", valueDialectFailure{}, 1, BeNil(), MatchError("value failure")),
 
 			// Basic Types
 			// - Successful

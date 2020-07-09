@@ -36,24 +36,24 @@ var _ = Describe("Insert", func() {
 				NewMockColumn(),
 				NewMockColumn(),
 			}
-			pegomock.When(cols[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[0].sql"), nil)
+			pegomock.When(cols[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[0].sqlStr"), nil)
 			pegomock.When(cols[0].GetAlias()).ThenReturn("col[0].alias")
 			pegomock.When(cols[0].GetName()).ThenReturn("col[0].name")
 			pegomock.When(cols[0].GetParent()).ThenReturn(table)
-			pegomock.When(cols[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[1].sql"), nil)
+			pegomock.When(cols[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("cols[1].sqlStr"), nil)
 			pegomock.When(cols[1].GetAlias()).ThenReturn("col[1].alias")
 			pegomock.When(cols[1].GetName()).ThenReturn("col[1].name")
 			pegomock.When(cols[1].GetParent()).ThenReturn(table)
 
 			pegomock.When(table.GetColumns()).ThenReturn(cols)
-			pegomock.When(table.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("table.sql"), nil)
+			pegomock.When(table.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("table.sqlStr"), nil)
 
 			valueExpressions = []core.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(valueExpressions[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("valueExpressions[0].sql"), nil)
-			pegomock.When(valueExpressions[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("valueExpressions[1].sql"), nil)
+			pegomock.When(valueExpressions[0].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("valueExpressions[0].sqlStr"), nil)
+			pegomock.When(valueExpressions[1].ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("valueExpressions[1].sqlStr"), nil)
 
 			// Ensure we reset valueConstants. Had random test failures due to this. Only happened on certain
 			// random num test seeds.
@@ -85,7 +85,7 @@ var _ = Describe("Insert", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("INSERT INTO table.sql (col[0].name, col[1].name) VALUES (valueExpressions[0].sql, valueExpressions[1].sql)"))
+				Expect(sql).To(MatchSQLString("INSERT INTO table.sqlStr (col[0].name, col[1].name) VALUES (valueExpressions[0].sqlStr, valueExpressions[1].sqlStr)"))
 			})
 
 			It("Returns no error", func() {
@@ -103,7 +103,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns a table is nil error", func() {
-					Expect(err).To(MatchError(ContainSubstring("expression '%s' cannot be nil", "table")))
+					Expect(err).To(MatchError(ContainSubstring("table cannot be empty")))
 				})
 			})
 
@@ -211,7 +211,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("INSERT INTO table.sql (col[0].name, col[1].name) VALUES (?, ?)"))
+					Expect(sql).To(MatchSQLString("INSERT INTO table.sqlStr (col[0].name, col[1].name) VALUES (?, ?)"))
 				})
 
 				It("Returns valid SQL Values", func() {
@@ -234,7 +234,7 @@ var _ = Describe("Insert", func() {
 
 			BeforeEach(func() {
 				sTable = NewMockTable()
-				pegomock.When(sTable.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("select.sql"), nil)
+				pegomock.When(sTable.ToSQL(matchers.AnyCoreDialect())).ThenReturn(sql.String("select.sqlStr"), nil)
 
 				sq = query.Select(expression.Star()).From(sTable)
 			})
@@ -261,7 +261,7 @@ var _ = Describe("Insert", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("INSERT INTO table.sql (col[0].name, col[1].name) SELECT * FROM select.sql"))
+					Expect(sql).To(MatchSQLString("INSERT INTO table.sqlStr (col[0].name, col[1].name) SELECT * FROM select.sqlStr"))
 				})
 
 				It("Returns no error", func() {

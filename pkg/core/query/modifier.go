@@ -11,8 +11,8 @@ type Modifier interface {
 	Offset() (offset uint64, wasSet bool)
 }
 
-// Modify is used by the query builders to check if an interface is satisfied for a dialect.
-type Modify interface {
+// ModifyDialect is used by the query builders to check if an interface is satisfied for a dialect.
+type ModifyDialect interface {
 	Modify(modifier Modifier) (sql.Data, error)
 }
 

@@ -6,19 +6,11 @@ import (
 
 	"github.com/weworksandbox/lingo/pkg/core"
 	"github.com/weworksandbox/lingo/pkg/core/check"
-	"github.com/weworksandbox/lingo/pkg/core/expression"
-	"github.com/weworksandbox/lingo/pkg/core/join"
-	"github.com/weworksandbox/lingo/pkg/core/operator"
-	"github.com/weworksandbox/lingo/pkg/core/sort"
+	"github.com/weworksandbox/lingo/pkg/core/expression/join"
+	"github.com/weworksandbox/lingo/pkg/core/expression/operator"
+	"github.com/weworksandbox/lingo/pkg/core/expression/sort"
 	"github.com/weworksandbox/lingo/pkg/core/sql"
 )
-
-var genericJoinTypeToStr = map[join.Type]string{
-	join.Inner: "INNER JOIN",
-	join.Outer: "OUTER JOIN",
-	join.Left:  "LEFT JOIN",
-	join.Right: "RIGHT JOIN",
-}
 
 // AliasElseName will use the core.Alias if non-empty, else the Name is used.
 func AliasElseName(n core.Name) sql.Data {
@@ -68,18 +60,35 @@ type ValueFormatter interface {
 }
 
 func Value(formatter ValueFormatter, values []interface{}) (sql.Data, error) {
-	if check.IsValueNilOrBlank(values) {
-		return nil, expression.ConstantIsNil()
-	}
-	if check.IsValueNilOrBlank(formatter) {
-		return nil, errors.New("ValueFormatter is nil or the interface pointer is nil")
-	}
-
 	return formatter.ValueFormat(len(values)).Append(sql.Values(values)), nil
 }
 
+var operandToStr = map[operator.Operand]string{
+	operator.And:                "AND",
+	operator.Or:                 "OR",
+	operator.Eq:                 "=",
+	operator.NotEq:              "<>",
+	operator.LessThan:           "<",
+	operator.LessThanOrEqual:    "<=",
+	operator.GreaterThan:        ">",
+	operator.GreaterThanOrEqual: ">=",
+	operator.Like:               "LIKE",
+	operator.NotLike:            "NOT LIKE",
+	operator.Null:               "IS NULL",
+	operator.NotNull:            "IS NOT NULL",
+	operator.In:                 "IN",
+	operator.NotIn:              "NOT IN",
+	operator.Between:            "BETWEEN",
+	operator.NotBetween:         "NOT BETWEEN",
+}
+
 func Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, error) {
-	opWithSpaces := " " + op.String() + " "
+	optStr, ok := operandToStr[op]
+	if !ok {
+		return nil, EnumIsInvalid("operator.Operand", op)
+	}
+
+	opWithSpaces := " " + optStr + " "
 
 	switch op {
 
@@ -96,28 +105,30 @@ func Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, 
 		return sql.Join(opWithSpaces, combined), nil
 
 	case operator.In, operator.NotIn:
-		opSQL := sql.String(op.String())
+		opSQL := sql.String(optStr)
 		return left.AppendWithSpace(opSQL).SurroundAppend(" (", ")", sql.Join(", ", values)), nil
 
 	case operator.Null, operator.NotNull:
-		opSQL := sql.String(op.String())
+		opSQL := sql.String(optStr)
 		return left.AppendWithSpace(opSQL), nil
 	}
-	return nil, expression.ErrorAroundSQL(expression.EnumIsInvalid("Operator", op), left.String())
+	return nil, fmt.Errorf("operator.Operand %d is not implemented", op)
 }
 
-func Join(left sql.Data, joinType string, on sql.Data) (sql.Data, error) {
-	if check.IsValueNilOrBlank(left.String()) {
-		return nil, expression.ExpressionIsNil("left")
-	}
-	if check.IsValueNilOrBlank(on.String()) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("on"), left.String())
-	}
-	if check.IsValueNilOrEmpty(joinType) {
-		return nil, expression.ErrorAroundSQL(expression.ExpressionIsNil("joinType"), left.String())
+var genericJoinTypeToStr = map[join.Type]string{
+	join.Inner: "INNER JOIN",
+	join.Outer: "OUTER JOIN",
+	join.Left:  "LEFT JOIN",
+	join.Right: "RIGHT JOIN",
+}
+
+func Join(left sql.Data, joinType join.Type, on sql.Data) (sql.Data, error) {
+	jTypeStr, ok := genericJoinTypeToStr[joinType]
+	if !ok {
+		return nil, EnumIsInvalid("join.Type", joinType)
 	}
 
-	return sql.String(joinType).
+	return sql.String(jTypeStr).
 		AppendWithSpace(left).
 		AppendWithSpace(sql.String("ON")).
 		AppendWithSpace(on), nil
@@ -131,23 +142,19 @@ func Set(format SetFormatter, left sql.Data, value sql.Data) (sql.Data, error) {
 	if check.IsValueNilOrBlank(format) {
 		return nil, errors.New("SetFormatter is nil or the interface pointer is nil")
 	}
-	if check.IsValueNilOrBlank(left.String()) {
-		return nil, expression.ExpressionIsNil("left")
-	}
-	if check.IsValueNilOrBlank(value.String()) {
-		return nil, expression.ExpressionIsNil("value")
-	}
-
 	return left.AppendWithSpace(sql.String(format.SetValueFormat())).AppendWithSpace(value), nil
 }
 
+var sortDirectionToStr = map[sort.Direction]string{
+	sort.Ascending:  "ASC",
+	sort.Descending: "DESC",
+}
+
 func OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
-	if check.IsValueNilOrBlank(left.String()) {
-		return nil, expression.ExpressionIsNil("left")
+	dirStr, ok := sortDirectionToStr[direction]
+	if !ok {
+		return nil, EnumIsInvalid("sort.Direction", direction)
 	}
-	switch direction {
-	case sort.Ascending, sort.Descending:
-		return left.AppendWithSpace(sql.String(direction.String())), nil
-	}
-	return nil, expression.EnumIsInvalid("direction", direction)
+
+	return left.AppendWithSpace(sql.String(dirStr)), nil
 }

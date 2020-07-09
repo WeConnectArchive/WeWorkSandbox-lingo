@@ -68,10 +68,12 @@ func All() {
 		Deps.ModDownload,
 		Gen.Go,
 		GoFmt,
-		GoVet,
 		Revive,
-		Build,
 		Gen.TestSchema,
+		// Keep GoVet, Build & Test after Gen.TestSchema. If its before, the generated schema files are included
+		// in the building / vet / tests. If there are contract changes (due to development), it will fail to compile.
+		GoVet,
+		Build,
 		Test.All,
 		GoTidy,
 		Gen.StopTestSchemaDB,
@@ -205,7 +207,7 @@ func (Test) Benchmark() error {
 	return nil
 }
 
-// Builds lingo and then builds codePaths
+// Builds lingo CLI and then builds codePaths
 func Build() error {
 	if err := run("go", "build",
 		goRaceFlag(),
@@ -217,6 +219,26 @@ func Build() error {
 	if err := runCmd("go", "build",
 		goRaceFlag(),
 		debug("-v"),
+	)(codePaths); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Builds lingo CLI and then builds all codePaths without building any generated lingo files.
+func BuildNoLingoGens() error {
+	if err := run("go", "build",
+		goRaceFlag(),
+		debug("-v"),
+		"./cmd/lingo/lingo.go",
+	); err != nil {
+		return err
+	}
+	if err := runCmd("go", "build",
+		goRaceFlag(),
+		debug("-v"),
+		"-tags",
+		"nolingo",
 	)(codePaths); err != nil {
 		return err
 	}
@@ -320,7 +342,7 @@ type Run mg.Namespace
 
 // Runs Lingo for the Sakila test DB
 func (Run) LingoGenTestSchema() error {
-	mg.SerialDeps(Build)
+	mg.SerialDeps(BuildNoLingoGens)
 
 	if isCI() {
 		log.Println(msgSkippingDockerCommandInCI)

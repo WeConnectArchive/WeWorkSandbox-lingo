@@ -55,7 +55,7 @@ func Generate(ctx context.Context, settings Settings, parser Parser) <-chan erro
 					return PathPackageToType{},
 						fmt.Errorf("unable to find lingo path type for DB type %s", dbType)
 				}
-				result = PathPackageToType{pkgCorePath, "Unsupported"}
+				result = PathPackageToType{pkgCoreExpPath, "Unsupported"}
 			}
 			return result, nil
 		}
