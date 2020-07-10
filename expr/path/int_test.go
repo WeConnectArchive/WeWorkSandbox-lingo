@@ -120,7 +120,7 @@ var _ = Describe("Int", func() {
 				s = p.To(value)
 			})
 
-			It("Returns a valid `lingo.Dialect`", func() {
+			It("Returns a valid `set.Set`", func() {
 				Expect(s).ToNot(BeNil())
 				Expect(s).To(Equal(set.NewSet(p, expr.NewValue(value))))
 			})
@@ -141,7 +141,7 @@ var _ = Describe("Int", func() {
 				s = p.ToExpr(value)
 			})
 
-			It("Returns a valid `lingo.Dialect`", func() {
+			It("Returns a valid `set.Set`", func() {
 				Expect(s).ToNot(BeNil())
 				Expect(s).To(Equal(set.NewSet(p, value)))
 			})
