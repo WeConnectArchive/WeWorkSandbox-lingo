@@ -1,4 +1,4 @@
-package expr_test
+package set_test
 
 import (
 	"errors"
@@ -8,13 +8,13 @@ import (
 	"github.com/petergtz/pegomock"
 
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/matchers"
+	"github.com/weworksandbox/lingo/expr/set"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/sql"
 )
 
-var _ = Describe("SetDialect", func() {
+var _ = Describe("Dialect", func() {
 
 	Context("Calling `NewSet`", func() {
 
@@ -22,7 +22,7 @@ var _ = Describe("SetDialect", func() {
 			left  lingo.Expression
 			value lingo.Expression
 
-			set lingo.Set
+			lSet lingo.Set
 		)
 
 		BeforeEach(func() {
@@ -31,11 +31,11 @@ var _ = Describe("SetDialect", func() {
 		})
 
 		JustBeforeEach(func() {
-			set = expr.NewSet(left, value)
+			lSet = set.NewSet(left, value)
 		})
 
-		It("Returns a `lingo.SetDialect`", func() {
-			Expect(set).ToNot(BeNil())
+		It("Returns a `lingo.Dialect`", func() {
+			Expect(lSet).ToNot(BeNil())
 		})
 
 		Context("Calling `ToSQL`", func() {
@@ -54,10 +54,10 @@ var _ = Describe("SetDialect", func() {
 			})
 
 			JustBeforeEach(func() {
-				s, err = set.ToSQL(d)
+				s, err = lSet.ToSQL(d)
 			})
 
-			It("Returns SetDialect SQL string", func() {
+			It("Returns Dialect SQL string", func() {
 				Expect(s).ToNot(BeNil())
 				Expect(s).To(MatchSQLString("Set sql"))
 			})
@@ -66,7 +66,7 @@ var _ = Describe("SetDialect", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support SetDialect", func() {
+			Context("Dialect does not support Dialect", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
@@ -78,7 +78,7 @@ var _ = Describe("SetDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "expr.SetDialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "set.Dialect")))
 				})
 			})
 
@@ -142,7 +142,7 @@ var _ = Describe("SetDialect", func() {
 				})
 			})
 
-			Context("`SetDialect` fails", func() {
+			Context("`Dialect` fails", func() {
 
 				BeforeEach(func() {
 					d = setDialectFailure{}

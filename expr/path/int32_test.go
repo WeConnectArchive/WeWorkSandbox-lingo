@@ -10,6 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr/set"
 )
 
 var _ = Describe("Int32", func() {
@@ -108,7 +109,7 @@ var _ = Describe("Int32", func() {
 
 			var (
 				value int32
-				set   lingo.Set
+				s     lingo.Set
 			)
 
 			BeforeEach(func() {
@@ -116,12 +117,12 @@ var _ = Describe("Int32", func() {
 			})
 
 			JustBeforeEach(func() {
-				set = p.To(value)
+				s = p.To(value)
 			})
 
-			It("Returns a valid `lingo.SetDialect`", func() {
-				Expect(set).ToNot(BeNil())
-				Expect(set).To(Equal(expr.NewSet(p, expr.NewValue(value))))
+			It("Returns a valid `set.Set`", func() {
+				Expect(s).ToNot(BeNil())
+				Expect(s).To(Equal(set.NewSet(p, expr.NewValue(value))))
 			})
 		})
 
@@ -129,7 +130,7 @@ var _ = Describe("Int32", func() {
 
 			var (
 				value lingo.Expression
-				set   lingo.Set
+				s     lingo.Set
 			)
 
 			BeforeEach(func() {
@@ -137,12 +138,12 @@ var _ = Describe("Int32", func() {
 			})
 
 			JustBeforeEach(func() {
-				set = p.ToExpr(value)
+				s = p.ToExpr(value)
 			})
 
-			It("Returns a valid `lingo.SetDialect`", func() {
-				Expect(set).ToNot(BeNil())
-				Expect(set).To(Equal(expr.NewSet(p, value)))
+			It("Returns a valid `set.Set`", func() {
+				Expect(s).ToNot(BeNil())
+				Expect(s).To(Equal(set.NewSet(p, value)))
 			})
 		})
 

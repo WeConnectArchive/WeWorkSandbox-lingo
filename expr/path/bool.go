@@ -4,6 +4,7 @@ import (
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/operator"
+	"github.com/weworksandbox/lingo/expr/set"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -46,34 +47,34 @@ func (b Bool) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	return ExpandColumnWithDialect(d, b)
 }
 
-func (b Bool) To(value bool) lingo.Set {
-	return expr.NewSet(b, expr.NewValue(value))
+func (b Bool) To(value bool) set.Set {
+	return set.NewSet(b, expr.NewValue(value))
 }
 
-func (b Bool) ToExpr(setExp lingo.Expression) lingo.Set {
-	return expr.NewSet(b, setExp)
+func (b Bool) ToExpr(setExp lingo.Expression) set.Set {
+	return set.NewSet(b, setExp)
 }
 
-func (b Bool) Eq(equalTo bool) lingo.ComboExpression {
+func (b Bool) Eq(equalTo bool) operator.Operator {
 	return operator.NewOperator(b, operator.Eq, expr.NewValue(equalTo))
 }
 
-func (b Bool) EqPath(equalTo lingo.Expression) lingo.ComboExpression {
+func (b Bool) EqPath(equalTo lingo.Expression) operator.Operator {
 	return operator.NewOperator(b, operator.Eq, equalTo)
 }
 
-func (b Bool) NotEq(notEqualTo bool) lingo.ComboExpression {
+func (b Bool) NotEq(notEqualTo bool) operator.Operator {
 	return operator.NewOperator(b, operator.NotEq, expr.NewValue(notEqualTo))
 }
 
-func (b Bool) NotEqPath(notEqualTo lingo.Expression) lingo.ComboExpression {
+func (b Bool) NotEqPath(notEqualTo lingo.Expression) operator.Operator {
 	return operator.NewOperator(b, operator.NotEq, notEqualTo)
 }
 
-func (b Bool) IsNull() lingo.ComboExpression {
+func (b Bool) IsNull() operator.Operator {
 	return operator.NewOperator(b, operator.Null)
 }
 
-func (b Bool) IsNotNull() lingo.ComboExpression {
+func (b Bool) IsNotNull() operator.Operator {
 	return operator.NewOperator(b, operator.NotNull)
 }

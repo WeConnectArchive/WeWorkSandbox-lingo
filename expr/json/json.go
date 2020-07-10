@@ -14,29 +14,29 @@ type Dialect interface {
 	JSONOperator(left sql.Data, op Operand, values []sql.Data) (sql.Data, error)
 }
 
-func NewJSONOperation(left lingo.Expression, op Operand, expressions ...lingo.Expression) lingo.ComboExpression {
-	return jsonOperate{
+func NewJSONOperation(left lingo.Expression, op Operand, expressions ...lingo.Expression) Operator {
+	return Operator{
 		left:        left,
 		operand:     op,
 		expressions: expressions,
 	}
 }
 
-type jsonOperate struct {
+type Operator struct {
 	left        lingo.Expression
 	operand     Operand
 	expressions []lingo.Expression
 }
 
-func (j jsonOperate) And(exp lingo.Expression) lingo.ComboExpression {
+func (j Operator) And(exp lingo.Expression) lingo.ComboExpression {
 	return operator.NewOperator(j, operator.And, exp)
 }
 
-func (j jsonOperate) Or(exp lingo.Expression) lingo.ComboExpression {
+func (j Operator) Or(exp lingo.Expression) lingo.ComboExpression {
 	return operator.NewOperator(j, operator.Or, exp)
 }
 
-func (j jsonOperate) ToSQL(d lingo.Dialect) (sql.Data, error) {
+func (j Operator) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	operate, ok := d.(Dialect)
 	if !ok {
 		return nil, fmt.Errorf("dialect '%s' does not support 'json.Dialect'", d.GetName())
