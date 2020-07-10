@@ -9,7 +9,7 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/expr/matchers"
-	set2 "github.com/weworksandbox/lingo/expr/set"
+	"github.com/weworksandbox/lingo/expr/set"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/sql"
 )
@@ -22,7 +22,7 @@ var _ = Describe("Dialect", func() {
 			left  lingo.Expression
 			value lingo.Expression
 
-			set lingo.Set
+			lSet lingo.Set
 		)
 
 		BeforeEach(func() {
@@ -31,11 +31,11 @@ var _ = Describe("Dialect", func() {
 		})
 
 		JustBeforeEach(func() {
-			set = set2.NewSet(left, value)
+			lSet = set.NewSet(left, value)
 		})
 
 		It("Returns a `lingo.Dialect`", func() {
-			Expect(set).ToNot(BeNil())
+			Expect(lSet).ToNot(BeNil())
 		})
 
 		Context("Calling `ToSQL`", func() {
@@ -54,7 +54,7 @@ var _ = Describe("Dialect", func() {
 			})
 
 			JustBeforeEach(func() {
-				s, err = set.ToSQL(d)
+				s, err = lSet.ToSQL(d)
 			})
 
 			It("Returns Dialect SQL string", func() {

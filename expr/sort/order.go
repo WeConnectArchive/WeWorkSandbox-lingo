@@ -24,18 +24,18 @@ type By struct {
 	direction Direction
 }
 
-func (o By) ToSQL(d lingo.Dialect) (sql.Data, error) {
+func (b By) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	order, ok := d.(Dialect)
 	if !ok {
 		return nil, fmt.Errorf("dialect '%s' does not support 'sort.Dialect'", d.GetName())
 	}
 
-	if o.left == nil {
+	if b.left == nil {
 		return nil, errors.New("left of 'order by' cannot be empty")
 	}
-	left, lerr := o.left.ToSQL(d)
+	left, lerr := b.left.ToSQL(d)
 	if lerr != nil {
 		return nil, lerr
 	}
-	return order.OrderBy(left, o.direction)
+	return order.OrderBy(left, b.direction)
 }
