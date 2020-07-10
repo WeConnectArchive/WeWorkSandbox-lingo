@@ -10,6 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/expr/path"
+	set2 "github.com/weworksandbox/lingo/expr/set"
 )
 
 var _ = Describe("Int32", func() {
@@ -119,9 +120,9 @@ var _ = Describe("Int32", func() {
 				set = p.To(value)
 			})
 
-			It("Returns a valid `lingo.SetDialect`", func() {
+			It("Returns a valid `lingo.Dialect`", func() {
 				Expect(set).ToNot(BeNil())
-				Expect(set).To(Equal(expr.NewSet(p, expr.NewValue(value))))
+				Expect(set).To(Equal(set2.NewSet(p, expr.NewValue(value))))
 			})
 		})
 
@@ -140,9 +141,9 @@ var _ = Describe("Int32", func() {
 				set = p.ToExpr(value)
 			})
 
-			It("Returns a valid `lingo.SetDialect`", func() {
+			It("Returns a valid `lingo.Dialect`", func() {
 				Expect(set).ToNot(BeNil())
-				Expect(set).To(Equal(expr.NewSet(p, value)))
+				Expect(set).To(Equal(set2.NewSet(p, value)))
 			})
 		})
 

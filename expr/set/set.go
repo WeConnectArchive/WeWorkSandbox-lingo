@@ -1,4 +1,4 @@
-package expr
+package set
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/sql"
 )
 
-type SetDialect interface {
+type Dialect interface {
 	Set(left, value sql.Data) (sql.Data, error)
 }
 
@@ -35,9 +35,9 @@ func (s Set) Or(exp lingo.Expression) lingo.ComboExpression {
 }
 
 func (s Set) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	setFunc, ok := d.(SetDialect)
+	setFunc, ok := d.(Dialect)
 	if !ok {
-		return nil, fmt.Errorf("dialect '%s' does not support 'expr.SetDialect'", d.GetName())
+		return nil, fmt.Errorf("dialect '%s' does not support 'set.Dialect'", d.GetName())
 	}
 
 	if check.IsValueNilOrEmpty(s.left) {

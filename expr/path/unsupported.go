@@ -37,5 +37,6 @@ func (i Unsupported) GetAlias() string {
 
 func (Unsupported) ToSQL(_ lingo.Dialect) (sql.Data, error) {
 	// TODO - Revisit how we want to deal with unsupported columns. Right now we just ignore them.
+	//        Possibly just using the dialect to determine what to do? Dialect options?
 	return sql.Empty(), nil
 }

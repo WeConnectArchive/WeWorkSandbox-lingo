@@ -14,29 +14,29 @@ type Dialect interface {
 	Join(left sql.Data, joinType Type, on sql.Data) (sql.Data, error)
 }
 
-func NewJoinOn(left lingo.Expression, joinType Type, on lingo.Expression) lingo.ComboExpression {
-	return joinOn{
+func NewJoinOn(left lingo.Expression, joinType Type, on lingo.Expression) On {
+	return On{
 		left:     left,
 		on:       on,
 		joinType: joinType,
 	}
 }
 
-type joinOn struct {
+type On struct {
 	left     lingo.Expression
 	on       lingo.Expression
 	joinType Type
 }
 
-func (j joinOn) And(exp lingo.Expression) lingo.ComboExpression {
+func (j On) And(exp lingo.Expression) lingo.ComboExpression {
 	return operator.NewOperator(j, operator.And, exp)
 }
 
-func (j joinOn) Or(exp lingo.Expression) lingo.ComboExpression {
+func (j On) Or(exp lingo.Expression) lingo.ComboExpression {
 	return operator.NewOperator(j, operator.Or, exp)
 }
 
-func (j joinOn) ToSQL(d lingo.Dialect) (sql.Data, error) {
+func (j On) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	joiner, ok := d.(Dialect)
 	if !ok {
 		return nil, fmt.Errorf("dialect '%s' does not support 'join.Dialect'", d.GetName())

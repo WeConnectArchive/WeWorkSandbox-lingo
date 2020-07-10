@@ -34,7 +34,7 @@ var _ = Describe("Dialect", func() {
 			orderBy = sort.NewOrderBy(left, direction)
 		})
 
-		It("Returns a `lingo.OrderBy`", func() {
+		It("Returns a `lingo.By`", func() {
 			Expect(orderBy).ToNot(BeNil())
 		})
 
@@ -111,7 +111,7 @@ var _ = Describe("Dialect", func() {
 				})
 			})
 
-			Context("`OrderBy` returns an error", func() {
+			Context("`By` returns an error", func() {
 
 				BeforeEach(func() {
 					d = orderDialectFailure{}

@@ -25,6 +25,6 @@ func (j JSON) As(alias string) JSON {
 	return j
 }
 
-func (j JSON) Extract(paths ...string) lingo.ComboExpression {
+func (j JSON) Extract(paths ...string) json.Operator {
 	return json.NewJSONOperation(j, json.Extract, expr.NewValue(paths))
 }

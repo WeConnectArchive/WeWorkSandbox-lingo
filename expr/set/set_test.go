@@ -1,4 +1,4 @@
-package expr_test
+package set_test
 
 import (
 	"errors"
@@ -8,13 +8,13 @@ import (
 	"github.com/petergtz/pegomock"
 
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/matchers"
+	set2 "github.com/weworksandbox/lingo/expr/set"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/sql"
 )
 
-var _ = Describe("SetDialect", func() {
+var _ = Describe("Dialect", func() {
 
 	Context("Calling `NewSet`", func() {
 
@@ -31,10 +31,10 @@ var _ = Describe("SetDialect", func() {
 		})
 
 		JustBeforeEach(func() {
-			set = expr.NewSet(left, value)
+			set = set2.NewSet(left, value)
 		})
 
-		It("Returns a `lingo.SetDialect`", func() {
+		It("Returns a `lingo.Dialect`", func() {
 			Expect(set).ToNot(BeNil())
 		})
 
@@ -57,7 +57,7 @@ var _ = Describe("SetDialect", func() {
 				s, err = set.ToSQL(d)
 			})
 
-			It("Returns SetDialect SQL string", func() {
+			It("Returns Dialect SQL string", func() {
 				Expect(s).ToNot(BeNil())
 				Expect(s).To(MatchSQLString("Set sql"))
 			})
@@ -66,7 +66,7 @@ var _ = Describe("SetDialect", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			Context("Dialect does not support SetDialect", func() {
+			Context("Dialect does not support Dialect", func() {
 
 				BeforeEach(func() {
 					d = NewMockDialect()
@@ -78,7 +78,7 @@ var _ = Describe("SetDialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "expr.SetDialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "set.Dialect")))
 				})
 			})
 
@@ -142,7 +142,7 @@ var _ = Describe("SetDialect", func() {
 				})
 			})
 
-			Context("`SetDialect` fails", func() {
+			Context("`Dialect` fails", func() {
 
 				BeforeEach(func() {
 					d = setDialectFailure{}
