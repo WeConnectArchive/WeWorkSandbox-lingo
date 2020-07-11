@@ -24,6 +24,8 @@ import (
 
 const (
 	// Paths and Files
+	exprPathDir                      = "./expr/path"
+	genPathsDir                      = "./internal/commands/genpaths"
 	testGenerateSakilaDir            = "./internal/test/testdata/sakila"
 	testGenerateSakilaConfigFileName = "lingo-config.yml"
 	dockerComposeYml                 = "docker-compose.yml"
@@ -39,6 +41,7 @@ const (
 var (
 	testSchemaSakilaLingoConfigFile = filepath.Join(testGenerateSakilaDir, testGenerateSakilaConfigFileName)
 	testGenerateSakilaDC            = filepath.Join(testGenerateSakilaDir, dockerComposeYml)
+
 	// allFiles has the current directory `.` plus all subsequent directories `./...`.
 	// Note: `...` does not work as it tries to do EVERYTHING including random GOPATH stuff.
 	allFiles = append(allPkgs, ".")
@@ -64,6 +67,7 @@ func All() {
 		Deps.InstallTools,
 		Deps.ModDownload,
 		Gen.Go,
+		Gen.Paths,
 		GoFmt,
 		Revive,
 		Gen.TestSchema,
@@ -108,6 +112,16 @@ func (Gen) Go() error {
 	return runCmd("go", "generate",
 		debug("-v"),
 	)(allFiles)
+}
+
+// Runs `genpaths.go` that generates the column Path definition types
+func (Gen) Paths() error {
+	absPath, err := filepath.Abs(exprPathDir)
+	if err != nil {
+		return fmt.Errorf("unable to find absolute path to '%s': %w", exprPathDir, err)
+	}
+
+	return run("go", "run", genPathsDir, "--dir", absPath)
 }
 
 // Runs `go fmt` with optional debug logging
