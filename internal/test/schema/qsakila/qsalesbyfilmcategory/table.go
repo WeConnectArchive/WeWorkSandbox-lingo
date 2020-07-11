@@ -19,14 +19,17 @@ func New() QSalesByFilmCategory {
 }
 
 func newQSalesByFilmCategory(alias string) QSalesByFilmCategory {
-	q := QSalesByFilmCategory{_alias: alias}
+	q := QSalesByFilmCategory{
+		_alias: alias,
+	}
 	q.category = path.NewString(q, "category")
 	q.totalSales = path.NewBinary(q, "total_sales")
 	return q
 }
 
 type QSalesByFilmCategory struct {
-	_alias     string
+	_alias string
+
 	category   path.String
 	totalSales path.Binary
 }

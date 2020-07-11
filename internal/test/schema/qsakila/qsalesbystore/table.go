@@ -19,7 +19,9 @@ func New() QSalesByStore {
 }
 
 func newQSalesByStore(alias string) QSalesByStore {
-	q := QSalesByStore{_alias: alias}
+	q := QSalesByStore{
+		_alias: alias,
+	}
 	q.store = path.NewString(q, "store")
 	q.manager = path.NewString(q, "manager")
 	q.totalSales = path.NewBinary(q, "total_sales")
@@ -27,7 +29,8 @@ func newQSalesByStore(alias string) QSalesByStore {
 }
 
 type QSalesByStore struct {
-	_alias     string
+	_alias string
+
 	store      path.String
 	manager    path.String
 	totalSales path.Binary

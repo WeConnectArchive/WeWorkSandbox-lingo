@@ -40,27 +40,7 @@ func Generate(ctx context.Context, settings Settings, parser Parser) <-chan erro
 	go func() {
 		defer close(errChan)
 
-		var dbToPath = make(DBToPathType)
-		for k, v := range parser.DBTypesToPaths() {
-			dbToPath[k] = v
-		}
-		for k, v := range settings.OverrideDBTypesToPaths() {
-			dbToPath[k] = v
-		}
-
-		dbTypeToPathType := func(dbType string) (PathPackageToType, error) {
-			result, ok := dbToPath[dbType]
-			if !ok {
-				if !settings.AllowUnsupportedColumnTypes() {
-					return PathPackageToType{},
-						fmt.Errorf("unable to find lingo path type for DB type %s", dbType)
-				}
-				result = PathPackageToType{PkgPath, "Unsupported"}
-			}
-			return result, nil
-		}
-
-		pipeErrors(errChan, generateSchemas(ctx, settings, parser, dbTypeToPathType))
+		pipeErrors(errChan, generateSchemas(ctx, settings, parser))
 	}()
 	return errChan
 }
@@ -76,7 +56,6 @@ func generateSchemas(
 	ctx context.Context,
 	settings Settings,
 	parser Parser,
-	dbTypeToPathType dbTypeToPathTypeFunc,
 ) <-chan error {
 	var errs = make(chan error)
 
@@ -102,22 +81,25 @@ func generateSchemas(
 				continue
 			}
 
-			tableNames, tablesErr := parser.Tables(ctx, schemaName)
-
-			if contents, err := GenerateSchema(schemaName); err != nil {
+			if contents, err := NewSchemaInfo(schemaName).Generate(); err != nil {
 				errs <- err
 				continue
-			} else if err = writeSchema(rootDir, contents, schemaName); err != nil {
+			} else if err = writeSchema(rootDir, schemaName, contents); err != nil {
 				errs <- err
 				continue
 			}
+
+			// tablesErr is a channel and will send errors the collector below
+			tableNames, tablesErr := parser.Tables(ctx, schemaName)
+
+			dbPathTypes := updatePathTypesWithSettings(parser, settings)
 
 			forEachPipeErrors(tableNames, tablesErr, errs, func(tableName interface{}) {
 				retErrChan := retrieveDataAndWriteTable(
 					ctx,
 					settings,
 					parser,
-					dbTypeToPathType,
+					dbPathTypes,
 					rootDir,
 					schemaName,
 					tableName.(string),
@@ -129,12 +111,19 @@ func generateSchemas(
 	return errs
 }
 
+func updatePathTypesWithSettings(parser Parser, settings Settings) DBPathTypes {
+	dbToPath := NewDBPathTypes(settings.AllowUnsupportedColumnTypes())
+	dbToPath.Merge(parser.DBTypesToPaths())
+	dbToPath.Merge(settings.OverrideDBTypesToPaths())
+	return dbToPath
+}
+
 //revive:disable-next-line - Disabling max params until we can rewrite this logic.
 func retrieveDataAndWriteTable(
 	ctx context.Context,
 	settings Settings,
 	parser Parser,
-	dbTypeToPathType dbTypeToPathTypeFunc,
+	dbPathTypes DBPathTypes,
 	schemaDir, schemaName, tableName string,
 ) <-chan error {
 	var errs = make(chan error)
@@ -143,49 +132,47 @@ func retrieveDataAndWriteTable(
 		defer close(errs)
 		log.Printf("Generating table: %s", tableName)
 
-		cols, colErrs := parser.Columns(ctx, schemaName, tableName)
+		chanCols, colErrs := parser.Columns(ctx, schemaName, tableName)
 
-		var tInfo = tableInfo{
-			name:   tableName,
-			schema: schemaName,
-		}
-		forEachPipeErrors(cols, colErrs, errs, func(column interface{}) {
-			tInfo.columns = append(tInfo.columns, column.(Column))
+		var columns = make([]Column, 0, len(chanCols))
+		forEachPipeErrors(chanCols, colErrs, errs, func(column interface{}) {
+			columns = append(columns, column.(Column))
 		})
 
-		columns, err := convertCols(tInfo.Columns(), settings.ReplaceFieldName, dbTypeToPathType)
+		cols, err := convertColumns(columns, dbPathTypes, settings.ReplaceFieldName)
 		if err != nil {
-			errs <- fmt.Errorf("unable to convert columns: %w", err)
-			return
-		}
-
-		if contents, err := GenerateTable(tInfo, columns); err != nil {
-			errs <- err
-			return
-		} else if err = writeTable(schemaDir, contents, schemaName, tableName); err != nil {
 			errs <- err
 			return
 		}
 
-		if contents, err := GeneratePackageMembers(tInfo, columns); err != nil {
+		var tInfo = TableInfo{
+			Name:    tableName,
+			Schema:  schemaName,
+			Columns: cols,
+		}
+		generator, err := NewTable(tInfo)
+		if err != nil {
 			errs <- err
 			return
-		} else if err = writePackageMembers(schemaDir, contents, schemaName, tableName); err != nil {
+		}
+
+		contents, err := generator.GenerateTable()
+		if err != nil {
+			errs <- err
+			return
+		}
+		if err = writeTable(schemaDir, schemaName, tableName, contents); err != nil {
+			errs <- err
+			return
+		}
+
+		if contents, err = generator.GenerateExported(); err != nil {
+			errs <- err
+			return
+		} else if err = writePackageMembers(schemaDir, schemaName, tableName, contents); err != nil {
 			errs <- err
 			return
 		}
 	}()
 	return errs
 }
-
-type tableInfo struct {
-	name        string
-	schema      string
-	columns     []Column
-	foreignKeys []ForeignKey
-}
-
-func (t tableInfo) Name() string              { return t.name }
-func (t tableInfo) Schema() string            { return t.schema }
-func (t tableInfo) Columns() []Column         { return t.columns }
-func (t tableInfo) ForeignKeys() []ForeignKey { return t.foreignKeys }

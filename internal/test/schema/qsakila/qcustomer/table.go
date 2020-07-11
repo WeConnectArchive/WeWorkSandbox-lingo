@@ -19,7 +19,9 @@ func New() QCustomer {
 }
 
 func newQCustomer(alias string) QCustomer {
-	q := QCustomer{_alias: alias}
+	q := QCustomer{
+		_alias: alias,
+	}
 	q.customerId = path.NewInt16(q, "customer_id")
 	q.storeId = path.NewInt8(q, "store_id")
 	q.firstName = path.NewString(q, "first_name")
@@ -33,7 +35,8 @@ func newQCustomer(alias string) QCustomer {
 }
 
 type QCustomer struct {
-	_alias     string
+	_alias string
+
 	customerId path.Int16
 	storeId    path.Int8
 	firstName  path.String

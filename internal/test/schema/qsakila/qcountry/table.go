@@ -19,7 +19,9 @@ func New() QCountry {
 }
 
 func newQCountry(alias string) QCountry {
-	q := QCountry{_alias: alias}
+	q := QCountry{
+		_alias: alias,
+	}
 	q.countryId = path.NewInt16(q, "country_id")
 	q.country = path.NewString(q, "country")
 	q.lastUpdate = path.NewTime(q, "last_update")
@@ -27,7 +29,8 @@ func newQCountry(alias string) QCountry {
 }
 
 type QCountry struct {
-	_alias     string
+	_alias string
+
 	countryId  path.Int16
 	country    path.String
 	lastUpdate path.Time

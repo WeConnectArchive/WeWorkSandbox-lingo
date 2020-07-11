@@ -19,7 +19,9 @@ func New() QInventory {
 }
 
 func newQInventory(alias string) QInventory {
-	q := QInventory{_alias: alias}
+	q := QInventory{
+		_alias: alias,
+	}
 	q.inventoryId = path.NewInt32(q, "inventory_id")
 	q.filmId = path.NewInt16(q, "film_id")
 	q.storeId = path.NewInt8(q, "store_id")
@@ -28,7 +30,8 @@ func newQInventory(alias string) QInventory {
 }
 
 type QInventory struct {
-	_alias      string
+	_alias string
+
 	inventoryId path.Int32
 	filmId      path.Int16
 	storeId     path.Int8

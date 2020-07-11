@@ -19,7 +19,9 @@ func New() QRental {
 }
 
 func newQRental(alias string) QRental {
-	q := QRental{_alias: alias}
+	q := QRental{
+		_alias: alias,
+	}
 	q.rentalId = path.NewInt(q, "rental_id")
 	q.rentalDate = path.NewTime(q, "rental_date")
 	q.inventoryId = path.NewInt32(q, "inventory_id")
@@ -31,7 +33,8 @@ func newQRental(alias string) QRental {
 }
 
 type QRental struct {
-	_alias      string
+	_alias string
+
 	rentalId    path.Int
 	rentalDate  path.Time
 	inventoryId path.Int32

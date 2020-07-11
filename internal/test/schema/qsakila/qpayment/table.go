@@ -19,7 +19,9 @@ func New() QPayment {
 }
 
 func newQPayment(alias string) QPayment {
-	q := QPayment{_alias: alias}
+	q := QPayment{
+		_alias: alias,
+	}
 	q.paymentId = path.NewInt16(q, "payment_id")
 	q.customerId = path.NewInt16(q, "customer_id")
 	q.staffId = path.NewInt8(q, "staff_id")
@@ -31,7 +33,8 @@ func newQPayment(alias string) QPayment {
 }
 
 type QPayment struct {
-	_alias      string
+	_alias string
+
 	paymentId   path.Int16
 	customerId  path.Int16
 	staffId     path.Int8

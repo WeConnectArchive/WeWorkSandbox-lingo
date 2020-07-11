@@ -19,7 +19,9 @@ func New() QCustomerList {
 }
 
 func newQCustomerList(alias string) QCustomerList {
-	q := QCustomerList{_alias: alias}
+	q := QCustomerList{
+		_alias: alias,
+	}
 	q.id = path.NewInt16(q, "ID")
 	q.name = path.NewString(q, "name")
 	q.address = path.NewString(q, "address")
@@ -28,12 +30,13 @@ func newQCustomerList(alias string) QCustomerList {
 	q.city = path.NewString(q, "city")
 	q.country = path.NewString(q, "country")
 	q.notes = path.NewString(q, "notes")
-	q.sid = path.NewInt8(q, "SID")
+	q.sID = path.NewInt8(q, "SID")
 	return q
 }
 
 type QCustomerList struct {
-	_alias  string
+	_alias string
+
 	id      path.Int16
 	name    path.String
 	address path.String
@@ -42,7 +45,7 @@ type QCustomerList struct {
 	city    path.String
 	country path.String
 	notes   path.String
-	sid     path.Int8
+	sID     path.Int8
 }
 
 // lingo.Table Functions
@@ -57,7 +60,7 @@ func (q QCustomerList) GetColumns() []lingo.Column {
 		q.city,
 		q.country,
 		q.notes,
-		q.sid,
+		q.sID,
 	}
 }
 
@@ -111,6 +114,6 @@ func (q QCustomerList) Notes() path.String {
 	return q.notes
 }
 
-func (q QCustomerList) Sid() path.Int8 {
-	return q.sid
+func (q QCustomerList) SID() path.Int8 {
+	return q.sID
 }

@@ -19,7 +19,9 @@ func New() QAddress {
 }
 
 func newQAddress(alias string) QAddress {
-	q := QAddress{_alias: alias}
+	q := QAddress{
+		_alias: alias,
+	}
 	q.addressId = path.NewInt16(q, "address_id")
 	q.address = path.NewString(q, "address")
 	q.address2 = path.NewString(q, "address2")
@@ -33,7 +35,8 @@ func newQAddress(alias string) QAddress {
 }
 
 type QAddress struct {
-	_alias     string
+	_alias string
+
 	addressId  path.Int16
 	address    path.String
 	address2   path.String

@@ -4,7 +4,9 @@
 
 package qnicerbutslowerfilmlist
 
-import "github.com/weworksandbox/lingo/expr/path"
+import (
+	"github.com/weworksandbox/lingo/expr/path"
+)
 
 var instance = New()
 
@@ -12,8 +14,8 @@ func Q() QNicerButSlowerFilmList {
 	return instance
 }
 
-func Fid() path.Int16 {
-	return instance.fid
+func FID() path.Int16 {
+	return instance.fID
 }
 
 func Title() path.String {

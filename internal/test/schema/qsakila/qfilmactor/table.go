@@ -19,7 +19,9 @@ func New() QFilmActor {
 }
 
 func newQFilmActor(alias string) QFilmActor {
-	q := QFilmActor{_alias: alias}
+	q := QFilmActor{
+		_alias: alias,
+	}
 	q.actorId = path.NewInt16(q, "actor_id")
 	q.filmId = path.NewInt16(q, "film_id")
 	q.lastUpdate = path.NewTime(q, "last_update")
@@ -27,7 +29,8 @@ func newQFilmActor(alias string) QFilmActor {
 }
 
 type QFilmActor struct {
-	_alias     string
+	_alias string
+
 	actorId    path.Int16
 	filmId     path.Int16
 	lastUpdate path.Time

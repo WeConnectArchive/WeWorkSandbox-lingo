@@ -19,8 +19,10 @@ func New() QFilmList {
 }
 
 func newQFilmList(alias string) QFilmList {
-	q := QFilmList{_alias: alias}
-	q.fid = path.NewInt16(q, "FID")
+	q := QFilmList{
+		_alias: alias,
+	}
+	q.fID = path.NewInt16(q, "FID")
 	q.title = path.NewString(q, "title")
 	q.description = path.NewString(q, "description")
 	q.category = path.NewString(q, "category")
@@ -32,8 +34,9 @@ func newQFilmList(alias string) QFilmList {
 }
 
 type QFilmList struct {
-	_alias      string
-	fid         path.Int16
+	_alias string
+
+	fID         path.Int16
 	title       path.String
 	description path.String
 	category    path.String
@@ -47,7 +50,7 @@ type QFilmList struct {
 
 func (q QFilmList) GetColumns() []lingo.Column {
 	return []lingo.Column{
-		q.fid,
+		q.fID,
 		q.title,
 		q.description,
 		q.category,
@@ -76,8 +79,8 @@ func (q QFilmList) GetParent() string {
 
 // Column Functions
 
-func (q QFilmList) Fid() path.Int16 {
-	return q.fid
+func (q QFilmList) FID() path.Int16 {
+	return q.fID
 }
 
 func (q QFilmList) Title() path.String {

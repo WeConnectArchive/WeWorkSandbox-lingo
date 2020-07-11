@@ -4,7 +4,9 @@
 
 package qcustomerlist
 
-import "github.com/weworksandbox/lingo/expr/path"
+import (
+	"github.com/weworksandbox/lingo/expr/path"
+)
 
 var instance = New()
 
@@ -44,6 +46,6 @@ func Notes() path.String {
 	return instance.notes
 }
 
-func Sid() path.Int8 {
-	return instance.sid
+func SID() path.Int8 {
+	return instance.sID
 }
