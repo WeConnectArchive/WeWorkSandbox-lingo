@@ -19,7 +19,9 @@ func New() QStore {
 }
 
 func newQStore(alias string) QStore {
-	q := QStore{_alias: alias}
+	q := QStore{
+		_alias: alias,
+	}
 	q.storeId = path.NewInt8(q, "store_id")
 	q.managerStaffId = path.NewInt8(q, "manager_staff_id")
 	q.addressId = path.NewInt16(q, "address_id")
@@ -28,7 +30,8 @@ func newQStore(alias string) QStore {
 }
 
 type QStore struct {
-	_alias         string
+	_alias string
+
 	storeId        path.Int8
 	managerStaffId path.Int8
 	addressId      path.Int16

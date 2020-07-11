@@ -1,40 +1,55 @@
 package generator
 
 import (
-	"io/ioutil"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-func writeSchema(root, contents, schemaName string) error {
+func WriteFile(path string, data io.Reader, perm os.FileMode) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
+	if err != nil {
+		return fmt.Errorf("unable to open file for write: %w", err)
+	}
+	if _, err = io.Copy(f, data); err != nil {
+		return fmt.Errorf("unable to copy file data: %w", err)
+	}
+	if err = f.Close(); err != nil {
+		return fmt.Errorf("unable to close file: %w", err)
+	}
+	return nil
+}
+
+func writeSchema(root, schemaName string, contents io.Reader) error {
 	dirPath := buildSchemaDir(root, schemaName)
 	schemaFile := filepath.Join(dirPath, "schema.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	return ioutil.WriteFile(schemaFile, []byte(contents), os.ModePerm)
+	return WriteFile(schemaFile, contents, os.ModePerm)
 }
 
-func writeTable(root, contents, schemaName, name string) error {
+func writeTable(root, schemaName, name string, contents io.Reader) error {
 	dirPath := buildTableDir(root, schemaName, name)
 	path := filepath.Join(dirPath, "table.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	return ioutil.WriteFile(path, []byte(contents), os.ModePerm)
+	return WriteFile(path, contents, os.ModePerm)
 }
 
-func writePackageMembers(root, contents, schemaName, name string) error {
+func writePackageMembers(root, schemaName, name string, contents io.Reader) error {
 	dirPath := buildTableDir(root, schemaName, name)
 	path := filepath.Join(dirPath, "exported.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	return ioutil.WriteFile(path, []byte(contents), os.ModePerm)
+	return WriteFile(path, contents, os.ModePerm)
 }
 
 func buildSchemaDir(root, schemaName string) string {

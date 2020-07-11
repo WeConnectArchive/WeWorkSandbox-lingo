@@ -19,7 +19,9 @@ func New() QCategory {
 }
 
 func newQCategory(alias string) QCategory {
-	q := QCategory{_alias: alias}
+	q := QCategory{
+		_alias: alias,
+	}
 	q.categoryId = path.NewInt8(q, "category_id")
 	q.name = path.NewString(q, "name")
 	q.lastUpdate = path.NewTime(q, "last_update")
@@ -27,7 +29,8 @@ func newQCategory(alias string) QCategory {
 }
 
 type QCategory struct {
-	_alias     string
+	_alias string
+
 	categoryId path.Int8
 	name       path.String
 	lastUpdate path.Time

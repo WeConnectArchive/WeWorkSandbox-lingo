@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -91,28 +90,13 @@ func jen(dir string) error {
 	for _, p := range pathData {
 		r, err := p.Generate()
 		if err != nil {
-			return fmt.Errorf("unable to generate path '%s': %w", p.Name, err)
+			return fmt.Errorf("unable to generate path data '%s': %w", p.Name, err)
 		}
 
-		if writeErr := writeFile(dir, p.Filename, r); writeErr != nil {
-			return fmt.Errorf("unable to write path file '%s': %w", p.Filename, writeErr)
+		outputPath := filepath.Join(dir, p.Filename)
+		if writeErr := generator.WriteFile(outputPath, r, os.ModePerm); writeErr != nil {
+			return fmt.Errorf("unable to write to output file '%s': %w", p.Filename, writeErr)
 		}
-	}
-	return nil
-}
-
-func writeFile(dir, pathName string, data io.Reader) error {
-	path := filepath.Join(dir, pathName)
-
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		return fmt.Errorf("unable to open file for write: %w", err)
-	}
-	if _, err = io.Copy(f, data); err != nil {
-		return fmt.Errorf("unable to copy file data: %w", err)
-	}
-	if err = f.Close(); err != nil {
-		return fmt.Errorf("unable to close file: %w", err)
 	}
 	return nil
 }

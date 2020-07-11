@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+
+	"github.com/weworksandbox/lingo/internal/generator"
 )
 
 func getSettings() *settings {
@@ -19,7 +21,7 @@ func getSettings() *settings {
 		s.replaceNames[k] = v
 	}
 
-	s.dbToPkgTypes = make(map[string][2]string)
+	s.dbToPkgTypes = make(map[string]generator.PathPackageToType)
 	for k, v := range viper.GetStringMapStringSlice("db_to_pkg_type") {
 		if len(v) == 2 {
 			s.dbToPkgTypes[strings.ToUpper(k)] = [2]string{v[0], v[1]}
@@ -29,30 +31,69 @@ func getSettings() *settings {
 }
 
 var defaultReplaceNames = map[string]string{
+	"append":      "__append",
+	"bool":        "__bool",
 	"break":       "__break",
-	"default":     "__default",
-	"func":        "__func",
-	"interface":   "__interface",
-	"select":      "__select",
+	"byte":        "__byte",
+	"cap":         "__cap",
 	"case":        "__case",
-	"defer":       "__defer",
-	"go":          "__go",
-	"map":         "__map",
-	"struct":      "__struct",
 	"chan":        "__chan",
-	"else":        "__else",
-	"goto":        "__goto",
-	"package":     "__package",
-	"switch":      "__switch",
+	"close":       "__close",
+	"complex":     "__complex",
+	"complex128":  "__complex128",
+	"complex64":   "__complex64",
 	"const":       "__const",
-	"fallthrough": "__fallthrough",
-	"if":          "__if",
-	"range":       "__range",
-	"type":        "__type",
 	"continue":    "__continue",
+	"copy":        "__copy",
+	"default":     "__default",
+	"defer":       "__defer",
+	"delete":      "__delete",
+	"else":        "__else",
+	"error":       "__error",
+	"fallthrough": "__fallthrough",
+	"false":       "__false",
+	"float32":     "__float32",
+	"float64":     "__float64",
 	"for":         "__for",
+	"func":        "__func",
+	"go":          "__go",
+	"goto":        "__goto",
+	"if":          "__if",
+	"imag":        "__imag",
 	"import":      "__import",
+	"int":         "__int",
+	"int16":       "__int16",
+	"int32":       "__int32",
+	"int64":       "__int64",
+	"int8":        "__int8",
+	"interface":   "__interface",
+	"iota":        "__iota",
+	"len":         "__len",
+	"make":        "__make",
+	"map":         "__map",
+	"new":         "__new",
+	"nil":         "__nil",
+	"package":     "__package",
+	"panic":       "__panic",
+	"print":       "__print",
+	"println":     "__println",
+	"range":       "__range",
+	"real":        "__real",
+	"recover":     "__recover",
 	"return":      "__return",
+	"rune":        "__rune",
+	"select":      "__select",
+	"string":      "__string",
+	"struct":      "__struct",
+	"switch":      "__switch",
+	"true":        "__true",
+	"type":        "__type",
+	"uint":        "__uint",
+	"uint16":      "__uint16",
+	"uint32":      "__uint32",
+	"uint64":      "__uint64",
+	"uint8":       "__uint8",
+	"uintptr":     "__uintptr",
 	"var":         "__var",
 }
 
@@ -63,7 +104,7 @@ type settings struct {
 	dataSourceName           string
 	allowUnsupportedColTypes bool
 	replaceNames             map[string]string
-	dbToPkgTypes             map[string][2]string
+	dbToPkgTypes             map[string]generator.PathPackageToType
 }
 
 func (s settings) RootDirectory() string {
@@ -94,6 +135,6 @@ func (s settings) ReplaceFieldName(name string) string {
 	return newName
 }
 
-func (s settings) OverrideDBTypesToPaths() map[string][2]string {
+func (s settings) OverrideDBTypesToPaths() map[string]generator.PathPackageToType {
 	return s.dbToPkgTypes
 }

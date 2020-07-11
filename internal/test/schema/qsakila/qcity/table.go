@@ -19,7 +19,9 @@ func New() QCity {
 }
 
 func newQCity(alias string) QCity {
-	q := QCity{_alias: alias}
+	q := QCity{
+		_alias: alias,
+	}
 	q.cityId = path.NewInt16(q, "city_id")
 	q.city = path.NewString(q, "city")
 	q.countryId = path.NewInt16(q, "country_id")
@@ -28,7 +30,8 @@ func newQCity(alias string) QCity {
 }
 
 type QCity struct {
-	_alias     string
+	_alias string
+
 	cityId     path.Int16
 	city       path.String
 	countryId  path.Int16

@@ -4,7 +4,9 @@
 
 package qstafflist
 
-import "github.com/weworksandbox/lingo/expr/path"
+import (
+	"github.com/weworksandbox/lingo/expr/path"
+)
 
 var instance = New()
 
@@ -40,6 +42,6 @@ func Country() path.String {
 	return instance.country
 }
 
-func Sid() path.Int8 {
-	return instance.sid
+func SID() path.Int8 {
+	return instance.sID
 }

@@ -19,7 +19,9 @@ func New() QActor {
 }
 
 func newQActor(alias string) QActor {
-	q := QActor{_alias: alias}
+	q := QActor{
+		_alias: alias,
+	}
 	q.actorId = path.NewInt16(q, "actor_id")
 	q.firstName = path.NewString(q, "first_name")
 	q.lastName = path.NewString(q, "last_name")
@@ -28,7 +30,8 @@ func newQActor(alias string) QActor {
 }
 
 type QActor struct {
-	_alias     string
+	_alias string
+
 	actorId    path.Int16
 	firstName  path.String
 	lastName   path.String

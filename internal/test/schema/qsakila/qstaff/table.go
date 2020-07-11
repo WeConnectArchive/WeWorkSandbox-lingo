@@ -19,7 +19,9 @@ func New() QStaff {
 }
 
 func newQStaff(alias string) QStaff {
-	q := QStaff{_alias: alias}
+	q := QStaff{
+		_alias: alias,
+	}
 	q.staffId = path.NewInt8(q, "staff_id")
 	q.firstName = path.NewString(q, "first_name")
 	q.lastName = path.NewString(q, "last_name")
@@ -35,7 +37,8 @@ func newQStaff(alias string) QStaff {
 }
 
 type QStaff struct {
-	_alias     string
+	_alias string
+
 	staffId    path.Int8
 	firstName  path.String
 	lastName   path.String

@@ -4,7 +4,9 @@
 
 package qaddress
 
-import "github.com/weworksandbox/lingo/expr/path"
+import (
+	"github.com/weworksandbox/lingo/expr/path"
+)
 
 var instance = New()
 

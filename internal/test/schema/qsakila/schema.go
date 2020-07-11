@@ -4,10 +4,14 @@
 
 package qsakila
 
+import (
+	"github.com/weworksandbox/lingo"
+)
+
 var instance = schema{_name: "sakila"}
 
-func GetSchema() *schema {
-	return &instance
+func GetSchema() lingo.Name {
+	return instance
 }
 
 type schema struct {

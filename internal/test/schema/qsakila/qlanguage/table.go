@@ -19,7 +19,9 @@ func New() QLanguage {
 }
 
 func newQLanguage(alias string) QLanguage {
-	q := QLanguage{_alias: alias}
+	q := QLanguage{
+		_alias: alias,
+	}
 	q.languageId = path.NewInt8(q, "language_id")
 	q.name = path.NewString(q, "name")
 	q.lastUpdate = path.NewTime(q, "last_update")
@@ -27,7 +29,8 @@ func newQLanguage(alias string) QLanguage {
 }
 
 type QLanguage struct {
-	_alias     string
+	_alias string
+
 	languageId path.Int8
 	name       path.String
 	lastUpdate path.Time
