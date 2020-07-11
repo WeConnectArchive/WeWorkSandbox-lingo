@@ -19,7 +19,7 @@ func BuildWhereSQL(d lingo.Dialect, values []lingo.Expression) (sql.Data, error)
 		return where.Append(whereSQL), nil
 
 	case length > 1:
-		andOperator := operator.NewOperator(values[0], operator.And, values[1:]...)
+		andOperator := operator.NewVariadic(values[0], operator.And, values[1:])
 		whereSQL, err := andOperator.ToSQL(d)
 		if err != nil {
 			return nil, err

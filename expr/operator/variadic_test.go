@@ -14,13 +14,13 @@ import (
 	"github.com/weworksandbox/lingo/sql"
 )
 
-var _ = Describe("Dialect", func() {
+var _ = Describe("variadic.go", func() {
 
-	Context("Calling `NewOperator`", func() {
+	Context("#NewVariadic", func() {
 
 		var (
 			left   lingo.Expression
-			op     operator.Operand
+			op     operator.Operator
 			values []lingo.Expression
 
 			newOperator lingo.ComboExpression
@@ -33,14 +33,14 @@ var _ = Describe("Dialect", func() {
 		})
 
 		JustBeforeEach(func() {
-			newOperator = operator.NewOperator(left, op, values...)
+			newOperator = operator.NewVariadic(left, op, values)
 		})
 
 		It("Is not nil", func() {
 			Expect(newOperator).ToNot(BeNil())
 		})
 
-		Context("`ToSQL`", func() {
+		Context("#ToSQL", func() {
 
 			var (
 				d lingo.Dialect
@@ -81,7 +81,7 @@ var _ = Describe("Dialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "json.Dialect")))
+					Expect(err).To(MatchError(EqString("dialect '%s' does not support '%s'", "mock", "operator.Dialect")))
 				})
 			})
 
@@ -96,7 +96,7 @@ var _ = Describe("Dialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError("left of operator cannot be empty"))
+					Expect(err).To(MatchError("left of operator.Variadic cannot be empty"))
 				})
 			})
 
@@ -126,7 +126,7 @@ var _ = Describe("Dialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError("expressions[0] of operator cannot be empty"))
+					Expect(err).To(MatchError("expressions[0] of operator.Variadic cannot be empty"))
 				})
 			})
 
@@ -156,7 +156,7 @@ var _ = Describe("Dialect", func() {
 				})
 
 				It("Returns an error", func() {
-					Expect(err).To(MatchError("expressions[1] of operator cannot be empty"))
+					Expect(err).To(MatchError("expressions[1] of operator.Variadic cannot be empty"))
 				})
 			})
 
@@ -192,16 +192,3 @@ var _ = Describe("Dialect", func() {
 		})
 	})
 })
-
-type operatorDialectSuccess struct{}
-
-func (operatorDialectSuccess) GetName() string { return "operator success" }
-func (operatorDialectSuccess) Operator(sql.Data, operator.Operand, []sql.Data) (sql.Data, error) {
-	return sql.String("operator sql"), nil
-}
-
-type operatorDialectFailure struct{ operatorDialectSuccess }
-
-func (operatorDialectFailure) Operator(sql.Data, operator.Operand, []sql.Data) (sql.Data, error) {
-	return nil, errors.New("operator failure")
-}

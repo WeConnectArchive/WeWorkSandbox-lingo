@@ -130,10 +130,19 @@ var _ = Describe("where", func() {
 type whereDialectSuccess struct{}
 
 func (whereDialectSuccess) GetName() string { return "where dialect success" }
-func (whereDialectSuccess) Operator(left sql.Data, _ operator.Operand, values []sql.Data) (sql.Data, error) {
-	var s = left
+
+func (s whereDialectSuccess) UnaryOperator(left sql.Data, _ operator.Operator) (sql.Data, error) {
+	return left, nil
+}
+
+func (s whereDialectSuccess) BinaryOperator(left sql.Data, _ operator.Operator, value sql.Data) (sql.Data, error) {
+	return left.AppendWithSpace(sql.String("op")).AppendWithSpace(value), nil
+}
+
+func (s whereDialectSuccess) VariadicOperator(left sql.Data, _ operator.Operator, values []sql.Data) (sql.Data, error) {
+	var result = left
 	for _, value := range values {
-		s = s.AppendWithSpace(sql.String("op")).AppendWithSpace(value)
+		result = result.AppendWithSpace(sql.String("op")).AppendWithSpace(value)
 	}
-	return s, nil
+	return result, nil
 }

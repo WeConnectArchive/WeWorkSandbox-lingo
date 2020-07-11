@@ -27,11 +27,11 @@ type Set struct {
 }
 
 func (s Set) And(exp lingo.Expression) lingo.ComboExpression {
-	return operator.NewOperator(s, operator.And, exp)
+	return operator.NewBinary(s, operator.And, exp)
 }
 
 func (s Set) Or(exp lingo.Expression) lingo.ComboExpression {
-	return operator.NewOperator(s, operator.Or, exp)
+	return operator.NewBinary(s, operator.Or, exp)
 }
 
 func (s Set) ToSQL(d lingo.Dialect) (sql.Data, error) {

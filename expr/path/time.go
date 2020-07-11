@@ -57,90 +57,90 @@ func (t Time) ToExpr(setExp lingo.Expression) set.Set {
 	return set.NewSet(t, setExp)
 }
 
-func (t Time) Eq(equalTo time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.Eq, expr.NewValue(equalTo))
+func (t Time) Eq(equalTo time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.Eq, expr.NewValue(equalTo))
 }
 
-func (t Time) EqPath(equalTo lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.Eq, equalTo)
+func (t Time) EqPath(equalTo lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.Eq, equalTo)
 }
 
-func (t Time) NotEq(notEqualTo time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.NotEq, expr.NewValue(notEqualTo))
+func (t Time) NotEq(notEqualTo time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.NotEq, expr.NewValue(notEqualTo))
 }
 
-func (t Time) NotEqPath(notEqualTo lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.NotEq, notEqualTo)
+func (t Time) NotEqPath(notEqualTo lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.NotEq, notEqualTo)
 }
 
-func (t Time) LT(lessThan time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.LessThan, expr.NewValue(lessThan))
+func (t Time) LT(lessThan time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.LessThan, expr.NewValue(lessThan))
 }
 
-func (t Time) LTPath(lessThan lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.LessThan, lessThan)
+func (t Time) LTPath(lessThan lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.LessThan, lessThan)
 }
 
-func (t Time) LTOrEq(lessThanOrEqual time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.LessThanOrEqual, expr.NewValue(lessThanOrEqual))
+func (t Time) LTOrEq(lessThanOrEqual time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.LessThanOrEqual, expr.NewValue(lessThanOrEqual))
 }
 
-func (t Time) LTOrEqPath(lessThanOrEqual lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.LessThanOrEqual, lessThanOrEqual)
+func (t Time) LTOrEqPath(lessThanOrEqual lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.LessThanOrEqual, lessThanOrEqual)
 }
 
-func (t Time) GT(greaterThan time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.GreaterThan, expr.NewValue(greaterThan))
+func (t Time) GT(greaterThan time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.GreaterThan, expr.NewValue(greaterThan))
 }
 
-func (t Time) GTPath(greaterThan lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.GreaterThan, greaterThan)
+func (t Time) GTPath(greaterThan lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.GreaterThan, greaterThan)
 }
 
-func (t Time) GTOrEq(greaterThanOrEqual time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.GreaterThanOrEqual, expr.NewValue(greaterThanOrEqual))
+func (t Time) GTOrEq(greaterThanOrEqual time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.GreaterThanOrEqual, expr.NewValue(greaterThanOrEqual))
 }
 
-func (t Time) GTOrEqPath(greaterThanOrEqual lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.GreaterThanOrEqual, greaterThanOrEqual)
+func (t Time) GTOrEqPath(greaterThanOrEqual lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.GreaterThanOrEqual, greaterThanOrEqual)
 }
 
-func (t Time) IsNull() operator.Operator {
-	return operator.NewOperator(t, operator.Null)
+func (t Time) IsNull() operator.Unary {
+	return operator.NewUnary(t, operator.Null)
 }
 
-func (t Time) IsNotNull() operator.Operator {
-	return operator.NewOperator(t, operator.NotNull)
+func (t Time) IsNotNull() operator.Unary {
+	return operator.NewUnary(t, operator.NotNull)
 }
 
-func (t Time) In(values ...time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.In, expr.NewValue(values))
+func (t Time) In(values ...time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.In, expr.NewParens(expr.NewValue(values)))
 }
 
-func (t Time) InPaths(values ...lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.In, values...)
+func (t Time) InPaths(values ...lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.In, expr.NewParens(expr.ToList(values)))
 }
 
-func (t Time) NotIn(values ...time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.NotIn, expr.NewValue(values))
+func (t Time) NotIn(values ...time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.NotIn, expr.NewParens(expr.NewValue(values)))
 }
 
-func (t Time) NotInPaths(values ...lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.NotIn, values...)
+func (t Time) NotInPaths(values ...lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.NotIn, expr.NewParens(expr.ToList(values)))
 }
 
-func (t Time) Between(first, second time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.Between, expr.NewValue(first).And(expr.NewValue(second)))
+func (t Time) Between(first, second time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.Between, expr.NewParens(expr.NewValue(first).And(expr.NewValue(second))))
 }
 
-func (t Time) BetweenPaths(first, second lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.Between, operator.NewOperator(first, operator.And, second))
+func (t Time) BetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.Between, expr.NewParens(operator.NewBinary(first, operator.And, second)))
 }
 
-func (t Time) NotBetween(first, second time.Time) operator.Operator {
-	return operator.NewOperator(t, operator.NotBetween, expr.NewValue(first).And(expr.NewValue(second)))
+func (t Time) NotBetween(first, second time.Time) operator.Binary {
+	return operator.NewBinary(t, operator.NotBetween, expr.NewParens(expr.NewValue(first).And(expr.NewValue(second))))
 }
 
-func (t Time) NotBetweenPaths(first, second lingo.Expression) operator.Operator {
-	return operator.NewOperator(t, operator.NotBetween, operator.NewOperator(first, operator.And, second))
+func (t Time) NotBetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.NewBinary(t, operator.NotBetween, expr.NewParens(operator.NewBinary(first, operator.And, second)))
 }

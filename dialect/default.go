@@ -71,9 +71,16 @@ func (Default) ExpandColumn(column lingo.Column) (sql.Data, error) {
 	return ExpandColumnWithParent(column)
 }
 
-func (Default) Operator(left sql.Data, op operator.Operand, values []sql.Data) (sql.Data, error) {
-	// No special operations needed beyond ANSI SQL
-	return Operator(left, op, values)
+func (Default) UnaryOperator(left sql.Data, op operator.Operator) (sql.Data, error) {
+	return UnaryOperator(left, op)
+}
+
+func (Default) BinaryOperator(left sql.Data, op operator.Operator, right sql.Data) (sql.Data, error) {
+	return BinaryOperator(left, op, right)
+}
+
+func (Default) VariadicOperator(left sql.Data, op operator.Operator, values []sql.Data) (sql.Data, error) {
+	return VariadicOperator(left, op, values)
 }
 
 func (d Default) Value(value []interface{}) (sql.Data, error) {

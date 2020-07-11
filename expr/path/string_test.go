@@ -162,7 +162,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.Eq, expr.NewValue(value))))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.Eq, expr.NewValue(value))))
 			})
 		})
 
@@ -183,7 +183,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.Eq, value)))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.Eq, value)))
 			})
 		})
 
@@ -204,7 +204,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotEq, expr.NewValue(value))))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.NotEq, expr.NewValue(value))))
 			})
 		})
 
@@ -225,7 +225,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotEq, value)))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.NotEq, value)))
 			})
 		})
 
@@ -241,7 +241,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.Null)))
+				Expect(result).To(Equal(operator.NewUnary(p, operator.Null)))
 			})
 		})
 
@@ -257,7 +257,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotNull)))
+				Expect(result).To(Equal(operator.NewUnary(p, operator.NotNull)))
 			})
 		})
 
@@ -278,7 +278,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.Like, expr.NewValue(value))))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.Like, expr.NewValue(value))))
 			})
 		})
 
@@ -299,7 +299,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.Like, value)))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.Like, value)))
 			})
 		})
 
@@ -320,7 +320,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotLike, expr.NewValue(value))))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.NotLike, expr.NewValue(value))))
 			})
 		})
 
@@ -341,7 +341,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotLike, value)))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.NotLike, value)))
 			})
 		})
 
@@ -366,7 +366,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.In, expr.NewValue(value))))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.In, expr.NewParens(expr.NewValue(value)))))
 			})
 		})
 
@@ -390,7 +390,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.In, value[0], value[1])))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.In, expr.NewParens(expr.ToList(value)))))
 			})
 		})
 
@@ -415,7 +415,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotIn, expr.NewValue(value))))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.NewValue(value)))))
 			})
 		})
 
@@ -439,7 +439,7 @@ var _ = Describe("String", func() {
 
 			It("Returns a valid `lingo.ComboExpression`", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(result).To(Equal(operator.NewOperator(p, operator.NotIn, value[0], value[1])))
+				Expect(result).To(Equal(operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.ToList(value)))))
 			})
 		})
 	})
