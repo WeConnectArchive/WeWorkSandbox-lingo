@@ -55,26 +55,26 @@ func (b Bool) ToExpr(setExp lingo.Expression) set.Set {
 	return set.NewSet(b, setExp)
 }
 
-func (b Bool) Eq(equalTo bool) operator.Operator {
-	return operator.NewOperator(b, operator.Eq, expr.NewValue(equalTo))
+func (b Bool) Eq(equalTo bool) operator.Binary {
+	return operator.NewBinary(b, operator.Eq, expr.NewValue(equalTo))
 }
 
-func (b Bool) EqPath(equalTo lingo.Expression) operator.Operator {
-	return operator.NewOperator(b, operator.Eq, equalTo)
+func (b Bool) EqPath(equalTo lingo.Expression) operator.Binary {
+	return operator.NewBinary(b, operator.Eq, equalTo)
 }
 
-func (b Bool) NotEq(notEqualTo bool) operator.Operator {
-	return operator.NewOperator(b, operator.NotEq, expr.NewValue(notEqualTo))
+func (b Bool) NotEq(notEqualTo bool) operator.Binary {
+	return operator.NewBinary(b, operator.NotEq, expr.NewValue(notEqualTo))
 }
 
-func (b Bool) NotEqPath(notEqualTo lingo.Expression) operator.Operator {
-	return operator.NewOperator(b, operator.NotEq, notEqualTo)
+func (b Bool) NotEqPath(notEqualTo lingo.Expression) operator.Binary {
+	return operator.NewBinary(b, operator.NotEq, notEqualTo)
 }
 
-func (b Bool) IsNull() operator.Operator {
-	return operator.NewOperator(b, operator.Null)
+func (b Bool) IsNull() operator.Unary {
+	return operator.NewUnary(b, operator.Null)
 }
 
-func (b Bool) IsNotNull() operator.Operator {
-	return operator.NewOperator(b, operator.NotNull)
+func (b Bool) IsNotNull() operator.Unary {
+	return operator.NewUnary(b, operator.NotNull)
 }

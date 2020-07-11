@@ -55,58 +55,58 @@ func (s String) ToExpr(setExp lingo.Expression) set.Set {
 	return set.NewSet(s, setExp)
 }
 
-func (s String) Eq(equalTo string) operator.Operator {
-	return operator.NewOperator(s, operator.Eq, expr.NewValue(equalTo))
+func (s String) Eq(equalTo string) operator.Binary {
+	return operator.NewBinary(s, operator.Eq, expr.NewValue(equalTo))
 }
 
-func (s String) EqPath(equalTo lingo.Expression) operator.Operator {
-	return operator.NewOperator(s, operator.Eq, equalTo)
+func (s String) EqPath(equalTo lingo.Expression) operator.Binary {
+	return operator.NewBinary(s, operator.Eq, equalTo)
 }
 
-func (s String) NotEq(notEqualTo string) operator.Operator {
-	return operator.NewOperator(s, operator.NotEq, expr.NewValue(notEqualTo))
+func (s String) NotEq(notEqualTo string) operator.Binary {
+	return operator.NewBinary(s, operator.NotEq, expr.NewValue(notEqualTo))
 }
 
-func (s String) NotEqPath(notEqualTo lingo.Expression) operator.Operator {
-	return operator.NewOperator(s, operator.NotEq, notEqualTo)
+func (s String) NotEqPath(notEqualTo lingo.Expression) operator.Binary {
+	return operator.NewBinary(s, operator.NotEq, notEqualTo)
 }
 
-func (s String) Like(like string) operator.Operator {
-	return operator.NewOperator(s, operator.Like, expr.NewValue(like))
+func (s String) Like(like string) operator.Binary {
+	return operator.NewBinary(s, operator.Like, expr.NewValue(like))
 }
 
-func (s String) LikePath(likePath lingo.Expression) operator.Operator {
-	return operator.NewOperator(s, operator.Like, likePath)
+func (s String) LikePath(likePath lingo.Expression) operator.Binary {
+	return operator.NewBinary(s, operator.Like, likePath)
 }
 
-func (s String) NotLike(like string) operator.Operator {
-	return operator.NewOperator(s, operator.NotLike, expr.NewValue(like))
+func (s String) NotLike(like string) operator.Binary {
+	return operator.NewBinary(s, operator.NotLike, expr.NewValue(like))
 }
 
-func (s String) NotLikePath(notLikePath lingo.Expression) operator.Operator {
-	return operator.NewOperator(s, operator.NotLike, notLikePath)
+func (s String) NotLikePath(notLikePath lingo.Expression) operator.Binary {
+	return operator.NewBinary(s, operator.NotLike, notLikePath)
 }
 
-func (s String) IsNull() operator.Operator {
-	return operator.NewOperator(s, operator.Null)
+func (s String) IsNull() operator.Unary {
+	return operator.NewUnary(s, operator.Null)
 }
 
-func (s String) IsNotNull() operator.Operator {
-	return operator.NewOperator(s, operator.NotNull)
+func (s String) IsNotNull() operator.Unary {
+	return operator.NewUnary(s, operator.NotNull)
 }
 
-func (s String) In(values ...string) operator.Operator {
-	return operator.NewOperator(s, operator.In, expr.NewValue(values))
+func (s String) In(values ...string) operator.Binary {
+	return operator.NewBinary(s, operator.In, expr.NewParens(expr.NewValue(values)))
 }
 
-func (s String) InPaths(values ...lingo.Expression) operator.Operator {
-	return operator.NewOperator(s, operator.In, values...)
+func (s String) InPaths(values ...lingo.Expression) operator.Binary {
+	return operator.NewBinary(s, operator.In, expr.NewParens(expr.ToList(values)))
 }
 
-func (s String) NotIn(values ...string) operator.Operator {
-	return operator.NewOperator(s, operator.NotIn, expr.NewValue(values))
+func (s String) NotIn(values ...string) operator.Binary {
+	return operator.NewBinary(s, operator.NotIn, expr.NewParens(expr.NewValue(values)))
 }
 
-func (s String) NotInPaths(values ...lingo.Expression) operator.Operator {
-	return operator.NewOperator(s, operator.NotIn, values...)
+func (s String) NotInPaths(values ...lingo.Expression) operator.Binary {
+	return operator.NewBinary(s, operator.NotIn, expr.NewParens(expr.ToList(values)))
 }
