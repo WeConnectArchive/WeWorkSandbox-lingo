@@ -1,0 +1,11 @@
+codecov:
+  notify:
+    wait_for_ci: true
+coverage:
+  status:
+    project:
+      default:
+        paths: "!expr/path,!internal/test/schema" # do not include generated files
+        target: auto
+        threshold: 5%
+    range: "80...100"
