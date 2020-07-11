@@ -15,7 +15,7 @@ import (
 func Generate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate",
-		Short: "GenerateTable entity table and columns from an existing database schema",
+		Short: "Generate tables from an existing database schema",
 		Args:  cobra.MaximumNArgs(0),
 		Run:   generate,
 	}

@@ -14,7 +14,7 @@ type PathPackageToType [2]string
 
 func (p PathPackageToType) ShortPkg() string {
 	idx := strings.LastIndexAny(p[0], "/")
-	if idx == -1 && idx < len(p[0])-1 {
+	if idx == -1 && idx >= len(p[0])-1 {
 		return p[0]
 	}
 	return p[0][idx+1:]
