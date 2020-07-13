@@ -72,12 +72,7 @@ func generateSchemas(
 			rootDir := path.Clean(settings.RootDirectory())
 			schemaDir := buildSchemaDir(rootDir, schemaName)
 			if schemaDir == "" {
-				errs <- fmt.Errorf("root directory '%s' is not a valid path", schemaDir)
-				continue
-			}
-
-			if err := ensureDirectoryIsClean(schemaDir); err != nil {
-				errs <- err
+				errs <- fmt.Errorf("root directory '%s' is not a valid path", rootDir)
 				continue
 			}
 
