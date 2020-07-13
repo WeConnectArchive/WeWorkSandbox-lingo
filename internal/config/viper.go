@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -22,14 +23,22 @@ func init() {
 	_ = FileFlag.SetAnnotation("config", cobra.BashCompFilenameExt, configFileBashCompletion)
 
 	cobra.OnInitialize(func() {
-		fmt.Println(ReadConfig()) // Print the error if there is one
+		err := ReadConfig()
+		if err != nil {
+			log.Fatal(err) // Print the error if there is one
+		}
 	})
 }
 
 func ReadConfig() error {
 	viper.SetConfigFile(File)
-	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("unable to find or read config at '%s': %w", File, err)
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		// Replace this with errors.Is once this conforms to 1.13 errors.
+		if _, notFound := err.(viper.ConfigFileNotFoundError); !notFound {
+			return fmt.Errorf("unable to read config at '%s': %w", File, err)
+		}
 	}
 	return nil
 }

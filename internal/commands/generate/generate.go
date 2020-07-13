@@ -12,7 +12,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/parse"
 )
 
-func Generate() *cobra.Command {
+func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate",
 		Short: "Generate tables from an existing database schema",

@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/weworksandbox/lingo/internal/generator"
 )
@@ -26,10 +24,10 @@ func generate(dir string) error {
 	if err := validateDir(dir); err != nil {
 		return err
 	}
-	if err := filepath.Walk(dir, removeOldFile); err != nil {
+	if err := filepath.Walk(dir, generator.RemoveOldFiles(generator.GenPathFileHeader)); err != nil {
 		return err
 	}
-	return jen(dir)
+	return genPaths(dir)
 }
 
 func validateDir(dir string) error {
@@ -51,42 +49,7 @@ func validateDir(dir string) error {
 	return nil
 }
 
-func removeOldFile(path string, info os.FileInfo, err error) (result error) {
-	if err != nil {
-		return fmt.Errorf("error while accessing path %s: %w", path, err)
-	}
-	if info.IsDir() {
-		return nil
-	}
-
-	f, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("unable to open file '%s' to determine if it is generated: %w", path, err)
-	}
-	defer func() {
-		_ = f.Close()
-	}()
-
-	scanner := bufio.NewScanner(f)
-	if !scanner.Scan() {
-		if scanErr := scanner.Err(); scanErr != nil {
-			return fmt.Errorf("unable to read file '%s' to determine if it is generated: %w", path, err)
-		}
-		return nil
-	}
-
-	if line := scanner.Text(); !strings.EqualFold(line, generator.GenPathFileHeader) {
-		return nil
-	}
-
-	if err = os.Remove(path); err != nil {
-		return fmt.Errorf("unable to remove old lingo path file: %w", err)
-	}
-	return nil
-}
-
-func jen(dir string) error {
-
+func genPaths(dir string) error {
 	for _, p := range pathData {
 		r, err := p.Generate()
 		if err != nil {
