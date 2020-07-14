@@ -12,12 +12,12 @@ import (
 	"github.com/weworksandbox/lingo/internal/generator"
 )
 
-func NewMySQL(dsn string) (*MySQL, error) {
+func NewMySQL(ctx context.Context, dsn string) (*MySQL, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
-	if err = db.Ping(); err != nil {
+	if err = db.PingContext(ctx); err != nil {
 		return nil, err
 	}
 	return &MySQL{db: db}, nil
@@ -54,180 +54,77 @@ func (MySQL) DBTypesToPaths() map[string]generator.PathPackageToType {
 	}
 }
 
-func (m MySQL) Tables(ctx context.Context, schema string) (<-chan string, <-chan error) {
-	var tables = make(chan string)
-	var errors = make(chan error)
+func (m MySQL) Tables(ctx context.Context, schema string) ([]string, error) {
+	const selectQuery = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?"
+	sqlStmt, prepareErr := m.db.PrepareContext(ctx, selectQuery)
+	if prepareErr != nil {
+		return nil, prepareErr
+	}
 
-	go func() {
-		defer close(tables)
-		defer close(errors)
-
-		const selectQuery = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?"
-		sqlStmt, prepareErr := m.db.PrepareContext(ctx, selectQuery)
-		if prepareErr != nil {
-			errors <- prepareErr
-			return
-		}
-
-		defer func() {
-			if closeErr := sqlStmt.Close(); closeErr != nil {
-				log.Printf("unable to close `findTables` query: %v", closeErr)
-			}
-		}()
-
-		rows, queryErr := sqlStmt.QueryContext(ctx, schema)
-		if queryErr != nil {
-			errors <- queryErr
-			return
-		}
-
-		defer func() {
-			if closeErr := rows.Close(); closeErr != nil {
-				log.Printf("unable to close `rows` during `findTables` query: %v", closeErr)
-			}
-		}()
-
-		for rows.Next() {
-			var tableName string
-			if scanErr := rows.Scan(&tableName); scanErr != nil {
-				errors <- scanErr
-				return
-			}
-			tables <- tableName
+	defer func() {
+		if closeErr := sqlStmt.Close(); closeErr != nil {
+			log.Printf("unable to close `findTables` query: %v", closeErr)
 		}
 	}()
-	return tables, errors
+
+	rows, queryErr := sqlStmt.QueryContext(ctx, schema)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil {
+			log.Printf("unable to close `rows` during `findTables` query: %v", closeErr)
+		}
+	}()
+
+	var tables []string
+	for rows.Next() {
+		var tableName string
+		if scanErr := rows.Scan(&tableName); scanErr != nil {
+			return nil, scanErr
+		}
+		tables = append(tables, tableName)
+	}
+	return tables, nil
 }
 
-func (m MySQL) Columns(ctx context.Context, schema, table string) (<-chan generator.Column, <-chan error) {
-	var columns = make(chan generator.Column)
-	var errors = make(chan error)
+func (m MySQL) Columns(ctx context.Context, schema, table string) ([]generator.Column, error) {
+	sqlStr := fmt.Sprintf("SELECT * FROM %s.%s LIMIT 0", schema, table)
+	sqlStmt, prepareErr := m.db.PrepareContext(ctx, sqlStr)
+	if prepareErr != nil {
+		return nil, prepareErr
+	}
 
-	go func() {
-		defer close(columns)
-		defer close(errors)
-
-		sqlStr := fmt.Sprintf("SELECT * FROM %s.%s LIMIT 0", schema, table)
-		sqlStmt, prepareErr := m.db.PrepareContext(ctx, sqlStr)
-		if prepareErr != nil {
-			errors <- prepareErr
-			return
-		}
-
-		defer func() {
-			if closeErr := sqlStmt.Close(); closeErr != nil {
-				log.Printf("unable to close `findColumns` query: %v", closeErr)
-			}
-		}()
-
-		rows, queryErr := sqlStmt.QueryContext(ctx)
-		if queryErr != nil {
-			errors <- queryErr
-			return
-		}
-
-		defer func() {
-			if closeErr := rows.Close(); closeErr != nil {
-				log.Printf("unable to close `rows` during `findColumns` query: %v", closeErr)
-			}
-		}()
-
-		columnTypes, typesErr := rows.ColumnTypes()
-		if typesErr != nil {
-			errors <- typesErr
-			return
-		}
-
-		for _, col := range columnTypes {
-			var columnInfo = Column{
-				table:      table,
-				columnType: col,
-			}
-			columns <- &columnInfo
+	defer func() {
+		if closeErr := sqlStmt.Close(); closeErr != nil {
+			log.Printf("unable to close `findColumns` query: %v", closeErr)
 		}
 	}()
-	return columns, errors
-}
 
-func (m MySQL) ForeignKeys(ctx context.Context, schema, table string) (<-chan generator.ForeignKey, <-chan error) {
-	var foreignKeys = make(chan generator.ForeignKey)
-	var errors = make(chan error)
+	rows, queryErr := sqlStmt.QueryContext(ctx)
+	if queryErr != nil {
+		return nil, queryErr
+	}
 
-	go func() {
-		defer close(foreignKeys)
-		defer close(errors)
-
-		sqlStr := `
-			SELECT 
-				cu.CONSTRAINT_NAME, cu.COLUMN_NAME, cu.ORDINAL_POSITION, 
-				cu.REFERENCED_TABLE_SCHEMA, cu.REFERENCED_TABLE_NAME, cu.REFERENCED_COLUMN_NAME
-			FROM information_schema.KEY_COLUMN_USAGE cu
-			LEFT JOIN information_schema.TABLE_CONSTRAINTS tc on cu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
-			WHERE cu.TABLE_SCHEMA = ? AND cu.TABLE_NAME = ? AND tc.CONSTRAINT_TYPE = 'FOREIGN KEY'
-			ORDER BY cu.ORDINAL_POSITION;
-		`
-
-		sqlStmt, prepareErr := m.db.PrepareContext(ctx, sqlStr)
-		if prepareErr != nil {
-			errors <- prepareErr
-			return
-		}
-		defer func() {
-			if closeErr := sqlStmt.Close(); closeErr != nil {
-				log.Printf("unable to close `findForeignConstraints` query: %v", closeErr)
-			}
-		}()
-
-		rows, queryErr := sqlStmt.QueryContext(ctx, schema, table)
-		if queryErr != nil {
-			errors <- queryErr
-			return
-		}
-
-		defer func() {
-			if closeErr := rows.Close(); closeErr != nil {
-				log.Printf("unable to close `rows` during `findForeignConstraints` query: %v", closeErr)
-			}
-		}()
-
-		var fKey *ForeignKey
-		for rows.Next() {
-			// Prob refactor this out?
-			var constraintName string
-			var columnName string
-			var ordinalPosition int
-			var referencedTableSchema string
-			var referencedTableName string
-			var referencedTableColumnName string
-
-			scanErr := rows.Scan(
-				&constraintName,
-				&columnName,
-				&ordinalPosition,
-				&referencedTableSchema,
-				&referencedTableName,
-				&referencedTableColumnName)
-			if scanErr != nil {
-				errors <- scanErr
-			}
-
-			if fKey == nil {
-				fKey = &ForeignKey{
-					name: constraintName,
-				}
-			} else if fKey.Name() != constraintName {
-				foreignKeys <- fKey
-
-				fKey = &ForeignKey{
-					name: constraintName,
-				}
-			}
-			// Append Column
-		}
-
-		if fKey != nil {
-			foreignKeys <- fKey
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil {
+			log.Printf("unable to close `rows` during `findColumns` query: %v", closeErr)
 		}
 	}()
-	return foreignKeys, errors
+
+	columnTypes, typesErr := rows.ColumnTypes()
+	if typesErr != nil {
+		return nil, typesErr
+	}
+
+	var columns = make([]generator.Column, 0, len(columnTypes))
+	for _, col := range columnTypes {
+		var columnInfo = Column{
+			table:      table,
+			columnType: col,
+		}
+		columns = append(columns, columnInfo)
+	}
+	return columns, nil
 }

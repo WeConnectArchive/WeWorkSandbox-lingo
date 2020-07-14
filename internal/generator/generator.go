@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
-	"path"
 )
 
 type Settings interface {
@@ -18,9 +16,8 @@ type Settings interface {
 }
 
 type Parser interface {
-	Tables(ctx context.Context, schema string) (<-chan string, <-chan error)
-	Columns(ctx context.Context, schema, table string) (<-chan Column, <-chan error)
-	ForeignKeys(ctx context.Context, schema, table string) (<-chan ForeignKey, <-chan error)
+	Tables(ctx context.Context, schema string) ([]string, error)
+	Columns(ctx context.Context, schema, table string) ([]Column, error)
 	DBTypesToPaths() map[string]PathPackageToType
 }
 
@@ -34,76 +31,35 @@ type Column interface {
 	Type() *sql.ColumnType
 }
 
-func Generate(ctx context.Context, settings Settings, parser Parser) <-chan error {
-	var errChan = make(chan error)
+func Generate(ctx context.Context, settings Settings, parser Parser) error {
+	dbPathTypes := updatePathTypesWithSettings(parser, settings)
 
-	go func() {
-		defer close(errChan)
-
-		pipeErrors(errChan, generateSchemas(ctx, settings, parser))
-	}()
-	return errChan
-}
-
-func ensureDirectoryIsClean(directory string) error {
-	if err := os.RemoveAll(directory); err != nil && !os.IsNotExist(err) {
-		return err
+	schemas := settings.Schemas()
+	if len(schemas) == 0 {
+		return fmt.Errorf("no schemas selected to generate")
 	}
-	return os.MkdirAll(directory, os.ModeDir|os.ModePerm)
-}
 
-func generateSchemas(
-	ctx context.Context,
-	settings Settings,
-	parser Parser,
-) <-chan error {
-	var errs = make(chan error)
-
-	go func() {
-		defer close(errs)
-
-		schemas := settings.Schemas()
-		if len(schemas) == 0 {
-			errs <- fmt.Errorf("no schemas selected to generate")
-			return
+	for _, schemaName := range schemas {
+		rootDir := settings.RootDirectory()
+		if contents, err := NewSchemaInfo(schemaName).Generate(); err != nil {
+			return err
+		} else if err = writeSchema(rootDir, schemaName, contents); err != nil {
+			return err
 		}
 
-		for _, schemaName := range schemas {
-			rootDir := path.Clean(settings.RootDirectory())
-			schemaDir := buildSchemaDir(rootDir, schemaName)
-			if schemaDir == "" {
-				errs <- fmt.Errorf("root directory '%s' is not a valid path", rootDir)
-				continue
-			}
-
-			if contents, err := NewSchemaInfo(schemaName).Generate(); err != nil {
-				errs <- err
-				continue
-			} else if err = writeSchema(rootDir, schemaName, contents); err != nil {
-				errs <- err
-				continue
-			}
-
-			// tablesErr is a channel and will send errors the collector below
-			tableNames, tablesErr := parser.Tables(ctx, schemaName)
-
-			dbPathTypes := updatePathTypesWithSettings(parser, settings)
-
-			forEachPipeErrors(tableNames, tablesErr, errs, func(tableName interface{}) {
-				retErrChan := retrieveDataAndWriteTable(
-					ctx,
-					settings,
-					parser,
-					dbPathTypes,
-					rootDir,
-					schemaName,
-					tableName.(string),
-				)
-				pipeErrors(errs, retErrChan)
-			})
+		tableNames, tablesErr := parser.Tables(ctx, schemaName)
+		if tablesErr != nil {
+			return tablesErr
 		}
-	}()
-	return errs
+
+		for _, tableName := range tableNames {
+			tableErr := retrieveDataAndWriteTable(ctx, settings, parser, dbPathTypes, schemaName, tableName)
+			if tableErr != nil {
+				return tableErr
+			}
+		}
+	}
+	return nil
 }
 
 func updatePathTypesWithSettings(parser Parser, settings Settings) DBPathTypes {
@@ -119,55 +75,40 @@ func retrieveDataAndWriteTable(
 	settings Settings,
 	parser Parser,
 	dbPathTypes DBPathTypes,
-	schemaDir, schemaName, tableName string,
-) <-chan error {
-	var errs = make(chan error)
+	schemaName, tableName string,
+) error {
+	log.Printf("Generating table: %s", tableName)
 
-	go func() {
-		defer close(errs)
-		log.Printf("Generating table: %s", tableName)
+	columns, colErr := parser.Columns(ctx, schemaName, tableName)
+	if colErr != nil {
+		return colErr
+	}
 
-		chanCols, colErrs := parser.Columns(ctx, schemaName, tableName)
+	cols, err := convertColumns(columns, dbPathTypes, settings.ReplaceFieldName)
+	if err != nil {
+		return err
+	}
 
-		var columns = make([]Column, 0, len(chanCols))
-		forEachPipeErrors(chanCols, colErrs, errs, func(column interface{}) {
-			columns = append(columns, column.(Column))
-		})
+	var tInfo = TableInfo{
+		Name:    tableName,
+		Schema:  schemaName,
+		Columns: cols,
+	}
+	generator, err := NewTable(tInfo)
+	if err != nil {
+		return err
+	}
 
-		cols, err := convertColumns(columns, dbPathTypes, settings.ReplaceFieldName)
-		if err != nil {
-			errs <- err
-			return
-		}
+	contents, err := generator.GenerateTable()
+	if err != nil {
+		return err
+	}
+	if err = writeTable(settings.RootDirectory(), schemaName, tableName, contents); err != nil {
+		return err
+	}
 
-		var tInfo = TableInfo{
-			Name:    tableName,
-			Schema:  schemaName,
-			Columns: cols,
-		}
-		generator, err := NewTable(tInfo)
-		if err != nil {
-			errs <- err
-			return
-		}
-
-		contents, err := generator.GenerateTable()
-		if err != nil {
-			errs <- err
-			return
-		}
-		if err = writeTable(schemaDir, schemaName, tableName, contents); err != nil {
-			errs <- err
-			return
-		}
-
-		if contents, err = generator.GenerateExported(); err != nil {
-			errs <- err
-			return
-		} else if err = writePackageMembers(schemaDir, schemaName, tableName, contents); err != nil {
-			errs <- err
-			return
-		}
-	}()
-	return errs
+	if contents, err = generator.GenerateExported(); err != nil {
+		return err
+	}
+	return writePackageMembers(settings.RootDirectory(), schemaName, tableName, contents)
 }
