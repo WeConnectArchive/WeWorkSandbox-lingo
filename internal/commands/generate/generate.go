@@ -3,6 +3,8 @@ package generate
 import (
 	"context"
 	"log"
+	"os"
+	"os/signal"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -53,17 +55,22 @@ func generate(_ *cobra.Command, _ []string) {
 		log.Fatalf("parser unknown for driver '%s'", dn)
 	}
 
-	parser, err := parse.NewMySQL(s.DataSourceName())
+	ctx, cancel := context.WithCancel(context.Background())
+
+	sigs := make(chan os.Signal)
+	signal.Notify(sigs, os.Interrupt, os.Kill)
+	go func() {
+		<-sigs
+		cancel()
+	}()
+
+	parser, err := parse.NewMySQL(ctx, s.DataSourceName())
 	if err != nil {
 		log.Fatalf("unable to connect to database: %s", err)
 	}
 
-	var errCount int
-	for err = range generator.Generate(context.Background(), s, parser) {
-		log.Printf("ERR: %s", err)
-		errCount++
+	if err = generator.Generate(ctx, s, parser); err != nil {
+		log.Fatalf("ERR: %s", err)
 	}
-	if errCount != 0 {
-		log.Fatalf("had %d errors occur while generating", errCount)
-	}
+	log.Println("Completed")
 }
