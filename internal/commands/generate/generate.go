@@ -14,6 +14,15 @@ import (
 	"github.com/weworksandbox/lingo/internal/parse"
 )
 
+const (
+	flagDir             = "dir"
+	flagSchema          = "schemas"
+	flagDriver          = "driver"
+	flagDSN             = "dsn"
+	flagTablePrefix     = "tableprefix"
+	flagUnsupportedCols = "unsupported"
+)
+
 func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate",
@@ -22,24 +31,26 @@ func Command() *cobra.Command {
 		Run:   generate,
 	}
 
-	const (
-		flagDir    = "dir"
-		flagSchema = "schema"
-		flagDriver = "driver"
-		flagDSN    = "dsn"
-	)
-	cmd.PersistentFlags().StringP(flagDir, "d", "./db", "directory where generated file structure should go")
+	cmd.PersistentFlags().StringP(flagDir, "d", "./db",
+		"directory where generated file structure should go")
 	_ = viper.BindPFlag(flagDir, cmd.Flag(flagDir))
 	_ = cmd.PersistentFlags().SetAnnotation(flagDir, cobra.BashCompSubdirsInDir, []string{})
 
 	cmd.PersistentFlags().StringSliceP(flagSchema, "s", []string{}, "schema name to generate for")
 	_ = viper.BindPFlag(flagSchema, cmd.Flag(flagSchema))
 
+	cmd.PersistentFlags().StringP(flagTablePrefix, "t", "T",
+		"prefix of generated table packages and struct names - only the first rune will be used")
+	_ = viper.BindPFlag(flagTablePrefix, cmd.Flag(flagTablePrefix))
+
 	cmd.PersistentFlags().String(flagDriver, "mysql", "driver name used to initialize the SQL driver")
 	_ = viper.BindPFlag(flagDriver, cmd.Flag(flagDriver))
 
 	cmd.PersistentFlags().String(flagDSN, "", "data source connection string")
 	_ = viper.BindPFlag(flagDSN, cmd.Flag(flagDSN))
+
+	cmd.PersistentFlags().Bool(flagUnsupportedCols, true, "allow the unsupported column type to be generated")
+	_ = viper.BindPFlag(flagUnsupportedCols, cmd.Flag(flagUnsupportedCols))
 	return cmd
 }
 

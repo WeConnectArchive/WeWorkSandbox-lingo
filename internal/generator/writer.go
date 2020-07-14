@@ -22,8 +22,8 @@ func WriteFile(path string, data io.Reader, perm os.FileMode) error {
 	return nil
 }
 
-func writeSchema(root, schemaName string, contents io.Reader) error {
-	dirPath := buildSchemaDir(root, schemaName)
+func writeSchema(root, schemaName string, tablePrefix rune, contents io.Reader) error {
+	dirPath := buildSchemaDir(root, schemaName, tablePrefix)
 	schemaFile := filepath.Join(dirPath, "schema.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
@@ -32,8 +32,8 @@ func writeSchema(root, schemaName string, contents io.Reader) error {
 	return WriteFile(schemaFile, contents, os.ModePerm)
 }
 
-func writeTable(root, schemaName, name string, contents io.Reader) error {
-	dirPath := buildTableDir(root, schemaName, name)
+func writeTable(root, schemaName, name string, tablePrefix rune, contents io.Reader) error {
+	dirPath := buildTableDir(root, schemaName, name, tablePrefix)
 	path := filepath.Join(dirPath, "table.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
@@ -42,8 +42,8 @@ func writeTable(root, schemaName, name string, contents io.Reader) error {
 	return WriteFile(path, contents, os.ModePerm)
 }
 
-func writePackageMembers(root, schemaName, name string, contents io.Reader) error {
-	dirPath := buildTableDir(root, schemaName, name)
+func writePackageMembers(root, schemaName, name string, tablePrefix rune, contents io.Reader) error {
+	dirPath := buildTableDir(root, schemaName, name, tablePrefix)
 	path := filepath.Join(dirPath, "exported.go")
 
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil && !os.IsExist(err) {
@@ -52,14 +52,14 @@ func writePackageMembers(root, schemaName, name string, contents io.Reader) erro
 	return WriteFile(path, contents, os.ModePerm)
 }
 
-func buildSchemaDir(root, schemaName string) string {
-	pkg := strings.ToLower(LittleQ(ToNonExported(schemaName)))
+func buildSchemaDir(root, schemaName string, tablePrefix rune) string {
+	pkg := strings.ToLower(LittlePrefix(tablePrefix, ToNonExported(schemaName)))
 	dirPath := filepath.Join(root, pkg)
 	return dirPath
 }
 
-func buildTableDir(root string, schemaName string, name string) string {
-	tablePkgName := strings.ToLower(LittleQ(ToNonExported(name)))
-	dirPath := filepath.Join(buildSchemaDir(root, schemaName), tablePkgName)
+func buildTableDir(root string, schemaName string, name string, tablePrefix rune) string {
+	tablePkgName := strings.ToLower(LittlePrefix(tablePrefix, ToNonExported(name)))
+	dirPath := filepath.Join(buildSchemaDir(root, schemaName, tablePrefix), tablePkgName)
 	return dirPath
 }

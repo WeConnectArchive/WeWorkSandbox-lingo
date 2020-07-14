@@ -5,11 +5,14 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"unicode"
+	"unicode/utf8"
 )
 
 type Settings interface {
 	RootDirectory() string
 	Schemas() []string
+	TablePrefix() string
 	AllowUnsupportedColumnTypes() bool
 	ReplaceFieldName(name string) string
 	OverrideDBTypesToPaths() map[string]PathPackageToType
@@ -39,11 +42,19 @@ func Generate(ctx context.Context, settings Settings, parser Parser) error {
 		return fmt.Errorf("no schemas selected to generate")
 	}
 
+	prefix, _ := utf8.DecodeRuneInString(settings.TablePrefix())
+	if prefix == utf8.RuneError {
+		return fmt.Errorf("first rune in '%s' is not a valid utf8 sequence", settings.TablePrefix())
+	}
+	if !unicode.IsGraphic(prefix) {
+		return fmt.Errorf("rune hex %X is not a graphic rune", prefix)
+	}
+
 	for _, schemaName := range schemas {
 		rootDir := settings.RootDirectory()
-		if contents, err := NewSchemaInfo(schemaName).Generate(); err != nil {
+		if contents, err := NewSchemaInfo(schemaName, prefix).Generate(); err != nil {
 			return err
-		} else if err = writeSchema(rootDir, schemaName, contents); err != nil {
+		} else if err = writeSchema(rootDir, schemaName, prefix, contents); err != nil {
 			return err
 		}
 
@@ -53,7 +64,7 @@ func Generate(ctx context.Context, settings Settings, parser Parser) error {
 		}
 
 		for _, tableName := range tableNames {
-			tableErr := retrieveDataAndWriteTable(ctx, settings, parser, dbPathTypes, schemaName, tableName)
+			tableErr := retrieveDataAndWriteTable(ctx, settings, parser, dbPathTypes, schemaName, tableName, prefix)
 			if tableErr != nil {
 				return tableErr
 			}
@@ -76,6 +87,7 @@ func retrieveDataAndWriteTable(
 	parser Parser,
 	dbPathTypes DBPathTypes,
 	schemaName, tableName string,
+	prefix rune,
 ) error {
 	log.Printf("Generating table: %s", tableName)
 
@@ -90,6 +102,7 @@ func retrieveDataAndWriteTable(
 	}
 
 	var tInfo = TableInfo{
+		Prefix:  prefix,
 		Name:    tableName,
 		Schema:  schemaName,
 		Columns: cols,
@@ -103,12 +116,12 @@ func retrieveDataAndWriteTable(
 	if err != nil {
 		return err
 	}
-	if err = writeTable(settings.RootDirectory(), schemaName, tableName, contents); err != nil {
+	if err = writeTable(settings.RootDirectory(), schemaName, tableName, prefix, contents); err != nil {
 		return err
 	}
 
 	if contents, err = generator.GenerateExported(); err != nil {
 		return err
 	}
-	return writePackageMembers(settings.RootDirectory(), schemaName, tableName, contents)
+	return writePackageMembers(settings.RootDirectory(), schemaName, tableName, prefix, contents)
 }

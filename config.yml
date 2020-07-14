@@ -1,5 +1,7 @@
 dir: "db/mysql"
 schemas:
   - "information_schema"
-driver_name: "mysql"
+driver: "mysql"
 dsn: "root:P@ssw0rd@/?maxAllowedPacket=0"
+unsupported: true
+tableprefix: "T"

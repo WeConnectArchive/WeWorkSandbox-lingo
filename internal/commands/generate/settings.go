@@ -10,11 +10,12 @@ import (
 
 func getSettings() *settings {
 	s := &settings{}
-	s.rootDirectory = viper.GetString("dir")
-	s.schemas = viper.GetStringSlice("schemas")
-	s.driverName = viper.GetString("driver")
-	s.dataSourceName = viper.GetString("dsn")
-	s.allowUnsupportedColTypes = viper.GetBool("allow_unsupported_column_types")
+	s.rootDirectory = viper.GetString(flagDir)
+	s.schemas = viper.GetStringSlice(flagSchema)
+	s.driverName = viper.GetString(flagDriver)
+	s.dataSourceName = viper.GetString(flagDSN)
+	s.tablePrefix = viper.GetString(flagTablePrefix)
+	s.allowUnsupportedColTypes = viper.GetBool(flagUnsupportedCols)
 
 	s.replaceNames = defaultReplaceNames
 	for k, v := range viper.GetStringMapString("replace_names") {
@@ -102,6 +103,7 @@ type settings struct {
 	schemas                  []string
 	driverName               string
 	dataSourceName           string
+	tablePrefix              string
 	allowUnsupportedColTypes bool
 	replaceNames             map[string]string
 	dbToPkgTypes             map[string]generator.PathPackageToType
@@ -121,6 +123,10 @@ func (s settings) DriverName() string {
 
 func (s settings) DataSourceName() string {
 	return s.dataSourceName
+}
+
+func (s settings) TablePrefix() string {
+	return s.tablePrefix
 }
 
 func (s settings) AllowUnsupportedColumnTypes() bool {
