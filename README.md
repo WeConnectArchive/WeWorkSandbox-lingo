@@ -138,7 +138,7 @@ import (
 
 func CountForStore(d lingo.Dialect, storeID int16) (sql.Data, error) {
 	return query.Select(expr.Count(qinventory.InventoryId())).
-        From(qinventory.Q()).
+        From(qinventory.T()).
 		Where(qinventory.StoreId().Eq(storeID)).
         ToSQL(d)
 }
@@ -230,7 +230,7 @@ Right now, only `dialect.MySQL` is built / supported, however, anyone can build 
 
 ## Select All from Table
 ```go
-query.SelectFrom(qcharactersets.Q())
+query.SelectFrom(qcharactersets.T())
 ```
 
 ```mysql
@@ -244,7 +244,7 @@ Values: `[]`
 
 ## Select Columns from Table
 ```go
-query.Select(qcharactersets.Description(), qcharactersets.Maxlen()).From(qcharactersets.Q())
+query.Select(qcharactersets.Description(), qcharactersets.Maxlen()).From(qcharactersets.T())
 ```
 
 ```mysql
@@ -327,7 +327,7 @@ to specify which are constants.
 
 ## Insert Into with Go Types
 ```go
-charSets := qcharactersets.Q()
+charSets := qcharactersets.T()
 query.InsertInto(charSets).Columns(charSets.CharacterSetName(), charSets.DefaultCollateName(), charSets.Description(), charSets.Maxlen(),
 ).ValuesConstants("char_set_name", "default_collate", "description", 10)
 ```
@@ -348,7 +348,7 @@ Values: `["char_set_name", "default_collate", "description", 10]`
 ## Insert Into with Expressions
 
 ```go
-query.InsertInto(qcharactersets.Q()).Columns(qcharactersets.Maxlen()).Values(expressions.Count(expressions.Star()))
+query.InsertInto(qcharactersets.T()).Columns(qcharactersets.Maxlen()).Values(expressions.Count(expressions.Star()))
 ```
 
 ```mysql
@@ -361,7 +361,7 @@ Values: `[]`
 ## Insert Into with Go Types & Expressions
 
 ```go
-query.InsertInto(qcharactersets.Q()).Columns(
+query.InsertInto(qcharactersets.T()).Columns(
     qcharactersets.Maxlen(), qcharactersets.CharacterSetName(),
 ).Values(expressions.Count(expressions.Star()), expression.NewValue("default_name"))
 ```
@@ -381,7 +381,7 @@ Values: `["default_name"]`
 charSelect := qcharactersets.As("char_select")
 selQuery := query.Select(charSelect.Maxlen(), charSelect.CharacterSetName()).From(charSelect).Where(charSelect.Maxlen().GT(5))
 
-query.InsertInto(qcharactersets.Q()).Columns(qcharactersets.Maxlen(), qcharactersets.CharacterSetName()).Select(selQuery)
+query.InsertInto(qcharactersets.T()).Columns(qcharactersets.Maxlen(), qcharactersets.CharacterSetName()).Select(selQuery)
 ```
 
 ```mysql
@@ -400,7 +400,7 @@ Values: `[5]`
 ## Update Set All Rows
 
 ```go
-query.Update(qcharactersets.Q()).Set(
+query.Update(qcharactersets.T()).Set(
 	qcharactersets.Description().To("new_desc"),
 	qcharactersets.DefaultCollateName().To("new_collate_name"),
 )
@@ -415,7 +415,7 @@ SET    character_sets.description = ?,
 ## Update Set with Where
 
 ```go
-query.Update(qcharactersets.Q()).Set(
+query.Update(qcharactersets.T()).Set(
 	qcharactersets.Description().To("new_desc"),
 	qcharactersets.DefaultCollateName().To("new_collate_name"),
 ).Where(qcharactersets.CharacterSetName().Eq("identity"))
@@ -434,7 +434,7 @@ Values: `["new_desc", "new_collate_name", "identity"]`
 ## Delete All Rows
 
 ```go
-query.Delete(qcharactersets.Q())
+query.Delete(qcharactersets.T())
 ```
 
 ```mysql
@@ -445,7 +445,7 @@ Values: `[]`
 ## Delete with Where
 
 ```go
-query.Delete(qcharactersets.Q()).Where(qcharactersets.Maxlen().LTOrEq(14))
+query.Delete(qcharactersets.T()).Where(qcharactersets.Maxlen().LTOrEq(14))
 ```
 
 ```mysql
@@ -457,8 +457,8 @@ Values: `[14]`
 ## Delete Left Join Where
 
 ```go
-query.Delete(qcharactersets.Q()).Join(
-    qcollations.Q(),
+query.Delete(qcharactersets.T()).Join(
+    qcollations.T(),
     expression.LeftJoin,
     qcharactersets.CharacterSetName().EqPath(qcollations.CharacterSetName()),
 ).Where(qcharactersets.Maxlen().LTOrEq(14))

@@ -12,11 +12,11 @@ type SchemaInfo struct {
 	Imports          []string
 }
 
-func NewSchemaInfo(schema string) SchemaInfo {
+func NewSchemaInfo(schemaName string, prefix rune) SchemaInfo {
 	return SchemaInfo{
-		GeneratedComment: fmt.Sprintf(fmtSchemaHeaderComment, schema),
-		PackageName:      ToPackageName(schema),
-		DBName:           schema,
+		GeneratedComment: fmt.Sprintf(fmtSchemaHeaderComment, schemaName),
+		PackageName:      ToPackageName(prefix, schemaName),
+		DBName:           schemaName,
 		Imports: []string{
 			PkgLingo,
 		},

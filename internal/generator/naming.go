@@ -1,17 +1,19 @@
 package generator
 
 import (
+	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/iancoleman/strcase"
 )
 
-func ToTableStruct(tableName string) string {
-	return BigQ(ToExported(strings.ToLower(tableName)))
+func ToTableStruct(prefix rune, tableName string) string {
+	return BigPrefix(prefix, ToExported(strings.ToLower(tableName)))
 }
 
-func ToPackageName(s string) string {
-	return strings.ToLower(LittleQ(ToNonExported(s)))
+func ToPackageName(prefix rune, s string) string {
+	return strings.ToLower(LittlePrefix(prefix, ToNonExported(s)))
 }
 
 func ToExported(s string) string {
@@ -20,9 +22,9 @@ func ToExported(s string) string {
 func ToNonExported(s string) string {
 	return strcase.ToLowerCamel(s)
 }
-func LittleQ(s string) string {
-	return "q" + s
+func LittlePrefix(prefix rune, s string) string {
+	return fmt.Sprintf("%c%s", unicode.ToLower(prefix), s)
 }
-func BigQ(s string) string {
-	return "Q" + s
+func BigPrefix(prefix rune, s string) string {
+	return fmt.Sprintf("%c%s", unicode.ToUpper(prefix), s)
 }

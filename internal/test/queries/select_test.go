@@ -9,11 +9,11 @@ import (
 	"github.com/weworksandbox/lingo/expr/join"
 	"github.com/weworksandbox/lingo/expr/sort"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
-	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qcategory"
-	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmactor"
-	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmcategory"
-	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmtext"
-	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qinventory"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tcategory"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmactor"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmcategory"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmtext"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tinventory"
 	"github.com/weworksandbox/lingo/query"
 )
 
@@ -28,11 +28,11 @@ var selectQueries = []QueryTest{
 					storeID = 2
 				)
 				return query.Select(
-					expr.Count(qinventory.InventoryId()),
+					expr.Count(tinventory.InventoryId()),
 				).From(
-					qinventory.Q(),
+					tinventory.T(),
 				).Where(
-					qinventory.StoreId().Eq(storeID),
+					tinventory.StoreId().Eq(storeID),
 				)
 			},
 			SQLStrAssert: EqString(trimQuery(`
@@ -60,11 +60,11 @@ var selectQueries = []QueryTest{
 					storeID = 2
 				)
 				return query.Select(
-					expr.Count(qinventory.InventoryId()),
+					expr.Count(tinventory.InventoryId()),
 				).From(
-					qinventory.Q(),
+					tinventory.T(),
 				).Where(
-					qinventory.StoreId().Eq(storeID),
+					tinventory.StoreId().Eq(storeID),
 				)
 			},
 			SQLStrAssert: EqString(trimQuery(`
@@ -92,11 +92,11 @@ var selectQueries = []QueryTest{
 					actorID = 10
 				)
 				return query.Select(
-					expr.Count(qfilmactor.FilmId()),
+					expr.Count(tfilmactor.FilmId()),
 				).From(
-					qfilmactor.Q(),
+					tfilmactor.T(),
 				).Where(
-					qfilmactor.ActorId().Eq(actorID),
+					tfilmactor.ActorId().Eq(actorID),
 				)
 			},
 			SQLStrAssert: EqString(trimQuery(`
@@ -125,10 +125,10 @@ var selectQueries = []QueryTest{
 					actorID = int16(10)
 				)
 
-				fa := qfilmactor.As("fa")
-				fc := qfilmcategory.As("fc")
-				ft := qfilmtext.As("ft")
-				cat := qcategory.As("cat")
+				fa := tfilmactor.As("fa")
+				fc := tfilmcategory.As("fc")
+				ft := tfilmtext.As("ft")
+				cat := tcategory.As("cat")
 
 				return query.Select(
 					ft.Title(), cat.Name(),

@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo/dialect"
-	"github.com/weworksandbox/lingo/internal/test/schema/qsakila/qfilmactor"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmactor"
 	"github.com/weworksandbox/lingo/query"
 )
 
 func ExampleSelectQuery_From_where() {
 	d, _ := dialect.NewDefault()
 
-	fa := qfilmactor.As("fa")
+	fa := tfilmactor.As("fa")
 	s, _ := query.Select(fa.FilmId()).From(fa).Where(fa.ActorId().Between(1, 10)).ToSQL(d)
 
 	fmt.Println(s.String())
@@ -26,7 +26,7 @@ func ExampleSelectQuery_Restrict() {
 
 	const maxPageNum = 1 // To limit output for example
 	pageSize := uint64(150)
-	fa := qfilmactor.As("fa")
+	fa := tfilmactor.As("fa")
 	q := query.SelectFrom(fa)
 
 	for page := uint64(0); page < maxPageNum; page++ {

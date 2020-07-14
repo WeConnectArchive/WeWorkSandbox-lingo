@@ -236,13 +236,13 @@ func New() {{ .StructName }} {
 }
 
 func new{{ .StructName }}(alias string) {{ .StructName }} {
-	q := {{ .StructName }}{
+	t := {{ .StructName }}{
 		_alias: alias,
 	}
 	{{- range .Columns }}
-	{{ printf "q.%s = %s.New%s(q, \"%s\")" .FieldName .PathType.ShortPkg .PathType.Type .DBName }}
+	{{ printf "t.%s = %s.New%s(t, \"%s\")" .FieldName .PathType.ShortPkg .PathType.Type .DBName }}
 	{{- end }}
-	return q
+	return t
 }
 
 type {{ .StructName }} struct {
@@ -256,27 +256,27 @@ type {{ .StructName }} struct {
 
 // lingo.Table Functions
 
-func (q {{ .StructName }}) GetColumns() []lingo.Column {
+func (t {{ .StructName }}) GetColumns() []lingo.Column {
 	return []lingo.Column{
 	{{ range .Columns -}}
-		{{ printf "q.%s," .FieldName }}
+		{{ printf "t.%s," .FieldName }}
 	{{ end -}}
 	}
 }
 
-func (q {{ .StructName }}) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, q)
+func (t {{ .StructName }}) ToSQL(d lingo.Dialect) (sql.Data, error) {
+	return path.ExpandTableWithDialect(d, t)
 }
 
-func (q {{ .StructName }}) GetAlias() string {
-	return q._alias
+func (t {{ .StructName }}) GetAlias() string {
+	return t._alias
 }
 
-func (q {{ .StructName }}) GetName() string {
+func (t {{ .StructName }}) GetName() string {
 	return "{{ .DBName }}"
 }
 
-func (q {{ .StructName }}) GetParent() string {
+func (t {{ .StructName }}) GetParent() string {
 	return "{{ .SchemaName }}"
 }
 
@@ -284,8 +284,8 @@ func (q {{ .StructName }}) GetParent() string {
 
 {{ $receiverName := .StructName }}
 {{- range .Columns -}}
-func (q {{ $receiverName }}) {{ .MethodName }}() {{ .PathType.ShortPkg }}.{{ .PathType.Type }} {
-	return q.{{ .FieldName }}
+func (t {{ $receiverName }}) {{ .MethodName }}() {{ .PathType.ShortPkg }}.{{ .PathType.Type }} {
+	return t.{{ .FieldName }}
 }
 
 {{ end }}
@@ -302,7 +302,7 @@ package {{ .PackageName }}
 
 var instance = New()
 
-func Q() {{ .StructName }} {
+func {{ .Prefix }}() {{ .StructName }} {
 	return instance
 }
 

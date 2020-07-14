@@ -18,6 +18,7 @@ const PkgPath = PkgExp + "/path"
 const PkgSQL = PkgLingo + "/sql"
 
 type TableInfo struct {
+	Prefix      rune
 	Name        string
 	Schema      string
 	Columns     []column
@@ -25,6 +26,7 @@ type TableInfo struct {
 }
 
 type TableGenerator struct {
+	Prefix           string
 	GeneratedComment string
 	SchemaName       string
 	DBName           string
@@ -36,11 +38,12 @@ type TableGenerator struct {
 
 func NewTable(info TableInfo) (TableGenerator, error) {
 	t := TableGenerator{
+		Prefix:           string(info.Prefix),
 		GeneratedComment: fmt.Sprintf(fmtTableHeaderComment, info.Schema, info.Name),
 		SchemaName:       info.Schema,
 		DBName:           info.Name,
-		PackageName:      ToPackageName(info.Name),
-		StructName:       ToTableStruct(info.Name),
+		PackageName:      ToPackageName(info.Prefix, info.Name),
+		StructName:       ToTableStruct(info.Prefix, info.Name),
 		Columns:          info.Columns,
 	}
 	return t, nil
