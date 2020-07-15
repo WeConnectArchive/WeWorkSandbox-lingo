@@ -57,8 +57,8 @@ var _ = Describe("select", func() {
 				NewMockExpression(),
 			}
 			direction = []sort.Direction{
-				sort.Ascending,
-				sort.Descending,
+				sort.OpAscending,
+				sort.OpDescending,
 			}
 			pegomock.When(orderBy[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("orderBy[0].sqlStr"), nil)
 			pegomock.When(orderBy[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("orderBy[1].sqlStr"), nil)

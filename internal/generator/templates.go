@@ -102,118 +102,114 @@ func (p {{ .Name }}) ToSQL(d lingo.Dialect) (sql.Data, error) {
 {{- if .Operations.Set }}
 
 func (p {{ .Name }}) To(value {{ .GoType }}) set.Set {
-	return set.NewSet(p, expr.NewValue(value))
+	return set.To(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) ToExpr(exp lingo.Expression) set.Set {
-	return set.NewSet(p, exp)
+	return set.To(p, exp)
 }
 {{- end -}}
 
 {{ if .Operations.Equality }}
 
 func (p {{ .Name }}) Eq(value {{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, expr.NewValue(value))
+	return operator.Eq(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) EqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, exp)
+	return operator.Eq(p, exp)
 }
 
 func (p {{ .Name }}) NotEq(value {{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, expr.NewValue(value))
+	return operator.NotEq(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) NotEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, exp)
+	return operator.NotEq(p, exp)
 }
 {{- end -}}
 
 {{ if .Operations.Comparison }}
 
 func (p {{ .Name }}) LT(value {{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.LessThan, expr.NewValue(value))
+	return operator.LessThan(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) LTPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.LessThan, exp)
+	return operator.LessThan(p, exp)
 }
 
 func (p {{ .Name }}) LTOrEq(value {{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.LessThanOrEqual, expr.NewValue(value))
+	return operator.LessThanOrEqual(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) LTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.LessThanOrEqual, exp)
+	return operator.LessThanOrEqual(p, exp)
 }
 
 func (p {{ .Name }}) GT(value {{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThan, expr.NewValue(value))
+	return operator.GreaterThan(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) GTPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThan, exp)
+	return operator.GreaterThan(p, exp)
 }
 
 func (p {{ .Name }}) GTOrEq(value {{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThanOrEqual, expr.NewValue(value))
+	return operator.GreaterThanOrEqual(p, expr.NewValue(value))
 }
 
 func (p {{ .Name }}) GTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThanOrEqual, exp)
+	return operator.GreaterThanOrEqual(p, exp)
 }
 {{- end -}}
 
 {{ if .Operations.Nullable }}
 
 func (p {{ .Name }}) IsNull() operator.Unary {
-	return operator.NewUnary(p, operator.Null)
+	return operator.IsNull(p)
 }
 
 func (p {{ .Name }}) IsNotNull() operator.Unary {
-	return operator.NewUnary(p, operator.NotNull)
+	return operator.IsNotNull(p)
 }
 {{- end -}}
 
 {{ if .Operations.In }}
 
 func (p {{ .Name }}) In(values ...{{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.In, expr.NewParens(expr.NewValue(values)))
+	return operator.In(p, expr.NewParens(expr.NewValue(values)))
 }
 
 func (p {{ .Name }}) InPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.In, expr.NewParens(expr.ToList(exps)))
+	return operator.In(p, expr.NewParens(expr.ToList(exps)))
 }
 
 func (p {{ .Name }}) NotIn(values ...{{ .GoType }}) operator.Binary {
-	return operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.NewValue(values)))
+	return operator.NotIn(p, expr.NewParens(expr.NewValue(values)))
 }
 
 func (p {{ .Name }}) NotInPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.ToList(exps)))
+	return operator.NotIn(p, expr.NewParens(expr.ToList(exps)))
 }
 {{- end -}}
 
 {{ if .Operations.Between }}
 
 func (p {{ .Name }}) Between(first, second {{ .GoType }}) operator.Binary {
-	and := expr.NewParens(expr.NewValue(first).And(expr.NewValue(second)))
-	return operator.NewBinary(p, operator.Between, and)
+	return operator.Between(p, expr.NewValue(first), expr.NewValue(second))
 }
 
-func (p {{ .Name }}) BetweenPaths(firstExp, secondExp lingo.Expression) operator.Binary {
-	and := expr.NewParens(operator.NewBinary(firstExp, operator.And, secondExp))
-	return operator.NewBinary(p, operator.Between, and)
+func (p {{ .Name }}) BetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.Between(p, first, second)
 }
 
 func (p {{ .Name }}) NotBetween(first, second {{ .GoType }}) operator.Binary {
-	and := expr.NewParens(expr.NewValue(first).And(expr.NewValue(second)))
-	return operator.NewBinary(p, operator.NotBetween, and)
+	return operator.NotBetween(p, expr.NewValue(first), expr.NewValue(second))
 }
 
-func (p {{ .Name }}) NotBetweenPaths(firstExp, secondExp lingo.Expression) operator.Binary {
-	and := expr.NewParens(operator.NewBinary(firstExp, operator.And, secondExp))
-	return operator.NewBinary(p, operator.NotBetween, and)
+func (p {{ .Name }}) NotBetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.NotBetween(p, first, second)
 }
 
 {{- end -}}

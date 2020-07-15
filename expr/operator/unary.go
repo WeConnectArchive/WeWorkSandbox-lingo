@@ -36,3 +36,13 @@ func (u Unary) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	}
 	return operand.UnaryOperator(expSQL, u.op)
 }
+
+// IsNull creates an operator.Unary "null" expression (not literally a nil lingo.Expression!)
+func IsNull(exp lingo.Expression) Unary {
+	return NewUnary(exp, OpNull)
+}
+
+// IsNotNull creates a not null operator.Unary expression
+func IsNotNull(exp lingo.Expression) Unary {
+	return NewUnary(exp, OpNotNull)
+}

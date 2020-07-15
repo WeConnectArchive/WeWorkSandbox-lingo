@@ -27,7 +27,7 @@ var _ = Describe("unary.go", func() {
 
 		BeforeEach(func() {
 			left = NewMockExpression()
-			op = operator.Between
+			op = operator.OpBetween
 		})
 
 		JustBeforeEach(func() {

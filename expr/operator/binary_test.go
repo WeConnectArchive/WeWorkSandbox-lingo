@@ -28,7 +28,7 @@ var _ = Describe("binary.go", func() {
 
 		BeforeEach(func() {
 			left = NewMockExpression()
-			op = operator.Between
+			op = operator.OpBetween
 			value = NewMockExpression()
 		})
 

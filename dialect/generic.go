@@ -64,22 +64,22 @@ func Value(formatter ValueFormatter, values []interface{}) (sql.Data, error) {
 }
 
 var operandToStr = map[operator.Operator]string{
-	operator.And:                "AND",
-	operator.Or:                 "OR",
-	operator.Eq:                 "=",
-	operator.NotEq:              "<>",
-	operator.LessThan:           "<",
-	operator.LessThanOrEqual:    "<=",
-	operator.GreaterThan:        ">",
-	operator.GreaterThanOrEqual: ">=",
-	operator.Like:               "LIKE",
-	operator.NotLike:            "NOT LIKE",
-	operator.Null:               "IS NULL",
-	operator.NotNull:            "IS NOT NULL",
-	operator.In:                 "IN",
-	operator.NotIn:              "NOT IN",
-	operator.Between:            "BETWEEN",
-	operator.NotBetween:         "NOT BETWEEN",
+	operator.OpAnd:                "AND",
+	operator.OpOr:                 "OR",
+	operator.OpEq:                 "=",
+	operator.OpNotEq:              "<>",
+	operator.OpLessThan:           "<",
+	operator.OpLessThanOrEqual:    "<=",
+	operator.OpGreaterThan:        ">",
+	operator.OpGreaterThanOrEqual: ">=",
+	operator.OpLike:               "LIKE",
+	operator.OpNotLike:            "NOT LIKE",
+	operator.OpNull:               "IS NULL",
+	operator.OpNotNull:            "IS NOT NULL",
+	operator.OpIn:                 "IN",
+	operator.OpNotIn:              "NOT IN",
+	operator.OpBetween:            "BETWEEN",
+	operator.OpNotBetween:         "NOT BETWEEN",
 }
 
 func UnaryOperator(left sql.Data, op operator.Operator) (sql.Data, error) {
@@ -90,7 +90,7 @@ func UnaryOperator(left sql.Data, op operator.Operator) (sql.Data, error) {
 	opSQL := sql.String(opStr)
 
 	switch op {
-	case operator.Null, operator.NotNull:
+	case operator.OpNull, operator.OpNotNull:
 		return left.AppendWithSpace(opSQL), nil
 	}
 	return nil, fmt.Errorf("operator.Operator %d is not implemented in UnaryOperator", op)
@@ -104,12 +104,12 @@ func BinaryOperator(left sql.Data, op operator.Operator, right sql.Data) (sql.Da
 	opSQL := sql.String(opStr)
 
 	switch op {
-	case operator.And, operator.Or:
+	case operator.OpAnd, operator.OpOr:
 		return left.AppendWithSpace(opSQL).AppendWithSpace(right), nil
 
-	case operator.Eq, operator.NotEq, operator.LessThan, operator.LessThanOrEqual,
-		operator.GreaterThan, operator.GreaterThanOrEqual, operator.Like, operator.NotLike,
-		operator.Between, operator.NotBetween, operator.In, operator.NotIn:
+	case operator.OpEq, operator.OpNotEq, operator.OpLessThan, operator.OpLessThanOrEqual,
+		operator.OpGreaterThan, operator.OpGreaterThanOrEqual, operator.OpLike, operator.OpNotLike,
+		operator.OpBetween, operator.OpNotBetween, operator.OpIn, operator.OpNotIn:
 		return left.AppendWithSpace(opSQL).AppendWithSpace(right), nil
 	}
 	return nil, fmt.Errorf("operator.Operator %d is not implemented in BinaryOperator", op)
@@ -124,7 +124,7 @@ func VariadicOperator(left sql.Data, op operator.Operator, values []sql.Data) (s
 	opWithSpaces := " " + optStr + " "
 
 	switch op {
-	case operator.And, operator.Or:
+	case operator.OpAnd, operator.OpOr:
 		// Create the where SQL and then put parens around it.
 		whereSQL := sql.Join(opWithSpaces, append([]sql.Data{left}, values...))
 		return sql.Surround("(", ")", whereSQL), nil
@@ -163,8 +163,8 @@ func Set(format SetFormatter, left sql.Data, value sql.Data) (sql.Data, error) {
 }
 
 var sortDirectionToStr = map[sort.Direction]string{
-	sort.Ascending:  "ASC",
-	sort.Descending: "DESC",
+	sort.OpAscending:  "ASC",
+	sort.OpDescending: "DESC",
 }
 
 func OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {

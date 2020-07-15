@@ -28,7 +28,7 @@ var _ = Describe("variadic.go", func() {
 
 		BeforeEach(func() {
 			left = NewMockExpression()
-			op = operator.Between
+			op = operator.OpBetween
 			values = []lingo.Expression{NewMockExpression(), NewMockExpression()}
 		})
 

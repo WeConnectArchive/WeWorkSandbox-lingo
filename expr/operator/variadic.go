@@ -24,11 +24,11 @@ type Variadic struct {
 }
 
 func (o Variadic) And(exp lingo.Expression) lingo.ComboExpression {
-	return NewBinary(o, And, exp)
+	return And(o, exp)
 }
 
 func (o Variadic) Or(exp lingo.Expression) lingo.ComboExpression {
-	return NewBinary(o, Or, exp)
+	return And(o, exp)
 }
 
 func (o Variadic) ToSQL(d lingo.Dialect) (sql.Data, error) {

@@ -27,7 +27,7 @@ var _ = Describe("Dialect", func() {
 
 		BeforeEach(func() {
 			left = NewMockExpression()
-			direction = sort.Ascending
+			direction = sort.OpAscending
 		})
 
 		JustBeforeEach(func() {

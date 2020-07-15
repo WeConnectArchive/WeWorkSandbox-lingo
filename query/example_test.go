@@ -17,7 +17,7 @@ func ExampleSelectQuery_From_where() {
 	fmt.Println(s.String())
 	fmt.Println(s.Values())
 	// Output:
-	//SELECT fa.film_id FROM film_actor AS fa WHERE fa.actor_id BETWEEN (? AND ?)
+	//SELECT fa.film_id FROM film_actor AS fa WHERE fa.actor_id BETWEEN ? AND ?
 	//[1 10]
 }
 
