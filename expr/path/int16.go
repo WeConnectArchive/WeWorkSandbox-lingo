@@ -50,101 +50,97 @@ func (p Int16) ToSQL(d lingo.Dialect) (sql.Data, error) {
 }
 
 func (p Int16) To(value int16) set.Set {
-	return set.NewSet(p, expr.NewValue(value))
+	return set.To(p, expr.NewValue(value))
 }
 
 func (p Int16) ToExpr(exp lingo.Expression) set.Set {
-	return set.NewSet(p, exp)
+	return set.To(p, exp)
 }
 
 func (p Int16) Eq(value int16) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, expr.NewValue(value))
+	return operator.Eq(p, expr.NewValue(value))
 }
 
 func (p Int16) EqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, exp)
+	return operator.Eq(p, exp)
 }
 
 func (p Int16) NotEq(value int16) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, expr.NewValue(value))
+	return operator.NotEq(p, expr.NewValue(value))
 }
 
 func (p Int16) NotEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, exp)
+	return operator.NotEq(p, exp)
 }
 
 func (p Int16) LT(value int16) operator.Binary {
-	return operator.NewBinary(p, operator.LessThan, expr.NewValue(value))
+	return operator.LessThan(p, expr.NewValue(value))
 }
 
 func (p Int16) LTPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.LessThan, exp)
+	return operator.LessThan(p, exp)
 }
 
 func (p Int16) LTOrEq(value int16) operator.Binary {
-	return operator.NewBinary(p, operator.LessThanOrEqual, expr.NewValue(value))
+	return operator.LessThanOrEqual(p, expr.NewValue(value))
 }
 
 func (p Int16) LTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.LessThanOrEqual, exp)
+	return operator.LessThanOrEqual(p, exp)
 }
 
 func (p Int16) GT(value int16) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThan, expr.NewValue(value))
+	return operator.GreaterThan(p, expr.NewValue(value))
 }
 
 func (p Int16) GTPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThan, exp)
+	return operator.GreaterThan(p, exp)
 }
 
 func (p Int16) GTOrEq(value int16) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThanOrEqual, expr.NewValue(value))
+	return operator.GreaterThanOrEqual(p, expr.NewValue(value))
 }
 
 func (p Int16) GTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThanOrEqual, exp)
+	return operator.GreaterThanOrEqual(p, exp)
 }
 
 func (p Int16) IsNull() operator.Unary {
-	return operator.NewUnary(p, operator.Null)
+	return operator.IsNull(p)
 }
 
 func (p Int16) IsNotNull() operator.Unary {
-	return operator.NewUnary(p, operator.NotNull)
+	return operator.IsNotNull(p)
 }
 
 func (p Int16) In(values ...int16) operator.Binary {
-	return operator.NewBinary(p, operator.In, expr.NewParens(expr.NewValue(values)))
+	return operator.In(p, expr.NewParens(expr.NewValue(values)))
 }
 
 func (p Int16) InPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.In, expr.NewParens(expr.ToList(exps)))
+	return operator.In(p, expr.NewParens(expr.ToList(exps)))
 }
 
 func (p Int16) NotIn(values ...int16) operator.Binary {
-	return operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.NewValue(values)))
+	return operator.NotIn(p, expr.NewParens(expr.NewValue(values)))
 }
 
 func (p Int16) NotInPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.ToList(exps)))
+	return operator.NotIn(p, expr.NewParens(expr.ToList(exps)))
 }
 
 func (p Int16) Between(first, second int16) operator.Binary {
-	and := expr.NewParens(expr.NewValue(first).And(expr.NewValue(second)))
-	return operator.NewBinary(p, operator.Between, and)
+	return operator.Between(p, expr.NewValue(first), expr.NewValue(second))
 }
 
-func (p Int16) BetweenPaths(firstExp, secondExp lingo.Expression) operator.Binary {
-	and := expr.NewParens(operator.NewBinary(firstExp, operator.And, secondExp))
-	return operator.NewBinary(p, operator.Between, and)
+func (p Int16) BetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.Between(p, first, second)
 }
 
 func (p Int16) NotBetween(first, second int16) operator.Binary {
-	and := expr.NewParens(expr.NewValue(first).And(expr.NewValue(second)))
-	return operator.NewBinary(p, operator.NotBetween, and)
+	return operator.NotBetween(p, expr.NewValue(first), expr.NewValue(second))
 }
 
-func (p Int16) NotBetweenPaths(firstExp, secondExp lingo.Expression) operator.Binary {
-	and := expr.NewParens(operator.NewBinary(firstExp, operator.And, secondExp))
-	return operator.NewBinary(p, operator.NotBetween, and)
+func (p Int16) NotBetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.NotBetween(p, first, second)
 }

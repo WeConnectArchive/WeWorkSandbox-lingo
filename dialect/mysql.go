@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/json"
-	"github.com/weworksandbox/lingo/sql"
 )
 
 // NewMySQL takes options to configure a MySQL schema
@@ -28,29 +26,4 @@ type MySQL struct{ Default }
 
 func (MySQL) GetName() string {
 	return "MySQL"
-}
-
-func (m MySQL) JSONOperator(left sql.Data, op json.Operand, values []sql.Data) (sql.Data, error) {
-	switch op {
-	case json.Extract:
-		return m.multiPathJSON(left, op, values)
-	}
-
-	return nil, EnumIsInvalid("json.Operand", op)
-}
-
-func (MySQL) multiPathJSON(left sql.Data, op json.Operand, values []sql.Data) (sql.Data, error) {
-	opStr, ok := mysqlJSONOperatorToString[op]
-	if !ok {
-		return nil, EnumIsInvalid("json.Operand", op)
-	}
-
-	return sql.String(opStr).
-		Append(left.Append(sql.String(", ")).
-			SurroundAppend("(", ")", sql.Join(", ", values)),
-		), nil
-}
-
-var mysqlJSONOperatorToString = map[json.Operand]string{
-	json.Extract: "JSON_EXTRACT",
 }

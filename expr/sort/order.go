@@ -39,3 +39,11 @@ func (b By) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	}
 	return order.OrderBy(left, b.direction)
 }
+
+func Asc(column lingo.Expression) By {
+	return NewOrderBy(column, OpAscending)
+}
+
+func Desc(column lingo.Expression) By {
+	return NewOrderBy(column, OpDescending)
+}

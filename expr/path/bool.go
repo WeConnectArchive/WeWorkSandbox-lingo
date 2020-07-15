@@ -50,33 +50,33 @@ func (p Bool) ToSQL(d lingo.Dialect) (sql.Data, error) {
 }
 
 func (p Bool) To(value bool) set.Set {
-	return set.NewSet(p, expr.NewValue(value))
+	return set.To(p, expr.NewValue(value))
 }
 
 func (p Bool) ToExpr(exp lingo.Expression) set.Set {
-	return set.NewSet(p, exp)
+	return set.To(p, exp)
 }
 
 func (p Bool) Eq(value bool) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, expr.NewValue(value))
+	return operator.Eq(p, expr.NewValue(value))
 }
 
 func (p Bool) EqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, exp)
+	return operator.Eq(p, exp)
 }
 
 func (p Bool) NotEq(value bool) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, expr.NewValue(value))
+	return operator.NotEq(p, expr.NewValue(value))
 }
 
 func (p Bool) NotEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, exp)
+	return operator.NotEq(p, exp)
 }
 
 func (p Bool) IsNull() operator.Unary {
-	return operator.NewUnary(p, operator.Null)
+	return operator.IsNull(p)
 }
 
 func (p Bool) IsNotNull() operator.Unary {
-	return operator.NewUnary(p, operator.NotNull)
+	return operator.IsNotNull(p)
 }

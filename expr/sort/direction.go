@@ -7,8 +7,8 @@ type Direction int
 // Just ensure the int value for Direction is positive as to not conflict
 // with these Direction's
 const (
-	Unknown Direction = -iota // The `-` in front ensures all values are negative
+	OpUnknown Direction = -iota // The `-` in front ensures all values are negative
 
-	Ascending
-	Descending
+	OpAscending
+	OpDescending
 )

@@ -143,7 +143,7 @@ var selectQueries = []QueryTest{
 				).Where(
 					fa.ActorId().EqPath(expr.NewValue(&actorID)),
 				).OrderBy(
-					cat.Name(), sort.Ascending,
+					cat.Name(), sort.OpAscending,
 				)
 			},
 			SQLStrAssert: ContainSubstring(trimQuery(`

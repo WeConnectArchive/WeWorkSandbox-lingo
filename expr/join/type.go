@@ -10,7 +10,7 @@ type Type int
 // Just ensure the `int` value for `Type` is positive as to not conflict
 // with these `Type`s
 const (
-	Inner Type = -iota // The `-` in front ensures all values are negative, yay C++ macros!
+	Inner Type = -iota // The `-` in front ensures all values are negative, thus others can use positive numbers
 	Outer
 	Left
 	Right

@@ -4,27 +4,27 @@ type Operator int
 
 //goland:noinspection ALL
 const (
-	Unknown Operator = -iota //nolint
+	OpUnknown Operator = -iota //nolint
 
-	And
-	Or
+	OpAnd
+	OpOr
 
-	Eq
-	NotEq
-	Like
-	NotLike
+	OpEq
+	OpNotEq
+	OpLike
+	OpNotLike
 
-	LessThan
-	LessThanOrEqual
-	GreaterThan
-	GreaterThanOrEqual
+	OpLessThan
+	OpLessThanOrEqual
+	OpGreaterThan
+	OpGreaterThanOrEqual
 
-	Null
-	NotNull
+	OpNull
+	OpNotNull
 
-	In
-	NotIn
+	OpIn
+	OpNotIn
 
-	Between
-	NotBetween
+	OpBetween
+	OpNotBetween
 )

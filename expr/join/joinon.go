@@ -29,11 +29,11 @@ type On struct {
 }
 
 func (j On) And(exp lingo.Expression) lingo.ComboExpression {
-	return operator.NewBinary(j, operator.And, exp)
+	return operator.And(j, exp)
 }
 
 func (j On) Or(exp lingo.Expression) lingo.ComboExpression {
-	return operator.NewBinary(j, operator.Or, exp)
+	return operator.Or(j, exp)
 }
 
 func (j On) ToSQL(d lingo.Dialect) (sql.Data, error) {

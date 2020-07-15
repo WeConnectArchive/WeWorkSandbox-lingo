@@ -50,101 +50,97 @@ func (p Float32) ToSQL(d lingo.Dialect) (sql.Data, error) {
 }
 
 func (p Float32) To(value float32) set.Set {
-	return set.NewSet(p, expr.NewValue(value))
+	return set.To(p, expr.NewValue(value))
 }
 
 func (p Float32) ToExpr(exp lingo.Expression) set.Set {
-	return set.NewSet(p, exp)
+	return set.To(p, exp)
 }
 
 func (p Float32) Eq(value float32) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, expr.NewValue(value))
+	return operator.Eq(p, expr.NewValue(value))
 }
 
 func (p Float32) EqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.Eq, exp)
+	return operator.Eq(p, exp)
 }
 
 func (p Float32) NotEq(value float32) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, expr.NewValue(value))
+	return operator.NotEq(p, expr.NewValue(value))
 }
 
 func (p Float32) NotEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotEq, exp)
+	return operator.NotEq(p, exp)
 }
 
 func (p Float32) LT(value float32) operator.Binary {
-	return operator.NewBinary(p, operator.LessThan, expr.NewValue(value))
+	return operator.LessThan(p, expr.NewValue(value))
 }
 
 func (p Float32) LTPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.LessThan, exp)
+	return operator.LessThan(p, exp)
 }
 
 func (p Float32) LTOrEq(value float32) operator.Binary {
-	return operator.NewBinary(p, operator.LessThanOrEqual, expr.NewValue(value))
+	return operator.LessThanOrEqual(p, expr.NewValue(value))
 }
 
 func (p Float32) LTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.LessThanOrEqual, exp)
+	return operator.LessThanOrEqual(p, exp)
 }
 
 func (p Float32) GT(value float32) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThan, expr.NewValue(value))
+	return operator.GreaterThan(p, expr.NewValue(value))
 }
 
 func (p Float32) GTPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThan, exp)
+	return operator.GreaterThan(p, exp)
 }
 
 func (p Float32) GTOrEq(value float32) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThanOrEqual, expr.NewValue(value))
+	return operator.GreaterThanOrEqual(p, expr.NewValue(value))
 }
 
 func (p Float32) GTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.GreaterThanOrEqual, exp)
+	return operator.GreaterThanOrEqual(p, exp)
 }
 
 func (p Float32) IsNull() operator.Unary {
-	return operator.NewUnary(p, operator.Null)
+	return operator.IsNull(p)
 }
 
 func (p Float32) IsNotNull() operator.Unary {
-	return operator.NewUnary(p, operator.NotNull)
+	return operator.IsNotNull(p)
 }
 
 func (p Float32) In(values ...float32) operator.Binary {
-	return operator.NewBinary(p, operator.In, expr.NewParens(expr.NewValue(values)))
+	return operator.In(p, expr.NewParens(expr.NewValue(values)))
 }
 
 func (p Float32) InPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.In, expr.NewParens(expr.ToList(exps)))
+	return operator.In(p, expr.NewParens(expr.ToList(exps)))
 }
 
 func (p Float32) NotIn(values ...float32) operator.Binary {
-	return operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.NewValue(values)))
+	return operator.NotIn(p, expr.NewParens(expr.NewValue(values)))
 }
 
 func (p Float32) NotInPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NewBinary(p, operator.NotIn, expr.NewParens(expr.ToList(exps)))
+	return operator.NotIn(p, expr.NewParens(expr.ToList(exps)))
 }
 
 func (p Float32) Between(first, second float32) operator.Binary {
-	and := expr.NewParens(expr.NewValue(first).And(expr.NewValue(second)))
-	return operator.NewBinary(p, operator.Between, and)
+	return operator.Between(p, expr.NewValue(first), expr.NewValue(second))
 }
 
-func (p Float32) BetweenPaths(firstExp, secondExp lingo.Expression) operator.Binary {
-	and := expr.NewParens(operator.NewBinary(firstExp, operator.And, secondExp))
-	return operator.NewBinary(p, operator.Between, and)
+func (p Float32) BetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.Between(p, first, second)
 }
 
 func (p Float32) NotBetween(first, second float32) operator.Binary {
-	and := expr.NewParens(expr.NewValue(first).And(expr.NewValue(second)))
-	return operator.NewBinary(p, operator.NotBetween, and)
+	return operator.NotBetween(p, expr.NewValue(first), expr.NewValue(second))
 }
 
-func (p Float32) NotBetweenPaths(firstExp, secondExp lingo.Expression) operator.Binary {
-	and := expr.NewParens(operator.NewBinary(firstExp, operator.And, secondExp))
-	return operator.NewBinary(p, operator.NotBetween, and)
+func (p Float32) NotBetweenPaths(first, second lingo.Expression) operator.Binary {
+	return operator.NotBetween(p, first, second)
 }
