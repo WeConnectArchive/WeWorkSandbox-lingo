@@ -21,7 +21,7 @@ type Parens struct {
 
 func (p Parens) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	if check.IsValueNilOrEmpty(p.exp) {
-		return nil, errors.New("paren exp cannot be empty")
+		return nil, errors.New("paren Expr cannot be empty")
 	}
 	s, err := p.exp.ToSQL(d)
 	if err != nil {

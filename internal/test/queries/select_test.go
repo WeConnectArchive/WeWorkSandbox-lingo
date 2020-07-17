@@ -10,6 +10,7 @@ import (
 	"github.com/weworksandbox/lingo/expr/sort"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tcategory"
+	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilm"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmactor"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmcategory"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmtext"
@@ -18,6 +19,42 @@ import (
 )
 
 var selectQueries = []QueryTest{
+	{
+		Name: "Binary",
+		Benchmark: true,
+		Params: Params{
+			Dialect:         DefaultDialect,
+			SQL: func() lingo.Expression {
+				f := tfilm.As("f")
+				return query.Select(f.ReplacementCost()).From(f).Where(f.ReplacementCost().EqPath(f.RentalRate()))
+			},
+			SQLStrAssert: EqString(trimQuery(`
+					SELECT f.replacement_cost
+					FROM film AS f
+					WHERE f.replacement_cost = f.rental_rate`,
+			)),
+			SQLValuesAssert: BeEmpty(),
+			ExecuteParams:   ExecuteParams{},
+		},
+	},
+	{
+		Name: "Int32",
+		Benchmark: true,
+		Params: Params{
+			Dialect:         DefaultDialect,
+			SQL: func() lingo.Expression {
+				f := tfilm.As("f")
+				return query.Select(f.FilmId()).From(f).Where(f.FilmId().EqPath(f.Length()))
+			},
+			SQLStrAssert: EqString(trimQuery(`
+					SELECT f.film_id
+					FROM film AS f
+					WHERE f.film_id = f.length`,
+			)),
+			SQLValuesAssert: BeEmpty(),
+			ExecuteParams:   ExecuteParams{},
+		},
+	},
 	{
 		Name:      "CountInventoryID_ForStoreID",
 		Benchmark: true,

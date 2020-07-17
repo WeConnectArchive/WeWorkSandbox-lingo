@@ -63,7 +63,7 @@ var _ = Describe("parens.go", func() {
 				Expect(err).Should(BeNil())
 			})
 
-			Context("exp is nil", func() {
+			Context("Expr is nil", func() {
 
 				BeforeEach(func() {
 					exp = nil
@@ -74,7 +74,7 @@ var _ = Describe("parens.go", func() {
 				})
 
 				It("Returns the expr error", func() {
-					Expect(err).To(MatchError("paren exp cannot be empty"))
+					Expect(err).To(MatchError("paren Expr cannot be empty"))
 				})
 			})
 		})

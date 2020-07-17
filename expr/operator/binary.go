@@ -17,6 +17,47 @@ func NewBinary(left lingo.Expression, op Operator, right lingo.Expression) Binar
 	}
 }
 
+func Binary1(left lingo.Expr, op Operator, right lingo.Expr) lingo.Expr {
+	return func(d lingo.Dialect) (sql.Data, error) {
+		operand, ok := d.(Dialect)
+		if !ok {
+			return nil, fmt.Errorf("dialect '%s' does not support 'operator.Dialect'", d.GetName())
+		}
+
+		if check.IsValueNilOrEmpty(left) {
+			return nil, errors.New("left of operator.Binary cannot be empty")
+		}
+		leftSQL, err := left(d)
+		if err != nil {
+			return nil, err
+		}
+
+		if check.IsValueNilOrEmpty(right) {
+			return nil, errors.New("right of operator.Binary cannot be empty")
+		}
+		rightSQL, err := right(d)
+		if err != nil {
+			return nil, err
+		}
+		return operand.BinaryOperator(leftSQL, op, rightSQL)
+	}
+}
+
+type Binary2 lingo.Expr
+
+func (b Binary2) And(exp lingo.Expression) lingo.ComboExpression {
+	return And2(b, exp)
+}
+
+func (b Binary2) Or(exp lingo.Expression) lingo.ComboExpression {
+	return And2(b, exp)
+}
+
+func And2(left, right lingo.Expr) Binary2 {
+	return Binary1(left, OpAnd, right)
+}
+
+
 type Binary struct {
 	left  lingo.Expression
 	op    Operator

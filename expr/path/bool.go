@@ -5,7 +5,6 @@ package path
 import (
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/expr"
-	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/expr/set"
 	"github.com/weworksandbox/lingo/sql"
 )
@@ -23,6 +22,7 @@ func NewBool(e lingo.Table, name string) Bool {
 }
 
 type Bool struct {
+	expr.Bool
 	entity lingo.Table
 	name   string
 	alias  string
@@ -55,28 +55,4 @@ func (p Bool) To(value bool) set.Set {
 
 func (p Bool) ToExpr(exp lingo.Expression) set.Set {
 	return set.To(p, exp)
-}
-
-func (p Bool) Eq(value bool) operator.Binary {
-	return operator.Eq(p, expr.NewValue(value))
-}
-
-func (p Bool) EqPath(exp lingo.Expression) operator.Binary {
-	return operator.Eq(p, exp)
-}
-
-func (p Bool) NotEq(value bool) operator.Binary {
-	return operator.NotEq(p, expr.NewValue(value))
-}
-
-func (p Bool) NotEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NotEq(p, exp)
-}
-
-func (p Bool) IsNull() operator.Unary {
-	return operator.IsNull(p)
-}
-
-func (p Bool) IsNotNull() operator.Unary {
-	return operator.IsNotNull(p)
 }

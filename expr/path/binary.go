@@ -5,17 +5,18 @@ package path
 import (
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/expr"
-	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/expr/set"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func NewBinaryWithAlias(e lingo.Table, name, alias string) Binary {
-	return Binary{
+	b := Binary{
 		entity: e,
 		name:   name,
 		alias:  alias,
 	}
+	b.Binary = b.ToSQL
+	return b
 }
 
 func NewBinary(e lingo.Table, name string) Binary {
@@ -23,6 +24,7 @@ func NewBinary(e lingo.Table, name string) Binary {
 }
 
 type Binary struct {
+	expr.Binary
 	entity lingo.Table
 	name   string
 	alias  string
@@ -55,92 +57,4 @@ func (p Binary) To(value []byte) set.Set {
 
 func (p Binary) ToExpr(exp lingo.Expression) set.Set {
 	return set.To(p, exp)
-}
-
-func (p Binary) Eq(value []byte) operator.Binary {
-	return operator.Eq(p, expr.NewValue(value))
-}
-
-func (p Binary) EqPath(exp lingo.Expression) operator.Binary {
-	return operator.Eq(p, exp)
-}
-
-func (p Binary) NotEq(value []byte) operator.Binary {
-	return operator.NotEq(p, expr.NewValue(value))
-}
-
-func (p Binary) NotEqPath(exp lingo.Expression) operator.Binary {
-	return operator.NotEq(p, exp)
-}
-
-func (p Binary) LT(value []byte) operator.Binary {
-	return operator.LessThan(p, expr.NewValue(value))
-}
-
-func (p Binary) LTPath(exp lingo.Expression) operator.Binary {
-	return operator.LessThan(p, exp)
-}
-
-func (p Binary) LTOrEq(value []byte) operator.Binary {
-	return operator.LessThanOrEqual(p, expr.NewValue(value))
-}
-
-func (p Binary) LTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.LessThanOrEqual(p, exp)
-}
-
-func (p Binary) GT(value []byte) operator.Binary {
-	return operator.GreaterThan(p, expr.NewValue(value))
-}
-
-func (p Binary) GTPath(exp lingo.Expression) operator.Binary {
-	return operator.GreaterThan(p, exp)
-}
-
-func (p Binary) GTOrEq(value []byte) operator.Binary {
-	return operator.GreaterThanOrEqual(p, expr.NewValue(value))
-}
-
-func (p Binary) GTOrEqPath(exp lingo.Expression) operator.Binary {
-	return operator.GreaterThanOrEqual(p, exp)
-}
-
-func (p Binary) IsNull() operator.Unary {
-	return operator.IsNull(p)
-}
-
-func (p Binary) IsNotNull() operator.Unary {
-	return operator.IsNotNull(p)
-}
-
-func (p Binary) In(values ...[]byte) operator.Binary {
-	return operator.In(p, expr.NewParens(expr.NewValue(values)))
-}
-
-func (p Binary) InPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.In(p, expr.NewParens(expr.ToList(exps)))
-}
-
-func (p Binary) NotIn(values ...[]byte) operator.Binary {
-	return operator.NotIn(p, expr.NewParens(expr.NewValue(values)))
-}
-
-func (p Binary) NotInPaths(exps ...lingo.Expression) operator.Binary {
-	return operator.NotIn(p, expr.NewParens(expr.ToList(exps)))
-}
-
-func (p Binary) Between(first, second []byte) operator.Binary {
-	return operator.Between(p, expr.NewValue(first), expr.NewValue(second))
-}
-
-func (p Binary) BetweenPaths(first, second lingo.Expression) operator.Binary {
-	return operator.Between(p, first, second)
-}
-
-func (p Binary) NotBetween(first, second []byte) operator.Binary {
-	return operator.NotBetween(p, expr.NewValue(first), expr.NewValue(second))
-}
-
-func (p Binary) NotBetweenPaths(first, second lingo.Expression) operator.Binary {
-	return operator.NotBetween(p, first, second)
 }

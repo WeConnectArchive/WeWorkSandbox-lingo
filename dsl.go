@@ -27,6 +27,8 @@ type Column interface {
 	GetParent() Table
 }
 
+type Expr func(Dialect) (sql.Data, error)
+
 type Expression interface {
 	ToSQL(d Dialect) (sql.Data, error)
 }
