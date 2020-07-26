@@ -6,6 +6,7 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/join"
 	"github.com/weworksandbox/lingo/expr/sort"
 	"github.com/weworksandbox/lingo/sql"
@@ -24,7 +25,7 @@ func SelectFrom(e lingo.Table) *SelectQuery {
 type SelectQuery struct {
 	from     lingo.Expression
 	join     []lingo.Expression
-	where    []lingo.Expression
+	where    lingo.Expression
 	order    []lingo.Expression
 	paths    []lingo.Expression
 	modifier Modifier
@@ -36,7 +37,7 @@ func (q *SelectQuery) From(e lingo.Table) *SelectQuery {
 }
 
 func (q *SelectQuery) Where(exp ...lingo.Expression) *SelectQuery {
-	q.where = append(q.where, exp...)
+	q.where = appendWith(q.where, exp, expr.And)
 	return q
 }
 
@@ -74,10 +75,10 @@ func (q *SelectQuery) ToSQL(d lingo.Dialect) (sql.Data, error) {
 		s = s.AppendWithSpace(joinSQL)
 	}
 
-	if where, err := BuildWhereSQL(d, q.where); err != nil {
+	if where, err := buildIfNotEmpty(d, q.where); err != nil {
 		return nil, NewErrAroundSQL(s, err)
 	} else if where.String() != "" {
-		s = s.AppendWithSpace(where)
+		s = s.AppendWithSpace(sqlWhere).AppendWithSpace(where)
 	}
 
 	if orderBy, err := JoinToSQL(d, sepPathComma, q.order); err != nil {

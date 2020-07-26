@@ -27,6 +27,11 @@ type Column interface {
 	GetParent() Table
 }
 
+// ExpressionFunc is a wrapper similar to http.HandlerFunc
+type ExpressionFunc func(d Dialect) (sql.Data, error)
+
+func (e ExpressionFunc) ToSQL(d Dialect) (sql.Data, error) { return e(d) }
+
 type Expression interface {
 	ToSQL(d Dialect) (sql.Data, error)
 }

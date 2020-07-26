@@ -6,15 +6,11 @@ import (
 )
 
 func DefaultDialect() (lingo.Dialect, error) {
-	return dialect.NewDefault()
+	return dialect.NewDialect()
 }
 
 func DefaultDialectWithSchema() (lingo.Dialect, error) {
-	return dialect.NewDefault(
+	return dialect.NewDialect(
 		dialect.WithSchemaNameIncluded(true),
 	)
-}
-
-func MySQLDialect() (lingo.Dialect, error) {
-	return dialect.NewMySQL()
 }

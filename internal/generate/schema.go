@@ -1,4 +1,4 @@
-package generator
+package generate
 
 import (
 	"fmt"
@@ -24,5 +24,5 @@ func NewSchemaInfo(schemaName string, prefix rune) SchemaInfo {
 }
 
 func (s SchemaInfo) Generate() (io.Reader, error) {
-	return generateFromTemplate(schemaTemplate, s)
+	return FromTemplate(schemaTemplate, s)
 }

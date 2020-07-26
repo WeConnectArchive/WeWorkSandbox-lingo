@@ -55,9 +55,11 @@ var _ = Describe("Delete", func() {
 			where = []lingo.Expression{
 				NewMockExpression(),
 				NewMockExpression(),
+				NewMockExpression(),
 			}
-			pegomock.When(where[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("where[0].sqlStr"), nil)
-			pegomock.When(where[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("where[1].sqlStr"), nil)
+			pegomock.When(where[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[0].sqlStr"), nil)
+			pegomock.When(where[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[1].sqlStr"), nil)
+			pegomock.When(where[2].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[2].sqlStr"), nil)
 		})
 
 		JustBeforeEach(func() {
@@ -77,7 +79,8 @@ var _ = Describe("Delete", func() {
 			)
 
 			BeforeEach(func() {
-				d = dialect.Default{}
+				d, err = dialect.NewDialect()
+				Expect(err).ToNot(HaveOccurred())
 			})
 
 			JustBeforeEach(func() {
@@ -85,7 +88,7 @@ var _ = Describe("Delete", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr LEFT JOIN joinOn[0][0].sqlStr ON joinOn[0][1].sqlStr RIGHT JOIN joinOn[1][0].sqlStr ON joinOn[1][1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr)"))
+				Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr LEFT JOIN joinOn[0][0].sqlStr ON joinOn[0][1].sqlStr RIGHT JOIN joinOn[1][0].sqlStr ON joinOn[1][1].sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr AND whereSQL[2].sqlStr"))
 			})
 
 			It("Returns no error", func() {
@@ -129,7 +132,7 @@ var _ = Describe("Delete", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr)"))
+					Expect(sql).To(MatchSQLString("DELETE FROM from.sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr AND whereSQL[2].sqlStr"))
 				})
 
 				It("Returns no error", func() {
@@ -185,15 +188,15 @@ var _ = Describe("Delete", func() {
 			Context("Where ToSQL returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("where error"))
+					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("whereSQL error"))
 				})
 
 				It("Returns a nil SQL", func() {
 					Expect(sql).To(BeNil())
 				})
 
-				It("Returns the where error", func() {
-					Expect(err).To(MatchError(ContainSubstring("where error")))
+				It("Returns the whereSQL error", func() {
+					Expect(err).To(MatchError(ContainSubstring("whereSQL error")))
 				})
 			})
 		})

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/weworksandbox/lingo/internal/generator"
+	"github.com/weworksandbox/lingo/internal/generate"
 )
 
 func getSettings() *settings {
@@ -22,7 +22,7 @@ func getSettings() *settings {
 		s.replaceNames[k] = v
 	}
 
-	s.dbToPkgTypes = make(map[string]generator.PathPackageToType)
+	s.dbToPkgTypes = make(map[string]generate.PathPackageToType)
 	for k, v := range viper.GetStringMapStringSlice("db_to_pkg_type") {
 		if len(v) == 2 {
 			s.dbToPkgTypes[strings.ToUpper(k)] = [2]string{v[0], v[1]}
@@ -106,7 +106,7 @@ type settings struct {
 	tablePrefix              string
 	allowUnsupportedColTypes bool
 	replaceNames             map[string]string
-	dbToPkgTypes             map[string]generator.PathPackageToType
+	dbToPkgTypes             map[string]generate.PathPackageToType
 }
 
 func (s settings) RootDirectory() string {
@@ -141,6 +141,6 @@ func (s settings) ReplaceFieldName(name string) string {
 	return newName
 }
 
-func (s settings) OverrideDBTypesToPaths() map[string]generator.PathPackageToType {
+func (s settings) OverrideDBTypesToPaths() map[string]generate.PathPackageToType {
 	return s.dbToPkgTypes
 }

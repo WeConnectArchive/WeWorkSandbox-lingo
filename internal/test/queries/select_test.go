@@ -41,12 +41,12 @@ var selectQueries = []QueryTest{
 					WHERE inventory.store_id = ?`,
 			)),
 			SQLValuesAssert: AllInSlice(
-				BeEquivalentTo(2),
+				Equal(int8(2)),
 			),
 			ExecuteParams: ExecuteParams{
-				Type:     execute.QTRow,
-				ScanData: row(ptrI16(0)),
-				Assert:   rows(row(ptrI16(2311))),
+				Type:         execute.QTRow,
+				Data:         row(ptrI16(0)),
+				AssertValues: rows(row(ptrI16(2311))),
 			},
 		},
 	},
@@ -73,12 +73,12 @@ var selectQueries = []QueryTest{
 					WHERE inventory.store_id = ?`,
 			)),
 			SQLValuesAssert: AllInSlice(
-				BeEquivalentTo(2),
+				Equal(int8(2)),
 			),
 			ExecuteParams: ExecuteParams{
-				Type:     execute.QTRow,
-				ScanData: row(ptrI16(0)),
-				Assert:   rows(row(ptrI16(2311))),
+				Type:         execute.QTRow,
+				Data:         row(ptrI16(0)),
+				AssertValues: rows(row(ptrI16(2311))),
 			},
 		},
 	},
@@ -105,12 +105,12 @@ var selectQueries = []QueryTest{
 					WHERE film_actor.actor_id = ?
 			`)),
 			SQLValuesAssert: AllInSlice(
-				BeEquivalentTo(10),
+				Equal(int16(10)),
 			),
 			ExecuteParams: ExecuteParams{
-				Type:     execute.QTRow,
-				ScanData: row(ptrI32(0)),
-				Assert:   rows(row(ptrI32(22))),
+				Type:         execute.QTRow,
+				Data:         row(ptrI32(0)),
+				AssertValues: rows(row(ptrI32(22))),
 			},
 		},
 	},
@@ -158,12 +158,12 @@ var selectQueries = []QueryTest{
 					WHERE fa.actor_id = ?
 					ORDER BY cat.name ASC`)),
 			SQLValuesAssert: AllInSlice(
-				BeEquivalentTo(10),
+				Equal(int16(10)),
 			),
 			ExecuteParams: ExecuteParams{
-				Type:     execute.QTRows,
-				ScanData: row(ptrStr(""), ptrStr("")),
-				Assert: rows(
+				Type: execute.QTRows,
+				Data: row(ptrStr(""), ptrStr("")),
+				AssertValues: rows(
 					row(ptrStr("WATERFRONT DELIVERANCE"), ptrStr("Action")),
 					row(ptrStr("LORD ARIZONA"), ptrStr("Action")),
 					row(ptrStr("PUNK DIVORCE"), ptrStr("Animation")),

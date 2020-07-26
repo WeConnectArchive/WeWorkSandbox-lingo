@@ -21,10 +21,9 @@ var _ = Describe("Insert", func() {
 	Context("InsertInto #Columns #Values", func() {
 
 		var (
-			table            lingo.Table
-			cols             []lingo.Column
-			valueExpressions []lingo.Expression
-			valueConstants   []interface{}
+			table  lingo.Table
+			cols   []lingo.Column
+			values []interface{}
 
 			q *query.InsertQuery
 		)
@@ -48,22 +47,19 @@ var _ = Describe("Insert", func() {
 			pegomock.When(table.GetColumns()).ThenReturn(cols)
 			pegomock.When(table.ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("table.sqlStr"), nil)
 
-			valueExpressions = []lingo.Expression{
-				NewMockExpression(),
-				NewMockExpression(),
-			}
-			pegomock.When(valueExpressions[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("valueExpressions[0].sqlStr"), nil)
-			pegomock.When(valueExpressions[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("valueExpressions[1].sqlStr"), nil)
+			expValue := NewMockExpression()
+			pegomock.When(expValue.ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("expValue.sqlStr"), nil)
 
-			// Ensure we reset valueConstants. Had random test failures due to this. Only happened on certain
-			// random num test seeds.
-			valueConstants = nil
+			values = []interface{}{
+				int64(100),
+				expValue,
+			}
 		})
 
 		JustBeforeEach(func() {
-			q = query.InsertInto(table).Values(valueExpressions...).ValuesConstants(valueConstants...)
+			q = query.InsertInto(table).Values(values...)
 			if table != nil {
-				q = q.Columns(table.GetColumns()...)
+				q.Columns(table.GetColumns()...)
 			}
 		})
 
@@ -77,7 +73,8 @@ var _ = Describe("Insert", func() {
 			)
 
 			BeforeEach(func() {
-				d = dialect.Default{}
+				d, err = dialect.NewDialect()
+				Expect(err).ToNot(HaveOccurred())
 			})
 
 			JustBeforeEach(func() {
@@ -85,7 +82,7 @@ var _ = Describe("Insert", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("INSERT INTO table.sqlStr (col[0].name, col[1].name) VALUES (valueExpressions[0].sqlStr, valueExpressions[1].sqlStr)"))
+				Expect(sql).To(MatchSQLString("INSERT INTO table.sqlStr (col[0].name, col[1].name) VALUES (?, expValue.sqlStr)"))
 			})
 
 			It("Returns no error", func() {
@@ -170,25 +167,12 @@ var _ = Describe("Insert", func() {
 				})
 			})
 
-			Context("Values are nil", func() {
-
-				BeforeEach(func() {
-					valueExpressions = nil
-				})
-
-				It("Returns a nil SQL string", func() {
-					Expect(sql).To(BeNil())
-				})
-
-				It("Returns an error about column count vs values count", func() {
-					Expect(err).To(MatchError(ContainSubstring("column count 2 does not match values count 0")))
-				})
-			})
-
 			Context("Values return an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(valueExpressions[len(valueExpressions)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("valueExpressions error"))
+					mock, ok := values[len(values)-1].(*MockExpression)
+					Expect(ok).To(BeTrue(), "expect the last expression to be a mock")
+					pegomock.When(mock.ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("valueExpressions error"))
 				})
 
 				It("Returns a nil SQL", func() {
@@ -197,29 +181,6 @@ var _ = Describe("Insert", func() {
 
 				It("Returns the valueExpressions error", func() {
 					Expect(err).To(MatchError(ContainSubstring("valueExpressions error")))
-				})
-			})
-
-			Context("With value constants", func() {
-
-				BeforeEach(func() {
-					valueConstants = []interface{}{
-						"stringHere",
-						1.4e2,
-					}
-					valueExpressions = nil
-				})
-
-				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("INSERT INTO table.sqlStr (col[0].name, col[1].name) VALUES (?, ?)"))
-				})
-
-				It("Returns valid SQL Values", func() {
-					Expect(sql).To(MatchSQLValues(ConsistOf("stringHere", 1.4e2)))
-				})
-
-				It("Returns no error", func() {
-					Expect(err).ToNot(HaveOccurred())
 				})
 			})
 		})
@@ -253,7 +214,8 @@ var _ = Describe("Insert", func() {
 				)
 
 				BeforeEach(func() {
-					d = dialect.Default{}
+					d, err = dialect.NewDialect()
+					Expect(err).ToNot(HaveOccurred())
 				})
 
 				JustBeforeEach(func() {

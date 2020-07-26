@@ -49,8 +49,8 @@ var _ = Describe("select", func() {
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(where[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("where[0].sqlStr"), nil)
-			pegomock.When(where[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("where[1].sqlStr"), nil)
+			pegomock.When(where[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[0].sqlStr"), nil)
+			pegomock.When(where[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[1].sqlStr"), nil)
 
 			orderBy = []lingo.Expression{
 				NewMockExpression(),
@@ -108,7 +108,8 @@ var _ = Describe("select", func() {
 			)
 
 			BeforeEach(func() {
-				d = dialect.Default{}
+				d, err = dialect.NewDialect()
+				Expect(err).ToNot(HaveOccurred())
 			})
 
 			JustBeforeEach(func() {
@@ -116,7 +117,7 @@ var _ = Describe("select", func() {
 			})
 
 			It("Returns a valid SQL string", func() {
-				Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr LEFT JOIN joins[0][0].sqlStr ON joins[0][1].sqlStr RIGHT JOIN joins[1][0].sqlStr ON joins[1][1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr) ORDER BY orderBy[0].sqlStr ASC, orderBy[1].sqlStr DESC LIMIT ? OFFSET ?"))
+				Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr LEFT JOIN joins[0][0].sqlStr ON joins[0][1].sqlStr RIGHT JOIN joins[1][0].sqlStr ON joins[1][1].sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr ORDER BY orderBy[0].sqlStr ASC, orderBy[1].sqlStr DESC LIMIT ? OFFSET ?"))
 			})
 
 			It("Returns no error", func() {
@@ -190,7 +191,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr) ORDER BY orderBy[0].sqlStr ASC, orderBy[1].sqlStr DESC LIMIT ? OFFSET ?"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr ORDER BY orderBy[0].sqlStr ASC, orderBy[1].sqlStr DESC LIMIT ? OFFSET ?"))
 				})
 
 				It("Returns no error", func() {
@@ -246,15 +247,15 @@ var _ = Describe("select", func() {
 			Context("Where has error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("where error"))
+					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("whereSQL error"))
 				})
 
 				It("Returns a nil SQL", func() {
 					Expect(sql).To(BeNil())
 				})
 
-				It("Returns a where error", func() {
-					Expect(err).To(MatchError(ContainSubstring("where error")))
+				It("Returns a whereSQL error", func() {
+					Expect(err).To(MatchError(ContainSubstring("whereSQL error")))
 				})
 			})
 
@@ -265,7 +266,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL string", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr LEFT JOIN joins[0][0].sqlStr ON joins[0][1].sqlStr RIGHT JOIN joins[1][0].sqlStr ON joins[1][1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr) LIMIT ? OFFSET ?"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr LEFT JOIN joins[0][0].sqlStr ON joins[0][1].sqlStr RIGHT JOIN joins[1][0].sqlStr ON joins[1][1].sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr LIMIT ? OFFSET ?"))
 				})
 
 				It("Returns no error", func() {
@@ -296,7 +297,7 @@ var _ = Describe("select", func() {
 				})
 
 				It("Returns a valid SQL", func() {
-					Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr LEFT JOIN joins[0][0].sqlStr ON joins[0][1].sqlStr RIGHT JOIN joins[1][0].sqlStr ON joins[1][1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr) ORDER BY orderBy[0].sqlStr ASC, orderBy[1].sqlStr DESC"))
+					Expect(sql).To(MatchSQLString("SELECT path[0].sqlStr, path[1].sqlStr FROM from.sqlStr LEFT JOIN joins[0][0].sqlStr ON joins[0][1].sqlStr RIGHT JOIN joins[1][0].sqlStr ON joins[1][1].sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr ORDER BY orderBy[0].sqlStr ASC, orderBy[1].sqlStr DESC"))
 				})
 
 				It("Returns no error", func() {
@@ -342,7 +343,7 @@ var _ = Describe("select", func() {
 			)
 
 			BeforeEach(func() {
-				d = dialect.Default{}
+				d = dialect.Dialect{}
 			})
 
 			JustBeforeEach(func() {

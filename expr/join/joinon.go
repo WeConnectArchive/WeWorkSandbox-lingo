@@ -6,7 +6,7 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
-	"github.com/weworksandbox/lingo/expr/operator"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -29,11 +29,11 @@ type On struct {
 }
 
 func (j On) And(exp lingo.Expression) lingo.ComboExpression {
-	return operator.And(j, exp)
+	return expr.And(j, exp)
 }
 
 func (j On) Or(exp lingo.Expression) lingo.ComboExpression {
-	return operator.Or(j, exp)
+	return expr.Or(j, exp)
 }
 
 func (j On) ToSQL(d lingo.Dialect) (sql.Data, error) {

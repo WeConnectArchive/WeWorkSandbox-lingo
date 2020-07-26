@@ -2,7 +2,6 @@ package query
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
@@ -18,14 +17,15 @@ func InsertInto(entity lingo.Table) *InsertQuery {
 
 type InsertQuery struct {
 	table      lingo.Table
-	columns    []lingo.Expression
+	columns    lingo.Expression
 	values     []lingo.Expression
 	selectPart lingo.Expression
 }
 
 func (i *InsertQuery) Columns(columns ...lingo.Column) *InsertQuery {
 	// TODO - validate we actually want to do this with our insert columns...
-	i.columns = append(i.columns, convertToStringColumns(columns)...)
+	strCols := convertToStringColumns(columns)
+	i.columns = appendWith(i.columns, strCols, expr.List)
 	return i
 }
 
@@ -33,19 +33,14 @@ func (i *InsertQuery) Columns(columns ...lingo.Column) *InsertQuery {
 //
 // INSERT INTO table1 (id, name, internal_name)
 // values (123456, 'name1', 'internal_name');
-func (i *InsertQuery) ValuesConstants(values ...interface{}) *InsertQuery {
+func (i *InsertQuery) Values(values ...interface{}) *InsertQuery {
 	for _, value := range values {
-		i.values = append(i.values, expr.NewValue(value))
+		if exp, ok := value.(lingo.Expression); ok {
+			i.values = append(i.values, exp)
+		} else {
+			i.values = append(i.values, expr.NewValue(value))
+		}
 	}
-	return i
-}
-
-// Values allows inserting expressions with SQL functions:
-//
-// INSERT INTO table1 (uuid, name)
-// values (UNHEX("1234567891234"), 'name1');
-func (i *InsertQuery) Values(values ...lingo.Expression) *InsertQuery {
-	i.values = append(i.values, values...)
 	return i
 }
 
@@ -79,11 +74,12 @@ func (i InsertQuery) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	if check.IsValueNilOrEmpty(i.columns) {
 		return nil, NewErrAroundSQL(s, errors.New("expr 'columns' cannot be empty"))
 	}
-	pathsSQL, err := JoinToSQL(d, sepPathComma, i.columns)
+	pathSQL, err := i.columns.ToSQL(d)
 	if err != nil {
 		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}
+	} else {
+		s = s.SurroundAppend(" (", ")", pathSQL) // Include space before first paren!
 	}
-	s = s.SurroundAppend(" (", ")", pathsSQL) // Include space before first paren!
 
 	if i.selectPart != nil {
 		s, err = i.buildSelectFrom(d, s)
@@ -112,13 +108,6 @@ func (i InsertQuery) buildSelectFrom(d lingo.Dialect, s sql.Data) (sql.Data, err
 }
 
 func (i InsertQuery) buildValues(d lingo.Dialect, s sql.Data) (sql.Data, error) {
-	colsLen := len(i.columns)
-	valuesLen := len(i.values)
-	if colsLen != valuesLen {
-		err := fmt.Errorf("column count %d does not match values count %d", colsLen, valuesLen)
-		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}
-	}
-
 	valuesSQL, err := JoinToSQL(d, sepPathComma, i.values)
 	if err != nil {
 		return nil, ErrAroundSQL{err: err, sqlStr: s.String()}

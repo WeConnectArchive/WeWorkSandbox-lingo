@@ -8,8 +8,7 @@ import (
 	// Include MySQL driver in order to connect to it in NewMySQL
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/weworksandbox/lingo/dialect"
-	"github.com/weworksandbox/lingo/internal/generator"
+	"github.com/weworksandbox/lingo/internal/generate"
 )
 
 func NewMySQL(ctx context.Context, dsn string) (*MySQL, error) {
@@ -24,18 +23,17 @@ func NewMySQL(ctx context.Context, dsn string) (*MySQL, error) {
 }
 
 type MySQL struct {
-	dialect.MySQL
 	db *sql.DB
 }
 
-func (MySQL) DBTypesToPaths() map[string]generator.PathPackageToType {
+func (MySQL) DBTypesToPaths() map[string]generate.PathPackageToType {
 	const pkgCorePath = "github.com/weworksandbox/lingo/expr/path"
 	// TODO - Need to do further changes to Paths. Right now, every Path can have nullable operations against it.
 	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends
 	//  and adds the nullable methods? https://github.com/go-sql-driver/mysql/blob/master/fields.go
 	// Note: For `decimal`, we create our own, but there is no 'decimal' type in Go
 	// besides `math/big/decimal.go` which is binary anyway...
-	return map[string]generator.PathPackageToType{
+	return map[string]generate.PathPackageToType{
 		"BIGINT":    {pkgCorePath, "Int64"},
 		"BINARY":    {pkgCorePath, "Binary"},
 		"CHAR":      {pkgCorePath, "String"},
@@ -89,7 +87,7 @@ func (m MySQL) Tables(ctx context.Context, schema string) ([]string, error) {
 	return tables, nil
 }
 
-func (m MySQL) Columns(ctx context.Context, schema, table string) ([]generator.Column, error) {
+func (m MySQL) Columns(ctx context.Context, schema, table string) ([]generate.Column, error) {
 	sqlStr := fmt.Sprintf("SELECT * FROM %s.%s LIMIT 0", schema, table)
 	sqlStmt, prepareErr := m.db.PrepareContext(ctx, sqlStr)
 	if prepareErr != nil {
@@ -118,7 +116,7 @@ func (m MySQL) Columns(ctx context.Context, schema, table string) ([]generator.C
 		return nil, typesErr
 	}
 
-	var columns = make([]generator.Column, 0, len(columnTypes))
+	var columns = make([]generate.Column, 0, len(columnTypes))
 	for _, col := range columnTypes {
 		var columnInfo = Column{
 			table:      table,

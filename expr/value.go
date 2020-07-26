@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -28,11 +27,11 @@ type value struct {
 }
 
 func (v value) And(exp lingo.Expression) lingo.ComboExpression {
-	return operator.And(v, exp)
+	return And(v, exp)
 }
 
 func (v value) Or(exp lingo.Expression) lingo.ComboExpression {
-	return operator.And(v, exp)
+	return And(v, exp)
 }
 
 func (v value) ToSQL(d lingo.Dialect) (sql.Data, error) {

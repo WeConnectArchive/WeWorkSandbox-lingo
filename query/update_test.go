@@ -35,8 +35,8 @@ var _ = Describe("Update", func() {
 				NewMockExpression(),
 				NewMockExpression(),
 			}
-			pegomock.When(where[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("where[0].sqlStr"), nil)
-			pegomock.When(where[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("where[1].sqlStr"), nil)
+			pegomock.When(where[0].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[0].sqlStr"), nil)
+			pegomock.When(where[1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(sql.String("whereSQL[1].sqlStr"), nil)
 
 			set = []lingo.Set{
 				NewMockSet(),
@@ -60,7 +60,8 @@ var _ = Describe("Update", func() {
 			)
 
 			BeforeEach(func() {
-				d = dialect.Default{}
+				d, err = dialect.NewDialect()
+				Expect(err).ToNot(HaveOccurred())
 			})
 
 			JustBeforeEach(func() {
@@ -68,7 +69,7 @@ var _ = Describe("Update", func() {
 			})
 
 			It("returns SQL", func() {
-				Expect(sql).To(MatchSQLString("UPDATE table.sqlStr SET set[0].sqlStr, set[1].sqlStr WHERE (where[0].sqlStr AND where[1].sqlStr)"))
+				Expect(sql).To(MatchSQLString("UPDATE table.sqlStr SET set[0].sqlStr, set[1].sqlStr WHERE whereSQL[0].sqlStr AND whereSQL[1].sqlStr"))
 			})
 
 			It("should not error", func() {
@@ -168,15 +169,15 @@ var _ = Describe("Update", func() {
 			Context("Where returns an error", func() {
 
 				BeforeEach(func() {
-					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("where error"))
+					pegomock.When(where[len(where)-1].ToSQL(matchers.AnyLingoDialect())).ThenReturn(nil, errors.New("whereSQL error"))
 				})
 
 				It("Returns a nil SQL", func() {
 					Expect(sql).To(BeNil())
 				})
 
-				It("Returns a where is empty error", func() {
-					Expect(err).To(MatchError(ContainSubstring("where error")))
+				It("Returns a whereSQL is empty error", func() {
+					Expect(err).To(MatchError(ContainSubstring("whereSQL error")))
 				})
 			})
 		})

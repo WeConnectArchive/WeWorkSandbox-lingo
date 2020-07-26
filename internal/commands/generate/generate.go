@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/weworksandbox/lingo/internal/generator"
+	"github.com/weworksandbox/lingo/internal/generate"
 	"github.com/weworksandbox/lingo/internal/parse"
 )
 
@@ -80,7 +80,7 @@ func generate(_ *cobra.Command, _ []string) {
 		log.Fatalf("unable to connect to database: %s", err)
 	}
 
-	if err = generator.Generate(ctx, s, parser); err != nil {
+	if err = generate.Generate(ctx, s, parser); err != nil {
 		log.Fatalf("ERR: %s", err)
 	}
 	log.Println("Completed")

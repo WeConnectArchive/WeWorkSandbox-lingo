@@ -7,7 +7,6 @@ import (
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
 	"github.com/weworksandbox/lingo/expr/join"
-	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/expr/sort"
 	"github.com/weworksandbox/lingo/sql"
 )
@@ -61,75 +60,6 @@ type ValueFormatter interface {
 
 func Value(formatter ValueFormatter, values []interface{}) (sql.Data, error) {
 	return formatter.ValueFormat(len(values)).Append(sql.Values(values)), nil
-}
-
-var operandToStr = map[operator.Operator]string{
-	operator.OpAnd:                "AND",
-	operator.OpOr:                 "OR",
-	operator.OpEq:                 "=",
-	operator.OpNotEq:              "<>",
-	operator.OpLessThan:           "<",
-	operator.OpLessThanOrEqual:    "<=",
-	operator.OpGreaterThan:        ">",
-	operator.OpGreaterThanOrEqual: ">=",
-	operator.OpLike:               "LIKE",
-	operator.OpNotLike:            "NOT LIKE",
-	operator.OpNull:               "IS NULL",
-	operator.OpNotNull:            "IS NOT NULL",
-	operator.OpIn:                 "IN",
-	operator.OpNotIn:              "NOT IN",
-	operator.OpBetween:            "BETWEEN",
-	operator.OpNotBetween:         "NOT BETWEEN",
-}
-
-func UnaryOperator(left sql.Data, op operator.Operator) (sql.Data, error) {
-	opStr, ok := operandToStr[op]
-	if !ok {
-		return nil, EnumIsInvalid("operator.Operator", op)
-	}
-	opSQL := sql.String(opStr)
-
-	switch op {
-	case operator.OpNull, operator.OpNotNull:
-		return left.AppendWithSpace(opSQL), nil
-	}
-	return nil, fmt.Errorf("operator.Operator %d is not implemented in UnaryOperator", op)
-}
-
-func BinaryOperator(left sql.Data, op operator.Operator, right sql.Data) (sql.Data, error) {
-	opStr, ok := operandToStr[op]
-	if !ok {
-		return nil, EnumIsInvalid("operator.Operator", op)
-	}
-	opSQL := sql.String(opStr)
-
-	switch op {
-	case operator.OpAnd, operator.OpOr:
-		return left.AppendWithSpace(opSQL).AppendWithSpace(right), nil
-
-	case operator.OpEq, operator.OpNotEq, operator.OpLessThan, operator.OpLessThanOrEqual,
-		operator.OpGreaterThan, operator.OpGreaterThanOrEqual, operator.OpLike, operator.OpNotLike,
-		operator.OpBetween, operator.OpNotBetween, operator.OpIn, operator.OpNotIn:
-		return left.AppendWithSpace(opSQL).AppendWithSpace(right), nil
-	}
-	return nil, fmt.Errorf("operator.Operator %d is not implemented in BinaryOperator", op)
-}
-
-func VariadicOperator(left sql.Data, op operator.Operator, values []sql.Data) (sql.Data, error) {
-	optStr, ok := operandToStr[op]
-	if !ok {
-		return nil, EnumIsInvalid("operator.Operator", op)
-	}
-
-	opWithSpaces := " " + optStr + " "
-
-	switch op {
-	case operator.OpAnd, operator.OpOr:
-		// Create the where SQL and then put parens around it.
-		whereSQL := sql.Join(opWithSpaces, append([]sql.Data{left}, values...))
-		return sql.Surround("(", ")", whereSQL), nil
-	}
-	return nil, fmt.Errorf("operator.Operator %d is not implemented in VariadicOperator", op)
 }
 
 var genericJoinTypeToStr = map[join.Type]string{

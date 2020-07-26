@@ -1,28 +1,24 @@
 package main
 
 import (
-	"github.com/weworksandbox/lingo/internal/generator"
+	"github.com/weworksandbox/lingo/expr"
+	"github.com/weworksandbox/lingo/internal/generate"
+	"github.com/weworksandbox/lingo/internal/generate/paths"
 )
 
-var pathData = []generator.Path{
+var pathData = []paths.Path{
 	{
 		Name:     "Binary",
 		Filename: "binary.go",
 		GoType:   "[]byte",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -30,16 +26,13 @@ var pathData = []generator.Path{
 		Filename: "bool.go",
 		GoType:   "bool",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:      true,
-			Equality: true,
-			Nullable: true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -47,19 +40,13 @@ var pathData = []generator.Path{
 		Filename: "float32.go",
 		GoType:   "float32",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -67,19 +54,13 @@ var pathData = []generator.Path{
 		Filename: "float64.go",
 		GoType:   "float64",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -87,19 +68,13 @@ var pathData = []generator.Path{
 		Filename: "int.go",
 		GoType:   "int",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -107,19 +82,13 @@ var pathData = []generator.Path{
 		Filename: "int8.go",
 		GoType:   "int8",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -127,19 +96,13 @@ var pathData = []generator.Path{
 		Filename: "int16.go",
 		GoType:   "int16",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -147,19 +110,13 @@ var pathData = []generator.Path{
 		Filename: "int32.go",
 		GoType:   "int32",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -167,19 +124,13 @@ var pathData = []generator.Path{
 		Filename: "int64.go",
 		GoType:   "int64",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -187,19 +138,13 @@ var pathData = []generator.Path{
 		Filename: "string.go",
 		GoType:   "string",
 		Imports: []string{
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 	{
@@ -209,19 +154,13 @@ var pathData = []generator.Path{
 		Imports: []string{
 			"time",
 			"",
-			generator.PkgLingo,
-			generator.PkgExp,
-			generator.PkgOperator,
-			generator.PkgSet,
-			generator.PkgSQL,
+			generate.PkgLingo,
+			generate.PkgExp,
+			generate.PkgSet,
+			generate.PkgSQL,
 		},
-		Operations: generator.Ops{
-			Set:        true,
-			Equality:   true,
-			Comparison: true,
-			Nullable:   true,
-			In:         true,
-			Between:    true,
+		Operators: []expr.Operator{
+
 		},
 	},
 }

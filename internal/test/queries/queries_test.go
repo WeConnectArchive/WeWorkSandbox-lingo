@@ -52,20 +52,17 @@ func (p Params) Validate() {
 	ExpectWithOffset(1, p.SQLStrAssert).ToNot(BeNil(), "SQLStrAssert was nil")
 }
 
-const DefaultTimeout = 10 * time.Millisecond
+const DefaultTimeout = 10 * time.Second
 
 type ExecuteParams struct {
-	Type     execute.QueryType
-	Timeout  time.Duration
-	ScanData []interface{}
-	Assert   [][]interface{}
+	Type         execute.QueryType
+	Timeout      time.Duration
+	Data         []interface{}
+	AssertValues [][]interface{}
 }
 
 func (e ExecuteParams) Validate() {
 	ExpectWithOffset(1, e.Type).To(BeElementOf(execute.QTRow, execute.QTRows, execute.QTExec), "must be a valid QT")
-	// Timeout now has a default. Check out DefaultTimeout.
-	//ExpectWithOffset(1, e.Timeout).To(BeNumerically(">", time.Duration(0)))
-	ExpectWithOffset(1, e.ScanData).ToNot(BeEmpty(), "Requires at ScanData pointers / values")
 }
 
 func (e ExecuteParams) WithTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
@@ -184,34 +181,43 @@ func TestExecute(t *testing.T) {
 				d, err := p.Dialect()
 				Expect(err).ToNot(HaveOccurred())
 
+				// Create executor
 				sqlExec := execute.NewSQLExp(execute.NewSQL(db), d)
+
+				// Grab SQL
 				sqlExp := p.SQL()
 
 				switch p.ExecuteParams.Type {
 				case execute.QTExec:
-					Expect(true).To(BeFalse(), "QTExec tests not implemented")
+					Expect(p.ExecuteParams.Data).To(BeEmpty(),
+						"Not selecting data, no need for checking output params")
+					Expect(p.ExecuteParams.AssertValues).To(HaveLen(2),
+						"Must have 2 asserts for sql.Result.LastInsertId and sql.Result.RowsAffected " +
+						"in the order of `[][]interface{}{{lastInsertId}, {rowsAffected}}`")
+
+					runExecuteWithRollback(ctx, sqlExec, sqlExp, p.ExecuteParams)
 
 				case execute.QTRow:
-					Expect(p.ExecuteParams.Assert).To(HaveLen(1),
+					Expect(p.ExecuteParams.AssertValues).To(HaveLen(1),
 						"Must assert values from result of QueryRow")
-					Expect(p.ExecuteParams.Assert[0]).To(HaveLen(len(p.ExecuteParams.ScanData)),
+					Expect(p.ExecuteParams.AssertValues[0]).To(HaveLen(len(p.ExecuteParams.Data)),
 						"Number of columns asserting should match number of columns scanning")
 
-					queryErr := sqlExec.QueryRow(ctx, sqlExp, p.ExecuteParams.ScanData...)
+					queryErr := sqlExec.QueryRow(ctx, sqlExp, p.ExecuteParams.Data...)
 					Expect(queryErr).ToNot(HaveOccurred())
-					Expect(p.ExecuteParams.ScanData).To(Equal(p.ExecuteParams.Assert[0]))
+					Expect(p.ExecuteParams.Data).To(Equal(p.ExecuteParams.AssertValues[0]))
 
 				case execute.QTRows:
-					Expect(p.ExecuteParams.Assert).To(EachElementMust(HaveLen(len(p.ExecuteParams.ScanData))),
+					Expect(p.ExecuteParams.AssertValues).To(EachElementMust(HaveLen(len(p.ExecuteParams.Data))),
 						"Number of columns asserting should match number of columns scanning")
 
 					scanner, queryErr := sqlExec.Query(ctx, sqlExp)
 					Expect(queryErr).ToNot(HaveOccurred(), "unable to query for scanner")
 					defer scanner.Close(ctx)
 
-					for idx := 0; idx < len(p.ExecuteParams.Assert) && scanner.ScanRow(p.ExecuteParams.ScanData...); idx++ {
+					for idx := 0; idx < len(p.ExecuteParams.AssertValues) && scanner.ScanRow(p.ExecuteParams.Data...); idx++ {
 
-						Expect(p.ExecuteParams.ScanData).To(Equal(p.ExecuteParams.Assert[idx]),
+						Expect(p.ExecuteParams.Data).To(Equal(p.ExecuteParams.AssertValues[idx]),
 							fmt.Sprintf("row %d did not match", idx))
 					}
 					Expect(scanner.Err(ctx)).ToNot(HaveOccurred(),
@@ -223,6 +229,26 @@ func TestExecute(t *testing.T) {
 	})
 
 	runner.SetupAndRunFunctional(t, "Execute")
+}
+
+func runExecuteWithRollback(ctx context.Context, sqlExec execute.SQLExp, exp lingo.Expression, params ExecuteParams) {
+	tx, err := sqlExec.BeginTx(ctx, nil)
+	Expect(err).ToNot(HaveOccurred())
+
+	defer func() {
+		_ = tx.Rollback(ctx, nil)
+	}()
+
+	result, err := tx.Exec(ctx, exp)
+	Expect(err).ToNot(HaveOccurred())
+
+	id, err := result.LastInsertId()
+	Expect(err).ToNot(HaveOccurred())
+	Expect(id).To(BeNumerically(">=", params.AssertValues[0][0]))
+
+	affected, err := result.RowsAffected()
+	Expect(err).ToNot(HaveOccurred())
+	Expect(affected).To(BeEquivalentTo(params.AssertValues[1][0]))
 }
 
 func loadFunctionalConfigOrFatal() {
@@ -242,7 +268,7 @@ func loadFunctionalConfigOrFatal() {
 }
 
 var (
-	allQueries        = aggregateQueries(selectQueries)
+	allQueries        = aggregateQueries(selectQueries, insertQueries)
 	acceptanceEntries = queriesToEntries(allQueries)
 )
 

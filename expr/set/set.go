@@ -6,7 +6,6 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
-	"github.com/weworksandbox/lingo/expr/operator"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -24,14 +23,6 @@ func NewSet(left lingo.Expression, value lingo.Expression) Set {
 type Set struct {
 	left  lingo.Expression
 	value lingo.Expression
-}
-
-func (s Set) And(exp lingo.Expression) lingo.ComboExpression {
-	return operator.And(s, exp)
-}
-
-func (s Set) Or(exp lingo.Expression) lingo.ComboExpression {
-	return operator.Or(s, exp)
 }
 
 func (s Set) ToSQL(d lingo.Dialect) (sql.Data, error) {
@@ -57,9 +48,4 @@ func (s Set) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	}
 
 	return setFunc.Set(left, v)
-}
-
-// To sets the given column
-func To(column, to lingo.Expression) Set {
-	return NewSet(column, to)
 }

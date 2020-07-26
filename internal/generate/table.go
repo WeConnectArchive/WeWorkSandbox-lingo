@@ -1,4 +1,4 @@
-package generator
+package generate
 
 import (
 	"fmt"
@@ -12,7 +12,6 @@ const fmtTableHeaderComment = HeaderCommentPrefix + "table %s.%s - DO NOT EDIT\n
 
 const PkgLingo = "github.com/weworksandbox/lingo"
 const PkgExp = PkgLingo + "/expr"
-const PkgOperator = PkgExp + "/operator"
 const PkgSet = PkgExp + "/set"
 const PkgPath = PkgExp + "/path"
 const PkgSQL = PkgLingo + "/sql"
@@ -55,12 +54,12 @@ func (t TableGenerator) GenerateTable() (io.Reader, error) {
 		PkgSQL,
 	}
 	t.Imports = determineImports(defaultImports, t.Columns)
-	return generateFromTemplate(tableTemplate, t)
+	return FromTemplate(tableTemplate, t)
 }
 
 func (t TableGenerator) GenerateExported() (io.Reader, error) {
 	t.Imports = determineImports([]string{}, t.Columns)
-	return generateFromTemplate(exportedTemplate, t)
+	return FromTemplate(exportedTemplate, t)
 }
 
 func determineImports(defaultImports []string, cols []column) []string {

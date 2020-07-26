@@ -5,6 +5,7 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/join"
 	"github.com/weworksandbox/lingo/sql"
 )
@@ -19,11 +20,11 @@ func Delete(from lingo.Table) *DeleteQuery {
 type DeleteQuery struct {
 	from  lingo.Expression
 	join  []lingo.Expression
-	where []lingo.Expression
+	where lingo.Expression
 }
 
 func (d DeleteQuery) Where(exp ...lingo.Expression) *DeleteQuery {
-	d.where = append(d.where, exp...)
+	d.where = appendWith(d.where, exp, expr.And)
 	return &d
 }
 
@@ -56,12 +57,12 @@ func (d DeleteQuery) ToSQL(dialect lingo.Dialect) (sql.Data, error) {
 		s = s.AppendWithSpace(joinSQL)
 	}
 
-	whereSQL, err := BuildWhereSQL(dialect, d.where)
+	whereSQL, err := buildIfNotEmpty(dialect, d.where)
 	if err != nil {
 		return nil, NewErrAroundSQL(s, err)
 	}
 	if whereSQL.String() != "" {
-		s = s.AppendWithSpace(whereSQL)
+		s = s.AppendWithSpace(sqlWhere).AppendWithSpace(whereSQL)
 	}
 
 	return s, nil

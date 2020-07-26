@@ -2,6 +2,7 @@ package query
 
 import (
 	"github.com/weworksandbox/lingo"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -39,4 +40,29 @@ func JoinToSQL(d lingo.Dialect, sep string, exp []lingo.Expression) (sql.Data, e
 		sqlData[idx] = data
 	}
 	return sql.Join(sep, sqlData), nil
+}
+
+// buildIfNotEmpty will call ToSQL to return the data else the error. If exp is nil or empty, it returns an empty sql
+// and no error.
+func buildIfNotEmpty(d lingo.Dialect, exp lingo.Expression) (sql.Data, error) {
+	if exp == nil {
+		return sql.Empty(), nil
+	}
+	return exp.ToSQL(d)
+}
+
+type appendFunc func(prev, new lingo.Expression) expr.Operation
+
+// appendWith takes a previous expression, and will append each newExps using appendFunc to previousExp. If previousExp
+// is nil or empty, each newExps will be append to each other using appendFunc - not including previousExp in it. The
+// result is a single lingo.Expression from chaining the given expressions.
+func appendWith(previousExp lingo.Expression, newExps []lingo.Expression, reduce appendFunc) lingo.Expression {
+	for _, exp := range newExps {
+		if previousExp == nil {
+			previousExp = exp
+			continue
+		}
+		previousExp = reduce(previousExp, exp)
+	}
+	return previousExp
 }

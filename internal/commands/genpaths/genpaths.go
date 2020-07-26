@@ -7,7 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/weworksandbox/lingo/internal/generator"
+	"github.com/weworksandbox/lingo/internal/generate"
+	"github.com/weworksandbox/lingo/internal/generate/paths"
 )
 
 func main() {
@@ -15,19 +16,19 @@ func main() {
 	flag.StringVar(&dir, "dir", "", "absolute path to directory to generate into")
 	flag.Parse()
 
-	if err := generate(dir); err != nil {
+	if err := generatePaths(dir); err != nil {
 		log.Fatal(err.Error())
 	}
 }
 
-func generate(dir string) error {
+func generatePaths(dir string) error {
 	if err := validateDir(dir); err != nil {
 		return err
 	}
-	if err := filepath.Walk(dir, generator.RemoveOldFiles(generator.GenPathFileHeader)); err != nil {
+	if err := filepath.Walk(dir, generate.RemoveOldFiles(paths.GenPathFileHeader)); err != nil {
 		return err
 	}
-	return genPaths(dir)
+	return genAndWrite(dir)
 }
 
 func validateDir(dir string) error {
@@ -49,7 +50,7 @@ func validateDir(dir string) error {
 	return nil
 }
 
-func genPaths(dir string) error {
+func genAndWrite(dir string) error {
 	for _, p := range pathData {
 		r, err := p.Generate()
 		if err != nil {
@@ -57,7 +58,7 @@ func genPaths(dir string) error {
 		}
 
 		outputPath := filepath.Join(dir, p.Filename)
-		if writeErr := generator.WriteFile(outputPath, r, os.ModePerm); writeErr != nil {
+		if writeErr := generate.WriteFile(outputPath, r, os.ModePerm); writeErr != nil {
 			return fmt.Errorf("unable to write to output file '%s': %w", p.Filename, writeErr)
 		}
 	}

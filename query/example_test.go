@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleSelectQuery_From_where() {
-	d, _ := dialect.NewDefault()
+	d, _ := dialect.NewDialect()
 
 	fa := tfilmactor.As("fa")
 	s, _ := query.Select(fa.FilmId()).From(fa).Where(fa.ActorId().Between(1, 10)).ToSQL(d)
@@ -22,7 +22,7 @@ func ExampleSelectQuery_From_where() {
 }
 
 func ExampleSelectQuery_Restrict() {
-	d, _ := dialect.NewDefault()
+	d, _ := dialect.NewDialect()
 
 	const maxPageNum = 1 // To limit output for example
 	pageSize := uint64(150)

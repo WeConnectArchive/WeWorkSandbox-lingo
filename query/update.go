@@ -5,6 +5,7 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -18,11 +19,11 @@ func Update(table lingo.Table) *UpdateQuery {
 type UpdateQuery struct {
 	table lingo.Table
 	set   []lingo.Expression
-	where []lingo.Expression
+	where lingo.Expression
 }
 
 func (u UpdateQuery) Where(exp ...lingo.Expression) *UpdateQuery {
-	u.where = append(u.where, exp...)
+	u.where = appendWith(u.where, exp, expr.And)
 	return &u
 }
 
@@ -57,12 +58,12 @@ func (u UpdateQuery) ToSQL(d lingo.Dialect) (sql.Data, error) {
 		s = s.AppendWithSpace(sql.String("SET")).AppendWithSpace(pathsSQL)
 	}
 
-	whereSQL, err := BuildWhereSQL(d, u.where)
+	whereSQL, err := buildIfNotEmpty(d, u.where)
 	if err != nil {
 		return nil, NewErrAroundSQL(s, err)
 	}
 	if whereSQL.String() != "" {
-		s = s.AppendWithSpace(whereSQL)
+		s = s.AppendWithSpace(sqlWhere).AppendWithSpace(whereSQL)
 	}
 
 	return s, nil

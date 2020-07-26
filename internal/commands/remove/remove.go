@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/weworksandbox/lingo/internal/generator"
+	"github.com/weworksandbox/lingo/internal/generate"
 )
 
 const (
@@ -57,7 +57,7 @@ func remove(*cobra.Command, []string) {
 	}
 	rootDir = filepath.Clean(rootDir)
 
-	removeWalker := generator.RemoveOldFiles(generator.HeaderCommentPrefix)
+	removeWalker := generate.RemoveOldFiles(generate.HeaderCommentPrefix)
 	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
 		// Ignore directories, we dont do anything with them.
 		if info.IsDir() {
