@@ -5,7 +5,7 @@
 package tstaff
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,46 +14,46 @@ func T() TStaff {
 	return instance
 }
 
-func StaffId() path.Int8 {
-	return instance.staffId
+func StaffId() expr.Int8 {
+	return instance.StaffId()
 }
 
-func FirstName() path.String {
-	return instance.firstName
+func FirstName() expr.String {
+	return instance.FirstName()
 }
 
-func LastName() path.String {
-	return instance.lastName
+func LastName() expr.String {
+	return instance.LastName()
 }
 
-func AddressId() path.Int16 {
-	return instance.addressId
+func AddressId() expr.Int16 {
+	return instance.AddressId()
 }
 
-func Picture() path.Unsupported {
-	return instance.picture
+func Picture() expr.UnsupportedType {
+	return instance.Picture()
 }
 
-func Email() path.String {
-	return instance.email
+func Email() expr.String {
+	return instance.Email()
 }
 
-func StoreId() path.Int8 {
-	return instance.storeId
+func StoreId() expr.Int8 {
+	return instance.StoreId()
 }
 
-func Active() path.Int8 {
-	return instance.active
+func Active() expr.Int8 {
+	return instance.Active()
 }
 
-func Username() path.String {
-	return instance.username
+func Username() expr.String {
+	return instance.Username()
 }
 
-func Password() path.String {
-	return instance.password
+func Password() expr.String {
+	return instance.Password()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

@@ -6,114 +6,92 @@ package taddress
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TAddress {
-	return newTAddress(alias)
-}
-
-func New() TAddress {
-	return newTAddress("")
-}
-
-func newTAddress(alias string) TAddress {
-	t := TAddress{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.addressId = path.NewInt16(t, "address_id")
-	t.address = path.NewString(t, "address")
-	t.address2 = path.NewString(t, "address2")
-	t.district = path.NewString(t, "district")
-	t.cityId = path.NewInt16(t, "city_id")
-	t.postalCode = path.NewString(t, "postal_code")
-	t.phone = path.NewString(t, "phone")
-	t.location = path.NewUnsupported(t, "location")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TAddress struct {
-	_alias string
+func New() TAddress {
+	return TAddress{}
+}
 
-	addressId  path.Int16
-	address    path.String
-	address2   path.String
-	district   path.String
-	cityId     path.Int16
-	postalCode path.String
-	phone      path.String
-	location   path.Unsupported
-	lastUpdate path.Time
+type TAddress struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TAddress) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.addressId,
-		t.address,
-		t.address2,
-		t.district,
-		t.cityId,
-		t.postalCode,
-		t.phone,
-		t.location,
-		t.lastUpdate,
+func (t TAddress) GetTableName() string {
+	return "address"
+}
+
+func (t TAddress) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.AddressId(),
+		t.Address(),
+		t.Address2(),
+		t.District(),
+		t.CityId(),
+		t.PostalCode(),
+		t.Phone(),
+		t.Location(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TAddress) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TAddress) GetAlias() string {
-	return t._alias
+func (t TAddress) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TAddress) GetName() string {
-	return "address"
-}
-
-func (t TAddress) GetParent() string {
-	return "sakila"
+func (t TAddress) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TAddress) AddressId() path.Int16 {
-	return t.addressId
+func (t TAddress) AddressId() expr.Int16 {
+	return expr.Column(t, expr.Lit("address_id")).ToSQL
 }
 
-func (t TAddress) Address() path.String {
-	return t.address
+func (t TAddress) Address() expr.String {
+	return expr.Column(t, expr.Lit("address")).ToSQL
 }
 
-func (t TAddress) Address2() path.String {
-	return t.address2
+func (t TAddress) Address2() expr.String {
+	return expr.Column(t, expr.Lit("address2")).ToSQL
 }
 
-func (t TAddress) District() path.String {
-	return t.district
+func (t TAddress) District() expr.String {
+	return expr.Column(t, expr.Lit("district")).ToSQL
 }
 
-func (t TAddress) CityId() path.Int16 {
-	return t.cityId
+func (t TAddress) CityId() expr.Int16 {
+	return expr.Column(t, expr.Lit("city_id")).ToSQL
 }
 
-func (t TAddress) PostalCode() path.String {
-	return t.postalCode
+func (t TAddress) PostalCode() expr.String {
+	return expr.Column(t, expr.Lit("postal_code")).ToSQL
 }
 
-func (t TAddress) Phone() path.String {
-	return t.phone
+func (t TAddress) Phone() expr.String {
+	return expr.Column(t, expr.Lit("phone")).ToSQL
 }
 
-func (t TAddress) Location() path.Unsupported {
-	return t.location
+func (t TAddress) Location() expr.UnsupportedType {
+	return expr.Column(t, expr.Lit("location")).ToSQL
 }
 
-func (t TAddress) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TAddress) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

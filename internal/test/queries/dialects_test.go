@@ -11,6 +11,6 @@ func DefaultDialect() (lingo.Dialect, error) {
 
 func DefaultDialectWithSchema() (lingo.Dialect, error) {
 	return dialect.NewDialect(
-		dialect.WithSchemaNameIncluded(true),
+		dialect.WithSchemaName("sakila"),
 	)
 }

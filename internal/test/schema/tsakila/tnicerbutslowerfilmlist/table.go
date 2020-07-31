@@ -6,107 +6,87 @@ package tnicerbutslowerfilmlist
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TNicerButSlowerFilmList {
-	return newTNicerButSlowerFilmList(alias)
-}
-
-func New() TNicerButSlowerFilmList {
-	return newTNicerButSlowerFilmList("")
-}
-
-func newTNicerButSlowerFilmList(alias string) TNicerButSlowerFilmList {
-	t := TNicerButSlowerFilmList{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.fID = path.NewInt16(t, "FID")
-	t.title = path.NewString(t, "title")
-	t.description = path.NewString(t, "description")
-	t.category = path.NewString(t, "category")
-	t.price = path.NewBinary(t, "price")
-	t.length = path.NewInt16(t, "length")
-	t.rating = path.NewString(t, "rating")
-	t.actors = path.NewString(t, "actors")
 	return t
 }
 
-type TNicerButSlowerFilmList struct {
-	_alias string
+func New() TNicerButSlowerFilmList {
+	return TNicerButSlowerFilmList{}
+}
 
-	fID         path.Int16
-	title       path.String
-	description path.String
-	category    path.String
-	price       path.Binary
-	length      path.Int16
-	rating      path.String
-	actors      path.String
+type TNicerButSlowerFilmList struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TNicerButSlowerFilmList) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.fID,
-		t.title,
-		t.description,
-		t.category,
-		t.price,
-		t.length,
-		t.rating,
-		t.actors,
+func (t TNicerButSlowerFilmList) GetTableName() string {
+	return "nicer_but_slower_film_list"
+}
+
+func (t TNicerButSlowerFilmList) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.FID(),
+		t.Title(),
+		t.Description(),
+		t.Category(),
+		t.Price(),
+		t.Length(),
+		t.Rating(),
+		t.Actors(),
 	}
 }
 
 func (t TNicerButSlowerFilmList) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TNicerButSlowerFilmList) GetAlias() string {
-	return t._alias
+func (t TNicerButSlowerFilmList) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TNicerButSlowerFilmList) GetName() string {
-	return "nicer_but_slower_film_list"
-}
-
-func (t TNicerButSlowerFilmList) GetParent() string {
-	return "sakila"
+func (t TNicerButSlowerFilmList) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TNicerButSlowerFilmList) FID() path.Int16 {
-	return t.fID
+func (t TNicerButSlowerFilmList) FID() expr.Int16 {
+	return expr.Column(t, expr.Lit("FID")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Title() path.String {
-	return t.title
+func (t TNicerButSlowerFilmList) Title() expr.String {
+	return expr.Column(t, expr.Lit("title")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Description() path.String {
-	return t.description
+func (t TNicerButSlowerFilmList) Description() expr.String {
+	return expr.Column(t, expr.Lit("description")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Category() path.String {
-	return t.category
+func (t TNicerButSlowerFilmList) Category() expr.String {
+	return expr.Column(t, expr.Lit("category")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Price() path.Binary {
-	return t.price
+func (t TNicerButSlowerFilmList) Price() expr.Binary {
+	return expr.Column(t, expr.Lit("price")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Length() path.Int16 {
-	return t.length
+func (t TNicerButSlowerFilmList) Length() expr.Int16 {
+	return expr.Column(t, expr.Lit("length")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Rating() path.String {
-	return t.rating
+func (t TNicerButSlowerFilmList) Rating() expr.String {
+	return expr.Column(t, expr.Lit("rating")).ToSQL
 }
 
-func (t TNicerButSlowerFilmList) Actors() path.String {
-	return t.actors
+func (t TNicerButSlowerFilmList) Actors() expr.String {
+	return expr.Column(t, expr.Lit("actors")).ToSQL
 }

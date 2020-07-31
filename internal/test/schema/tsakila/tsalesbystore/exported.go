@@ -5,7 +5,7 @@
 package tsalesbystore
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,14 +14,14 @@ func T() TSalesByStore {
 	return instance
 }
 
-func Store() path.String {
-	return instance.store
+func Store() expr.String {
+	return instance.Store()
 }
 
-func Manager() path.String {
-	return instance.manager
+func Manager() expr.String {
+	return instance.Manager()
 }
 
-func TotalSales() path.Binary {
-	return instance.totalSales
+func TotalSales() expr.Binary {
+	return instance.TotalSales()
 }

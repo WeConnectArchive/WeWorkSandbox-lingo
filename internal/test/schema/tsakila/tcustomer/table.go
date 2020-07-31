@@ -6,114 +6,92 @@ package tcustomer
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TCustomer {
-	return newTCustomer(alias)
-}
-
-func New() TCustomer {
-	return newTCustomer("")
-}
-
-func newTCustomer(alias string) TCustomer {
-	t := TCustomer{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.customerId = path.NewInt16(t, "customer_id")
-	t.storeId = path.NewInt8(t, "store_id")
-	t.firstName = path.NewString(t, "first_name")
-	t.lastName = path.NewString(t, "last_name")
-	t.email = path.NewString(t, "email")
-	t.addressId = path.NewInt16(t, "address_id")
-	t.active = path.NewInt8(t, "active")
-	t.createDate = path.NewTime(t, "create_date")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TCustomer struct {
-	_alias string
+func New() TCustomer {
+	return TCustomer{}
+}
 
-	customerId path.Int16
-	storeId    path.Int8
-	firstName  path.String
-	lastName   path.String
-	email      path.String
-	addressId  path.Int16
-	active     path.Int8
-	createDate path.Time
-	lastUpdate path.Time
+type TCustomer struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TCustomer) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.customerId,
-		t.storeId,
-		t.firstName,
-		t.lastName,
-		t.email,
-		t.addressId,
-		t.active,
-		t.createDate,
-		t.lastUpdate,
+func (t TCustomer) GetTableName() string {
+	return "customer"
+}
+
+func (t TCustomer) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.CustomerId(),
+		t.StoreId(),
+		t.FirstName(),
+		t.LastName(),
+		t.Email(),
+		t.AddressId(),
+		t.Active(),
+		t.CreateDate(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TCustomer) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TCustomer) GetAlias() string {
-	return t._alias
+func (t TCustomer) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TCustomer) GetName() string {
-	return "customer"
-}
-
-func (t TCustomer) GetParent() string {
-	return "sakila"
+func (t TCustomer) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TCustomer) CustomerId() path.Int16 {
-	return t.customerId
+func (t TCustomer) CustomerId() expr.Int16 {
+	return expr.Column(t, expr.Lit("customer_id")).ToSQL
 }
 
-func (t TCustomer) StoreId() path.Int8 {
-	return t.storeId
+func (t TCustomer) StoreId() expr.Int8 {
+	return expr.Column(t, expr.Lit("store_id")).ToSQL
 }
 
-func (t TCustomer) FirstName() path.String {
-	return t.firstName
+func (t TCustomer) FirstName() expr.String {
+	return expr.Column(t, expr.Lit("first_name")).ToSQL
 }
 
-func (t TCustomer) LastName() path.String {
-	return t.lastName
+func (t TCustomer) LastName() expr.String {
+	return expr.Column(t, expr.Lit("last_name")).ToSQL
 }
 
-func (t TCustomer) Email() path.String {
-	return t.email
+func (t TCustomer) Email() expr.String {
+	return expr.Column(t, expr.Lit("email")).ToSQL
 }
 
-func (t TCustomer) AddressId() path.Int16 {
-	return t.addressId
+func (t TCustomer) AddressId() expr.Int16 {
+	return expr.Column(t, expr.Lit("address_id")).ToSQL
 }
 
-func (t TCustomer) Active() path.Int8 {
-	return t.active
+func (t TCustomer) Active() expr.Int8 {
+	return expr.Column(t, expr.Lit("active")).ToSQL
 }
 
-func (t TCustomer) CreateDate() path.Time {
-	return t.createDate
+func (t TCustomer) CreateDate() expr.Time {
+	return expr.Column(t, expr.Lit("create_date")).ToSQL
 }
 
-func (t TCustomer) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TCustomer) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

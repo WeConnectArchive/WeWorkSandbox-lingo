@@ -20,7 +20,7 @@ import (
 var _ = Describe("ValueDialect", func() {
 
 	Context("Calling `NewValue`", func() {
-		complexTypeErrFmt := "value is complex type '%s' when it should be a simple type " +
+		complexTypeErrFmt := "QueryParam is complex type '%s' when it should be a simple type " +
 			"or a pointer to a simple type"
 
 		type i interface{}
@@ -36,7 +36,7 @@ var _ = Describe("ValueDialect", func() {
 		DescribeTable("`ToSQL`",
 
 			func(d lingo.Dialect, v interface{}, matchSql, matchErr types.GomegaMatcher) {
-				value := expr.NewValue(v)
+				value := expr.InterfaceParam(v)
 				sql, err := value.ToSQL(d)
 
 				Expect(err).To(matchErr)
@@ -45,7 +45,7 @@ var _ = Describe("ValueDialect", func() {
 
 			// Edge Cases / Odd balls - Failures
 			Entry("dialect '%s' does not support 'expr.ValueDialect'", newDialect(), 1, BeNil(), MatchError(EqString("dialect '%s' does not support '%s'", "mock", "expr.ValueDialect"))),
-			Entry("`ValueDialect` fails", valueDialectFailure{}, 1, BeNil(), MatchError("value failure")),
+			Entry("`ValueDialect` fails", valueDialectFailure{}, 1, BeNil(), MatchError("QueryParam failure")),
 
 			// Basic Types
 			// - Successful
@@ -76,7 +76,7 @@ var _ = Describe("ValueDialect", func() {
 
 type valueDialectSuccess struct{}
 
-func (valueDialectSuccess) GetName() string { return "value by dialect" }
+func (valueDialectSuccess) GetName() string { return "QueryParam by dialect" }
 func (valueDialectSuccess) Value(i []interface{}) (sql.Data, error) {
 	return sql.Format("%+v", i), nil
 }
@@ -84,5 +84,5 @@ func (valueDialectSuccess) Value(i []interface{}) (sql.Data, error) {
 type valueDialectFailure struct{ valueDialectSuccess }
 
 func (valueDialectFailure) Value(_ []interface{}) (sql.Data, error) {
-	return nil, errors.New("value failure")
+	return nil, errors.New("QueryParam failure")
 }

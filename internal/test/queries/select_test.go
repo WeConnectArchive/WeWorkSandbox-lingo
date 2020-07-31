@@ -7,7 +7,6 @@ import (
 	"github.com/weworksandbox/lingo/execute"
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/join"
-	"github.com/weworksandbox/lingo/expr/sort"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tcategory"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmactor"
@@ -15,6 +14,7 @@ import (
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tfilmtext"
 	"github.com/weworksandbox/lingo/internal/test/schema/tsakila/tinventory"
 	"github.com/weworksandbox/lingo/query"
+	"github.com/weworksandbox/lingo/query/sort"
 )
 
 var selectQueries = []QueryTest{
@@ -32,7 +32,7 @@ var selectQueries = []QueryTest{
 				).From(
 					tinventory.T(),
 				).Where(
-					tinventory.StoreId().Eq(storeID),
+					tinventory.StoreId().Eq(expr.Int8Param(storeID)),
 				)
 			},
 			SQLStrAssert: EqString(trimQuery(`
@@ -64,7 +64,7 @@ var selectQueries = []QueryTest{
 				).From(
 					tinventory.T(),
 				).Where(
-					tinventory.StoreId().Eq(storeID),
+					tinventory.StoreId().Eq(expr.Int8Param(storeID)),
 				)
 			},
 			SQLStrAssert: EqString(trimQuery(`
@@ -96,7 +96,7 @@ var selectQueries = []QueryTest{
 				).From(
 					tfilmactor.T(),
 				).Where(
-					tfilmactor.ActorId().Eq(actorID),
+					tfilmactor.ActorId().Eq(expr.Int16Param(actorID)),
 				)
 			},
 			SQLStrAssert: EqString(trimQuery(`
@@ -135,13 +135,13 @@ var selectQueries = []QueryTest{
 				).From(
 					fa,
 				).Join(
-					fc, join.Inner, fc.FilmId().EqPath(fa.FilmId()),
+					fc, join.Inner, fc.FilmId().Eq(fa.FilmId()),
 				).Join(
-					ft, join.Inner, ft.FilmId().EqPath(fa.FilmId()),
+					ft, join.Inner, ft.FilmId().Eq(fa.FilmId()),
 				).Join(
-					cat, join.Inner, fc.CategoryId().EqPath(cat.CategoryId()),
+					cat, join.Inner, fc.CategoryId().Eq(cat.CategoryId()),
 				).Where(
-					fa.ActorId().EqPath(expr.NewValue(&actorID)),
+					fa.ActorId().Eq(expr.Int16PtrParam(&actorID)),
 				).OrderBy(
 					cat.Name(), sort.OpAscending,
 				)

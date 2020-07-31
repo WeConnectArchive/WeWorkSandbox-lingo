@@ -5,7 +5,7 @@
 package tfilmlist
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,34 +14,34 @@ func T() TFilmList {
 	return instance
 }
 
-func FID() path.Int16 {
-	return instance.fID
+func FID() expr.Int16 {
+	return instance.FID()
 }
 
-func Title() path.String {
-	return instance.title
+func Title() expr.String {
+	return instance.Title()
 }
 
-func Description() path.String {
-	return instance.description
+func Description() expr.String {
+	return instance.Description()
 }
 
-func Category() path.String {
-	return instance.category
+func Category() expr.String {
+	return instance.Category()
 }
 
-func Price() path.Binary {
-	return instance.price
+func Price() expr.Binary {
+	return instance.Price()
 }
 
-func Length() path.Int16 {
-	return instance.length
+func Length() expr.Int16 {
+	return instance.Length()
 }
 
-func Rating() path.String {
-	return instance.rating
+func Rating() expr.String {
+	return instance.Rating()
 }
 
-func Actors() path.String {
-	return instance.actors
+func Actors() expr.String {
+	return instance.Actors()
 }

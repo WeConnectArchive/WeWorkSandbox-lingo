@@ -6,79 +6,67 @@ package tinventory
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TInventory {
-	return newTInventory(alias)
-}
-
-func New() TInventory {
-	return newTInventory("")
-}
-
-func newTInventory(alias string) TInventory {
-	t := TInventory{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.inventoryId = path.NewInt32(t, "inventory_id")
-	t.filmId = path.NewInt16(t, "film_id")
-	t.storeId = path.NewInt8(t, "store_id")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TInventory struct {
-	_alias string
+func New() TInventory {
+	return TInventory{}
+}
 
-	inventoryId path.Int32
-	filmId      path.Int16
-	storeId     path.Int8
-	lastUpdate  path.Time
+type TInventory struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TInventory) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.inventoryId,
-		t.filmId,
-		t.storeId,
-		t.lastUpdate,
+func (t TInventory) GetTableName() string {
+	return "inventory"
+}
+
+func (t TInventory) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.InventoryId(),
+		t.FilmId(),
+		t.StoreId(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TInventory) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TInventory) GetAlias() string {
-	return t._alias
+func (t TInventory) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TInventory) GetName() string {
-	return "inventory"
-}
-
-func (t TInventory) GetParent() string {
-	return "sakila"
+func (t TInventory) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TInventory) InventoryId() path.Int32 {
-	return t.inventoryId
+func (t TInventory) InventoryId() expr.Int32 {
+	return expr.Column(t, expr.Lit("inventory_id")).ToSQL
 }
 
-func (t TInventory) FilmId() path.Int16 {
-	return t.filmId
+func (t TInventory) FilmId() expr.Int16 {
+	return expr.Column(t, expr.Lit("film_id")).ToSQL
 }
 
-func (t TInventory) StoreId() path.Int8 {
-	return t.storeId
+func (t TInventory) StoreId() expr.Int8 {
+	return expr.Column(t, expr.Lit("store_id")).ToSQL
 }
 
-func (t TInventory) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TInventory) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

@@ -6,142 +6,112 @@ package tfilm
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TFilm {
-	return newTFilm(alias)
-}
-
-func New() TFilm {
-	return newTFilm("")
-}
-
-func newTFilm(alias string) TFilm {
-	t := TFilm{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.filmId = path.NewInt16(t, "film_id")
-	t.title = path.NewString(t, "title")
-	t.description = path.NewString(t, "description")
-	t.releaseYear = path.NewUnsupported(t, "release_year")
-	t.languageId = path.NewInt8(t, "language_id")
-	t.originalLanguageId = path.NewInt8(t, "original_language_id")
-	t.rentalDuration = path.NewInt8(t, "rental_duration")
-	t.rentalRate = path.NewBinary(t, "rental_rate")
-	t.length = path.NewInt16(t, "length")
-	t.replacementCost = path.NewBinary(t, "replacement_cost")
-	t.rating = path.NewString(t, "rating")
-	t.specialFeatures = path.NewString(t, "special_features")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TFilm struct {
-	_alias string
+func New() TFilm {
+	return TFilm{}
+}
 
-	filmId             path.Int16
-	title              path.String
-	description        path.String
-	releaseYear        path.Unsupported
-	languageId         path.Int8
-	originalLanguageId path.Int8
-	rentalDuration     path.Int8
-	rentalRate         path.Binary
-	length             path.Int16
-	replacementCost    path.Binary
-	rating             path.String
-	specialFeatures    path.String
-	lastUpdate         path.Time
+type TFilm struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TFilm) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.filmId,
-		t.title,
-		t.description,
-		t.releaseYear,
-		t.languageId,
-		t.originalLanguageId,
-		t.rentalDuration,
-		t.rentalRate,
-		t.length,
-		t.replacementCost,
-		t.rating,
-		t.specialFeatures,
-		t.lastUpdate,
+func (t TFilm) GetTableName() string {
+	return "film"
+}
+
+func (t TFilm) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.FilmId(),
+		t.Title(),
+		t.Description(),
+		t.ReleaseYear(),
+		t.LanguageId(),
+		t.OriginalLanguageId(),
+		t.RentalDuration(),
+		t.RentalRate(),
+		t.Length(),
+		t.ReplacementCost(),
+		t.Rating(),
+		t.SpecialFeatures(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TFilm) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TFilm) GetAlias() string {
-	return t._alias
+func (t TFilm) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TFilm) GetName() string {
-	return "film"
-}
-
-func (t TFilm) GetParent() string {
-	return "sakila"
+func (t TFilm) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TFilm) FilmId() path.Int16 {
-	return t.filmId
+func (t TFilm) FilmId() expr.Int16 {
+	return expr.Column(t, expr.Lit("film_id")).ToSQL
 }
 
-func (t TFilm) Title() path.String {
-	return t.title
+func (t TFilm) Title() expr.String {
+	return expr.Column(t, expr.Lit("title")).ToSQL
 }
 
-func (t TFilm) Description() path.String {
-	return t.description
+func (t TFilm) Description() expr.String {
+	return expr.Column(t, expr.Lit("description")).ToSQL
 }
 
-func (t TFilm) ReleaseYear() path.Unsupported {
-	return t.releaseYear
+func (t TFilm) ReleaseYear() expr.UnsupportedType {
+	return expr.Column(t, expr.Lit("release_year")).ToSQL
 }
 
-func (t TFilm) LanguageId() path.Int8 {
-	return t.languageId
+func (t TFilm) LanguageId() expr.Int8 {
+	return expr.Column(t, expr.Lit("language_id")).ToSQL
 }
 
-func (t TFilm) OriginalLanguageId() path.Int8 {
-	return t.originalLanguageId
+func (t TFilm) OriginalLanguageId() expr.Int8 {
+	return expr.Column(t, expr.Lit("original_language_id")).ToSQL
 }
 
-func (t TFilm) RentalDuration() path.Int8 {
-	return t.rentalDuration
+func (t TFilm) RentalDuration() expr.Int8 {
+	return expr.Column(t, expr.Lit("rental_duration")).ToSQL
 }
 
-func (t TFilm) RentalRate() path.Binary {
-	return t.rentalRate
+func (t TFilm) RentalRate() expr.Binary {
+	return expr.Column(t, expr.Lit("rental_rate")).ToSQL
 }
 
-func (t TFilm) Length() path.Int16 {
-	return t.length
+func (t TFilm) Length() expr.Int16 {
+	return expr.Column(t, expr.Lit("length")).ToSQL
 }
 
-func (t TFilm) ReplacementCost() path.Binary {
-	return t.replacementCost
+func (t TFilm) ReplacementCost() expr.Binary {
+	return expr.Column(t, expr.Lit("replacement_cost")).ToSQL
 }
 
-func (t TFilm) Rating() path.String {
-	return t.rating
+func (t TFilm) Rating() expr.String {
+	return expr.Column(t, expr.Lit("rating")).ToSQL
 }
 
-func (t TFilm) SpecialFeatures() path.String {
-	return t.specialFeatures
+func (t TFilm) SpecialFeatures() expr.String {
+	return expr.Column(t, expr.Lit("special_features")).ToSQL
 }
 
-func (t TFilm) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TFilm) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

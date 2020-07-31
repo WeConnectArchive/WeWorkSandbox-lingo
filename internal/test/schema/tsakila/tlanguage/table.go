@@ -6,72 +6,62 @@ package tlanguage
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TLanguage {
-	return newTLanguage(alias)
-}
-
-func New() TLanguage {
-	return newTLanguage("")
-}
-
-func newTLanguage(alias string) TLanguage {
-	t := TLanguage{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.languageId = path.NewInt8(t, "language_id")
-	t.name = path.NewString(t, "name")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TLanguage struct {
-	_alias string
+func New() TLanguage {
+	return TLanguage{}
+}
 
-	languageId path.Int8
-	name       path.String
-	lastUpdate path.Time
+type TLanguage struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TLanguage) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.languageId,
-		t.name,
-		t.lastUpdate,
+func (t TLanguage) GetTableName() string {
+	return "language"
+}
+
+func (t TLanguage) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.LanguageId(),
+		t.Name(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TLanguage) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TLanguage) GetAlias() string {
-	return t._alias
+func (t TLanguage) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TLanguage) GetName() string {
-	return "language"
-}
-
-func (t TLanguage) GetParent() string {
-	return "sakila"
+func (t TLanguage) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TLanguage) LanguageId() path.Int8 {
-	return t.languageId
+func (t TLanguage) LanguageId() expr.Int8 {
+	return expr.Column(t, expr.Lit("language_id")).ToSQL
 }
 
-func (t TLanguage) Name() path.String {
-	return t.name
+func (t TLanguage) Name() expr.String {
+	return expr.Column(t, expr.Lit("name")).ToSQL
 }
 
-func (t TLanguage) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TLanguage) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

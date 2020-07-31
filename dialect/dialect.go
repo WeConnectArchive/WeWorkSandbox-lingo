@@ -7,8 +7,8 @@ import (
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/join"
-	"github.com/weworksandbox/lingo/expr/sort"
 	"github.com/weworksandbox/lingo/query"
+	"github.com/weworksandbox/lingo/query/sort"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -22,10 +22,18 @@ func NewDialect(opts ...Option) (Dialect, error) {
 	}
 
 	opsMap := make(opSyntax)
-	if o.noDefaultMappings == false {
-		opsMap.Merge(defaultOperations)
+	if !o.noDefaultMappings {
+		opsMap.Merge(defaultSyntax)
 	}
 	opsMap.Merge(o.opMap)
+
+	if o.schemaName != "" {
+		opsMap.Merge(opSyntax{
+			expr.OpSchema:     Syntax(o.schemaName),
+			expr.OpTable:      "{0}.{1}",
+			expr.OpTableAlias: "{0}.{1} AS {2}",
+		})
+	}
 
 	cacheSize := int(o.cacheSize)
 	if cacheSize < minTemplateCacheSize {
@@ -39,37 +47,39 @@ func NewDialect(opts ...Option) (Dialect, error) {
 	}
 
 	return Dialect{
-		opMap:             opsMap,
-		includeSchemaName: o.includeSchemaName,
-		replaceCache:      idxFmts,
+		opMap:        opsMap,
+		schemaName:   o.schemaName,
+		replaceCache: idxFmts,
 	}, nil
 }
 
 // Dialect schema uses the generic schema methods to work as a basic ANSI schema.
 type Dialect struct {
-	includeSchemaName bool
-	opMap             opSyntax
+	schemaName string
+	opMap      opSyntax
 
 	replaceCache []string
 }
 
-func (Dialect) GetName() string {
-	return "Dialect"
+func (Dialect) GetName() lingo.Expression {
+	return lingo.ExpressionFunc(func(d lingo.Dialect) (sql.Data, error) {
+		return sql.String("dialect.Dialect"), nil
+	})
 }
 
-func (d Dialect) BuildOperator(operation expr.Operation) (sql.Data, error) {
-	mapping, ok := d.opMap[operation.Op]
+func (d Dialect) BuildOperator(op expr.Operator, operands ...lingo.Expression) (sql.Data, error) {
+	mapping, ok := d.opMap[op]
 	if !ok {
-		return nil, fmt.Errorf("operation %s not supported", operation.Op)
+		return nil, fmt.Errorf("operation %d not supported", op)
 	}
 
-	growTo := len(mapping)                              // Going to be a minimum of the length of the mapping
-	idxers := make([]string, 0, len(operation.Exprs)*2) // *2 for a from and to value for NewReplacer
-	sqlDatas := make([]interface{}, 0, len(operation.Exprs))
-	for idx, exp := range operation.Exprs {
+	growTo := len(mapping)                       // Going to be a minimum of the length of the mapping
+	idxers := make([]string, 0, len(operands)*2) // *2 for a from and to value for NewReplacer
+	sqlDatas := make([]interface{}, 0, len(operands))
+	for idx, exp := range operands {
 		s, err := exp.ToSQL(d)
 		if err != nil {
-			return nil, fmt.Errorf("unable to build operation %s: %w", operation.Op, err)
+			return nil, fmt.Errorf("unable to build operation %s: %w", op, err)
 		}
 
 		idxStr := d.idxStr(idx)
@@ -78,16 +88,16 @@ func (d Dialect) BuildOperator(operation expr.Operation) (sql.Data, error) {
 
 		sqlStr := s.String()
 		sqlLen := len(sqlStr)
-		count := strings.Count(mapping, idxStr)
+		count := strings.Count(string(mapping), idxStr)
 		growTo += sqlLen * count
 	}
 
 	b := strings.Builder{}
 	b.Grow(growTo)
-	_, err := strings.NewReplacer(idxers...).WriteString(&b, mapping)
+	_, err := strings.NewReplacer(idxers...).WriteString(&b, string(mapping))
 	if err != nil {
 		return nil, fmt.Errorf("unable to build replace operator %s format '%s': %w",
-			operation.Op, mapping, err)
+			op, mapping, err)
 	}
 	return sql.New(b.String(), sqlDatas), nil
 }
@@ -125,29 +135,6 @@ func (Dialect) SetValueFormat() string {
 	return "="
 }
 
-func (d Dialect) ExpandTable(table lingo.Table) (sql.Data, error) {
-	if d.includeSchemaName {
-		return ExpandTableWithSchema(table)
-	}
-	return ExpandTable(table)
-}
-
-func (Dialect) ExpandColumn(column lingo.Column) (sql.Data, error) {
-	return ExpandColumnWithParent(column)
-}
-
-func (Dialect) UnaryOperator(left sql.Data, op expr.Operation) (sql.Data, error) {
-	return UnaryOperator(left, op)
-}
-
-func (Dialect) BinaryOperator(left sql.Data, op expr.Operation, right sql.Data) (sql.Data, error) {
-	return BinaryOperator(left, op, right)
-}
-
-func (Dialect) VariadicOperator(left sql.Data, op expr.Operation, values []sql.Data) (sql.Data, error) {
-	return VariadicOperator(left, op, values)
-}
-
 func (d Dialect) Value(value []interface{}) (sql.Data, error) {
 	return Value(d, value)
 }
@@ -158,10 +145,6 @@ func (Dialect) Join(left sql.Data, joinType join.Type, on sql.Data) (sql.Data, e
 
 func (Dialect) OrderBy(left sql.Data, direction sort.Direction) (sql.Data, error) {
 	return OrderBy(left, direction)
-}
-
-func (d Dialect) Set(left sql.Data, value sql.Data) (sql.Data, error) {
-	return Set(d, left, value)
 }
 
 // Modify will build: [LIMIT limit] [OFFSET offset]

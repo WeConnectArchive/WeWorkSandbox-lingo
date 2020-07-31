@@ -21,7 +21,7 @@ func WithDefaultOperandMappings(enabled bool) Option {
 }
 
 // WithOperationMapping allows one to change how a dialect operates for a given operation
-func WithOperandMapping(op expr.Operator, mapping string) Option {
+func WithOperandMapping(op expr.Operator, mapping Syntax) Option {
 	return func(opts *options) error {
 		if opts.opMap == nil {
 			opts.opMap = make(opSyntax)
@@ -31,10 +31,10 @@ func WithOperandMapping(op expr.Operator, mapping string) Option {
 	}
 }
 
-// WithSchemaNameIncluded will include the schema name for `schema.table` or `schema.table AS alias` SQL output.
-func WithSchemaNameIncluded(include bool) Option {
+// WithSchemaName will include the name for `schema.table` or `schema.table AS alias` SQL output.
+func WithSchemaName(name string) Option {
 	return func(opts *options) error {
-		opts.includeSchemaName = include
+		opts.schemaName = name
 		return nil
 	}
 }
@@ -49,6 +49,6 @@ func WithMaxFormatCacheSize(size uint) Option {
 type options struct {
 	noDefaultMappings bool
 	opMap             opSyntax
-	includeSchemaName bool
+	schemaName        string
 	cacheSize         uint
 }

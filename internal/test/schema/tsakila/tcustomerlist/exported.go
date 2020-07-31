@@ -5,7 +5,7 @@
 package tcustomerlist
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,38 +14,38 @@ func T() TCustomerList {
 	return instance
 }
 
-func Id() path.Int16 {
-	return instance.id
+func Id() expr.Int16 {
+	return instance.Id()
 }
 
-func Name() path.String {
-	return instance.name
+func Name() expr.String {
+	return instance.Name()
 }
 
-func Address() path.String {
-	return instance.address
+func Address() expr.String {
+	return instance.Address()
 }
 
-func ZipCode() path.String {
-	return instance.zipCode
+func ZipCode() expr.String {
+	return instance.ZipCode()
 }
 
-func Phone() path.String {
-	return instance.phone
+func Phone() expr.String {
+	return instance.Phone()
 }
 
-func City() path.String {
-	return instance.city
+func City() expr.String {
+	return instance.City()
 }
 
-func Country() path.String {
-	return instance.country
+func Country() expr.String {
+	return instance.Country()
 }
 
-func Notes() path.String {
-	return instance.notes
+func Notes() expr.String {
+	return instance.Notes()
 }
 
-func SID() path.Int8 {
-	return instance.sID
+func SID() expr.Int8 {
+	return instance.SID()
 }

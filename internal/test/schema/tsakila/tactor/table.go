@@ -6,79 +6,67 @@ package tactor
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TActor {
-	return newTActor(alias)
-}
-
-func New() TActor {
-	return newTActor("")
-}
-
-func newTActor(alias string) TActor {
-	t := TActor{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.actorId = path.NewInt16(t, "actor_id")
-	t.firstName = path.NewString(t, "first_name")
-	t.lastName = path.NewString(t, "last_name")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TActor struct {
-	_alias string
+func New() TActor {
+	return TActor{}
+}
 
-	actorId    path.Int16
-	firstName  path.String
-	lastName   path.String
-	lastUpdate path.Time
+type TActor struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TActor) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.actorId,
-		t.firstName,
-		t.lastName,
-		t.lastUpdate,
+func (t TActor) GetTableName() string {
+	return "actor"
+}
+
+func (t TActor) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.ActorId(),
+		t.FirstName(),
+		t.LastName(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TActor) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TActor) GetAlias() string {
-	return t._alias
+func (t TActor) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TActor) GetName() string {
-	return "actor"
-}
-
-func (t TActor) GetParent() string {
-	return "sakila"
+func (t TActor) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TActor) ActorId() path.Int16 {
-	return t.actorId
+func (t TActor) ActorId() expr.Int16 {
+	return expr.Column(t, expr.Lit("actor_id")).ToSQL
 }
 
-func (t TActor) FirstName() path.String {
-	return t.firstName
+func (t TActor) FirstName() expr.String {
+	return expr.Column(t, expr.Lit("first_name")).ToSQL
 }
 
-func (t TActor) LastName() path.String {
-	return t.lastName
+func (t TActor) LastName() expr.String {
+	return expr.Column(t, expr.Lit("last_name")).ToSQL
 }
 
-func (t TActor) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TActor) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

@@ -5,7 +5,7 @@
 package tcategory
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,14 +14,14 @@ func T() TCategory {
 	return instance
 }
 
-func CategoryId() path.Int8 {
-	return instance.categoryId
+func CategoryId() expr.Int8 {
+	return instance.CategoryId()
 }
 
-func Name() path.String {
-	return instance.name
+func Name() expr.String {
+	return instance.Name()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

@@ -5,7 +5,7 @@
 package tstore
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,18 +14,18 @@ func T() TStore {
 	return instance
 }
 
-func StoreId() path.Int8 {
-	return instance.storeId
+func StoreId() expr.Int8 {
+	return instance.StoreId()
 }
 
-func ManagerStaffId() path.Int8 {
-	return instance.managerStaffId
+func ManagerStaffId() expr.Int8 {
+	return instance.ManagerStaffId()
 }
 
-func AddressId() path.Int16 {
-	return instance.addressId
+func AddressId() expr.Int16 {
+	return instance.AddressId()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

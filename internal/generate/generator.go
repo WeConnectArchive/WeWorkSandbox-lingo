@@ -51,13 +51,6 @@ func Generate(ctx context.Context, settings Settings, parser Parser) error {
 	}
 
 	for _, schemaName := range schemas {
-		rootDir := settings.RootDirectory()
-		if contents, err := NewSchemaInfo(schemaName, prefix).Generate(); err != nil {
-			return err
-		} else if err = writeSchema(rootDir, schemaName, prefix, contents); err != nil {
-			return err
-		}
-
 		tableNames, tablesErr := parser.Tables(ctx, schemaName)
 		if tablesErr != nil {
 			return tablesErr

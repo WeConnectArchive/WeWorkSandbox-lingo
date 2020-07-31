@@ -8,7 +8,7 @@ import (
 	"github.com/weworksandbox/lingo/check"
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/expr/join"
-	"github.com/weworksandbox/lingo/expr/sort"
+	"github.com/weworksandbox/lingo/query/sort"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -19,7 +19,7 @@ func Select(paths ...lingo.Expression) *SelectQuery {
 }
 
 func SelectFrom(e lingo.Table) *SelectQuery {
-	return Select(e).From(e)
+	return Select(e.GetColumns()...).From(e.GetName())
 }
 
 type SelectQuery struct {
@@ -31,13 +31,13 @@ type SelectQuery struct {
 	modifier Modifier
 }
 
-func (q *SelectQuery) From(e lingo.Table) *SelectQuery {
+func (q *SelectQuery) From(e lingo.Expression) *SelectQuery {
 	q.from = e
 	return q
 }
 
-func (q *SelectQuery) Where(exp ...lingo.Expression) *SelectQuery {
-	q.where = appendWith(q.where, exp, expr.And)
+func (q *SelectQuery) Where(exp ...lingo.ComboExpression) *SelectQuery {
+	q.where = appendCombosWith(q.where, exp, expr.And)
 	return q
 }
 

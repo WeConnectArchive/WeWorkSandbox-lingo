@@ -6,79 +6,67 @@ package tactorinfo
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TActorInfo {
-	return newTActorInfo(alias)
-}
-
-func New() TActorInfo {
-	return newTActorInfo("")
-}
-
-func newTActorInfo(alias string) TActorInfo {
-	t := TActorInfo{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.actorId = path.NewInt16(t, "actor_id")
-	t.firstName = path.NewString(t, "first_name")
-	t.lastName = path.NewString(t, "last_name")
-	t.filmInfo = path.NewString(t, "film_info")
 	return t
 }
 
-type TActorInfo struct {
-	_alias string
+func New() TActorInfo {
+	return TActorInfo{}
+}
 
-	actorId   path.Int16
-	firstName path.String
-	lastName  path.String
-	filmInfo  path.String
+type TActorInfo struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TActorInfo) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.actorId,
-		t.firstName,
-		t.lastName,
-		t.filmInfo,
+func (t TActorInfo) GetTableName() string {
+	return "actor_info"
+}
+
+func (t TActorInfo) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.ActorId(),
+		t.FirstName(),
+		t.LastName(),
+		t.FilmInfo(),
 	}
 }
 
 func (t TActorInfo) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TActorInfo) GetAlias() string {
-	return t._alias
+func (t TActorInfo) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TActorInfo) GetName() string {
-	return "actor_info"
-}
-
-func (t TActorInfo) GetParent() string {
-	return "sakila"
+func (t TActorInfo) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TActorInfo) ActorId() path.Int16 {
-	return t.actorId
+func (t TActorInfo) ActorId() expr.Int16 {
+	return expr.Column(t, expr.Lit("actor_id")).ToSQL
 }
 
-func (t TActorInfo) FirstName() path.String {
-	return t.firstName
+func (t TActorInfo) FirstName() expr.String {
+	return expr.Column(t, expr.Lit("first_name")).ToSQL
 }
 
-func (t TActorInfo) LastName() path.String {
-	return t.lastName
+func (t TActorInfo) LastName() expr.String {
+	return expr.Column(t, expr.Lit("last_name")).ToSQL
 }
 
-func (t TActorInfo) FilmInfo() path.String {
-	return t.filmInfo
+func (t TActorInfo) FilmInfo() expr.String {
+	return expr.Column(t, expr.Lit("film_info")).ToSQL
 }

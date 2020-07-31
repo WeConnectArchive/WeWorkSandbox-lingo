@@ -164,7 +164,12 @@ var _ = Describe("JoinOn", func() {
 
 type joinerDialectSuccess struct{}
 
-func (joinerDialectSuccess) GetName() string { return "joiner success" }
+func (joinerDialectSuccess) GetName() lingo.Expression {
+	return lingo.ExpressionFunc(func(d lingo.Dialect) (sql.Data, error) {
+		return sql.String("joiner success"), nil
+	})
+}
+
 func (joinerDialectSuccess) Join(sql.Data, join.Type, sql.Data) (sql.Data, error) {
 	return sql.String("joiner sql"), nil
 }

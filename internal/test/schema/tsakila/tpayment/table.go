@@ -6,100 +6,82 @@ package tpayment
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TPayment {
-	return newTPayment(alias)
-}
-
-func New() TPayment {
-	return newTPayment("")
-}
-
-func newTPayment(alias string) TPayment {
-	t := TPayment{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.paymentId = path.NewInt16(t, "payment_id")
-	t.customerId = path.NewInt16(t, "customer_id")
-	t.staffId = path.NewInt8(t, "staff_id")
-	t.rentalId = path.NewInt(t, "rental_id")
-	t.amount = path.NewBinary(t, "amount")
-	t.paymentDate = path.NewTime(t, "payment_date")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TPayment struct {
-	_alias string
+func New() TPayment {
+	return TPayment{}
+}
 
-	paymentId   path.Int16
-	customerId  path.Int16
-	staffId     path.Int8
-	rentalId    path.Int
-	amount      path.Binary
-	paymentDate path.Time
-	lastUpdate  path.Time
+type TPayment struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TPayment) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.paymentId,
-		t.customerId,
-		t.staffId,
-		t.rentalId,
-		t.amount,
-		t.paymentDate,
-		t.lastUpdate,
+func (t TPayment) GetTableName() string {
+	return "payment"
+}
+
+func (t TPayment) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.PaymentId(),
+		t.CustomerId(),
+		t.StaffId(),
+		t.RentalId(),
+		t.Amount(),
+		t.PaymentDate(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TPayment) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TPayment) GetAlias() string {
-	return t._alias
+func (t TPayment) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TPayment) GetName() string {
-	return "payment"
-}
-
-func (t TPayment) GetParent() string {
-	return "sakila"
+func (t TPayment) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TPayment) PaymentId() path.Int16 {
-	return t.paymentId
+func (t TPayment) PaymentId() expr.Int16 {
+	return expr.Column(t, expr.Lit("payment_id")).ToSQL
 }
 
-func (t TPayment) CustomerId() path.Int16 {
-	return t.customerId
+func (t TPayment) CustomerId() expr.Int16 {
+	return expr.Column(t, expr.Lit("customer_id")).ToSQL
 }
 
-func (t TPayment) StaffId() path.Int8 {
-	return t.staffId
+func (t TPayment) StaffId() expr.Int8 {
+	return expr.Column(t, expr.Lit("staff_id")).ToSQL
 }
 
-func (t TPayment) RentalId() path.Int {
-	return t.rentalId
+func (t TPayment) RentalId() expr.Int {
+	return expr.Column(t, expr.Lit("rental_id")).ToSQL
 }
 
-func (t TPayment) Amount() path.Binary {
-	return t.amount
+func (t TPayment) Amount() expr.Binary {
+	return expr.Column(t, expr.Lit("amount")).ToSQL
 }
 
-func (t TPayment) PaymentDate() path.Time {
-	return t.paymentDate
+func (t TPayment) PaymentDate() expr.Time {
+	return expr.Column(t, expr.Lit("payment_date")).ToSQL
 }
 
-func (t TPayment) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TPayment) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

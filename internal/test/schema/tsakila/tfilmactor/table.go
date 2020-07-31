@@ -6,72 +6,62 @@ package tfilmactor
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TFilmActor {
-	return newTFilmActor(alias)
-}
-
-func New() TFilmActor {
-	return newTFilmActor("")
-}
-
-func newTFilmActor(alias string) TFilmActor {
-	t := TFilmActor{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.actorId = path.NewInt16(t, "actor_id")
-	t.filmId = path.NewInt16(t, "film_id")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TFilmActor struct {
-	_alias string
+func New() TFilmActor {
+	return TFilmActor{}
+}
 
-	actorId    path.Int16
-	filmId     path.Int16
-	lastUpdate path.Time
+type TFilmActor struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TFilmActor) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.actorId,
-		t.filmId,
-		t.lastUpdate,
+func (t TFilmActor) GetTableName() string {
+	return "film_actor"
+}
+
+func (t TFilmActor) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.ActorId(),
+		t.FilmId(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TFilmActor) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TFilmActor) GetAlias() string {
-	return t._alias
+func (t TFilmActor) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TFilmActor) GetName() string {
-	return "film_actor"
-}
-
-func (t TFilmActor) GetParent() string {
-	return "sakila"
+func (t TFilmActor) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TFilmActor) ActorId() path.Int16 {
-	return t.actorId
+func (t TFilmActor) ActorId() expr.Int16 {
+	return expr.Column(t, expr.Lit("actor_id")).ToSQL
 }
 
-func (t TFilmActor) FilmId() path.Int16 {
-	return t.filmId
+func (t TFilmActor) FilmId() expr.Int16 {
+	return expr.Column(t, expr.Lit("film_id")).ToSQL
 }
 
-func (t TFilmActor) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TFilmActor) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

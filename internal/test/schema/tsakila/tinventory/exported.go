@@ -5,7 +5,7 @@
 package tinventory
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,18 +14,18 @@ func T() TInventory {
 	return instance
 }
 
-func InventoryId() path.Int32 {
-	return instance.inventoryId
+func InventoryId() expr.Int32 {
+	return instance.InventoryId()
 }
 
-func FilmId() path.Int16 {
-	return instance.filmId
+func FilmId() expr.Int16 {
+	return instance.FilmId()
 }
 
-func StoreId() path.Int8 {
-	return instance.storeId
+func StoreId() expr.Int8 {
+	return instance.StoreId()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

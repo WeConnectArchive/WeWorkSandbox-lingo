@@ -2,7 +2,6 @@ package query
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -51,12 +50,30 @@ func buildIfNotEmpty(d lingo.Dialect, exp lingo.Expression) (sql.Data, error) {
 	return exp.ToSQL(d)
 }
 
-type appendFunc func(prev, new lingo.Expression) expr.Operation
+type appendFunc func(prev, new lingo.Expression) lingo.Expression
 
 // appendWith takes a previous expression, and will append each newExps using appendFunc to previousExp. If previousExp
 // is nil or empty, each newExps will be append to each other using appendFunc - not including previousExp in it. The
 // result is a single lingo.Expression from chaining the given expressions.
 func appendWith(previousExp lingo.Expression, newExps []lingo.Expression, reduce appendFunc) lingo.Expression {
+	for _, exp := range newExps {
+		if previousExp == nil {
+			previousExp = exp
+			continue
+		}
+		previousExp = reduce(previousExp, exp)
+	}
+	return previousExp
+}
+
+type appendWithFunc func(prev, new lingo.Expression) lingo.ComboExpression
+
+// appendCombosWith takes a previous expression, and will append each newExps using appendFunc to previousExp. If
+// previousExp is nil or empty, each newExps will be append to each other using appendFunc - not including previousExp
+// in it. The result is a single lingo.Expression from chaining the given expressions.
+func appendCombosWith(
+	previousExp lingo.Expression, newExps []lingo.ComboExpression, reduce appendWithFunc,
+) lingo.Expression {
 	for _, exp := range newExps {
 		if previousExp == nil {
 			previousExp = exp

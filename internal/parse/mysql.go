@@ -27,28 +27,27 @@ type MySQL struct {
 }
 
 func (MySQL) DBTypesToPaths() map[string]generate.PathPackageToType {
-	const pkgCorePath = "github.com/weworksandbox/lingo/expr/path"
 	// TODO - Need to do further changes to Paths. Right now, every Path can have nullable operations against it.
 	//  We may want to create a `Int64NullPath` vs `Int64Path` for example. In that case, `Int64NullPath` just extends
 	//  and adds the nullable methods? https://github.com/go-sql-driver/mysql/blob/master/fields.go
 	// Note: For `decimal`, we create our own, but there is no 'decimal' type in Go
 	// besides `math/big/decimal.go` which is binary anyway...
 	return map[string]generate.PathPackageToType{
-		"BIGINT":    {pkgCorePath, "Int64"},
-		"BINARY":    {pkgCorePath, "Binary"},
-		"CHAR":      {pkgCorePath, "String"},
-		"DATETIME":  {pkgCorePath, "Time"},
-		"DECIMAL":   {pkgCorePath, "Binary"}, // See note above.
-		"DOUBLE":    {pkgCorePath, "Float64"},
-		"FLOAT":     {pkgCorePath, "Float32"},
-		"INT":       {pkgCorePath, "Int"},
-		"JSON":      {pkgCorePath, "JSON"},
-		"MEDIUMINT": {pkgCorePath, "Int32"},
-		"SMALLINT":  {pkgCorePath, "Int16"},
-		"TEXT":      {pkgCorePath, "String"},
-		"TINYINT":   {pkgCorePath, "Int8"},
-		"TIMESTAMP": {pkgCorePath, "Time"},
-		"VARCHAR":   {pkgCorePath, "String"},
+		"BIGINT":    {generate.PkgExpr, "Int64"},
+		"BINARY":    {generate.PkgExpr, "Binary"},
+		"CHAR":      {generate.PkgExpr, "String"},
+		"DATETIME":  {generate.PkgExpr, "Time"},
+		"DECIMAL":   {generate.PkgExpr, "Binary"}, // See note above.
+		"DOUBLE":    {generate.PkgExpr, "Float64"},
+		"FLOAT":     {generate.PkgExpr, "Float32"},
+		"INT":       {generate.PkgExpr, "Int"},
+		"JSON":      {generate.PkgExpr, "JSON"},
+		"MEDIUMINT": {generate.PkgExpr, "Int32"},
+		"SMALLINT":  {generate.PkgExpr, "Int16"},
+		"TEXT":      {generate.PkgExpr, "String"},
+		"TINYINT":   {generate.PkgExpr, "Int8"},
+		"TIMESTAMP": {generate.PkgExpr, "Time"},
+		"VARCHAR":   {generate.PkgExpr, "String"},
 	}
 }
 

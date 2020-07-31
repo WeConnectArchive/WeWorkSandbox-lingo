@@ -5,7 +5,7 @@
 package tfilm
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,54 +14,54 @@ func T() TFilm {
 	return instance
 }
 
-func FilmId() path.Int16 {
-	return instance.filmId
+func FilmId() expr.Int16 {
+	return instance.FilmId()
 }
 
-func Title() path.String {
-	return instance.title
+func Title() expr.String {
+	return instance.Title()
 }
 
-func Description() path.String {
-	return instance.description
+func Description() expr.String {
+	return instance.Description()
 }
 
-func ReleaseYear() path.Unsupported {
-	return instance.releaseYear
+func ReleaseYear() expr.UnsupportedType {
+	return instance.ReleaseYear()
 }
 
-func LanguageId() path.Int8 {
-	return instance.languageId
+func LanguageId() expr.Int8 {
+	return instance.LanguageId()
 }
 
-func OriginalLanguageId() path.Int8 {
-	return instance.originalLanguageId
+func OriginalLanguageId() expr.Int8 {
+	return instance.OriginalLanguageId()
 }
 
-func RentalDuration() path.Int8 {
-	return instance.rentalDuration
+func RentalDuration() expr.Int8 {
+	return instance.RentalDuration()
 }
 
-func RentalRate() path.Binary {
-	return instance.rentalRate
+func RentalRate() expr.Binary {
+	return instance.RentalRate()
 }
 
-func Length() path.Int16 {
-	return instance.length
+func Length() expr.Int16 {
+	return instance.Length()
 }
 
-func ReplacementCost() path.Binary {
-	return instance.replacementCost
+func ReplacementCost() expr.Binary {
+	return instance.ReplacementCost()
 }
 
-func Rating() path.String {
-	return instance.rating
+func Rating() expr.String {
+	return instance.Rating()
 }
 
-func SpecialFeatures() path.String {
-	return instance.specialFeatures
+func SpecialFeatures() expr.String {
+	return instance.SpecialFeatures()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

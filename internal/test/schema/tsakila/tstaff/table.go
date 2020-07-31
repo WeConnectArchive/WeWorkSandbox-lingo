@@ -6,128 +6,102 @@ package tstaff
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TStaff {
-	return newTStaff(alias)
-}
-
-func New() TStaff {
-	return newTStaff("")
-}
-
-func newTStaff(alias string) TStaff {
-	t := TStaff{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.staffId = path.NewInt8(t, "staff_id")
-	t.firstName = path.NewString(t, "first_name")
-	t.lastName = path.NewString(t, "last_name")
-	t.addressId = path.NewInt16(t, "address_id")
-	t.picture = path.NewUnsupported(t, "picture")
-	t.email = path.NewString(t, "email")
-	t.storeId = path.NewInt8(t, "store_id")
-	t.active = path.NewInt8(t, "active")
-	t.username = path.NewString(t, "username")
-	t.password = path.NewString(t, "password")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TStaff struct {
-	_alias string
+func New() TStaff {
+	return TStaff{}
+}
 
-	staffId    path.Int8
-	firstName  path.String
-	lastName   path.String
-	addressId  path.Int16
-	picture    path.Unsupported
-	email      path.String
-	storeId    path.Int8
-	active     path.Int8
-	username   path.String
-	password   path.String
-	lastUpdate path.Time
+type TStaff struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TStaff) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.staffId,
-		t.firstName,
-		t.lastName,
-		t.addressId,
-		t.picture,
-		t.email,
-		t.storeId,
-		t.active,
-		t.username,
-		t.password,
-		t.lastUpdate,
+func (t TStaff) GetTableName() string {
+	return "staff"
+}
+
+func (t TStaff) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.StaffId(),
+		t.FirstName(),
+		t.LastName(),
+		t.AddressId(),
+		t.Picture(),
+		t.Email(),
+		t.StoreId(),
+		t.Active(),
+		t.Username(),
+		t.Password(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TStaff) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TStaff) GetAlias() string {
-	return t._alias
+func (t TStaff) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TStaff) GetName() string {
-	return "staff"
-}
-
-func (t TStaff) GetParent() string {
-	return "sakila"
+func (t TStaff) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TStaff) StaffId() path.Int8 {
-	return t.staffId
+func (t TStaff) StaffId() expr.Int8 {
+	return expr.Column(t, expr.Lit("staff_id")).ToSQL
 }
 
-func (t TStaff) FirstName() path.String {
-	return t.firstName
+func (t TStaff) FirstName() expr.String {
+	return expr.Column(t, expr.Lit("first_name")).ToSQL
 }
 
-func (t TStaff) LastName() path.String {
-	return t.lastName
+func (t TStaff) LastName() expr.String {
+	return expr.Column(t, expr.Lit("last_name")).ToSQL
 }
 
-func (t TStaff) AddressId() path.Int16 {
-	return t.addressId
+func (t TStaff) AddressId() expr.Int16 {
+	return expr.Column(t, expr.Lit("address_id")).ToSQL
 }
 
-func (t TStaff) Picture() path.Unsupported {
-	return t.picture
+func (t TStaff) Picture() expr.UnsupportedType {
+	return expr.Column(t, expr.Lit("picture")).ToSQL
 }
 
-func (t TStaff) Email() path.String {
-	return t.email
+func (t TStaff) Email() expr.String {
+	return expr.Column(t, expr.Lit("email")).ToSQL
 }
 
-func (t TStaff) StoreId() path.Int8 {
-	return t.storeId
+func (t TStaff) StoreId() expr.Int8 {
+	return expr.Column(t, expr.Lit("store_id")).ToSQL
 }
 
-func (t TStaff) Active() path.Int8 {
-	return t.active
+func (t TStaff) Active() expr.Int8 {
+	return expr.Column(t, expr.Lit("active")).ToSQL
 }
 
-func (t TStaff) Username() path.String {
-	return t.username
+func (t TStaff) Username() expr.String {
+	return expr.Column(t, expr.Lit("username")).ToSQL
 }
 
-func (t TStaff) Password() path.String {
-	return t.password
+func (t TStaff) Password() expr.String {
+	return expr.Column(t, expr.Lit("password")).ToSQL
 }
 
-func (t TStaff) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TStaff) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

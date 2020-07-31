@@ -5,7 +5,7 @@
 package tfilmtext
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,14 +14,14 @@ func T() TFilmText {
 	return instance
 }
 
-func FilmId() path.Int16 {
-	return instance.filmId
+func FilmId() expr.Int16 {
+	return instance.FilmId()
 }
 
-func Title() path.String {
-	return instance.title
+func Title() expr.String {
+	return instance.Title()
 }
 
-func Description() path.String {
-	return instance.description
+func Description() expr.String {
+	return instance.Description()
 }

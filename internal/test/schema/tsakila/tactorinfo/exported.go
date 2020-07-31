@@ -5,7 +5,7 @@
 package tactorinfo
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,18 +14,18 @@ func T() TActorInfo {
 	return instance
 }
 
-func ActorId() path.Int16 {
-	return instance.actorId
+func ActorId() expr.Int16 {
+	return instance.ActorId()
 }
 
-func FirstName() path.String {
-	return instance.firstName
+func FirstName() expr.String {
+	return instance.FirstName()
 }
 
-func LastName() path.String {
-	return instance.lastName
+func LastName() expr.String {
+	return instance.LastName()
 }
 
-func FilmInfo() path.String {
-	return instance.filmInfo
+func FilmInfo() expr.String {
+	return instance.FilmInfo()
 }

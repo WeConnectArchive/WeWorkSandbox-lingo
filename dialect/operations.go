@@ -1,6 +1,8 @@
 package dialect
 
 import (
+	"fmt"
+
 	"github.com/weworksandbox/lingo/expr"
 )
 
@@ -17,7 +19,7 @@ func (o opSyntax) Merge(other opSyntax) opSyntax {
 	return o
 }
 
-var defaultOperations = opSyntax{
+var defaultSyntax = requireSyntaxForEveryOperator(opSyntax{
 	// CatArithmetic
 	expr.OpAddition:       "{0} + {1}",
 	expr.OpSubtraction:    "{0} - {1}",
@@ -27,8 +29,11 @@ var defaultOperations = opSyntax{
 
 	// CatAssignment
 	expr.OpAssign:      "{0} = {1}",
-	expr.OpTableAlias:  "{0} AS {1}",
-	expr.OpColumnAlias: "{0} AS {1}",
+	expr.OpTable:       "{1}", // {0} & {1} only
+	expr.OpTableAlias:  "{1} AS {2}",
+	expr.OpSchema:      "", // {0} only
+	expr.OpPath:        "{0}.{1}",
+	expr.OpColumnAlias: "{0}.{1} AS {2}",
 
 	// CatBitwise
 	expr.OpBitwiseAND: "{0} & {1}",
@@ -43,8 +48,8 @@ var defaultOperations = opSyntax{
 	expr.OpGreaterThan:        "{0} > {1}",
 	expr.OpLessThanOrEqual:    "{0} <= {1}",
 	expr.OpGreaterThanOrEqual: "{0} >= {1}",
-	expr.OpNull:               "{0} IS NULL",
-	expr.OpNotNull:            "{0} IS NOT NULL",
+	expr.OpIsNull:             "{0} IS NULL",
+	expr.OpIsNotNull:          "{0} IS NOT NULL",
 
 	// CatLogical
 	expr.OpAnd:        "{0} AND {1}",
@@ -60,18 +65,31 @@ var defaultOperations = opSyntax{
 	expr.OpExists:     "EXISTS ({0})",
 
 	// CatSet
-	expr.OpUnion: "{0} UNION {1}",
-	expr.OpExcept: "{0} EXCEPT {1}",
+	expr.OpUnion:     "{0} UNION {1}",
+	expr.OpExcept:    "{0} EXCEPT {1}",
 	expr.OpIntersect: "{0} INTERSECT {1}",
+
+	// CatString
+	expr.OpStringConcat: "CONCAT({0}, {1})",
 
 	// CatUnary
 	expr.OpSingleton: "{0}",
 	expr.OpNegative:  "-{0}",
 
-	expr.OpList: "{0}, {1}",
-
 	// ???
+	expr.OpList:             "{0}, {1}",
+	expr.OpCount:            "COUNT({0})",
 	expr.OpLike:             "{0} LIKE {1}",
 	expr.OpNotLike:          "{0} NOT LIKE {1}",
 	expr.OpCurrentTimestamp: "CURRENT_TIMESTAMP",
+})
+
+func requireSyntaxForEveryOperator(ops opSyntax) opSyntax {
+	for op := expr.OpUnknown + 1; op < expr.OpLastOperation; op++ {
+		_, found := ops[op]
+		if !found {
+			panic(fmt.Sprintf("Operator %d does not have a default Syntax", op))
+		}
+	}
+	return ops
 }

@@ -6,72 +6,62 @@ package tfilmtext
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TFilmText {
-	return newTFilmText(alias)
-}
-
-func New() TFilmText {
-	return newTFilmText("")
-}
-
-func newTFilmText(alias string) TFilmText {
-	t := TFilmText{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.filmId = path.NewInt16(t, "film_id")
-	t.title = path.NewString(t, "title")
-	t.description = path.NewString(t, "description")
 	return t
 }
 
-type TFilmText struct {
-	_alias string
+func New() TFilmText {
+	return TFilmText{}
+}
 
-	filmId      path.Int16
-	title       path.String
-	description path.String
+type TFilmText struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TFilmText) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.filmId,
-		t.title,
-		t.description,
+func (t TFilmText) GetTableName() string {
+	return "film_text"
+}
+
+func (t TFilmText) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.FilmId(),
+		t.Title(),
+		t.Description(),
 	}
 }
 
 func (t TFilmText) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TFilmText) GetAlias() string {
-	return t._alias
+func (t TFilmText) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TFilmText) GetName() string {
-	return "film_text"
-}
-
-func (t TFilmText) GetParent() string {
-	return "sakila"
+func (t TFilmText) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TFilmText) FilmId() path.Int16 {
-	return t.filmId
+func (t TFilmText) FilmId() expr.Int16 {
+	return expr.Column(t, expr.Lit("film_id")).ToSQL
 }
 
-func (t TFilmText) Title() path.String {
-	return t.title
+func (t TFilmText) Title() expr.String {
+	return expr.Column(t, expr.Lit("title")).ToSQL
 }
 
-func (t TFilmText) Description() path.String {
-	return t.description
+func (t TFilmText) Description() expr.String {
+	return expr.Column(t, expr.Lit("description")).ToSQL
 }

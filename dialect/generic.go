@@ -2,57 +2,12 @@ package dialect
 
 import (
 	"errors"
-	"fmt"
 
-	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/check"
 	"github.com/weworksandbox/lingo/expr/join"
-	"github.com/weworksandbox/lingo/expr/sort"
+	"github.com/weworksandbox/lingo/query/sort"
 	"github.com/weworksandbox/lingo/sql"
 )
-
-// AliasElseName will use the lingo.Alias if non-empty, else the Name is used.
-func AliasElseName(n lingo.Name) sql.Data {
-	alias, ok := n.(lingo.Alias)
-	if aliasStr := alias.GetAlias(); ok && aliasStr != "" {
-		return sql.String(aliasStr)
-	}
-	return sql.String(n.GetName())
-}
-
-func ExpandTable(entity lingo.Table) (sql.Data, error) {
-	s := sql.String(entity.GetName())
-	if alias := entity.GetAlias(); alias != "" {
-		s = s.Append(sql.Format(" AS %s", alias))
-	}
-	return s, nil
-}
-
-func ExpandTableWithSchema(entity lingo.Table) (sql.Data, error) {
-	s, err := ExpandTable(entity)
-	if err != nil {
-		return nil, fmt.Errorf("unable to expand table before schema: %w", err)
-	}
-	return sql.Format("%s.", entity.GetParent()).Append(s), nil
-}
-
-func ExpandColumn(column lingo.Column) (sql.Data, error) {
-	s := sql.String(column.GetName())
-	if a := column.GetAlias(); a != "" {
-		s = s.Append(sql.Format(" AS %s", a))
-	}
-	return s, nil
-}
-
-func ExpandColumnWithParent(column lingo.Column) (sql.Data, error) {
-	table := AliasElseName(column.GetParent())
-	colSQL, err := ExpandColumn(column)
-	if err != nil {
-		return nil, fmt.Errorf("unable to expand column: %w", err)
-	}
-	// Append separator prior to column: `table.column`
-	return table.Append(sql.String(".").Append(colSQL)), nil
-}
 
 type ValueFormatter interface {
 	ValueFormat(count int) sql.Data

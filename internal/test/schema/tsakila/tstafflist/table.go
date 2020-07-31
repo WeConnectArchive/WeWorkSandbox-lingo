@@ -6,107 +6,87 @@ package tstafflist
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TStaffList {
-	return newTStaffList(alias)
-}
-
-func New() TStaffList {
-	return newTStaffList("")
-}
-
-func newTStaffList(alias string) TStaffList {
-	t := TStaffList{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.id = path.NewInt8(t, "ID")
-	t.name = path.NewString(t, "name")
-	t.address = path.NewString(t, "address")
-	t.zipCode = path.NewString(t, "zip code")
-	t.phone = path.NewString(t, "phone")
-	t.city = path.NewString(t, "city")
-	t.country = path.NewString(t, "country")
-	t.sID = path.NewInt8(t, "SID")
 	return t
 }
 
-type TStaffList struct {
-	_alias string
+func New() TStaffList {
+	return TStaffList{}
+}
 
-	id      path.Int8
-	name    path.String
-	address path.String
-	zipCode path.String
-	phone   path.String
-	city    path.String
-	country path.String
-	sID     path.Int8
+type TStaffList struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TStaffList) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.id,
-		t.name,
-		t.address,
-		t.zipCode,
-		t.phone,
-		t.city,
-		t.country,
-		t.sID,
+func (t TStaffList) GetTableName() string {
+	return "staff_list"
+}
+
+func (t TStaffList) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.Id(),
+		t.Name(),
+		t.Address(),
+		t.ZipCode(),
+		t.Phone(),
+		t.City(),
+		t.Country(),
+		t.SID(),
 	}
 }
 
 func (t TStaffList) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TStaffList) GetAlias() string {
-	return t._alias
+func (t TStaffList) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TStaffList) GetName() string {
-	return "staff_list"
-}
-
-func (t TStaffList) GetParent() string {
-	return "sakila"
+func (t TStaffList) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TStaffList) Id() path.Int8 {
-	return t.id
+func (t TStaffList) Id() expr.Int8 {
+	return expr.Column(t, expr.Lit("ID")).ToSQL
 }
 
-func (t TStaffList) Name() path.String {
-	return t.name
+func (t TStaffList) Name() expr.String {
+	return expr.Column(t, expr.Lit("name")).ToSQL
 }
 
-func (t TStaffList) Address() path.String {
-	return t.address
+func (t TStaffList) Address() expr.String {
+	return expr.Column(t, expr.Lit("address")).ToSQL
 }
 
-func (t TStaffList) ZipCode() path.String {
-	return t.zipCode
+func (t TStaffList) ZipCode() expr.String {
+	return expr.Column(t, expr.Lit("zip code")).ToSQL
 }
 
-func (t TStaffList) Phone() path.String {
-	return t.phone
+func (t TStaffList) Phone() expr.String {
+	return expr.Column(t, expr.Lit("phone")).ToSQL
 }
 
-func (t TStaffList) City() path.String {
-	return t.city
+func (t TStaffList) City() expr.String {
+	return expr.Column(t, expr.Lit("city")).ToSQL
 }
 
-func (t TStaffList) Country() path.String {
-	return t.country
+func (t TStaffList) Country() expr.String {
+	return expr.Column(t, expr.Lit("country")).ToSQL
 }
 
-func (t TStaffList) SID() path.Int8 {
-	return t.sID
+func (t TStaffList) SID() expr.Int8 {
+	return expr.Column(t, expr.Lit("SID")).ToSQL
 }

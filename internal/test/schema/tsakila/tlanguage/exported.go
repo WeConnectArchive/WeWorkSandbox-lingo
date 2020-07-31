@@ -5,7 +5,7 @@
 package tlanguage
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,14 +14,14 @@ func T() TLanguage {
 	return instance
 }
 
-func LanguageId() path.Int8 {
-	return instance.languageId
+func LanguageId() expr.Int8 {
+	return instance.LanguageId()
 }
 
-func Name() path.String {
-	return instance.name
+func Name() expr.String {
+	return instance.Name()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

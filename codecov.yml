@@ -4,7 +4,7 @@ coverage:
       default:
         paths:
           # do not include generated files
-          - "!expr/path"
+          - "!expr/types.go"
           - "!internal/test/schema"
         target: auto
         threshold: 5%

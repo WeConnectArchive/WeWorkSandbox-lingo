@@ -6,72 +6,62 @@ package tsalesbystore
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TSalesByStore {
-	return newTSalesByStore(alias)
-}
-
-func New() TSalesByStore {
-	return newTSalesByStore("")
-}
-
-func newTSalesByStore(alias string) TSalesByStore {
-	t := TSalesByStore{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.store = path.NewString(t, "store")
-	t.manager = path.NewString(t, "manager")
-	t.totalSales = path.NewBinary(t, "total_sales")
 	return t
 }
 
-type TSalesByStore struct {
-	_alias string
+func New() TSalesByStore {
+	return TSalesByStore{}
+}
 
-	store      path.String
-	manager    path.String
-	totalSales path.Binary
+type TSalesByStore struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TSalesByStore) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.store,
-		t.manager,
-		t.totalSales,
+func (t TSalesByStore) GetTableName() string {
+	return "sales_by_store"
+}
+
+func (t TSalesByStore) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.Store(),
+		t.Manager(),
+		t.TotalSales(),
 	}
 }
 
 func (t TSalesByStore) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TSalesByStore) GetAlias() string {
-	return t._alias
+func (t TSalesByStore) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TSalesByStore) GetName() string {
-	return "sales_by_store"
-}
-
-func (t TSalesByStore) GetParent() string {
-	return "sakila"
+func (t TSalesByStore) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TSalesByStore) Store() path.String {
-	return t.store
+func (t TSalesByStore) Store() expr.String {
+	return expr.Column(t, expr.Lit("store")).ToSQL
 }
 
-func (t TSalesByStore) Manager() path.String {
-	return t.manager
+func (t TSalesByStore) Manager() expr.String {
+	return expr.Column(t, expr.Lit("manager")).ToSQL
 }
 
-func (t TSalesByStore) TotalSales() path.Binary {
-	return t.totalSales
+func (t TSalesByStore) TotalSales() expr.Binary {
+	return expr.Column(t, expr.Lit("total_sales")).ToSQL
 }

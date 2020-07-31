@@ -6,65 +6,57 @@ package tsalesbyfilmcategory
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TSalesByFilmCategory {
-	return newTSalesByFilmCategory(alias)
-}
-
-func New() TSalesByFilmCategory {
-	return newTSalesByFilmCategory("")
-}
-
-func newTSalesByFilmCategory(alias string) TSalesByFilmCategory {
-	t := TSalesByFilmCategory{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.category = path.NewString(t, "category")
-	t.totalSales = path.NewBinary(t, "total_sales")
 	return t
 }
 
-type TSalesByFilmCategory struct {
-	_alias string
+func New() TSalesByFilmCategory {
+	return TSalesByFilmCategory{}
+}
 
-	category   path.String
-	totalSales path.Binary
+type TSalesByFilmCategory struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TSalesByFilmCategory) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.category,
-		t.totalSales,
+func (t TSalesByFilmCategory) GetTableName() string {
+	return "sales_by_film_category"
+}
+
+func (t TSalesByFilmCategory) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.Category(),
+		t.TotalSales(),
 	}
 }
 
 func (t TSalesByFilmCategory) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TSalesByFilmCategory) GetAlias() string {
-	return t._alias
+func (t TSalesByFilmCategory) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TSalesByFilmCategory) GetName() string {
-	return "sales_by_film_category"
-}
-
-func (t TSalesByFilmCategory) GetParent() string {
-	return "sakila"
+func (t TSalesByFilmCategory) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TSalesByFilmCategory) Category() path.String {
-	return t.category
+func (t TSalesByFilmCategory) Category() expr.String {
+	return expr.Column(t, expr.Lit("category")).ToSQL
 }
 
-func (t TSalesByFilmCategory) TotalSales() path.Binary {
-	return t.totalSales
+func (t TSalesByFilmCategory) TotalSales() expr.Binary {
+	return expr.Column(t, expr.Lit("total_sales")).ToSQL
 }

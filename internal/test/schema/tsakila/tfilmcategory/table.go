@@ -6,72 +6,62 @@ package tfilmcategory
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TFilmCategory {
-	return newTFilmCategory(alias)
-}
-
-func New() TFilmCategory {
-	return newTFilmCategory("")
-}
-
-func newTFilmCategory(alias string) TFilmCategory {
-	t := TFilmCategory{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.filmId = path.NewInt16(t, "film_id")
-	t.categoryId = path.NewInt8(t, "category_id")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TFilmCategory struct {
-	_alias string
+func New() TFilmCategory {
+	return TFilmCategory{}
+}
 
-	filmId     path.Int16
-	categoryId path.Int8
-	lastUpdate path.Time
+type TFilmCategory struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TFilmCategory) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.filmId,
-		t.categoryId,
-		t.lastUpdate,
+func (t TFilmCategory) GetTableName() string {
+	return "film_category"
+}
+
+func (t TFilmCategory) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.FilmId(),
+		t.CategoryId(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TFilmCategory) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TFilmCategory) GetAlias() string {
-	return t._alias
+func (t TFilmCategory) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TFilmCategory) GetName() string {
-	return "film_category"
-}
-
-func (t TFilmCategory) GetParent() string {
-	return "sakila"
+func (t TFilmCategory) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TFilmCategory) FilmId() path.Int16 {
-	return t.filmId
+func (t TFilmCategory) FilmId() expr.Int16 {
+	return expr.Column(t, expr.Lit("film_id")).ToSQL
 }
 
-func (t TFilmCategory) CategoryId() path.Int8 {
-	return t.categoryId
+func (t TFilmCategory) CategoryId() expr.Int8 {
+	return expr.Column(t, expr.Lit("category_id")).ToSQL
 }
 
-func (t TFilmCategory) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TFilmCategory) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

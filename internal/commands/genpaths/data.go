@@ -1,166 +1,283 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/internal/generate"
-	"github.com/weworksandbox/lingo/internal/generate/paths"
 )
 
-var pathData = []paths.Path{
-	{
-		Name:     "Binary",
-		Filename: "binary.go",
-		GoType:   "[]byte",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
+func toOperatorInfo(ops []expr.Operator) map[expr.Operator]generate.OperatorInfo {
+	result := make(map[expr.Operator]generate.OperatorInfo, len(ops))
+	for _, op := range ops {
+		found, ok := opsToInfo[op]
+		if !ok {
+			panic(fmt.Errorf("missing mapping from expr.Operator to generate.OperatorInfo for %d-%s", op, op))
+		}
+		result[op] = found
+	}
+	return result
+}
 
-		},
+const (
+	strValue  = "value"
+	strValues = "values"
+	strFirst  = "first"
+	strSecond = "second"
+)
+
+var opsToInfo = map[expr.Operator]generate.OperatorInfo{
+	expr.OpIsNull: {
+		ArgNames: []string{},
 	},
-	{
-		Name:     "Bool",
-		Filename: "bool.go",
-		GoType:   "bool",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpIsNotNull: {
+		ArgNames: []string{},
 	},
-	{
-		Name:     "Float32",
-		Filename: "float32.go",
-		GoType:   "float32",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpEq: {
+		ArgNames: []string{strValue},
 	},
-	{
-		Name:     "Float64",
-		Filename: "float64.go",
-		GoType:   "float64",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpNotEq: {
+		ArgNames: []string{strValue},
 	},
-	{
-		Name:     "Int",
-		Filename: "int.go",
-		GoType:   "int",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpLessThan: {
+		ArgNames: []string{strValue},
 	},
-	{
-		Name:     "Int8",
-		Filename: "int8.go",
-		GoType:   "int8",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpLessThanOrEqual: {
+		ArgNames: []string{strValue},
 	},
-	{
-		Name:     "Int16",
-		Filename: "int16.go",
-		GoType:   "int16",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpGreaterThan: {
+		ArgNames: []string{strValue},
 	},
-	{
-		Name:     "Int32",
-		Filename: "int32.go",
-		GoType:   "int32",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpGreaterThanOrEqual: {
+		ArgNames: []string{strValue},
 	},
-	{
-		Name:     "Int64",
-		Filename: "int64.go",
-		GoType:   "int64",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpIn: {
+		ArgNames: []string{strValues},
 	},
-	{
-		Name:     "String",
-		Filename: "string.go",
-		GoType:   "string",
-		Imports: []string{
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
-
-		},
+	expr.OpNotIn: {
+		ArgNames: []string{strValues},
 	},
-	{
-		Name:     "Time",
-		Filename: "time.go",
-		GoType:   "time.Time",
-		Imports: []string{
-			"time",
-			"",
-			generate.PkgLingo,
-			generate.PkgExp,
-			generate.PkgSet,
-			generate.PkgSQL,
-		},
-		Operators: []expr.Operator{
+	expr.OpBetween: {
+		ArgNames: []string{strFirst, strSecond},
+	},
+	expr.OpNotBetween: {
+		ArgNames: []string{strFirst, strSecond},
+	},
+	expr.OpStringConcat: {
+		ArgNames: []string{strValue},
+	},
+	expr.OpCurrentTimestamp: {
+		ArgNames: []string{},
+	},
+	expr.OpLike: {
+		ArgNames: []string{strValue},
+	},
+	expr.OpNotLike: {
+		ArgNames: []string{strValue},
+	},
+}
 
+var pathData = generate.Paths{
+	Package: generate.PkgShortExpr,
+	Imports: []string{
+		"time",
+		"",
+		generate.PkgLingo,
+		generate.PkgSQL,
+	},
+	Paths: []generate.Path{
+		{
+			Name:   "Binary",
+			GoType: "[]byte",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Bool",
+			GoType: "bool",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				//expr.OpIn,
+				//expr.OpNotIn,
+			}),
+		},
+		{
+			Name:   "Float32",
+			GoType: "float32",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Float64",
+			GoType: "float64",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Int",
+			GoType: "int",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Int8",
+			GoType: "int8",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Int16",
+			GoType: "int16",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Int32",
+			GoType: "int32",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "Int64",
+			GoType: "int64",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
+		},
+		{
+			Name:   "String",
+			GoType: "string",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+				expr.OpStringConcat,
+			}),
+		},
+		{
+			Name:   "Time",
+			GoType: "time.Time",
+			Operators: toOperatorInfo([]expr.Operator{
+				expr.OpIsNull,
+				expr.OpIsNotNull,
+				expr.OpEq,
+				expr.OpNotEq,
+				expr.OpLessThan,
+				expr.OpLessThanOrEqual,
+				expr.OpGreaterThan,
+				expr.OpGreaterThanOrEqual,
+				//expr.OpIn,
+				//expr.OpNotIn,
+				expr.OpBetween,
+				expr.OpNotBetween,
+			}),
 		},
 	},
 }

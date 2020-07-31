@@ -6,72 +6,62 @@ package tcountry
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TCountry {
-	return newTCountry(alias)
-}
-
-func New() TCountry {
-	return newTCountry("")
-}
-
-func newTCountry(alias string) TCountry {
-	t := TCountry{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.countryId = path.NewInt16(t, "country_id")
-	t.country = path.NewString(t, "country")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TCountry struct {
-	_alias string
+func New() TCountry {
+	return TCountry{}
+}
 
-	countryId  path.Int16
-	country    path.String
-	lastUpdate path.Time
+type TCountry struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TCountry) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.countryId,
-		t.country,
-		t.lastUpdate,
+func (t TCountry) GetTableName() string {
+	return "country"
+}
+
+func (t TCountry) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.CountryId(),
+		t.Country(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TCountry) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TCountry) GetAlias() string {
-	return t._alias
+func (t TCountry) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TCountry) GetName() string {
-	return "country"
-}
-
-func (t TCountry) GetParent() string {
-	return "sakila"
+func (t TCountry) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TCountry) CountryId() path.Int16 {
-	return t.countryId
+func (t TCountry) CountryId() expr.Int16 {
+	return expr.Column(t, expr.Lit("country_id")).ToSQL
 }
 
-func (t TCountry) Country() path.String {
-	return t.country
+func (t TCountry) Country() expr.String {
+	return expr.Column(t, expr.Lit("country")).ToSQL
 }
 
-func (t TCountry) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TCountry) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

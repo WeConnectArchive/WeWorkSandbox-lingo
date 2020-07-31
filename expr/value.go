@@ -10,31 +10,19 @@ import (
 	"github.com/weworksandbox/lingo/sql"
 )
 
-var timeType = reflect.TypeOf(time.Time{})
+func InterfaceParam(i interface{}) QueryParam {
+	return QueryParam{value: i}
+}
+
+type QueryParam struct {
+	value interface{}
+}
 
 type ValueDialect interface {
 	Value(value []interface{}) (sql.Data, error)
 }
 
-func NewValue(v interface{}) lingo.ComboExpression {
-	return value{
-		value: v,
-	}
-}
-
-type value struct {
-	value interface{}
-}
-
-func (v value) And(exp lingo.Expression) lingo.ComboExpression {
-	return And(v, exp)
-}
-
-func (v value) Or(exp lingo.Expression) lingo.ComboExpression {
-	return And(v, exp)
-}
-
-func (v value) ToSQL(d lingo.Dialect) (sql.Data, error) {
+func (v QueryParam) ToSQL(d lingo.Dialect) (sql.Data, error) {
 	constant, ok := d.(ValueDialect)
 	if !ok {
 		return nil, fmt.Errorf("dialect '%s' does not support 'expr.ValueDialect'", d.GetName())
@@ -65,14 +53,14 @@ func validateOverallKind(reflectOfV reflect.Value) error {
 		underlyingType = reflectOfV.Type().Elem()
 	}
 	if !validateSimpleKind(underlyingType) {
-		return fmt.Errorf("value is complex type '%s' when it should be a simple type "+
+		return fmt.Errorf("QueryParam is complex type '%s' when it should be a simple type "+
 			"or a pointer to a simple type", reflectOfV.Type().String())
 	}
 	return nil
 }
 
 // removePtrIfExists so the underlying type can be exposed. This is helpful
-// when they want to change the value in a loop for example.
+// when they want to change the QueryParam in a loop for example.
 func removePtrIfExists(reflectOfV reflect.Value) reflect.Value {
 	switch reflectOfV.Kind() {
 	case reflect.Ptr:
@@ -80,6 +68,8 @@ func removePtrIfExists(reflectOfV reflect.Value) reflect.Value {
 	}
 	return reflectOfV
 }
+
+var timeType = reflect.TypeOf(time.Time{})
 
 func validateSimpleKind(t reflect.Type) bool {
 	switch t.Kind() {
@@ -102,7 +92,7 @@ func convertToISlice(value reflect.Value) []interface{} {
 	switch value.Kind() {
 	case reflect.Slice, reflect.Array:
 		// If we have byte slice or array, they must mean they want Binary, so include
-		// the entire slice as a single value to do binary lookups.
+		// the entire slice as a single QueryParam to do binary lookups.
 		if value.Type().Elem().Kind() == reflect.Uint8 {
 			break
 		}

@@ -6,107 +6,87 @@ package tfilmlist
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TFilmList {
-	return newTFilmList(alias)
-}
-
-func New() TFilmList {
-	return newTFilmList("")
-}
-
-func newTFilmList(alias string) TFilmList {
-	t := TFilmList{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.fID = path.NewInt16(t, "FID")
-	t.title = path.NewString(t, "title")
-	t.description = path.NewString(t, "description")
-	t.category = path.NewString(t, "category")
-	t.price = path.NewBinary(t, "price")
-	t.length = path.NewInt16(t, "length")
-	t.rating = path.NewString(t, "rating")
-	t.actors = path.NewString(t, "actors")
 	return t
 }
 
-type TFilmList struct {
-	_alias string
+func New() TFilmList {
+	return TFilmList{}
+}
 
-	fID         path.Int16
-	title       path.String
-	description path.String
-	category    path.String
-	price       path.Binary
-	length      path.Int16
-	rating      path.String
-	actors      path.String
+type TFilmList struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TFilmList) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.fID,
-		t.title,
-		t.description,
-		t.category,
-		t.price,
-		t.length,
-		t.rating,
-		t.actors,
+func (t TFilmList) GetTableName() string {
+	return "film_list"
+}
+
+func (t TFilmList) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.FID(),
+		t.Title(),
+		t.Description(),
+		t.Category(),
+		t.Price(),
+		t.Length(),
+		t.Rating(),
+		t.Actors(),
 	}
 }
 
 func (t TFilmList) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TFilmList) GetAlias() string {
-	return t._alias
+func (t TFilmList) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TFilmList) GetName() string {
-	return "film_list"
-}
-
-func (t TFilmList) GetParent() string {
-	return "sakila"
+func (t TFilmList) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TFilmList) FID() path.Int16 {
-	return t.fID
+func (t TFilmList) FID() expr.Int16 {
+	return expr.Column(t, expr.Lit("FID")).ToSQL
 }
 
-func (t TFilmList) Title() path.String {
-	return t.title
+func (t TFilmList) Title() expr.String {
+	return expr.Column(t, expr.Lit("title")).ToSQL
 }
 
-func (t TFilmList) Description() path.String {
-	return t.description
+func (t TFilmList) Description() expr.String {
+	return expr.Column(t, expr.Lit("description")).ToSQL
 }
 
-func (t TFilmList) Category() path.String {
-	return t.category
+func (t TFilmList) Category() expr.String {
+	return expr.Column(t, expr.Lit("category")).ToSQL
 }
 
-func (t TFilmList) Price() path.Binary {
-	return t.price
+func (t TFilmList) Price() expr.Binary {
+	return expr.Column(t, expr.Lit("price")).ToSQL
 }
 
-func (t TFilmList) Length() path.Int16 {
-	return t.length
+func (t TFilmList) Length() expr.Int16 {
+	return expr.Column(t, expr.Lit("length")).ToSQL
 }
 
-func (t TFilmList) Rating() path.String {
-	return t.rating
+func (t TFilmList) Rating() expr.String {
+	return expr.Column(t, expr.Lit("rating")).ToSQL
 }
 
-func (t TFilmList) Actors() path.String {
-	return t.actors
+func (t TFilmList) Actors() expr.String {
+	return expr.Column(t, expr.Lit("actors")).ToSQL
 }

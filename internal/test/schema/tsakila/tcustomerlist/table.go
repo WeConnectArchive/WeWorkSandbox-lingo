@@ -6,114 +6,92 @@ package tcustomerlist
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TCustomerList {
-	return newTCustomerList(alias)
-}
-
-func New() TCustomerList {
-	return newTCustomerList("")
-}
-
-func newTCustomerList(alias string) TCustomerList {
-	t := TCustomerList{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.id = path.NewInt16(t, "ID")
-	t.name = path.NewString(t, "name")
-	t.address = path.NewString(t, "address")
-	t.zipCode = path.NewString(t, "zip code")
-	t.phone = path.NewString(t, "phone")
-	t.city = path.NewString(t, "city")
-	t.country = path.NewString(t, "country")
-	t.notes = path.NewString(t, "notes")
-	t.sID = path.NewInt8(t, "SID")
 	return t
 }
 
-type TCustomerList struct {
-	_alias string
+func New() TCustomerList {
+	return TCustomerList{}
+}
 
-	id      path.Int16
-	name    path.String
-	address path.String
-	zipCode path.String
-	phone   path.String
-	city    path.String
-	country path.String
-	notes   path.String
-	sID     path.Int8
+type TCustomerList struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TCustomerList) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.id,
-		t.name,
-		t.address,
-		t.zipCode,
-		t.phone,
-		t.city,
-		t.country,
-		t.notes,
-		t.sID,
+func (t TCustomerList) GetTableName() string {
+	return "customer_list"
+}
+
+func (t TCustomerList) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.Id(),
+		t.Name(),
+		t.Address(),
+		t.ZipCode(),
+		t.Phone(),
+		t.City(),
+		t.Country(),
+		t.Notes(),
+		t.SID(),
 	}
 }
 
 func (t TCustomerList) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TCustomerList) GetAlias() string {
-	return t._alias
+func (t TCustomerList) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TCustomerList) GetName() string {
-	return "customer_list"
-}
-
-func (t TCustomerList) GetParent() string {
-	return "sakila"
+func (t TCustomerList) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TCustomerList) Id() path.Int16 {
-	return t.id
+func (t TCustomerList) Id() expr.Int16 {
+	return expr.Column(t, expr.Lit("ID")).ToSQL
 }
 
-func (t TCustomerList) Name() path.String {
-	return t.name
+func (t TCustomerList) Name() expr.String {
+	return expr.Column(t, expr.Lit("name")).ToSQL
 }
 
-func (t TCustomerList) Address() path.String {
-	return t.address
+func (t TCustomerList) Address() expr.String {
+	return expr.Column(t, expr.Lit("address")).ToSQL
 }
 
-func (t TCustomerList) ZipCode() path.String {
-	return t.zipCode
+func (t TCustomerList) ZipCode() expr.String {
+	return expr.Column(t, expr.Lit("zip code")).ToSQL
 }
 
-func (t TCustomerList) Phone() path.String {
-	return t.phone
+func (t TCustomerList) Phone() expr.String {
+	return expr.Column(t, expr.Lit("phone")).ToSQL
 }
 
-func (t TCustomerList) City() path.String {
-	return t.city
+func (t TCustomerList) City() expr.String {
+	return expr.Column(t, expr.Lit("city")).ToSQL
 }
 
-func (t TCustomerList) Country() path.String {
-	return t.country
+func (t TCustomerList) Country() expr.String {
+	return expr.Column(t, expr.Lit("country")).ToSQL
 }
 
-func (t TCustomerList) Notes() path.String {
-	return t.notes
+func (t TCustomerList) Notes() expr.String {
+	return expr.Column(t, expr.Lit("notes")).ToSQL
 }
 
-func (t TCustomerList) SID() path.Int8 {
-	return t.sID
+func (t TCustomerList) SID() expr.Int8 {
+	return expr.Column(t, expr.Lit("SID")).ToSQL
 }

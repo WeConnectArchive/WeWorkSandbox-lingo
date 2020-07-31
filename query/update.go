@@ -11,19 +11,19 @@ import (
 
 func Update(table lingo.Table) *UpdateQuery {
 	update := UpdateQuery{
-		table: table,
+		table: table.GetName(),
 	}
 	return &update
 }
 
 type UpdateQuery struct {
-	table lingo.Table
+	table lingo.Expression
 	set   []lingo.Expression
 	where lingo.Expression
 }
 
-func (u UpdateQuery) Where(exp ...lingo.Expression) *UpdateQuery {
-	u.where = appendWith(u.where, exp, expr.And)
+func (u UpdateQuery) Where(exp ...lingo.ComboExpression) *UpdateQuery {
+	u.where = appendCombosWith(u.where, exp, expr.And)
 	return &u
 }
 
@@ -37,9 +37,6 @@ func (u UpdateQuery) ToSQL(d lingo.Dialect) (sql.Data, error) {
 
 	if check.IsValueNilOrBlank(u.table) {
 		return nil, NewErrAroundSQL(s, errors.New("table cannot be empty"))
-	}
-	if u.table.GetAlias() != "" {
-		return nil, NewErrAroundSQL(s, errors.New("table alias must be unset"))
 	}
 	table, err := u.table.ToSQL(d)
 	if err != nil {

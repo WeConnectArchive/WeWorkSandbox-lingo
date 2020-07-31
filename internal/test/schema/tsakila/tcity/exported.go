@@ -5,7 +5,7 @@
 package tcity
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,18 +14,18 @@ func T() TCity {
 	return instance
 }
 
-func CityId() path.Int16 {
-	return instance.cityId
+func CityId() expr.Int16 {
+	return instance.CityId()
 }
 
-func City() path.String {
-	return instance.city
+func City() expr.String {
+	return instance.City()
 }
 
-func CountryId() path.Int16 {
-	return instance.countryId
+func CountryId() expr.Int16 {
+	return instance.CountryId()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

@@ -6,79 +6,67 @@ package tstore
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TStore {
-	return newTStore(alias)
-}
-
-func New() TStore {
-	return newTStore("")
-}
-
-func newTStore(alias string) TStore {
-	t := TStore{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.storeId = path.NewInt8(t, "store_id")
-	t.managerStaffId = path.NewInt8(t, "manager_staff_id")
-	t.addressId = path.NewInt16(t, "address_id")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TStore struct {
-	_alias string
+func New() TStore {
+	return TStore{}
+}
 
-	storeId        path.Int8
-	managerStaffId path.Int8
-	addressId      path.Int16
-	lastUpdate     path.Time
+type TStore struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TStore) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.storeId,
-		t.managerStaffId,
-		t.addressId,
-		t.lastUpdate,
+func (t TStore) GetTableName() string {
+	return "store"
+}
+
+func (t TStore) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.StoreId(),
+		t.ManagerStaffId(),
+		t.AddressId(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TStore) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TStore) GetAlias() string {
-	return t._alias
+func (t TStore) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TStore) GetName() string {
-	return "store"
-}
-
-func (t TStore) GetParent() string {
-	return "sakila"
+func (t TStore) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TStore) StoreId() path.Int8 {
-	return t.storeId
+func (t TStore) StoreId() expr.Int8 {
+	return expr.Column(t, expr.Lit("store_id")).ToSQL
 }
 
-func (t TStore) ManagerStaffId() path.Int8 {
-	return t.managerStaffId
+func (t TStore) ManagerStaffId() expr.Int8 {
+	return expr.Column(t, expr.Lit("manager_staff_id")).ToSQL
 }
 
-func (t TStore) AddressId() path.Int16 {
-	return t.addressId
+func (t TStore) AddressId() expr.Int16 {
+	return expr.Column(t, expr.Lit("address_id")).ToSQL
 }
 
-func (t TStore) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TStore) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

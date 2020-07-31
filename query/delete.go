@@ -13,7 +13,7 @@ import (
 // Delete allows deletion of an entity
 func Delete(from lingo.Table) *DeleteQuery {
 	return &DeleteQuery{
-		from: from,
+		from: from.GetName(),
 	}
 }
 
@@ -23,8 +23,8 @@ type DeleteQuery struct {
 	where lingo.Expression
 }
 
-func (d DeleteQuery) Where(exp ...lingo.Expression) *DeleteQuery {
-	d.where = appendWith(d.where, exp, expr.And)
+func (d DeleteQuery) Where(exp ...lingo.ComboExpression) *DeleteQuery {
+	d.where = appendCombosWith(d.where, exp, expr.And)
 	return &d
 }
 

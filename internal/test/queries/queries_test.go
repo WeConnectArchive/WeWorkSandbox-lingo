@@ -28,11 +28,12 @@ import (
 // QueryTest is used by Functional tests, along with benchmark tests. They are used for setting up common data to
 // ensure performance and code quality.
 type QueryTest struct {
-	Name      string
-	Focus     bool
-	Benchmark bool
+	Name          string
+	Focus         bool
+	PendingReason string
+	Benchmark     bool
 
-	// Params used during the test
+	// ArgNames used during the test
 	Params Params
 }
 
@@ -42,7 +43,7 @@ type Params struct {
 	SQLStrAssert    types.GomegaMatcher
 	SQLValuesAssert types.GomegaMatcher
 
-	// Params for executing this test
+	// ArgNames for executing this test
 	ExecuteParams ExecuteParams
 }
 
@@ -192,8 +193,8 @@ func TestExecute(t *testing.T) {
 					Expect(p.ExecuteParams.Data).To(BeEmpty(),
 						"Not selecting data, no need for checking output params")
 					Expect(p.ExecuteParams.AssertValues).To(HaveLen(2),
-						"Must have 2 asserts for sql.Result.LastInsertId and sql.Result.RowsAffected " +
-						"in the order of `[][]interface{}{{lastInsertId}, {rowsAffected}}`")
+						"Must have 2 asserts for sql.Result.LastInsertId and sql.Result.RowsAffected "+
+							"in the order of `[][]interface{}{{lastInsertId}, {rowsAffected}}`")
 
 					runExecuteWithRollback(ctx, sqlExec, sqlExp, p.ExecuteParams)
 

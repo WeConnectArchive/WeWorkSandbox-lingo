@@ -5,7 +5,7 @@
 package tfilmcategory
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,14 +14,14 @@ func T() TFilmCategory {
 	return instance
 }
 
-func FilmId() path.Int16 {
-	return instance.filmId
+func FilmId() expr.Int16 {
+	return instance.FilmId()
 }
 
-func CategoryId() path.Int8 {
-	return instance.categoryId
+func CategoryId() expr.Int8 {
+	return instance.CategoryId()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

@@ -5,7 +5,7 @@
 package tsalesbyfilmcategory
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,10 +14,10 @@ func T() TSalesByFilmCategory {
 	return instance
 }
 
-func Category() path.String {
-	return instance.category
+func Category() expr.String {
+	return instance.Category()
 }
 
-func TotalSales() path.Binary {
-	return instance.totalSales
+func TotalSales() expr.Binary {
+	return instance.TotalSales()
 }

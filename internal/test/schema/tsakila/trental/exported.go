@@ -5,7 +5,7 @@
 package trental
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,30 +14,30 @@ func T() TRental {
 	return instance
 }
 
-func RentalId() path.Int {
-	return instance.rentalId
+func RentalId() expr.Int {
+	return instance.RentalId()
 }
 
-func RentalDate() path.Time {
-	return instance.rentalDate
+func RentalDate() expr.Time {
+	return instance.RentalDate()
 }
 
-func InventoryId() path.Int32 {
-	return instance.inventoryId
+func InventoryId() expr.Int32 {
+	return instance.InventoryId()
 }
 
-func CustomerId() path.Int16 {
-	return instance.customerId
+func CustomerId() expr.Int16 {
+	return instance.CustomerId()
 }
 
-func ReturnDate() path.Time {
-	return instance.returnDate
+func ReturnDate() expr.Time {
+	return instance.ReturnDate()
 }
 
-func StaffId() path.Int8 {
-	return instance.staffId
+func StaffId() expr.Int8 {
+	return instance.StaffId()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

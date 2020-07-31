@@ -5,7 +5,7 @@
 package taddress
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,38 +14,38 @@ func T() TAddress {
 	return instance
 }
 
-func AddressId() path.Int16 {
-	return instance.addressId
+func AddressId() expr.Int16 {
+	return instance.AddressId()
 }
 
-func Address() path.String {
-	return instance.address
+func Address() expr.String {
+	return instance.Address()
 }
 
-func Address2() path.String {
-	return instance.address2
+func Address2() expr.String {
+	return instance.Address2()
 }
 
-func District() path.String {
-	return instance.district
+func District() expr.String {
+	return instance.District()
 }
 
-func CityId() path.Int16 {
-	return instance.cityId
+func CityId() expr.Int16 {
+	return instance.CityId()
 }
 
-func PostalCode() path.String {
-	return instance.postalCode
+func PostalCode() expr.String {
+	return instance.PostalCode()
 }
 
-func Phone() path.String {
-	return instance.phone
+func Phone() expr.String {
+	return instance.Phone()
 }
 
-func Location() path.Unsupported {
-	return instance.location
+func Location() expr.UnsupportedType {
+	return instance.Location()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

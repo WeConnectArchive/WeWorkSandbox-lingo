@@ -10,10 +10,10 @@ import (
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/dialect"
 	"github.com/weworksandbox/lingo/expr/join"
-	"github.com/weworksandbox/lingo/expr/sort"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
 	"github.com/weworksandbox/lingo/query"
 	"github.com/weworksandbox/lingo/query/matchers"
+	"github.com/weworksandbox/lingo/query/sort"
 	"github.com/weworksandbox/lingo/sql"
 )
 

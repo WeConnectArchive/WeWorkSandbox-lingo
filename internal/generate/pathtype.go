@@ -32,7 +32,7 @@ func (d DBPathTypes) ForDBType(dbType string) (PathPackageToType, error) {
 		if !d.allowUnsupportedColType {
 			return PathPackageToType{}, fmt.Errorf("unable to find lingo path type for DB type %s", dbType)
 		}
-		result = PathPackageToType{PkgPath, "Unsupported"}
+		result = PathPackageToType{PkgExpr, "UnsupportedType"}
 	}
 	return result, nil
 }

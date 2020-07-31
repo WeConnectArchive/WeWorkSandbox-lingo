@@ -24,7 +24,7 @@ import (
 
 const (
 	// Paths and Files
-	exprPathDir                      = "./expr/path"
+	exprDir                          = "./expr"
 	genPathsDir                      = "./internal/commands/genpaths"
 	testGenerateSakilaDir            = "./internal/test/testdata/sakila"
 	testGenerateSakilaConfigFileName = "lingo-config.yml"
@@ -116,9 +116,9 @@ func (Gen) Go() error {
 
 // Runs `genpaths.go` that generates the column Path definition types
 func (Gen) Paths() error {
-	absPath, err := filepath.Abs(exprPathDir)
+	absPath, err := filepath.Abs(exprDir)
 	if err != nil {
-		return fmt.Errorf("unable to find absolute path to '%s': %w", exprPathDir, err)
+		return fmt.Errorf("unable to find absolute path to '%s': %w", exprDir, err)
 	}
 
 	return run("go", "run", genPathsDir, "--dir", absPath)

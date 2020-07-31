@@ -5,7 +5,7 @@
 package tpayment
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,30 +14,30 @@ func T() TPayment {
 	return instance
 }
 
-func PaymentId() path.Int16 {
-	return instance.paymentId
+func PaymentId() expr.Int16 {
+	return instance.PaymentId()
 }
 
-func CustomerId() path.Int16 {
-	return instance.customerId
+func CustomerId() expr.Int16 {
+	return instance.CustomerId()
 }
 
-func StaffId() path.Int8 {
-	return instance.staffId
+func StaffId() expr.Int8 {
+	return instance.StaffId()
 }
 
-func RentalId() path.Int {
-	return instance.rentalId
+func RentalId() expr.Int {
+	return instance.RentalId()
 }
 
-func Amount() path.Binary {
-	return instance.amount
+func Amount() expr.Binary {
+	return instance.Amount()
 }
 
-func PaymentDate() path.Time {
-	return instance.paymentDate
+func PaymentDate() expr.Time {
+	return instance.PaymentDate()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

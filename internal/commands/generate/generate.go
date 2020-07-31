@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/weworksandbox/lingo/internal/generate"
+	generator "github.com/weworksandbox/lingo/internal/generate"
 	"github.com/weworksandbox/lingo/internal/parse"
 )
 
@@ -28,7 +28,7 @@ func Command() *cobra.Command {
 		Use:   "generate",
 		Short: "Generate tables from an existing database schema",
 		Args:  cobra.MaximumNArgs(0),
-		Run:   generate,
+		Run:   runGenerate,
 	}
 
 	cmd.PersistentFlags().StringP(flagDir, "d", "./db",
@@ -56,7 +56,7 @@ func Command() *cobra.Command {
 
 //revive:disable:deep-exit - Disabling deep exits from log.Fatalf due to this being a 'top level' command.
 
-func generate(_ *cobra.Command, _ []string) {
+func runGenerate(_ *cobra.Command, _ []string) {
 	var s = getSettings()
 
 	switch dn := strings.ToLower(s.DriverName()); dn {
@@ -80,7 +80,7 @@ func generate(_ *cobra.Command, _ []string) {
 		log.Fatalf("unable to connect to database: %s", err)
 	}
 
-	if err = generate.Generate(ctx, s, parser); err != nil {
+	if err = generator.Generate(ctx, s, parser); err != nil {
 		log.Fatalf("ERR: %s", err)
 	}
 	log.Println("Completed")

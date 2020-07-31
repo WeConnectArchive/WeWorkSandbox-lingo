@@ -5,7 +5,7 @@
 package tcountry
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,14 +14,14 @@ func T() TCountry {
 	return instance
 }
 
-func CountryId() path.Int16 {
-	return instance.countryId
+func CountryId() expr.Int16 {
+	return instance.CountryId()
 }
 
-func Country() path.String {
-	return instance.country
+func Country() expr.String {
+	return instance.Country()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

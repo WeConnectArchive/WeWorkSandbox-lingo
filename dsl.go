@@ -5,26 +5,20 @@ import (
 )
 
 type Name interface {
-	GetName() string
-}
-
-type Alias interface {
-	GetAlias() string
+	GetName() Expression
 }
 
 type Table interface {
 	Expression
-	Alias
 	Name
-	GetColumns() []Column
-	GetParent() string
+	GetTableName() string
+	GetAlias() Expression
+	GetColumns() []Expression
 }
 
 type Column interface {
 	Expression
-	Alias
 	Name
-	GetParent() Table
 }
 
 // ExpressionFunc is a wrapper similar to http.HandlerFunc

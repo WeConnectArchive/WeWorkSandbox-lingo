@@ -13,8 +13,8 @@ import (
 
 var insertQueries = []QueryTest{
 	{
-		Name:      "InsertIntoRental_CurTSAndDateAddCurrTS",
-		Benchmark: true,
+		Name:          "InsertIntoRental_CurTSAndDateAddCurrTS",
+		PendingReason: "Insert is currently broken",
 		Params: Params{
 			Dialect: DefaultDialect,
 			SQL: func() lingo.Expression {

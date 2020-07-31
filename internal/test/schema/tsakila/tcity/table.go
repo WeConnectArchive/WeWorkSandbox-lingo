@@ -6,79 +6,67 @@ package tcity
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TCity {
-	return newTCity(alias)
-}
-
-func New() TCity {
-	return newTCity("")
-}
-
-func newTCity(alias string) TCity {
-	t := TCity{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.cityId = path.NewInt16(t, "city_id")
-	t.city = path.NewString(t, "city")
-	t.countryId = path.NewInt16(t, "country_id")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TCity struct {
-	_alias string
+func New() TCity {
+	return TCity{}
+}
 
-	cityId     path.Int16
-	city       path.String
-	countryId  path.Int16
-	lastUpdate path.Time
+type TCity struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TCity) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.cityId,
-		t.city,
-		t.countryId,
-		t.lastUpdate,
+func (t TCity) GetTableName() string {
+	return "city"
+}
+
+func (t TCity) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.CityId(),
+		t.City(),
+		t.CountryId(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TCity) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TCity) GetAlias() string {
-	return t._alias
+func (t TCity) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TCity) GetName() string {
-	return "city"
-}
-
-func (t TCity) GetParent() string {
-	return "sakila"
+func (t TCity) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TCity) CityId() path.Int16 {
-	return t.cityId
+func (t TCity) CityId() expr.Int16 {
+	return expr.Column(t, expr.Lit("city_id")).ToSQL
 }
 
-func (t TCity) City() path.String {
-	return t.city
+func (t TCity) City() expr.String {
+	return expr.Column(t, expr.Lit("city")).ToSQL
 }
 
-func (t TCity) CountryId() path.Int16 {
-	return t.countryId
+func (t TCity) CountryId() expr.Int16 {
+	return expr.Column(t, expr.Lit("country_id")).ToSQL
 }
 
-func (t TCity) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TCity) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

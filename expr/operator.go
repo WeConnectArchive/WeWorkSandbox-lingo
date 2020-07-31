@@ -2,18 +2,19 @@ package expr
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Category int
 
 const (
 	// CatUnknown is the default Category - used to denote an unset Category.
-	CatUnknown Category = -iota
+	CatUnknown Category = iota
 
 	// CatArithmetic operators can perform arithmetical operations on numeric operands.
 	CatArithmetic
 
-	// CatAssignment operators assigns a value to a variable or of a column or field of a table.
+	// CatAssignment operators assigns a QueryParam to a variable or of a column or field of a table.
 	CatAssignment
 
 	// CatBitwise operators perform bit manipulations between two numeric expressions.
@@ -56,7 +57,7 @@ type Operator int
 
 const (
 	// OpUnknown is the default Operator - used to denote an unset Operator.
-	OpUnknown Operator = -iota
+	OpUnknown Operator = iota
 
 	// CatArithmetic Operators
 
@@ -69,7 +70,10 @@ const (
 	// CatAssignment Operators
 
 	OpAssign
+	OpTable
 	OpTableAlias
+	OpSchema
+	OpPath
 	OpColumnAlias
 
 	// CatBitwise Operators
@@ -81,8 +85,8 @@ const (
 
 	// CatComparison Operators
 
-	OpNull
-	OpNotNull
+	OpIsNull
+	OpIsNotNull
 	OpEq
 	OpNotEq
 	OpLessThan
@@ -123,7 +127,7 @@ const (
 	// CatOthers Operators
 
 	OpList
-
+	OpCount
 	OpLike
 	OpNotLike
 
@@ -162,7 +166,10 @@ var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 	},
 	CatAssignment: {
 		OpAssign:      "Assign",
+		OpTable:       "Table",
 		OpTableAlias:  "TableAlias",
+		OpSchema:      "Schema",
+		OpPath:        "Path",
 		OpColumnAlias: "ColumnAlias",
 	},
 	CatBitwise: {
@@ -172,8 +179,8 @@ var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 		OpBitwiseXOR: "BitwiseXOR",
 	},
 	CatComparison: {
-		OpNull:               "Null",
-		OpNotNull:            "NotNull",
+		OpIsNull:             "IsNull",
+		OpIsNotNull:          "IsNotNull",
 		OpEq:                 "Eq",
 		OpNotEq:              "NotEq",
 		OpLessThan:           "LessThan",
@@ -208,6 +215,7 @@ var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 	},
 	CatOthers: {
 		OpList:             "List",
+		OpCount:            "Count",
 		OpLike:             "Like",
 		OpNotLike:          "NotLike",
 		OpCurrentTimestamp: "CurrentTimestamp",
@@ -222,24 +230,28 @@ func checkAllOpsInACategoryWithStrings(catToOps map[Category]map[Operator]string
 	foundOps := make(map[Operator]Category)
 	foundOpStrs := make(map[string]Category)
 
+	var errMsgs []string
 	for cat := CatUnknown; cat < CatLastCategory; cat++ {
 		opsToStr, found := catToOps[cat]
 		if !found {
-			panic(fmt.Sprintf("Category %d is not in catToOps", cat))
+			errMsgs = append(errMsgs, fmt.Sprintf("Category %d is not in catToOps", cat))
+			continue
 		}
 
 		for op, opStr := range opsToStr {
 			// Check if this operation already exists / is in another category
 			otherCat, alreadyHaveOp := foundOps[op]
 			if alreadyHaveOp {
-				panic(fmt.Sprintf("Operator %s is already in Category %d", opStr, otherCat))
+				errMsgs = append(errMsgs, fmt.Sprintf("Operator %s is already in Category %d", opStr, otherCat))
+				continue
 			}
 			foundOps[op] = cat
 
-			// Check if this operation's string value already exists / is in another category
+			// Check if this operation's string QueryParam already exists / is in another category
 			otherCat, alreadyHaveOpStr := foundOpStrs[opStr]
 			if alreadyHaveOpStr {
-				panic(fmt.Sprintf("Operator string %s is already in Category %d", opStr, otherCat))
+				errMsgs = append(errMsgs, fmt.Sprintf("Operator string %s is already in Category %d", opStr, otherCat))
+				continue
 			}
 			foundOpStrs[opStr] = cat
 
@@ -248,11 +260,17 @@ func checkAllOpsInACategoryWithStrings(catToOps map[Category]map[Operator]string
 			operatorToString[op] = opStr
 		}
 	}
+	if len(errMsgs) > 0 {
+		panic(strings.Join(errMsgs, "\n"))
+	}
 
 	for op := OpUnknown; op < OpLastOperation; op++ {
 		if _, found := foundOps[op]; !found {
-			panic(fmt.Sprintf("Operator value %d was not found in any category", op))
+			errMsgs = append(errMsgs, fmt.Sprintf("Operator QueryParam %d was not found in any category", op))
 		}
+	}
+	if len(errMsgs) > 0 {
+		panic(strings.Join(errMsgs, "\n"))
 	}
 	return catToOps
 }

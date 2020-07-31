@@ -5,7 +5,7 @@
 package tcustomer
 
 import (
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 )
 
 var instance = New()
@@ -14,38 +14,38 @@ func T() TCustomer {
 	return instance
 }
 
-func CustomerId() path.Int16 {
-	return instance.customerId
+func CustomerId() expr.Int16 {
+	return instance.CustomerId()
 }
 
-func StoreId() path.Int8 {
-	return instance.storeId
+func StoreId() expr.Int8 {
+	return instance.StoreId()
 }
 
-func FirstName() path.String {
-	return instance.firstName
+func FirstName() expr.String {
+	return instance.FirstName()
 }
 
-func LastName() path.String {
-	return instance.lastName
+func LastName() expr.String {
+	return instance.LastName()
 }
 
-func Email() path.String {
-	return instance.email
+func Email() expr.String {
+	return instance.Email()
 }
 
-func AddressId() path.Int16 {
-	return instance.addressId
+func AddressId() expr.Int16 {
+	return instance.AddressId()
 }
 
-func Active() path.Int8 {
-	return instance.active
+func Active() expr.Int8 {
+	return instance.Active()
 }
 
-func CreateDate() path.Time {
-	return instance.createDate
+func CreateDate() expr.Time {
+	return instance.CreateDate()
 }
 
-func LastUpdate() path.Time {
-	return instance.lastUpdate
+func LastUpdate() expr.Time {
+	return instance.LastUpdate()
 }

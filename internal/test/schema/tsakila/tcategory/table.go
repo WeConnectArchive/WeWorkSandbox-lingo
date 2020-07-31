@@ -6,72 +6,62 @@ package tcategory
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TCategory {
-	return newTCategory(alias)
-}
-
-func New() TCategory {
-	return newTCategory("")
-}
-
-func newTCategory(alias string) TCategory {
-	t := TCategory{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.categoryId = path.NewInt8(t, "category_id")
-	t.name = path.NewString(t, "name")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TCategory struct {
-	_alias string
+func New() TCategory {
+	return TCategory{}
+}
 
-	categoryId path.Int8
-	name       path.String
-	lastUpdate path.Time
+type TCategory struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TCategory) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.categoryId,
-		t.name,
-		t.lastUpdate,
+func (t TCategory) GetTableName() string {
+	return "category"
+}
+
+func (t TCategory) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.CategoryId(),
+		t.Name(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TCategory) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TCategory) GetAlias() string {
-	return t._alias
+func (t TCategory) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TCategory) GetName() string {
-	return "category"
-}
-
-func (t TCategory) GetParent() string {
-	return "sakila"
+func (t TCategory) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TCategory) CategoryId() path.Int8 {
-	return t.categoryId
+func (t TCategory) CategoryId() expr.Int8 {
+	return expr.Column(t, expr.Lit("category_id")).ToSQL
 }
 
-func (t TCategory) Name() path.String {
-	return t.name
+func (t TCategory) Name() expr.String {
+	return expr.Column(t, expr.Lit("name")).ToSQL
 }
 
-func (t TCategory) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TCategory) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }

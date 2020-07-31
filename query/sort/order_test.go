@@ -9,8 +9,8 @@ import (
 
 	"github.com/weworksandbox/lingo"
 	"github.com/weworksandbox/lingo/expr/matchers"
-	"github.com/weworksandbox/lingo/expr/sort"
 	. "github.com/weworksandbox/lingo/internal/test/matchers"
+	"github.com/weworksandbox/lingo/query/sort"
 	"github.com/weworksandbox/lingo/sql"
 )
 
@@ -131,7 +131,7 @@ var _ = Describe("Dialect", func() {
 
 type orderDialectSuccess struct{}
 
-func (orderDialectSuccess) GetName() string { return "order by dialect" }
+func (orderDialectSuccess) GetName() lingo.Expression { return "order by dialect" }
 func (orderDialectSuccess) OrderBy(_ sql.Data, _ sort.Direction) (sql.Data, error) {
 	return sql.String("order by sql"), nil
 }

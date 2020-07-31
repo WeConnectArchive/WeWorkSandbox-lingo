@@ -6,100 +6,82 @@ package trental
 
 import (
 	"github.com/weworksandbox/lingo"
-	"github.com/weworksandbox/lingo/expr/path"
+	"github.com/weworksandbox/lingo/expr"
 	"github.com/weworksandbox/lingo/sql"
 )
 
 func As(alias string) TRental {
-	return newTRental(alias)
-}
-
-func New() TRental {
-	return newTRental("")
-}
-
-func newTRental(alias string) TRental {
-	t := TRental{
-		_alias: alias,
+	t := New()
+	if alias != "" {
+		t.alias = expr.Lit(alias)
 	}
-	t.rentalId = path.NewInt(t, "rental_id")
-	t.rentalDate = path.NewTime(t, "rental_date")
-	t.inventoryId = path.NewInt32(t, "inventory_id")
-	t.customerId = path.NewInt16(t, "customer_id")
-	t.returnDate = path.NewTime(t, "return_date")
-	t.staffId = path.NewInt8(t, "staff_id")
-	t.lastUpdate = path.NewTime(t, "last_update")
 	return t
 }
 
-type TRental struct {
-	_alias string
+func New() TRental {
+	return TRental{}
+}
 
-	rentalId    path.Int
-	rentalDate  path.Time
-	inventoryId path.Int32
-	customerId  path.Int16
-	returnDate  path.Time
-	staffId     path.Int8
-	lastUpdate  path.Time
+type TRental struct {
+	alias lingo.Expression
 }
 
 // lingo.Table Functions
 
-func (t TRental) GetColumns() []lingo.Column {
-	return []lingo.Column{
-		t.rentalId,
-		t.rentalDate,
-		t.inventoryId,
-		t.customerId,
-		t.returnDate,
-		t.staffId,
-		t.lastUpdate,
+func (t TRental) GetTableName() string {
+	return "rental"
+}
+
+func (t TRental) GetColumns() []lingo.Expression {
+	return []lingo.Expression{
+		t.RentalId(),
+		t.RentalDate(),
+		t.InventoryId(),
+		t.CustomerId(),
+		t.ReturnDate(),
+		t.StaffId(),
+		t.LastUpdate(),
 	}
 }
 
 func (t TRental) ToSQL(d lingo.Dialect) (sql.Data, error) {
-	return path.ExpandTableWithDialect(d, t)
+	return expr.Table(t).ToSQL(d)
 }
 
-func (t TRental) GetAlias() string {
-	return t._alias
+func (t TRental) GetName() lingo.Expression {
+	return expr.TableName(t)
 }
 
-func (t TRental) GetName() string {
-	return "rental"
-}
-
-func (t TRental) GetParent() string {
-	return "sakila"
+func (t TRental) GetAlias() lingo.Expression {
+	return t.alias
 }
 
 // Column Functions
 
-func (t TRental) RentalId() path.Int {
-	return t.rentalId
+func (t TRental) RentalId() expr.Int {
+	return expr.Column(t, expr.Lit("rental_id")).ToSQL
 }
 
-func (t TRental) RentalDate() path.Time {
-	return t.rentalDate
+func (t TRental) RentalDate() expr.Time {
+	return expr.Column(t, expr.Lit("rental_date")).ToSQL
 }
 
-func (t TRental) InventoryId() path.Int32 {
-	return t.inventoryId
+func (t TRental) InventoryId() expr.Int32 {
+	return expr.Column(t, expr.Lit("inventory_id")).ToSQL
 }
 
-func (t TRental) CustomerId() path.Int16 {
-	return t.customerId
+func (t TRental) CustomerId() expr.Int16 {
+	return expr.Column(t, expr.Lit("customer_id")).ToSQL
 }
 
-func (t TRental) ReturnDate() path.Time {
-	return t.returnDate
+func (t TRental) ReturnDate() expr.Time {
+	return expr.Column(t, expr.Lit("return_date")).ToSQL
 }
 
-func (t TRental) StaffId() path.Int8 {
-	return t.staffId
+func (t TRental) StaffId() expr.Int8 {
+	return expr.Column(t, expr.Lit("staff_id")).ToSQL
 }
 
-func (t TRental) LastUpdate() path.Time {
-	return t.lastUpdate
+func (t TRental) LastUpdate() expr.Time {
+	return expr.Column(t, expr.Lit("last_update")).ToSQL
 }
