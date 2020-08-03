@@ -24,7 +24,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.7.0
+	github.com/spf13/viper v1.7.1
 	go.opentelemetry.io/otel v0.8.0
 	golang.org/x/tools v0.0.0-20200225230052-807dcd883420 // indirect
 	google.golang.org/grpc v1.30.0
