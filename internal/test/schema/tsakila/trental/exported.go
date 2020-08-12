@@ -22,7 +22,7 @@ func RentalDate() expr.Time {
 	return instance.RentalDate()
 }
 
-func InventoryId() expr.Int32 {
+func InventoryId() expr.Int32Column {
 	return instance.InventoryId()
 }
 

@@ -66,8 +66,11 @@ func (t TRental) RentalDate() expr.Time {
 	return expr.Column(t, expr.Lit("rental_date")).ToSQL
 }
 
-func (t TRental) InventoryId() expr.Int32 {
-	return expr.Column(t, expr.Lit("inventory_id")).ToSQL
+func (t TRental) InventoryId() expr.Int32Column {
+	return expr.Int32Column{
+		Table:  t,
+		Column: expr.Lit("inventory_id"),
+	}
 }
 
 func (t TRental) CustomerId() expr.Int16 {

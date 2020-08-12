@@ -131,7 +131,12 @@ var _ = Describe("Dialect", func() {
 
 type orderDialectSuccess struct{}
 
-func (orderDialectSuccess) GetName() lingo.Expression { return "order by dialect" }
+func (orderDialectSuccess) GetName() lingo.Expression {
+	return lingo.ExpressionFunc(func(d lingo.Dialect) (sql.Data, error) {
+		return sql.String("order by dialect"), nil
+	})
+}
+
 func (orderDialectSuccess) OrderBy(_ sql.Data, _ sort.Direction) (sql.Data, error) {
 	return sql.String("order by sql"), nil
 }

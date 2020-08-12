@@ -21,6 +21,10 @@ var insertQueries = []QueryTest{
 				const (
 					inventoryID = int32(470)
 				)
+				query.Select(trental.InventoryId()).
+					From(trental.InventoryId()).
+					Where(trental.InventoryId().Between(expr.Int32Param(10), trental.InventoryId()))
+
 				return query.InsertInto(
 					trental.T(),
 				).Columns(

@@ -26,6 +26,12 @@ type ExpressionFunc func(d Dialect) (sql.Data, error)
 
 func (e ExpressionFunc) ToSQL(d Dialect) (sql.Data, error) { return e(d) }
 
+// 1. Dialect - knowing how to build each sql part `{0}.{1}`
+// 2. QueryContext - know about fields, tables -> exposed to be used in 'query' package
+
+type QueryContext interface {
+}
+
 type Expression interface {
 	ToSQL(d Dialect) (sql.Data, error)
 }

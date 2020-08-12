@@ -379,6 +379,20 @@ func Int32Param(i int32) Int32 {
 	return InterfaceParam(i).ToSQL
 }
 
+type Int32Column struct {
+	Int32
+	Table  lingo.Table
+	Column lingo.Expression
+}
+
+func (t Int32Column) ToSQL(d lingo.Dialect) (sql.Data, error) {
+	return t.Column.ToSQL(d) //Lit("inventory_id").ToSQL(d)
+}
+
+type Int32 struct {
+	exp lingo.Expression
+}
+
 type Int32 lingo.ExpressionFunc
 
 func (t Int32) ToSQL(d lingo.Dialect) (sql.Data, error) {
