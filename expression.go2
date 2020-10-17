@@ -1,0 +1,103 @@
+package lingo
+
+import (
+	"sync/atomic"
+	"reflect"
+	"strconv"
+)
+
+type Expression interface {
+	Type() reflect.Type
+}
+
+type TypedExpression[T any] interface{
+	Expression
+}
+
+type ConstantExpression interface {
+	Expression
+	Interface() interface{}
+}
+
+type PredicateExpression interface {
+	TypedExpression[bool]
+	Not() PredicateExpression
+}
+
+type AnyComparableExpression[T any] interface { 
+	TypedExpression[T]
+	Desc()
+}
+
+type ComparableExpression[T comparable] interface {
+	AnyComparableExpression[T]
+	GTValue(v T) BooleanExpression
+	GT(e TypedExpression[T]) BooleanExpression
+}
+
+type BooleanExpression interface {
+	TypedExpression[bool]
+	EqValue(b bool) BooleanExpression
+	Eq(e TypedExpression[bool]) BooleanExpression
+}
+
+type LiteralExpression[T comparable] interface {
+	ComparableExpression[T]
+	StringValue() // StringExpression
+}
+
+type NumberExpression[T numeric] interface {
+	ComparableExpression[T]
+	Max() NumberExpression[T]
+}
+
+type ParamExpression[T any] interface {
+	TypedExpression[T]
+	Name() string
+	Anonymus() bool
+}
+
+// NumberPath
+// NumberExpression
+// - ComparableExpression
+// - SimpleExpression
+// - DslExpression
+// - Expression
+
+
+func NewSimpleConstant[T](v T) SimpleConstant[T] {
+	return SimpleConstant[T]{
+		value: v,
+	}
+}
+type SimpleConstant[T any] struct {
+	TypedExpression[T]
+	value T
+}
+func (e SimpleConstant[T]) Type() reflect.Type { return reflect.TypeOf(T(e.value)) }
+func (e SimpleConstant[T]) Interface() interface{} { return e.value }
+
+
+var counter int64
+func newRandomName() string {
+	value := atomic.AddInt64(&counter, 1)
+	return strconv.FormatInt(value, 10)
+}
+func NewSimpleParam[T any](t reflect.Type, anonymus bool, name string) SimpleParam[T] {
+	if anonymus {
+		name = newRandomName()
+	}
+	return SimpleParam[T]{
+		t: t,
+		anonymus: anonymus,
+		name: name,
+	}
+}
+type SimpleParam[T any] struct {
+	t reflect.Type
+	anonymus bool
+	name string
+}
+func (p SimpleParam[T]) Type() reflect.Type { return p.t }
+func (p SimpleParam[T]) Name() string { return p.name }
+func (p SimpleParam[T]) Anonymus() bool { return p.anonymus }

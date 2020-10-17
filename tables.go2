@@ -1,0 +1,38 @@
+package lingo
+
+import "reflect"
+
+type Actor struct {
+	ActorID int16
+}
+
+func NewTActor() TActor {
+	return NewTActorForVariable("actor")
+}
+func NewTActorForVariable(variable string) TActor {
+	pm := NewPathMetadataForVariable(variable)
+	printDebug("NewPathMetadataForVariable(variable)", pm)
+	tablePath := NewSimplePath[Actor](Actor{}, pm)
+	printDebug("tablePath", tablePath)
+	return NewTActorForPath(tablePath)
+}
+func NewTActorForPath(p SimplePath[Actor]) TActor {
+	var t TActor
+	t.path = p
+	t.ActorID = NewNumberPath[int16](NewSimplePath[int16](0, NewPathMetadataForProperty("actor_id", p.Metadata())))
+	t.IsActive = NewBoolPath(NewSimplePath[bool](false, NewPathMetadataForProperty("is_active", p.Metadata())))
+	printDebug("t", t)
+	return t
+}
+
+type TActor struct {
+	path SimplePath[Actor]
+	ActorID NumberPath[int16]
+	IsActive BoolPath
+}
+func (t TActor) Type() reflect.Type {
+	return t.path.Type()
+}
+func (t TActor) Metadata() PathMetadata {
+	return t.path.Metadata()
+}

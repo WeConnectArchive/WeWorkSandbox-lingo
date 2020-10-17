@@ -1,6 +1,6 @@
 module github.com/weworksandbox/lingo
 
-go 1.14
+go 1.15
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
@@ -10,6 +10,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/uuid v1.1.2 // indirect
 	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
 	github.com/magefile/mage v1.10.0
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
@@ -30,3 +31,5 @@ require (
 	google.golang.org/grpc v1.30.0
 	gopkg.in/ini.v1 v1.55.0 // indirect
 )
+
+replace github.com/weworksandbox/lingo => /Users/james.popadak/gomod/lingo

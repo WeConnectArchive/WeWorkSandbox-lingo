@@ -1,0 +1,118 @@
+package lingo
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type PathType int
+
+func (p PathType) Type() reflect.Type {
+	return reflect.TypeOf(p)
+}
+
+const (
+	Unknown PathType = iota
+
+	ArrayValue
+	ArrayValueConstant
+	CollectionAny
+	Delegate
+	ListValue
+	ListValueConstant
+	MapValue
+	MapValueConstant
+	Property
+	Variable
+)
+
+func NewPathMetadataForVariable(varName string) PathMetadata { return NewPathMetadata(Variable, varName, nil) }
+func NewPathMetadataForProperty(propName string, parent PathMetadata) PathMetadata { return NewPathMetadata(Property, propName, &parent)}
+func NewPathMetadata(pt PathType, element interface{}, parent *PathMetadata) PathMetadata {
+	var root *PathMetadata
+	if parent != nil {
+		root = parent.Root()
+	}
+	return PathMetadata{
+		pathType: pt,
+		root: root,
+		parent: parent,
+		element: element,
+	}
+}
+type PathMetadata struct {
+	pathType PathType
+	root *PathMetadata
+	parent *PathMetadata
+	element interface{}
+}
+func (pm PathMetadata) Type() reflect.Type { return reflect.TypeOf(pm.pathType) }
+func (pm PathMetadata) PathType() PathType { return pm.pathType }
+func (pm PathMetadata) Parent() *PathMetadata { return pm.parent }
+func (pm PathMetadata) Root() *PathMetadata { return pm.root }
+func (pm PathMetadata) IsRoot() bool {
+	return pm.parent == nil && (pm.pathType == Delegate && pm.parent.IsRoot())
+}
+func (pm PathMetadata) Element() interface{} { return pm.element }
+func (pm PathMetadata) Name() string {
+	switch pm.pathType {
+	case Variable, Property:
+		return pm.element.(string)
+	}
+	panic(fmt.Sprintf("name property not available for path type %d, must be accessed with Element()", pm.pathType))
+}
+
+// ================================================
+// PATH
+type Path interface {
+	Type() reflect.Type
+	Metadata()
+}
+
+
+func NewSimplePath[T any](value T, pm PathMetadata) SimplePath[T] {
+	return SimplePath[T]{
+		value: value,
+		pm: pm,
+	}
+}
+type SimplePath[T any] struct {
+	value T
+	pm PathMetadata
+}
+func (p SimplePath[T]) Type() reflect.Type { return reflect.TypeOf(p.value) }
+func (p SimplePath[T]) Metadata() PathMetadata { return p.pm }
+
+// -------------------------------------
+// NewBoolPath
+func NewBoolPath(p SimplePath[bool]) BoolPath {
+	return BoolPath(p)
+}
+type BoolPath SimplePath[bool] // & BooleanExpression
+func (p BoolPath) Type() reflect.Type { return reflect.TypeOf(p) }
+func (p BoolPath) EqValue(v bool) BooleanExpression {
+	return BooleanExpression(nil) // Constant(v)
+}
+func (p BoolPath) Eq(v TypedExpression[bool]) BooleanExpression {
+	return NewOpEqual(p, v)
+}
+
+// -------------------------------------
+// NewNumberPath
+func NewNumberPath[T numeric](p SimplePath[T]) NumberPath[T] {
+	return NumberPath[T](p)
+}
+type NumberPath[T numeric] SimplePath[T] // & ComparableExpression & BooleanExpression
+func (p NumberPath[T]) Type() reflect.Type { return reflect.TypeOf(p) }
+func (p NumberPath[T]) EqValue(v T) BooleanExpression {
+	return BooleanExpression(nil) // Constant(v)
+}
+func (p NumberPath[T]) Eq(v TypedExpression[T]) BooleanExpression {
+	return NewOpEqual(p, v)
+}
+func (p NumberPath[T]) GTValue(v T) BooleanExpression {
+	return p.GT(nil) // Constant(v)
+}
+func (p NumberPath[T]) GT(e TypedExpression[T]) BooleanExpression {
+	return NewOpGreaterThan(p, e)
+}

@@ -1,0 +1,18 @@
+package lingo
+
+type WhereClause[T any] interface {
+	Where(e ...PredicateExpression) WhereClause[T]
+}
+
+type SimpleQuery[T any] interface {
+	WhereClause[T]
+	Limit(v int64) T
+	Offset(v int64) T
+	Set()
+}
+
+type Query[T any] interface {
+	SimpleQuery[T]
+	GroupBy(e ...Expression) Query[T]
+	Having(e ...PredicateExpression) Query[T]
+}

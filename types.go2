@@ -1,0 +1,15 @@
+package lingo
+
+import "reflect"
+
+type numeric interface {
+	type int, int16, int32, int64
+}
+
+var (
+	typeInt16 = reflect.TypeOf(int16(0))
+	typeBool  = reflect.TypeOf(bool(false))
+)
+
+func TypeOfInt16() reflect.Type { return typeInt16 }
+func TypeOfBool() reflect.Type  { return typeBool }

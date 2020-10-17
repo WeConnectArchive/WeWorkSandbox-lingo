@@ -1,0 +1,351 @@
+package lingo
+
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
+
+type Operation interface {
+	Operator() Operator
+	Arg(idx int) Expression
+	Args() []Expression
+}
+
+func NewSimpleOperation[T any](op Operator, args...Expression) SimpleOperation[T] {
+	return SimpleOperation[T]{
+		op: op,
+		args: args,
+	}
+}
+type SimpleOperation[T any] struct {
+	op Operator
+	args []Expression
+}
+func (o SimpleOperation[T]) Type() reflect.Type { return o.op.Type() }
+func (o SimpleOperation[T]) Operator() Operator { return o.op }
+func (o SimpleOperation[T]) Args() []Expression { return o.args }
+func (o SimpleOperation[T]) Arg(idx int) Expression { 
+	if idx >= len(o.args) {
+		return nil
+	}
+	return o.args[idx]
+}
+
+
+func NewPredicateOperation(op Operator, args...Expression) PredicateOperation {
+	return PredicateOperation(NewSimpleOperation[bool](op, args...))
+}
+type PredicateOperation SimpleOperation[bool]
+func (o PredicateOperation) Type() reflect.Type {
+	return o.Type()
+}
+func (o PredicateOperation) Not() PredicateExpression {
+	return NewPredicateOperation(OpNot, o)
+}
+
+
+
+func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
+	return BooleanOperation{
+		PredicateOperation: NewPredicateOperation(op, args...),
+	}
+}
+type BooleanOperation struct {
+	PredicateOperation
+}
+func (o BooleanOperation) Type() reflect.Type { 
+	return o.PredicateOperation.Type() 
+}
+func (o BooleanOperation) EqValue(b bool) BooleanExpression {
+	return o.Eq(nil) // Constant(b)
+}
+func (o BooleanOperation) Eq(e TypedExpression[bool]) BooleanExpression {
+	return NewBooleanOperation(OpEqual, o, e)
+}
+
+func NewOpEqual(l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpEqual, l, r)
+}
+func NewOpGreaterThan(l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpGreaterThan, l, r)
+}
+
+
+type Operator interface {
+	Type() reflect.Type
+}
+
+type Category int
+
+const (
+	// CatUnknown is the default Category - used to denote an unset Category.
+	CatUnknown Category = iota
+
+	// CatArithmetic operators can perform arithmetical operations on numeric operands.
+	CatArithmetic
+
+	// CatAssignment operators assigns a QueryParam to a variable or of a column or field of a table.
+	CatAssignment
+
+	// CatBitwise operators perform bit manipulations between two numeric expressions.
+	CatBitwise
+
+	// CatComparison (or relational) operators are mathematical symbols which are used to compare two values.
+	// The result of a comparison can be TRUE, FALSE, or UNKNOWN.
+	CatComparison
+
+	// CatLogical operators are those that are true or false. They return a true or false values to combine one or
+	// more true or false values.
+	CatLogical
+
+	// CatSet operators merges two queries using different algorithms
+	CatSet
+
+	// CatString operators can combine two or more string data types into one expression
+	CatString
+
+	// CatUnary operators perform such an operation which contain only one expression.
+	CatUnary
+
+	// TODO - Update this name!!!
+	// CatOthers just dont know what the heck to call this...
+	CatOthers
+
+	// CatLastCategory is the last entry in Category. Allows for iterating over Category.
+	CatLastCategory
+)
+
+// Operators that belong to this Category
+func (c Category) Operators() []Operator {
+	ops := make([]Operator, len(categoryToOperators[c]))
+	copy(ops, categoryToOperators[c])
+	return ops
+}
+
+// Op a specific type of an Operation
+type Op int
+
+func (op Op) Type() reflect.Type {
+	return reflect.TypeOf(op)
+}
+
+const (
+	// OpUnknown is the default Operator - used to denote an unset Operator.
+	OpUnknown Op = iota
+
+	// CatArithmetic Operators
+
+	OpAddition
+	OpSubtraction
+	OpMultiplication
+	OpDivision
+	OpModulo
+
+	// CatAssignment Operators
+
+	OpAssign
+	OpTable
+	OpTableAlias
+	OpSchema
+	OpPath
+	OpColumnAlias
+
+	// CatBitwise Operators
+
+	OpBitwiseAND
+	OpBitwiseNOT
+	OpBitwiseOR
+	OpBitwiseXOR
+
+	// CatComparison Operators
+
+	OpIsNull
+	OpIsNotNull
+	OpEqual
+	OpNotEqual
+	OpLessThan
+	OpLessThanOrEqual
+	OpGreaterThan
+	OpGreaterThanOrEqual
+
+	// CatLogical Operators
+
+	OpAnd
+	OpOr
+	OpNot
+	OpIn
+	OpNotIn
+	OpBetween
+	OpNotBetween
+	OpAny
+	OpAll
+	OpSome
+	OpExists
+
+	// CatSet Operators
+
+	OpUnion
+	OpExcept
+	OpIntersect
+
+	// CatString Operators
+
+	OpStringConcat
+
+	// CatUnary Operators
+
+	OpSingleton
+	OpNegate
+	OpCurrentTimestamp
+
+	// CatOthers Operators
+
+	OpList
+	OpCount
+	OpLike
+	OpNotLike
+
+	// OpLastOperator is the last entry in Operator list. Allows for iterating over Operator.
+	OpLastOperation
+
+	// Put aliases for Operator here to not affect OpLastOperator
+	// Ex: OpNewName = OpOldName
+)
+
+// String serves as the name of the operator. It is a single SnakeCased ASCII word that is used in generating paths.
+func (o Op) String() string {
+	return operatorToString[o]
+}
+
+// Category of operations this Operator belongs to.
+func (o Op) Category() Category {
+	return operatorToCategory[o]
+}
+
+// This is used to ensure:
+// - all categories have an operator
+// - all operators have method strings
+// - each operator only exists in one category
+// Each Operator string must be a single SnakeCased ASCII word that is used in generating paths.
+var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
+	CatUnknown: {
+		OpUnknown: "Unknown",
+	},
+	CatArithmetic: {
+		OpAddition:       "Addition",
+		OpSubtraction:    "Subtraction",
+		OpMultiplication: "Multiplication",
+		OpDivision:       "Division",
+		OpModulo:         "Modulo",
+	},
+	CatAssignment: {
+		OpAssign:      "Assign",
+		OpTable:       "Table",
+		OpTableAlias:  "TableAlias",
+		OpSchema:      "Schema",
+		OpPath:        "Path",
+		OpColumnAlias: "ColumnAlias",
+	},
+	CatBitwise: {
+		OpBitwiseAND: "BitwiseAND",
+		OpBitwiseNOT: "BitwiseNOT",
+		OpBitwiseOR:  "BitwiseOR",
+		OpBitwiseXOR: "BitwiseXOR",
+	},
+	CatComparison: {
+		OpIsNull:             "IsNull",
+		OpIsNotNull:          "IsNotNull",
+		OpEqual:              "Equal",
+		OpNotEqual:           "NotEqual",
+		OpLessThan:           "LessThan",
+		OpLessThanOrEqual:    "LessThanOrEqual",
+		OpGreaterThan:        "GreaterThan",
+		OpGreaterThanOrEqual: "GreaterThanOrEqual",
+	},
+	CatLogical: {
+		OpAnd:        "And",
+		OpOr:         "Or",
+		OpNot:        "Not",
+		OpIn:         "In",
+		OpNotIn:      "NotIn",
+		OpBetween:    "Between",
+		OpNotBetween: "NotBetween",
+		OpAny:        "Any",
+		OpAll:        "All",
+		OpSome:       "Some",
+		OpExists:     "Exists",
+	},
+	CatSet: {
+		OpUnion:     "Union",
+		OpExcept:    "Except",
+		OpIntersect: "Intersect",
+	},
+	CatString: {
+		OpStringConcat: "StringConcat",
+	},
+	CatUnary: {
+		OpSingleton: "Singleton",
+		OpNegate:    "Negate",
+	},
+	CatOthers: {
+		OpList:             "List",
+		OpCount:            "Count",
+		OpLike:             "Like",
+		OpNotLike:          "NotLike",
+		OpCurrentTimestamp: "CurrentTimestamp",
+	},
+})
+
+var operatorToString = make(map[Operator]string)
+var operatorToCategory = make(map[Operator]Category)
+var categoryToOperators = make(map[Category][]Operator)
+
+func checkAllOpsInACategoryWithStrings(catToOps map[Category]map[Operator]string) map[Category]map[Operator]string {
+	foundOps := make(map[Operator]Category)
+	foundOpStrs := make(map[string]Category)
+
+	var errMsgs []string
+	for cat := CatUnknown; cat < CatLastCategory; cat++ {
+		opsToStr, found := catToOps[cat]
+		if !found {
+			errMsgs = append(errMsgs, fmt.Sprintf("Category %d is not in catToOps", cat))
+			continue
+		}
+
+		for op, opStr := range opsToStr {
+			// Check if this operation already exists / is in another category
+			otherCat, alreadyHaveOp := foundOps[op]
+			if alreadyHaveOp {
+				errMsgs = append(errMsgs, fmt.Sprintf("Operator %s is already in Category %d", opStr, otherCat))
+				continue
+			}
+			foundOps[op] = cat
+
+			// Check if this operation's string QueryParam already exists / is in another category
+			otherCat, alreadyHaveOpStr := foundOpStrs[opStr]
+			if alreadyHaveOpStr {
+				errMsgs = append(errMsgs, fmt.Sprintf("Operator string %s is already in Category %d", opStr, otherCat))
+				continue
+			}
+			foundOpStrs[opStr] = cat
+
+			categoryToOperators[cat] = append(categoryToOperators[cat], op)
+			operatorToCategory[op] = cat
+			operatorToString[op] = opStr
+		}
+	}
+	if len(errMsgs) > 0 {
+		panic(strings.Join(errMsgs, "\n"))
+	}
+
+	for op := OpUnknown; op < OpLastOperation; op++ {
+		if _, found := foundOps[op]; !found {
+			errMsgs = append(errMsgs, fmt.Sprintf("Operator QueryParam %d was not found in any category", op))
+		}
+	}
+	if len(errMsgs) > 0 {
+		panic(strings.Join(errMsgs, "\n"))
+	}
+	return catToOps
+}
