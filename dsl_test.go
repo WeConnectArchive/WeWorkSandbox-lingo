@@ -94,6 +94,8 @@ func TestDSL(t *testing.T) {
 	printDebug("tactor", tactor)
 	printDebug("tactor.ActorID", tactor.ActorID)
 	printDebug("tactor.ActorID.EqValue(int16(10))", tactor.ActorID.EqValue(int16(10)))
+	var exp Expression = tactor.IsActive.Eq(tactor.IsActive.EqValue(true))
+	printDebug("tactor.IsActive.Eq(tactor.IsActive.EqValue(true))", exp)
 }
 //line paths.go2:88
 func instantiate୦୦NewSimplePath୦bool(value bool,
@@ -156,34 +158,26 @@ type instantiate୦୦SimplePath୦bool struct {
 //line paths.go2:98
 func (p instantiate୦୦SimplePath୦bool,) Type() reflect.Type { return p.pm.Type() }
 func (p instantiate୦୦SimplePath୦bool,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+//line paths.go2:99
+ return VisitWithDefaultToStringBuilder(p)
+//line paths.go2:99
 }
 func (p instantiate୦୦SimplePath୦bool,) Metadata() PathMetadata { return p.pm }
 func (p instantiate୦୦SimplePath୦bool,) Root() Path             { return p.pm.Root() }
-//line expression.go2:8
-func instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(b instantiate୦୦TypedBuilder୦lingo୮aTemplates୦string, buildCtx Templates, e Expression) string {
-	return b.Visit(buildCtx, e)
-}
 
-//line expression.go2:10
-type instantiate୦୦TypedBuilder୦lingo୮aTemplates୦string interface {
-//line expression.go2:13
- Visit(ctx Templates, e Expression) string
-}
-
-//line expression.go2:14
+//line paths.go2:101
 var _ = fmt.Errorf
-//line expression.go2:14
+//line paths.go2:101
 var _ = reflect.Append
-//line expression.go2:14
+//line paths.go2:101
 var _ = regexp.Compile
-//line expression.go2:14
+//line paths.go2:101
 var _ = strconv.AppendBool
 
-//line expression.go2:14
+//line paths.go2:101
 type _ strings.Builder
 
-//line expression.go2:14
+//line paths.go2:101
 var _ = atomic.AddInt32
-//line expression.go2:14
+//line paths.go2:101
 var _ = testing.AllocsPerRun

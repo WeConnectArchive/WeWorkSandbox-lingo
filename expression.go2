@@ -13,6 +13,9 @@ type TypedBuilder[C, T any] interface {
 	Visit(ctx C, e Expression) T
 }
 
+func VisitWithDefaultPathBuilder(e Expression) Path {
+	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e) 
+} 
 type PathBuilder struct {}
 func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	if p, ok := e.(Path); ok {
@@ -28,6 +31,10 @@ func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	return nil
 }
 
+
+func VisitWithDefaultPathsBuilder(e Expression) []Path {
+	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e) 
+} 
 type PathsBuilder struct {}
 func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	if p, ok := e.(Path); ok {
@@ -41,6 +48,9 @@ func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	return paths
 }
 
+func VisitWithDefaultToStringBuilder(e Expression) string {
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e) 
+} 
 type ToStringBuilder struct {}
 func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 	if c, ok := e.(ConstantExpression); ok {

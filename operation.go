@@ -31,22 +31,20 @@ type Operation interface {
 	Args() []Expression
 }
 
-//line operation.go2:41
+//line operation.go2:39
 func NewPredicateOperation(op Operator, args ...Expression) PredicateOperation {
 	return PredicateOperation(instantiate୦୦NewSimpleOperation୦bool(op, args...))
 }
 
-//line operation.go2:44
+//line operation.go2:42
 type PredicateOperation instantiate୦୦SimpleOperation୦bool
 
-//line operation.go2:45
+//line operation.go2:43
 func (o PredicateOperation) Type() reflect.Type { return o.Type() }
-func (o PredicateOperation) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
-}
-func (o PredicateOperation) Not() PredicateExpression { return NewPredicateOperation(OpNot, o) }
-func (o PredicateOperation) Operator() Operator       { return o.op }
-func (o PredicateOperation) Args() []Expression       { return o.args }
+func (o PredicateOperation) String() string                             { return VisitWithDefaultToStringBuilder(o) }
+func (o PredicateOperation) Not() PredicateExpression                   { return NewPredicateOperation(OpNot, o) }
+func (o PredicateOperation) Operator() Operator                         { return o.op }
+func (o PredicateOperation) Args() []Expression                         { return o.args }
 func (o PredicateOperation) Arg(idx int) Expression {
 	if idx >= len(o.args) {
 		return nil
@@ -54,59 +52,57 @@ func (o PredicateOperation) Arg(idx int) Expression {
 	return o.args[idx]
 }
 
-//line operation.go2:61
+//line operation.go2:57
+func NewIsNull(e Expression) BooleanExpression { return NewBooleanOperation(OpIsNull, e) }
+func NewIsNotNull(e Expression) BooleanExpression                      { return NewBooleanOperation(OpIsNotNull, e) }
+func NewOpEqual(l, r Expression) BooleanExpression                     { return NewBooleanOperation(OpEqual, l, r) }
+func NewOpGreaterThan(l, r Expression) BooleanExpression {
+//line operation.go2:60
+ return NewBooleanOperation(OpGreaterThan, l, r)
+//line operation.go2:60
+}
+
 func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
 	return BooleanOperation{
 		PredicateOperation: NewPredicateOperation(op, args...),
 	}
 }
 
-//line operation.go2:66
+//line operation.go2:67
 type BooleanOperation struct {
 	PredicateOperation
 }
 
-//line operation.go2:69
+//line operation.go2:70
 func (o BooleanOperation) Type() reflect.Type { return o.PredicateOperation.Type() }
-func (o BooleanOperation) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
-}
+func (o BooleanOperation) String() string                             { return VisitWithDefaultToStringBuilder(o) }
 func (o BooleanOperation) EqValue(b bool) BooleanExpression {
-//line operation.go2:73
+//line operation.go2:72
  return o.Eq(instantiate୦୦NewSimpleConstant୦bool(b))
-//line operation.go2:73
+//line operation.go2:72
 }
 func (o BooleanOperation) Eq(e instantiate୦୦TypedExpression୦bool,) BooleanExpression {
-//line operation.go2:74
+//line operation.go2:73
  return NewOpEqual(o, e)
-//line operation.go2:74
+//line operation.go2:73
 }
 
-func NewOpEqual(l, r Expression) BooleanExpression {
-	return NewBooleanOperation(OpEqual, l, r)
-}
-func NewOpGreaterThan(l, r Expression) BooleanExpression {
-	return NewBooleanOperation(OpGreaterThan, l, r)
-}
-
-//line operation.go2:85
+//line operation.go2:77
 func NewStringOperation(op Operator, args ...Expression) StringOperation {
 	return StringOperation{
 		mixin: instantiate୦୦NewSimpleOperation୦string(op, args...),
 	}
 }
 
-//line operation.go2:90
+//line operation.go2:82
 type StringOperation struct {
 	StringExpression
 	mixin instantiate୦୦SimpleOperation୦string
 }
 
-//line operation.go2:94
+//line operation.go2:86
 func (o StringOperation) Type() reflect.Type { return o.mixin.Type() }
-func (o StringOperation) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
-}
+func (o StringOperation) String() string                             { return VisitWithDefaultToStringBuilder(o) }
 
 func (o StringOperation) As(alias instantiate୦୦TypedPath୦string,) StringExpression {
 	return NewStringOperation(OpAlias, o, alias)
@@ -115,7 +111,7 @@ func (o StringOperation) Alias(alias string) StringExpression {
 	return o.As(instantiate୦୦NewSimplePathForVariable୦string("", alias))
 }
 
-//line operation.go2:108
+//line operation.go2:98
 type Operator interface {
 	Type() reflect.Type
 }
@@ -123,48 +119,48 @@ type Operator interface {
 type Category int
 
 const (
-//line operation.go2:116
+//line operation.go2:106
  CatUnknown Category = iota
 
-//line operation.go2:119
+//line operation.go2:109
  CatArithmetic
 
-//line operation.go2:122
+//line operation.go2:112
  CatAssignment
 
-//line operation.go2:125
+//line operation.go2:115
  CatBitwise
 
-//line operation.go2:129
+//line operation.go2:119
  CatComparison
 
-//line operation.go2:133
+//line operation.go2:123
  CatLogical
 
-//line operation.go2:136
+//line operation.go2:126
  CatSet
 
-//line operation.go2:139
+//line operation.go2:129
  CatString
 
-//line operation.go2:142
+//line operation.go2:132
  CatUnary
 
-//line operation.go2:146
+//line operation.go2:136
  CatOthers
 
-//line operation.go2:149
+//line operation.go2:139
  CatLastCategory
 )
 
-//line operation.go2:153
+//line operation.go2:143
 func (c Category) Operators() []Operator {
 	ops := make([]Operator, len(categoryToOperators[c]))
 	copy(ops, categoryToOperators[c])
 	return ops
 }
 
-//line operation.go2:160
+//line operation.go2:150
 type Op int
 
 func (op Op) Type() reflect.Type {
@@ -172,27 +168,27 @@ func (op Op) Type() reflect.Type {
 }
 
 const (
-//line operation.go2:168
+//line operation.go2:158
  OpUnknown Op = iota
 
-//line operation.go2:172
+//line operation.go2:162
  OpAddition
 				OpSubtraction
 				OpMultiplication
 				OpDivision
 				OpModulo
 
-//line operation.go2:180
+//line operation.go2:170
  OpAssign
 				OpAlias
 
-//line operation.go2:185
+//line operation.go2:175
  OpBitwiseAND
 				OpBitwiseNOT
 				OpBitwiseOR
 				OpBitwiseXOR
 
-//line operation.go2:192
+//line operation.go2:182
  OpIsNull
 				OpIsNotNull
 				OpEqual
@@ -202,7 +198,7 @@ const (
 				OpGreaterThan
 				OpGreaterThanOrEqual
 
-//line operation.go2:203
+//line operation.go2:193
  OpAnd
 				OpOr
 				OpNot
@@ -215,41 +211,41 @@ const (
 				OpSome
 				OpExists
 
-//line operation.go2:217
+//line operation.go2:207
  OpUnion
 				OpExcept
 				OpIntersect
 
-//line operation.go2:223
+//line operation.go2:213
  OpStringConcat
 
-//line operation.go2:227
+//line operation.go2:217
  OpSingleton
 				OpNegate
 				OpCurrentTimestamp
 
-//line operation.go2:233
+//line operation.go2:223
  OpList
 				OpCount
 				OpLike
 				OpNotLike
 
-//line operation.go2:239
+//line operation.go2:229
  OpLastOperation
-//line operation.go2:243
+//line operation.go2:233
 )
 
-//line operation.go2:246
+//line operation.go2:236
 func (o Op) String() string {
 	return operatorToString[o]
 }
 
-//line operation.go2:251
+//line operation.go2:241
 func (o Op) Category() Category {
 	return operatorToCategory[o]
 }
 
-//line operation.go2:260
+//line operation.go2:250
 var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 	CatUnknown: {
 		OpUnknown: "Unknown",
@@ -340,7 +336,7 @@ func checkAllOpsInACategoryWithStrings(catToOps map[Category]map[Operator]string
 			}
 						foundOps[op] = cat
 
-//line operation.go2:351
+//line operation.go2:341
    otherCat, alreadyHaveOpStr := foundOpStrs[opStr]
 			if alreadyHaveOpStr {
 				errMsgs = append(errMsgs, fmt.Sprintf("Operator string %s is already in Category %d", opStr, otherCat))
@@ -385,7 +381,9 @@ type instantiate୦୦SimpleOperation୦bool struct {
 //line operation.go2:26
 func (o instantiate୦୦SimpleOperation୦bool,) Type() reflect.Type { return o.op.Type() }
 func (o instantiate୦୦SimpleOperation୦bool,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
+//line operation.go2:27
+ return VisitWithDefaultToStringBuilder(o)
+//line operation.go2:27
 }
 func (o instantiate୦୦SimpleOperation୦bool,) Operator() Operator     { return o.op }
 func (o instantiate୦୦SimpleOperation୦bool,) Args() []Expression     { return o.args }
@@ -397,10 +395,10 @@ func (o instantiate୦୦SimpleOperation୦bool,) arg(idx int) Expression {
 	return o.args[idx]
 }
 
-//line expression.go2:168
+//line expression.go2:178
 func instantiate୦୦NewSimpleConstant୦bool(v bool,
 
-//line expression.go2:168
+//line expression.go2:178
 ) instantiate୦୦SimpleConstant୦bool {
 	return instantiate୦୦SimpleConstant୦bool{
 		value: v,
@@ -424,7 +422,9 @@ type instantiate୦୦SimpleOperation୦string struct {
 //line operation.go2:26
 func (o instantiate୦୦SimpleOperation୦string,) Type() reflect.Type { return o.op.Type() }
 func (o instantiate୦୦SimpleOperation୦string,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
+//line operation.go2:27
+ return VisitWithDefaultToStringBuilder(o)
+//line operation.go2:27
 }
 func (o instantiate୦୦SimpleOperation୦string,) Operator() Operator     { return o.op }
 func (o instantiate୦୦SimpleOperation୦string,) Args() []Expression     { return o.args }
@@ -443,34 +443,38 @@ func instantiate୦୦NewSimplePathForVariable୦string(value string, variableNa
 
 //line paths.go2:87
 type instantiate୦୦SimpleConstant୦bool struct {
-//line expression.go2:173
+//line expression.go2:183
  instantiate୦୦TypedExpression୦bool
 
 	value bool
 }
 
-//line expression.go2:177
+//line expression.go2:187
 func (e instantiate୦୦SimpleConstant୦bool,) Type() reflect.Type {
-//line expression.go2:177
+//line expression.go2:187
  return reflect.TypeOf(bool(e.value))
-//line expression.go2:177
+//line expression.go2:187
 }
 func (e instantiate୦୦SimpleConstant୦bool,) String() string {
 	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), e)
 }
 func (e instantiate୦୦SimpleConstant୦bool,) Interface() interface{} { return e.value }
 
-//line expression.go2:181
+//line expression.go2:191
 type instantiate୦୦SimplePath୦string struct {
 //line paths.go2:95
  value string
-			pm    PathMetadata
+
+//line paths.go2:96
+ pm PathMetadata
 }
 
 //line paths.go2:98
 func (p instantiate୦୦SimplePath୦string,) Type() reflect.Type { return p.pm.Type() }
 func (p instantiate୦୦SimplePath୦string,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+//line paths.go2:99
+ return VisitWithDefaultToStringBuilder(p)
+//line paths.go2:99
 }
 func (p instantiate୦୦SimplePath୦string,) Metadata() PathMetadata { return p.pm }
 func (p instantiate୦୦SimplePath୦string,) Root() Path             { return p.pm.Root() }

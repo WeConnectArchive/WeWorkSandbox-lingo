@@ -24,9 +24,14 @@ import (
 )
 
 //line expression.go2:16
+func VisitWithDefaultPathBuilder(e Expression) Path {
+	return instantiate୦୦VisitWithBuilder୦struct୮4୮5୦lingo୮aPath(PathBuilder{}, struct{}{}, e)
+}
+
+//line expression.go2:19
 type PathBuilder struct{}
 
-//line expression.go2:17
+//line expression.go2:20
 func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	if p, ok := e.(Path); ok {
 		return p
@@ -41,9 +46,15 @@ func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	return nil
 }
 
+//line expression.go2:35
+func VisitWithDefaultPathsBuilder(e Expression) []Path {
+	return instantiate୦୦VisitWithBuilder୦୮6୮7lingo୮aPath୦୮6୮7lingo୮aPath(PathsBuilder{}, make([]Path, 0, 10), e)
+}
+
+//line expression.go2:38
 type PathsBuilder struct{}
 
-//line expression.go2:32
+//line expression.go2:39
 func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	if p, ok := e.(Path); ok {
 		paths = append(paths, p)
@@ -56,9 +67,14 @@ func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	return paths
 }
 
+func VisitWithDefaultToStringBuilder(e Expression) string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), e)
+}
+
+//line expression.go2:54
 type ToStringBuilder struct{}
 
-//line expression.go2:45
+//line expression.go2:55
 func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 	if c, ok := e.(ConstantExpression); ok {
 		return fmt.Sprintf("%v", c.Interface())
@@ -112,7 +128,7 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 	return b.Visit(t, e)
 }
 
-//line expression.go2:103
+//line expression.go2:113
 type Expression interface {
 	Type() reflect.Type
 	String() string
@@ -129,44 +145,58 @@ type ParamExpression interface {
 	Anonymus() bool
 }
 
-//line expression.go2:126
+//line expression.go2:136
 type PredicateExpression interface {
-//line expression.go2:126
+//line expression.go2:136
  instantiate୦୦TypedExpression୦bool
 
 				Not() PredicateExpression
 }
 
-//line expression.go2:142
+//line expression.go2:152
 type BooleanExpression interface {
-//line expression.go2:142
+//line expression.go2:152
  instantiate୦୦TypedExpression୦bool
 
 				EqValue(b bool) BooleanExpression
 				Eq(e instantiate୦୦TypedExpression୦bool,) BooleanExpression
 }
 
-//line expression.go2:153
+//line expression.go2:163
 type StringExpression interface {
-//line expression.go2:153
+//line expression.go2:163
  instantiate୦୦LiteralExpression୦string
 
 				As(alias instantiate୦୦TypedPath୦string,) StringExpression
 				Alias(alias string) StringExpression
 }
-//line expression.go2:157
+
+//line expression.go2:8
+func instantiate୦୦VisitWithBuilder୦struct୮4୮5୦lingo୮aPath(b instantiate୦୦TypedBuilder୦struct୮4୮5୦lingo୮aPath, buildCtx struct{}, e Expression) Path {
+	return b.Visit(buildCtx, e)
+}
+//line expression.go2:8
+func instantiate୦୦VisitWithBuilder୦୮6୮7lingo୮aPath୦୮6୮7lingo୮aPath(b instantiate୦୦TypedBuilder୦୮6୮7lingo୮aPath୦୮6୮7lingo୮aPath, buildCtx []Path, e Expression) []Path {
+	return b.Visit(buildCtx, e)
+}
+//line expression.go2:8
+func instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(b instantiate୦୦TypedBuilder୦lingo୮aTemplates୦string, buildCtx Templates, e Expression) string {
+	return b.Visit(buildCtx, e)
+}
+
+//line expression.go2:10
 type instantiate୦୦TypedExpression୦bool interface {
-//line expression.go2:123
+//line expression.go2:133
  Expression
 }
-//line expression.go2:124
+//line expression.go2:134
 type instantiate୦୦LiteralExpression୦string interface {
-//line expression.go2:148
+//line expression.go2:158
  instantiate୦୦ComparableExpression୦string
 
 	StringValue()
 }
-//line expression.go2:151
+//line expression.go2:161
 type instantiate୦୦TypedPath୦string interface {
 //line paths.go2:75
  instantiate୦୦TypedExpression୦string
@@ -174,41 +204,56 @@ type instantiate୦୦TypedPath୦string interface {
 			Path
 }
 //line paths.go2:78
+type instantiate୦୦TypedBuilder୦struct୮4୮5୦lingo୮aPath interface {
+//line expression.go2:13
+ Visit(ctx struct{}, e Expression) Path
+}
+//line expression.go2:14
+type instantiate୦୦TypedBuilder୦୮6୮7lingo୮aPath୦୮6୮7lingo୮aPath interface {
+//line expression.go2:13
+ Visit(ctx []Path, e Expression) []Path
+}
+//line expression.go2:14
+type instantiate୦୦TypedBuilder୦lingo୮aTemplates୦string interface {
+//line expression.go2:13
+ Visit(ctx Templates, e Expression) string
+}
+//line expression.go2:14
 type instantiate୦୦ComparableExpression୦string interface {
-//line expression.go2:136
+//line expression.go2:146
  instantiate୦୦AnyComparableExpression୦string
 
 	GTValue(v string) BooleanExpression
 	GT(e instantiate୦୦TypedExpression୦string,) BooleanExpression
 }
-//line expression.go2:140
+//line expression.go2:150
 type instantiate୦୦TypedExpression୦string interface {
-//line expression.go2:123
+//line expression.go2:133
  Expression
 }
-//line expression.go2:124
+//line expression.go2:134
 type instantiate୦୦AnyComparableExpression୦string interface {
-//line expression.go2:131
+//line expression.go2:141
  instantiate୦୦TypedExpression୦string
 
 	Desc()
 }
-//line expression.go2:134
+//line expression.go2:144
 type Importable୦ int
 
-//line expression.go2:134
+//line expression.go2:144
 var _ = fmt.Errorf
-//line expression.go2:134
+//line expression.go2:144
 var _ = reflect.Append
-//line expression.go2:134
+//line expression.go2:144
 var _ = regexp.Compile
-//line expression.go2:134
+//line expression.go2:144
 var _ = strconv.AppendBool
 
-//line expression.go2:134
+//line expression.go2:144
 type _ strings.Builder
 
-//line expression.go2:134
+//line expression.go2:144
 var _ = atomic.AddInt32
-//line expression.go2:134
+//line expression.go2:144
 var _ = testing.AllocsPerRun

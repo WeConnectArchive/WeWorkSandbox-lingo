@@ -92,4 +92,7 @@ func TestDSL(t *testing.T) {
 	printDebug("tactor", tactor)
 	printDebug("tactor.ActorID", tactor.ActorID)
 	printDebug("tactor.ActorID.EqValue(int16(10))", tactor.ActorID.EqValue(int16(10)))
+	var exp = tactor.IsActive.Eq(tactor.IsActive.EqValue(true))
+	printDebug("tactor.IsActive.Eq(tactor.IsActive.EqValue(true))", exp)
+	printDebug("", exp.As)
 }

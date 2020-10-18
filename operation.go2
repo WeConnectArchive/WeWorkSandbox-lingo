@@ -24,9 +24,7 @@ type SimpleOperation[T any] struct {
 	args []Expression
 }
 func (o SimpleOperation[T]) Type() reflect.Type { return o.op.Type() }
-func (o SimpleOperation[T]) String() string { 
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
-}
+func (o SimpleOperation[T]) String() string { return VisitWithDefaultToStringBuilder(o) }
 func (o SimpleOperation[T]) Operator() Operator { return o.op }
 func (o SimpleOperation[T]) Args() []Expression { return o.args }
 func (o SimpleOperation[T]) Arg(idx int) Expression { return o.arg(idx) }
@@ -43,9 +41,7 @@ func NewPredicateOperation(op Operator, args...Expression) PredicateOperation {
 }
 type PredicateOperation SimpleOperation[bool]
 func (o PredicateOperation) Type() reflect.Type { return o.Type() }
-func (o PredicateOperation) String() string { 
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
- }
+func (o PredicateOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
 func (o PredicateOperation) Not() PredicateExpression { return NewPredicateOperation(OpNot, o) }
 func (o PredicateOperation) Operator() Operator { return o.op }
 func (o PredicateOperation) Args() []Expression { return o.args }
@@ -58,6 +54,11 @@ func (o PredicateOperation) Arg(idx int) Expression {
 
 
 
+func NewIsNull(e Expression) BooleanExpression { return NewBooleanOperation(OpIsNull, e) }
+func NewIsNotNull(e Expression) BooleanExpression { return NewBooleanOperation(OpIsNotNull, e) }
+func NewOpEqual(l, r Expression) BooleanExpression { return NewBooleanOperation(OpEqual, l, r) }
+func NewOpGreaterThan(l, r Expression) BooleanExpression { return NewBooleanOperation(OpGreaterThan, l, r) }
+
 func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
 	return BooleanOperation{
 		PredicateOperation: NewPredicateOperation(op, args...),
@@ -67,18 +68,9 @@ type BooleanOperation struct {
 	PredicateOperation
 }
 func (o BooleanOperation) Type() reflect.Type { return o.PredicateOperation.Type() }
-func (o BooleanOperation) String() string { 
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
-}
+func (o BooleanOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
 func (o BooleanOperation) EqValue(b bool) BooleanExpression { return o.Eq(NewSimpleConstant[bool](b))}
 func (o BooleanOperation) Eq(e TypedExpression[bool]) BooleanExpression { return NewOpEqual(o, e) }
-
-func NewOpEqual(l, r Expression) BooleanExpression {
-	return NewBooleanOperation(OpEqual, l, r)
-}
-func NewOpGreaterThan(l, r Expression) BooleanExpression {
-	return NewBooleanOperation(OpGreaterThan, l, r)
-}
 
 
 
@@ -92,9 +84,7 @@ type StringOperation struct {
 	mixin SimpleOperation[string]
 }
 func (o StringOperation) Type() reflect.Type { return o.mixin.Type() }
-func (o StringOperation) String() string { 
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
-}
+func (o StringOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
 
 func (o StringOperation) As(alias TypedPath[string]) StringExpression {
 	return NewStringOperation(OpAlias, o, alias)

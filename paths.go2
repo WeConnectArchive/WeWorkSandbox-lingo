@@ -96,9 +96,7 @@ type SimplePath[T any] struct {
 	pm PathMetadata
 }
 func (p SimplePath[T]) Type() reflect.Type { return p.pm.Type() }
-func (p SimplePath[T]) String() string {  
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p) 
-}
+func (p SimplePath[T]) String() string { return VisitWithDefaultToStringBuilder(p) }
 func (p SimplePath[T]) Metadata() PathMetadata { return p.pm }
 func (p SimplePath[T]) Root() Path { return p.pm.Root() }
 
@@ -113,9 +111,7 @@ type BoolPath struct {
 	mixin SimplePath[bool] // & BooleanExpression
 }
 func (p BoolPath) Type() reflect.Type { return p.mixin.Type() }
-func (p BoolPath) String() string {  
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p) 
-}
+func (p BoolPath) String() string { return VisitWithDefaultToStringBuilder(p) }
 func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p BoolPath) Root() Path { return p.mixin.Root() }
 
@@ -134,12 +130,11 @@ func NewNumberPath[T numeric](p SimplePath[T]) NumberPath[T] {
 	}
 }
 type NumberPath[T numeric] struct {
-	mixin SimplePath[T] // & ComparableExpression & BooleanExpression
+	NumberExpression[T]
+	mixin SimplePath[T]
 }
 func (p NumberPath[T]) Type() reflect.Type { return p.mixin.Type() }
-func (p NumberPath[T]) String() string {  
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p) 
-}
+func (p NumberPath[T]) String() string { return VisitWithDefaultToStringBuilder(p) }
 func (p NumberPath[T]) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p NumberPath[T]) Root() Path { return p.mixin.Root() }
 
@@ -154,4 +149,17 @@ func (p NumberPath[T]) GTValue(v T) BooleanExpression {
 }
 func (p NumberPath[T]) GT(e TypedExpression[T]) BooleanExpression {
 	return NewOpGreaterThan(p, e)
+}
+
+
+// -------------------------------------
+// NewStringPath
+func NewStringPath(p SimplePath[string]) StringPath {
+	return StringPath{
+		mixin: p,
+	}
+}
+type StringPath struct {
+	StringExpression
+	mixin SimplePath[string]
 }

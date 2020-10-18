@@ -90,7 +90,9 @@ type instantiate୦୦SimplePath୦lingo୮aActor struct {
 //line paths.go2:98
 func (p instantiate୦୦SimplePath୦lingo୮aActor,) Type() reflect.Type { return p.pm.Type() }
 func (p instantiate୦୦SimplePath୦lingo୮aActor,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+//line paths.go2:99
+ return VisitWithDefaultToStringBuilder(p)
+//line paths.go2:99
 }
 func (p instantiate୦୦SimplePath୦lingo୮aActor,) Metadata() PathMetadata { return p.pm }
 func (p instantiate୦୦SimplePath୦lingo୮aActor,) Root() Path             { return p.pm.Root() }
@@ -102,7 +104,7 @@ func instantiate୦୦NewSimplePathForProperty୦int16(value int16,
 	return instantiate୦୦NewSimplePath୦int16(value, NewPathMetadataForProperty(propName, parent))
 }
 
-//line paths.go2:131
+//line paths.go2:127
 func instantiate୦୦NewNumberPath୦int16(p instantiate୦୦SimplePath୦int16,) instantiate୦୦NumberPath୦int16 {
 	return instantiate୦୦NumberPath୦int16{
 		mixin: p,
@@ -118,21 +120,25 @@ func instantiate୦୦NewSimplePathForProperty୦bool(value bool,
 
 //line paths.go2:84
 type instantiate୦୦NumberPath୦int16 struct {
-//line paths.go2:137
- mixin instantiate୦୦SimplePath୦int16
+//line paths.go2:132
+ instantiate୦୦NumberExpression୦int16
+
+	mixin instantiate୦୦SimplePath୦int16
 }
 
-//line paths.go2:139
+//line paths.go2:136
 func (p instantiate୦୦NumberPath୦int16,) Type() reflect.Type { return p.mixin.Type() }
 func (p instantiate୦୦NumberPath୦int16,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+//line paths.go2:137
+ return VisitWithDefaultToStringBuilder(p)
+//line paths.go2:137
 }
 func (p instantiate୦୦NumberPath୦int16,) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p instantiate୦୦NumberPath୦int16,) Root() Path             { return p.mixin.Root() }
 
 func (p instantiate୦୦NumberPath୦int16,) EqValue(v int16,
 
-//line paths.go2:146
+//line paths.go2:141
 ) BooleanExpression {
 	return p.Eq(instantiate୦୦NewSimpleConstant୦int16(v))
 }
@@ -141,7 +147,7 @@ func (p instantiate୦୦NumberPath୦int16,) Eq(v instantiate୦୦TypedExpress
 }
 func (p instantiate୦୦NumberPath୦int16,) GTValue(v int16,
 
-//line paths.go2:152
+//line paths.go2:147
 ) BooleanExpression {
 	return p.GT(instantiate୦୦NewSimpleConstant୦int16(v))
 }
@@ -149,7 +155,7 @@ func (p instantiate୦୦NumberPath୦int16,) GT(e instantiate୦୦TypedExpress
 	return NewOpGreaterThan(p, e)
 }
 
-//line paths.go2:157
+//line paths.go2:152
 type instantiate୦୦SimplePath୦int16 struct {
 //line paths.go2:95
  value int16
@@ -161,7 +167,9 @@ type instantiate୦୦SimplePath୦int16 struct {
 //line paths.go2:98
 func (p instantiate୦୦SimplePath୦int16,) Type() reflect.Type { return p.pm.Type() }
 func (p instantiate୦୦SimplePath୦int16,) String() string {
-	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+//line paths.go2:99
+ return VisitWithDefaultToStringBuilder(p)
+//line paths.go2:99
 }
 func (p instantiate୦୦SimplePath୦int16,) Metadata() PathMetadata { return p.pm }
 func (p instantiate୦୦SimplePath୦int16,) Root() Path             { return p.pm.Root() }
@@ -176,53 +184,80 @@ func instantiate୦୦NewSimplePath୦int16(value int16,
 	}
 }
 
-//line expression.go2:168
+//line paths.go2:93
+type instantiate୦୦NumberExpression୦int16 interface {
+//line expression.go2:169
+ instantiate୦୦ComparableExpression୦int16
+
+	Max() instantiate୦୦NumberExpression୦int16
+}
+
+//line expression.go2:178
 func instantiate୦୦NewSimpleConstant୦int16(v int16,
 
-//line expression.go2:168
+//line expression.go2:178
 ) instantiate୦୦SimpleConstant୦int16 {
 	return instantiate୦୦SimpleConstant୦int16{
 		value: v,
 	}
 }
 
-//line expression.go2:172
+//line expression.go2:182
 type instantiate୦୦TypedExpression୦int16 interface {
-//line expression.go2:123
+//line expression.go2:133
  Expression
 }
-//line expression.go2:124
+//line expression.go2:134
+type instantiate୦୦ComparableExpression୦int16 interface {
+//line expression.go2:146
+ instantiate୦୦AnyComparableExpression୦int16
+
+	GTValue(v int16,
+
+//line expression.go2:148
+ ) BooleanExpression
+				GT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression
+}
+//line expression.go2:150
 type instantiate୦୦SimpleConstant୦int16 struct {
-//line expression.go2:173
+//line expression.go2:183
  instantiate୦୦TypedExpression୦int16
 
 	value int16
 }
 
-//line expression.go2:177
+//line expression.go2:187
 func (e instantiate୦୦SimpleConstant୦int16,) Type() reflect.Type {
-//line expression.go2:177
+//line expression.go2:187
  return reflect.TypeOf(int16(e.value))
-//line expression.go2:177
+//line expression.go2:187
 }
 func (e instantiate୦୦SimpleConstant୦int16,) String() string {
 	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), e)
 }
 func (e instantiate୦୦SimpleConstant୦int16,) Interface() interface{} { return e.value }
 
-//line expression.go2:181
+//line expression.go2:191
+type instantiate୦୦AnyComparableExpression୦int16 interface {
+//line expression.go2:141
+ instantiate୦୦TypedExpression୦int16
+
+				Desc()
+}
+
+//line expression.go2:144
 var _ = fmt.Errorf
-//line expression.go2:181
+//line expression.go2:144
 var _ = reflect.Append
-//line expression.go2:181
+//line expression.go2:144
 var _ = regexp.Compile
-//line expression.go2:181
+//line expression.go2:144
 var _ = strconv.AppendBool
 
-//line expression.go2:181
+//line expression.go2:144
 type _ strings.Builder
 
-//line expression.go2:181
+//line expression.go2:144
 var _ = atomic.AddInt32
-//line expression.go2:181
+//line expression.go2:144
 var _ = testing.AllocsPerRun
