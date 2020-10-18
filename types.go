@@ -7,11 +7,11 @@ package lingo
 //line types.go2:1
 import (
 //line types.go2:1
- "encoding/json"
-//line types.go2:1
  "fmt"
 //line types.go2:1
  "reflect"
+//line types.go2:1
+ "regexp"
 //line types.go2:1
  "strconv"
 //line types.go2:1
@@ -24,6 +24,9 @@ import (
 )
 
 //line types.go2:9
+type noType struct{}
+
+//line types.go2:14
 var (
 	typeInt16 = reflect.TypeOf(int16(0))
 	typeBool  = reflect.TypeOf(bool(false))
@@ -32,19 +35,27 @@ var (
 func TypeOfInt16() reflect.Type { return typeInt16 }
 func TypeOfBool() reflect.Type  { return typeBool }
 
-//line types.go2:15
-var _ = json.Compact
-//line types.go2:15
+var counter int64
+
+//line types.go2:23
+func newRandomName() string {
+	value := atomic.AddInt64(&counter, 1)
+	return strconv.FormatInt(value, 10)
+}
+
+//line types.go2:26
 var _ = fmt.Errorf
-//line types.go2:15
+//line types.go2:26
 var _ = reflect.Append
-//line types.go2:15
+//line types.go2:26
+var _ = regexp.Compile
+//line types.go2:26
 var _ = strconv.AppendBool
 
-//line types.go2:15
+//line types.go2:26
 type _ strings.Builder
 
-//line types.go2:15
+//line types.go2:26
 var _ = atomic.AddInt32
-//line types.go2:15
+//line types.go2:26
 var _ = testing.AllocsPerRun

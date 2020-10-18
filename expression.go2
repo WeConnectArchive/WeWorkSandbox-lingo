@@ -1,22 +1,126 @@
 package lingo
 
 import (
-	"sync/atomic"
+	"fmt"
 	"reflect"
-	"strconv"
 )
+
+func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) T {
+	return b.Visit(buildCtx, e)
+}
+
+type TypedBuilder[C, T any] interface {
+	Visit(ctx C, e Expression) T
+}
+
+type PathBuilder struct {}
+func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
+	if p, ok := e.(Path); ok {
+		return p
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			if p := b.Visit(ctx, arg); p != nil {
+				return p
+			}
+		}
+	}
+	return nil
+}
+
+type PathsBuilder struct {}
+func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
+	if p, ok := e.(Path); ok {
+		paths = append(paths, p)
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			paths = b.Visit(paths, arg)
+		}
+	}
+	return paths
+}
+
+type ToStringBuilder struct {}
+func (b ToStringBuilder) Visit(t Templates, e Expression) string {
+	if c, ok := e.(ConstantExpression); ok {
+		return fmt.Sprintf("%v", c.Interface())
+	}
+	if o, ok := e.(Operation); ok {
+		op := o.Operator()
+		// Make sure this is something we _should_ be able to build.
+		syntax, ok := t[op]
+		if !ok {
+			return fmt.Sprintf("unknown operation for operator %s and args %v", op, o.Args())
+		}
+
+		value := syntax.Replace(func(idx int) string {
+			arg := o.Arg(idx)
+			if arg == nil {
+				return fmt.Sprintf("unknown argument at index '%d' for syntax '%s'", idx, syntax)
+			}
+			if argOp, ok := arg.(Operation); ok {
+				return "(" + b.Visit(t, argOp) + ")"
+			} else {
+				return b.Visit(t, arg)
+			}
+		})
+		return value
+	}
+	if p, ok := e.(Path); ok {
+		parent := p.Metadata().Parent()
+		elem := p.Metadata().Elem()
+
+		if parent == nil {
+			return fmt.Sprintf("%v", elem)
+		}
+		// Make sure this is a path type we can build
+		syntax, ok := t[p.Metadata().PathType()]
+		if !ok {
+			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
+		}
+		
+		values := []interface{}{parent, elem}
+		value := syntax.Replace(func(idx int) string {
+			if idx > 2 {
+				return ""
+			}
+			if exp, ok := values[idx].(Expression); ok {
+				return b.Visit(t, exp)
+			}
+			return fmt.Sprintf("%v", values[idx])
+		})
+		return value
+	}
+	return b.Visit(t, e)
+}
+
+
+
+// ============================================================
+// Untyped Expressions Below
 
 type Expression interface {
 	Type() reflect.Type
-}
-
-type TypedExpression[T any] interface{
-	Expression
+	String() string
 }
 
 type ConstantExpression interface {
 	Expression
 	Interface() interface{}
+}
+
+type ParamExpression interface {
+	Expression
+	Name() string
+	Anonymus() bool
+}
+
+// ============================================================
+// Typed Expressions Below
+
+type TypedExpression[T any] interface{
+	Expression
 }
 
 type PredicateExpression interface {
@@ -46,25 +150,21 @@ type LiteralExpression[T comparable] interface {
 	StringValue() // StringExpression
 }
 
+type StringExpression interface {
+	LiteralExpression[string]
+	As(alias TypedPath[string]) StringExpression
+	Alias(alias string) StringExpression
+}
+
 type NumberExpression[T numeric] interface {
 	ComparableExpression[T]
 	Max() NumberExpression[T]
 }
 
-type ParamExpression[T any] interface {
-	TypedExpression[T]
-	Name() string
-	Anonymus() bool
-}
+// =======================================================
+// Implementations
 
-// NumberPath
-// NumberExpression
-// - ComparableExpression
-// - SimpleExpression
-// - DslExpression
-// - Expression
-
-
+// NewSimpleConstant
 func NewSimpleConstant[T](v T) SimpleConstant[T] {
 	return SimpleConstant[T]{
 		value: v,
@@ -75,14 +175,13 @@ type SimpleConstant[T any] struct {
 	value T
 }
 func (e SimpleConstant[T]) Type() reflect.Type { return reflect.TypeOf(T(e.value)) }
+func (e SimpleConstant[T]) String() string { 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
+}
 func (e SimpleConstant[T]) Interface() interface{} { return e.value }
 
 
-var counter int64
-func newRandomName() string {
-	value := atomic.AddInt64(&counter, 1)
-	return strconv.FormatInt(value, 10)
-}
+// NewSimpleParam
 func NewSimpleParam[T any](t reflect.Type, anonymus bool, name string) SimpleParam[T] {
 	if anonymus {
 		name = newRandomName()
@@ -99,5 +198,8 @@ type SimpleParam[T any] struct {
 	name string
 }
 func (p SimpleParam[T]) Type() reflect.Type { return p.t }
+func (p SimpleParam[T]) String() string { 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p)
+}
 func (p SimpleParam[T]) Name() string { return p.name }
 func (p SimpleParam[T]) Anonymus() bool { return p.anonymus }

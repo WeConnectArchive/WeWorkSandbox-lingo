@@ -27,9 +27,9 @@ const (
 )
 
 func NewPathMetadataForVariable(varName string) PathMetadata { return NewPathMetadata(Variable, varName, nil) }
-func NewPathMetadataForProperty(propName string, parent PathMetadata) PathMetadata { return NewPathMetadata(Property, propName, &parent)}
-func NewPathMetadata(pt PathType, element interface{}, parent *PathMetadata) PathMetadata {
-	var root *PathMetadata
+func NewPathMetadataForProperty(propName string, parent Path) PathMetadata { return NewPathMetadata(Property, propName, parent)}
+func NewPathMetadata(pt PathType, element interface{}, parent Path) PathMetadata {
+	var root Path
 	if parent != nil {
 		root = parent.Root()
 	}
@@ -42,22 +42,25 @@ func NewPathMetadata(pt PathType, element interface{}, parent *PathMetadata) Pat
 }
 type PathMetadata struct {
 	pathType PathType
-	root *PathMetadata
-	parent *PathMetadata
+	root Path
+	parent Path
 	element interface{}
 }
 func (pm PathMetadata) Type() reflect.Type { return reflect.TypeOf(pm.pathType) }
-func (pm PathMetadata) PathType() PathType { return pm.pathType }
-func (pm PathMetadata) Parent() *PathMetadata { return pm.parent }
-func (pm PathMetadata) Root() *PathMetadata { return pm.root }
-func (pm PathMetadata) IsRoot() bool {
-	return pm.parent == nil && (pm.pathType == Delegate && pm.parent.IsRoot())
+func (pm PathMetadata) IsZero() bool {
+	return pm == PathMetadata{}
 }
-func (pm PathMetadata) Element() interface{} { return pm.element }
+func (pm PathMetadata) PathType() PathType { return pm.pathType }
+func (pm PathMetadata) Parent() Path { return pm.parent }
+func (pm PathMetadata) Root() Path { return pm.root }
+func (pm PathMetadata) IsRoot() bool {
+	return pm.Parent() == nil || (pm.PathType() == Delegate && pm.Parent().Metadata().IsRoot())
+}
+func (pm PathMetadata) Elem() interface{} { return pm.element }
 func (pm PathMetadata) Name() string {
 	switch pm.pathType {
 	case Variable, Property:
-		return pm.element.(string)
+		return pm.Elem().(string)
 	}
 	panic(fmt.Sprintf("name property not available for path type %d, must be accessed with Element()", pm.pathType))
 }
@@ -65,11 +68,23 @@ func (pm PathMetadata) Name() string {
 // ================================================
 // PATH
 type Path interface {
-	Type() reflect.Type
-	Metadata()
+	Expression
+	Metadata() PathMetadata
+	Root() Path
+}
+type TypedPath[T any] interface {
+	TypedExpression[T]
+	Path
 }
 
-
+// -------------------------------------
+// NewSimplePath
+func NewSimplePathForProperty[T any](value T, propName string, parent Path) SimplePath[T] {
+	return NewSimplePath[T](value, NewPathMetadataForProperty(propName, parent))
+}
+func NewSimplePathForVariable[T any](value T, variableName string) SimplePath[T] {
+	return NewSimplePath[T](value, NewPathMetadataForVariable(variableName))
+}
 func NewSimplePath[T any](value T, pm PathMetadata) SimplePath[T] {
 	return SimplePath[T]{
 		value: value,
@@ -80,18 +95,32 @@ type SimplePath[T any] struct {
 	value T
 	pm PathMetadata
 }
-func (p SimplePath[T]) Type() reflect.Type { return reflect.TypeOf(p.value) }
+func (p SimplePath[T]) Type() reflect.Type { return p.pm.Type() }
+func (p SimplePath[T]) String() string {  
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p) 
+}
 func (p SimplePath[T]) Metadata() PathMetadata { return p.pm }
+func (p SimplePath[T]) Root() Path { return p.pm.Root() }
 
 // -------------------------------------
 // NewBoolPath
 func NewBoolPath(p SimplePath[bool]) BoolPath {
-	return BoolPath(p)
+	return BoolPath{
+		mixin: p,
+	}
 }
-type BoolPath SimplePath[bool] // & BooleanExpression
-func (p BoolPath) Type() reflect.Type { return reflect.TypeOf(p) }
+type BoolPath struct {
+	mixin SimplePath[bool] // & BooleanExpression
+}
+func (p BoolPath) Type() reflect.Type { return p.mixin.Type() }
+func (p BoolPath) String() string {  
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p) 
+}
+func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
+func (p BoolPath) Root() Path { return p.mixin.Root() }
+
 func (p BoolPath) EqValue(v bool) BooleanExpression {
-	return BooleanExpression(nil) // Constant(v)
+	return p.Eq(NewSimpleConstant[bool](v))
 }
 func (p BoolPath) Eq(v TypedExpression[bool]) BooleanExpression {
 	return NewOpEqual(p, v)
@@ -100,18 +129,28 @@ func (p BoolPath) Eq(v TypedExpression[bool]) BooleanExpression {
 // -------------------------------------
 // NewNumberPath
 func NewNumberPath[T numeric](p SimplePath[T]) NumberPath[T] {
-	return NumberPath[T](p)
+	return NumberPath[T]{
+		mixin: p,
+	}
 }
-type NumberPath[T numeric] SimplePath[T] // & ComparableExpression & BooleanExpression
-func (p NumberPath[T]) Type() reflect.Type { return reflect.TypeOf(p) }
+type NumberPath[T numeric] struct {
+	mixin SimplePath[T] // & ComparableExpression & BooleanExpression
+}
+func (p NumberPath[T]) Type() reflect.Type { return p.mixin.Type() }
+func (p NumberPath[T]) String() string {  
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p) 
+}
+func (p NumberPath[T]) Metadata() PathMetadata { return p.mixin.Metadata() }
+func (p NumberPath[T]) Root() Path { return p.mixin.Root() }
+
 func (p NumberPath[T]) EqValue(v T) BooleanExpression {
-	return BooleanExpression(nil) // Constant(v)
+	return p.Eq(NewSimpleConstant[T](v))
 }
 func (p NumberPath[T]) Eq(v TypedExpression[T]) BooleanExpression {
 	return NewOpEqual(p, v)
 }
 func (p NumberPath[T]) GTValue(v T) BooleanExpression {
-	return p.GT(nil) // Constant(v)
+	return p.GT(NewSimpleConstant[T](v))
 }
 func (p NumberPath[T]) GT(e TypedExpression[T]) BooleanExpression {
 	return NewOpGreaterThan(p, e)

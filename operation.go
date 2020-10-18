@@ -7,11 +7,11 @@ package lingo
 //line operation.go2:1
 import (
 //line operation.go2:1
- "encoding/json"
-//line operation.go2:1
  "fmt"
 //line operation.go2:1
  "reflect"
+//line operation.go2:1
+ "regexp"
 //line operation.go2:1
  "strconv"
 //line operation.go2:1
@@ -25,48 +25,61 @@ import (
 
 //line operation.go2:9
 type Operation interface {
+	Expression
 	Operator() Operator
 	Arg(idx int) Expression
 	Args() []Expression
 }
 
-//line operation.go2:36
+//line operation.go2:41
 func NewPredicateOperation(op Operator, args ...Expression) PredicateOperation {
 	return PredicateOperation(instantiate୦୦NewSimpleOperation୦bool(op, args...))
 }
 
-//line operation.go2:39
+//line operation.go2:44
 type PredicateOperation instantiate୦୦SimpleOperation୦bool
 
-//line operation.go2:40
-func (o PredicateOperation) Type() reflect.Type {
-	return o.Type()
+//line operation.go2:45
+func (o PredicateOperation) Type() reflect.Type { return o.Type() }
+func (o PredicateOperation) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
 }
-func (o PredicateOperation) Not() PredicateExpression {
-	return NewPredicateOperation(OpNot, o)
+func (o PredicateOperation) Not() PredicateExpression { return NewPredicateOperation(OpNot, o) }
+func (o PredicateOperation) Operator() Operator       { return o.op }
+func (o PredicateOperation) Args() []Expression       { return o.args }
+func (o PredicateOperation) Arg(idx int) Expression {
+	if idx >= len(o.args) {
+		return nil
+	}
+	return o.args[idx]
 }
 
-//line operation.go2:49
+//line operation.go2:61
 func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
 	return BooleanOperation{
 		PredicateOperation: NewPredicateOperation(op, args...),
 	}
 }
 
-//line operation.go2:54
+//line operation.go2:66
 type BooleanOperation struct {
 	PredicateOperation
 }
 
-//line operation.go2:57
-func (o BooleanOperation) Type() reflect.Type {
-	return o.PredicateOperation.Type()
+//line operation.go2:69
+func (o BooleanOperation) Type() reflect.Type { return o.PredicateOperation.Type() }
+func (o BooleanOperation) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
 }
 func (o BooleanOperation) EqValue(b bool) BooleanExpression {
-	return o.Eq(nil)
+//line operation.go2:73
+ return o.Eq(instantiate୦୦NewSimpleConstant୦bool(b))
+//line operation.go2:73
 }
 func (o BooleanOperation) Eq(e instantiate୦୦TypedExpression୦bool,) BooleanExpression {
-	return NewBooleanOperation(OpEqual, o, e)
+//line operation.go2:74
+ return NewOpEqual(o, e)
+//line operation.go2:74
 }
 
 func NewOpEqual(l, r Expression) BooleanExpression {
@@ -76,7 +89,33 @@ func NewOpGreaterThan(l, r Expression) BooleanExpression {
 	return NewBooleanOperation(OpGreaterThan, l, r)
 }
 
-//line operation.go2:75
+//line operation.go2:85
+func NewStringOperation(op Operator, args ...Expression) StringOperation {
+	return StringOperation{
+		mixin: instantiate୦୦NewSimpleOperation୦string(op, args...),
+	}
+}
+
+//line operation.go2:90
+type StringOperation struct {
+	StringExpression
+	mixin instantiate୦୦SimpleOperation୦string
+}
+
+//line operation.go2:94
+func (o StringOperation) Type() reflect.Type { return o.mixin.Type() }
+func (o StringOperation) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
+}
+
+func (o StringOperation) As(alias instantiate୦୦TypedPath୦string,) StringExpression {
+	return NewStringOperation(OpAlias, o, alias)
+}
+func (o StringOperation) Alias(alias string) StringExpression {
+	return o.As(instantiate୦୦NewSimplePathForVariable୦string("", alias))
+}
+
+//line operation.go2:108
 type Operator interface {
 	Type() reflect.Type
 }
@@ -84,48 +123,48 @@ type Operator interface {
 type Category int
 
 const (
-//line operation.go2:83
+//line operation.go2:116
  CatUnknown Category = iota
 
-//line operation.go2:86
+//line operation.go2:119
  CatArithmetic
 
-//line operation.go2:89
+//line operation.go2:122
  CatAssignment
 
-//line operation.go2:92
+//line operation.go2:125
  CatBitwise
 
-//line operation.go2:96
+//line operation.go2:129
  CatComparison
 
-//line operation.go2:100
+//line operation.go2:133
  CatLogical
 
-//line operation.go2:103
+//line operation.go2:136
  CatSet
 
-//line operation.go2:106
+//line operation.go2:139
  CatString
 
-//line operation.go2:109
+//line operation.go2:142
  CatUnary
 
-//line operation.go2:113
+//line operation.go2:146
  CatOthers
 
-//line operation.go2:116
+//line operation.go2:149
  CatLastCategory
 )
 
-//line operation.go2:120
+//line operation.go2:153
 func (c Category) Operators() []Operator {
 	ops := make([]Operator, len(categoryToOperators[c]))
 	copy(ops, categoryToOperators[c])
 	return ops
 }
 
-//line operation.go2:127
+//line operation.go2:160
 type Op int
 
 func (op Op) Type() reflect.Type {
@@ -133,31 +172,27 @@ func (op Op) Type() reflect.Type {
 }
 
 const (
-//line operation.go2:135
+//line operation.go2:168
  OpUnknown Op = iota
 
-//line operation.go2:139
+//line operation.go2:172
  OpAddition
 				OpSubtraction
 				OpMultiplication
 				OpDivision
 				OpModulo
 
-//line operation.go2:147
+//line operation.go2:180
  OpAssign
-				OpTable
-				OpTableAlias
-				OpSchema
-				OpPath
-				OpColumnAlias
+				OpAlias
 
-//line operation.go2:156
+//line operation.go2:185
  OpBitwiseAND
 				OpBitwiseNOT
 				OpBitwiseOR
 				OpBitwiseXOR
 
-//line operation.go2:163
+//line operation.go2:192
  OpIsNull
 				OpIsNotNull
 				OpEqual
@@ -167,7 +202,7 @@ const (
 				OpGreaterThan
 				OpGreaterThanOrEqual
 
-//line operation.go2:174
+//line operation.go2:203
  OpAnd
 				OpOr
 				OpNot
@@ -180,41 +215,41 @@ const (
 				OpSome
 				OpExists
 
-//line operation.go2:188
+//line operation.go2:217
  OpUnion
 				OpExcept
 				OpIntersect
 
-//line operation.go2:194
+//line operation.go2:223
  OpStringConcat
 
-//line operation.go2:198
+//line operation.go2:227
  OpSingleton
 				OpNegate
 				OpCurrentTimestamp
 
-//line operation.go2:204
+//line operation.go2:233
  OpList
 				OpCount
 				OpLike
 				OpNotLike
 
-//line operation.go2:210
+//line operation.go2:239
  OpLastOperation
-//line operation.go2:214
+//line operation.go2:243
 )
 
-//line operation.go2:217
+//line operation.go2:246
 func (o Op) String() string {
 	return operatorToString[o]
 }
 
-//line operation.go2:222
+//line operation.go2:251
 func (o Op) Category() Category {
 	return operatorToCategory[o]
 }
 
-//line operation.go2:231
+//line operation.go2:260
 var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 	CatUnknown: {
 		OpUnknown: "Unknown",
@@ -227,12 +262,8 @@ var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 		OpModulo:         "Modulo",
 	},
 	CatAssignment: {
-		OpAssign:      "Assign",
-		OpTable:       "Table",
-		OpTableAlias:  "TableAlias",
-		OpSchema:      "Schema",
-		OpPath:        "Path",
-		OpColumnAlias: "ColumnAlias",
+		OpAssign: "Assign",
+		OpAlias:  "Alias",
 	},
 	CatBitwise: {
 		OpBitwiseAND: "BitwiseAND",
@@ -309,7 +340,7 @@ func checkAllOpsInACategoryWithStrings(catToOps map[Category]map[Operator]string
 			}
 						foundOps[op] = cat
 
-//line operation.go2:326
+//line operation.go2:351
    otherCat, alreadyHaveOpStr := foundOpStrs[opStr]
 			if alreadyHaveOpStr {
 				errMsgs = append(errMsgs, fmt.Sprintf("Operator string %s is already in Category %d", opStr, otherCat))
@@ -336,7 +367,7 @@ func checkAllOpsInACategoryWithStrings(catToOps map[Category]map[Operator]string
 	}
 	return catToOps
 }
-//line operation.go2:15
+//line operation.go2:16
 func instantiate୦୦NewSimpleOperation୦bool(op Operator, args ...Expression) instantiate୦୦SimpleOperation୦bool {
 	return instantiate୦୦SimpleOperation୦bool{
 		op:   op,
@@ -344,37 +375,126 @@ func instantiate୦୦NewSimpleOperation୦bool(op Operator, args ...Expression)
 	}
 }
 
-//line operation.go2:20
+//line operation.go2:21
 type instantiate୦୦SimpleOperation୦bool struct {
-//line operation.go2:22
+//line operation.go2:23
  op Operator
 	args []Expression
 }
 
-//line operation.go2:25
+//line operation.go2:26
 func (o instantiate୦୦SimpleOperation୦bool,) Type() reflect.Type { return o.op.Type() }
-func (o instantiate୦୦SimpleOperation୦bool,) Operator() Operator                         { return o.op }
-func (o instantiate୦୦SimpleOperation୦bool,) Args() []Expression                         { return o.args }
-func (o instantiate୦୦SimpleOperation୦bool,) Arg(idx int) Expression {
+func (o instantiate୦୦SimpleOperation୦bool,) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
+}
+func (o instantiate୦୦SimpleOperation୦bool,) Operator() Operator     { return o.op }
+func (o instantiate୦୦SimpleOperation୦bool,) Args() []Expression     { return o.args }
+func (o instantiate୦୦SimpleOperation୦bool,) Arg(idx int) Expression { return o.arg(idx) }
+func (o instantiate୦୦SimpleOperation୦bool,) arg(idx int) Expression {
 	if idx >= len(o.args) {
 		return nil
 	}
 	return o.args[idx]
 }
 
-//line operation.go2:33
-var _ = json.Compact
-//line operation.go2:33
+//line expression.go2:168
+func instantiate୦୦NewSimpleConstant୦bool(v bool,
+
+//line expression.go2:168
+) instantiate୦୦SimpleConstant୦bool {
+	return instantiate୦୦SimpleConstant୦bool{
+		value: v,
+	}
+}
+//line operation.go2:16
+func instantiate୦୦NewSimpleOperation୦string(op Operator, args ...Expression) instantiate୦୦SimpleOperation୦string {
+	return instantiate୦୦SimpleOperation୦string{
+		op:   op,
+		args: args,
+	}
+}
+
+//line operation.go2:21
+type instantiate୦୦SimpleOperation୦string struct {
+//line operation.go2:23
+ op Operator
+	args []Expression
+}
+
+//line operation.go2:26
+func (o instantiate୦୦SimpleOperation୦string,) Type() reflect.Type { return o.op.Type() }
+func (o instantiate୦୦SimpleOperation୦string,) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), o)
+}
+func (o instantiate୦୦SimpleOperation୦string,) Operator() Operator     { return o.op }
+func (o instantiate୦୦SimpleOperation୦string,) Args() []Expression     { return o.args }
+func (o instantiate୦୦SimpleOperation୦string,) Arg(idx int) Expression { return o.arg(idx) }
+func (o instantiate୦୦SimpleOperation୦string,) arg(idx int) Expression {
+	if idx >= len(o.args) {
+		return nil
+	}
+	return o.args[idx]
+}
+
+//line paths.go2:85
+func instantiate୦୦NewSimplePathForVariable୦string(value string, variableName string) instantiate୦୦SimplePath୦string {
+	return instantiate୦୦NewSimplePath୦string(value, NewPathMetadataForVariable(variableName))
+}
+
+//line paths.go2:87
+type instantiate୦୦SimpleConstant୦bool struct {
+//line expression.go2:173
+ instantiate୦୦TypedExpression୦bool
+
+	value bool
+}
+
+//line expression.go2:177
+func (e instantiate୦୦SimpleConstant୦bool,) Type() reflect.Type {
+//line expression.go2:177
+ return reflect.TypeOf(bool(e.value))
+//line expression.go2:177
+}
+func (e instantiate୦୦SimpleConstant୦bool,) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), e)
+}
+func (e instantiate୦୦SimpleConstant୦bool,) Interface() interface{} { return e.value }
+
+//line expression.go2:181
+type instantiate୦୦SimplePath୦string struct {
+//line paths.go2:95
+ value string
+			pm    PathMetadata
+}
+
+//line paths.go2:98
+func (p instantiate୦୦SimplePath୦string,) Type() reflect.Type { return p.pm.Type() }
+func (p instantiate୦୦SimplePath୦string,) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+}
+func (p instantiate୦୦SimplePath୦string,) Metadata() PathMetadata { return p.pm }
+func (p instantiate୦୦SimplePath୦string,) Root() Path             { return p.pm.Root() }
+//line paths.go2:88
+func instantiate୦୦NewSimplePath୦string(value string, pm PathMetadata) instantiate୦୦SimplePath୦string {
+	return instantiate୦୦SimplePath୦string{
+		value: value,
+		pm:    pm,
+	}
+}
+
+//line paths.go2:93
 var _ = fmt.Errorf
-//line operation.go2:33
+//line paths.go2:93
 var _ = reflect.Append
-//line operation.go2:33
+//line paths.go2:93
+var _ = regexp.Compile
+//line paths.go2:93
 var _ = strconv.AppendBool
 
-//line operation.go2:33
+//line paths.go2:93
 type _ strings.Builder
 
-//line operation.go2:33
+//line paths.go2:93
 var _ = atomic.AddInt32
-//line operation.go2:33
+//line paths.go2:93
 var _ = testing.AllocsPerRun

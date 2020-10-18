@@ -1,8 +1,8 @@
 package lingo
 
 import (
-	"encoding/json"
 	"fmt"
+	"reflect"
 	"sync/atomic"
 	"testing"
 )
@@ -11,11 +11,6 @@ func printDebug(msg string, v interface{}) {
 	countNum := atomic.AddInt64(&counter, 1)
 	fmt.Println(msg)
 	fmt.Printf("%d => %+v\n", countNum, v)
-	bytes, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%d => %s\n", countNum, string(bytes))
 }
 
 // The playground now uses square brackets for type parameters. Otherwise,
@@ -25,21 +20,76 @@ func printDebug(msg string, v interface{}) {
 // used in the position of a type parameter constraint (and only there);
 // it indicates that there are no constraints.
 
+func TestPathMetadata_VariableProperty(t *testing.T) {
+	type want struct {
+		wantType     reflect.Type
+		wantPathType PathType
+		wantParent   Path
+		wantRoot     Path
+		wantIsRoot   bool
+		wantElem  interface{}
+		wantName     string
+	}
+	sp := NewSimplePath[bool](false, NewPathMetadataForVariable("bool_simple_path"))
+	tests := []struct {
+		tname    string
+		input    PathMetadata
+		wantData want
+	}{
+		{
+			tname: `NewPathMetadataForVariable("varName")`,
+			input: NewPathMetadataForVariable("varName"),
+			wantData: want{
+				wantType:     reflect.TypeOf(Variable),
+				wantPathType: Variable,
+				wantParent:   nil,
+				wantRoot:     nil,
+				wantIsRoot:   true,
+				wantElem:  "varName",
+				wantName:     "varName",
+			},
+		},
+		{
+			tname: `NewPathMetadataForProperty("propName", sp)`,
+			input: NewPathMetadataForProperty("propName", sp),
+			wantData: want{
+				wantType:     reflect.TypeOf(Property),
+				wantPathType: Property,
+				wantParent:   sp,
+				wantRoot:     sp.Root(),
+				wantIsRoot:   false,
+				wantElem:     "propName",
+				wantName:     "propName",
+			},
+		},
+	}
+
+	for idx, tc := range tests {
+		OnNotEqualFatalf(t, idx, tc.tname, "Type", tc.input.Type(), tc.wantData.wantType)
+		OnNotEqualFatalf(t, idx, tc.tname, "PathType", tc.input.PathType(), tc.wantData.wantPathType)
+		OnNotEqualFatalf(t, idx, tc.tname, "Parent", tc.input.Parent(), tc.wantData.wantParent)
+		OnNotEqualFatalf(t, idx, tc.tname, "Root", tc.input.Root(), tc.wantData.wantRoot)
+		OnNotEqualFatalf(t, idx, tc.tname, "IsRoot", tc.input.IsRoot(), tc.wantData.wantIsRoot)
+		OnNotEqualFatalf(t, idx, tc.tname, "Elem", tc.input.Elem(), tc.wantData.wantElem)
+		OnNotEqualFatalf(t, idx, tc.tname, "Name", tc.input.Name(), tc.wantData.wantName)
+	}
+}
+
+func OnNotDeepEqualFatalf[T comparable](t *testing.T, idx int, name, sub string, left, right T) {
+	if reflect.DeepEqual(left, right) {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+
+func OnNotEqualFatalf[T comparable](t *testing.T, idx int, name, sub string, left, right T) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+
 func TestDSL(t *testing.T) {
-	var tactor = NewTActorForVariable("asdf")
+	var tactor = NewTActorForVariable("a")
 	printDebug("tactor", tactor)
-	printDebug("tactor.type", tactor.Type())
 	printDebug("tactor.ActorID", tactor.ActorID)
-	printDebug("tactor.ActorID.Type()", tactor.ActorID.Type())
-	printDebug("tactor.IsActive", tactor.IsActive)
-	printDebug("tactor.IsActive.Type()", tactor.IsActive.Type())
-	printDebug("tactor.ActorID.Eq(tactor.ActorID)", tactor.ActorID.Eq(tactor.ActorID))
-
-	tactor.ActorID.Eq(tactor.ActorID)
-
-	// var actor = NewTActorForVariable("myvariablew")
-	// fmt.Println(tsv.VisitPath(tmpl, actor.ActorID))
-
-	// gt := actor.ActorID.GT(int16(5))
-	// fmt.Println(tsv.VisitPath(tmpl, gt))
+	printDebug("tactor.ActorID.EqValue(int16(10))", tactor.ActorID.EqValue(int16(10)))
 }

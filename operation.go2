@@ -7,6 +7,7 @@ import (
 )
 
 type Operation interface {
+	Expression
 	Operator() Operator
 	Arg(idx int) Expression
 	Args() []Expression
@@ -23,9 +24,13 @@ type SimpleOperation[T any] struct {
 	args []Expression
 }
 func (o SimpleOperation[T]) Type() reflect.Type { return o.op.Type() }
+func (o SimpleOperation[T]) String() string { 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
+}
 func (o SimpleOperation[T]) Operator() Operator { return o.op }
 func (o SimpleOperation[T]) Args() []Expression { return o.args }
-func (o SimpleOperation[T]) Arg(idx int) Expression { 
+func (o SimpleOperation[T]) Arg(idx int) Expression { return o.arg(idx) }
+func (o SimpleOperation[T]) arg(idx int) Expression {
 	if idx >= len(o.args) {
 		return nil
 	}
@@ -37,11 +42,18 @@ func NewPredicateOperation(op Operator, args...Expression) PredicateOperation {
 	return PredicateOperation(NewSimpleOperation[bool](op, args...))
 }
 type PredicateOperation SimpleOperation[bool]
-func (o PredicateOperation) Type() reflect.Type {
-	return o.Type()
-}
-func (o PredicateOperation) Not() PredicateExpression {
-	return NewPredicateOperation(OpNot, o)
+func (o PredicateOperation) Type() reflect.Type { return o.Type() }
+func (o PredicateOperation) String() string { 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
+ }
+func (o PredicateOperation) Not() PredicateExpression { return NewPredicateOperation(OpNot, o) }
+func (o PredicateOperation) Operator() Operator { return o.op }
+func (o PredicateOperation) Args() []Expression { return o.args }
+func (o PredicateOperation) Arg(idx int) Expression { 
+	if idx >= len(o.args) {
+		return nil
+	}
+	return o.args[idx]
 }
 
 
@@ -54,15 +66,12 @@ func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
 type BooleanOperation struct {
 	PredicateOperation
 }
-func (o BooleanOperation) Type() reflect.Type { 
-	return o.PredicateOperation.Type() 
+func (o BooleanOperation) Type() reflect.Type { return o.PredicateOperation.Type() }
+func (o BooleanOperation) String() string { 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
 }
-func (o BooleanOperation) EqValue(b bool) BooleanExpression {
-	return o.Eq(nil) // Constant(b)
-}
-func (o BooleanOperation) Eq(e TypedExpression[bool]) BooleanExpression {
-	return NewBooleanOperation(OpEqual, o, e)
-}
+func (o BooleanOperation) EqValue(b bool) BooleanExpression { return o.Eq(NewSimpleConstant[bool](b))}
+func (o BooleanOperation) Eq(e TypedExpression[bool]) BooleanExpression { return NewOpEqual(o, e) }
 
 func NewOpEqual(l, r Expression) BooleanExpression {
 	return NewBooleanOperation(OpEqual, l, r)
@@ -70,6 +79,30 @@ func NewOpEqual(l, r Expression) BooleanExpression {
 func NewOpGreaterThan(l, r Expression) BooleanExpression {
 	return NewBooleanOperation(OpGreaterThan, l, r)
 }
+
+
+
+func NewStringOperation(op Operator, args ...Expression) StringOperation {
+	return StringOperation{
+		mixin: NewSimpleOperation[string](op, args...),
+	}
+}
+type StringOperation struct {
+	StringExpression
+	mixin SimpleOperation[string]
+}
+func (o StringOperation) Type() reflect.Type { return o.mixin.Type() }
+func (o StringOperation) String() string { 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), o)
+}
+
+func (o StringOperation) As(alias TypedPath[string]) StringExpression {
+	return NewStringOperation(OpAlias, o, alias)
+}
+func (o StringOperation) Alias(alias string) StringExpression {
+	return o.As(NewSimplePathForVariable[string]("", alias))
+}
+
 
 
 type Operator interface {
@@ -145,11 +178,7 @@ const (
 	// CatAssignment Operators
 
 	OpAssign
-	OpTable
-	OpTableAlias
-	OpSchema
-	OpPath
-	OpColumnAlias
+	OpAlias
 
 	// CatBitwise Operators
 
@@ -240,12 +269,8 @@ var _ = checkAllOpsInACategoryWithStrings(map[Category]map[Operator]string{
 		OpModulo:         "Modulo",
 	},
 	CatAssignment: {
-		OpAssign:      "Assign",
-		OpTable:       "Table",
-		OpTableAlias:  "TableAlias",
-		OpSchema:      "Schema",
-		OpPath:        "Path",
-		OpColumnAlias: "ColumnAlias",
+		OpAssign: "Assign",
+		OpAlias:  "Alias",
 	},
 	CatBitwise: {
 		OpBitwiseAND: "BitwiseAND",

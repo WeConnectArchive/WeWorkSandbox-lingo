@@ -7,11 +7,11 @@ package lingo
 //line dsl_test.go2:1
 import (
 //line dsl_test.go2:1
- "encoding/json"
-//line dsl_test.go2:1
  "fmt"
 //line dsl_test.go2:1
  "reflect"
+//line dsl_test.go2:1
+ "regexp"
 //line dsl_test.go2:1
  "strconv"
 //line dsl_test.go2:1
@@ -28,40 +28,162 @@ func printDebug(msg string, v interface{}) {
 	countNum := atomic.AddInt64(&counter, 1)
 	fmt.Println(msg)
 	fmt.Printf("%d => %+v\n", countNum, v)
-	bytes, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
+}
+
+//line dsl_test.go2:23
+func TestPathMetadata_VariableProperty(t *testing.T) {
+	type want struct {
+		wantType     reflect.Type
+		wantPathType PathType
+		wantParent   Path
+		wantRoot     Path
+		wantIsRoot   bool
+		wantElem     interface{}
+		wantName     string
 	}
-	fmt.Printf("%d => %s\n", countNum, string(bytes))
+	sp := instantiate୦୦NewSimplePath୦bool(false, NewPathMetadataForVariable("bool_simple_path"))
+	tests := []struct {
+		tname    string
+		input    PathMetadata
+		wantData want
+	}{
+		{
+			tname: `NewPathMetadataForVariable("varName")`,
+			input: NewPathMetadataForVariable("varName"),
+			wantData: want{
+				wantType:     reflect.TypeOf(Variable),
+				wantPathType: Variable,
+				wantParent:   nil,
+				wantRoot:     nil,
+				wantIsRoot:   true,
+				wantElem:     "varName",
+				wantName:     "varName",
+			},
+		},
+		{
+			tname: `NewPathMetadataForProperty("propName", sp)`,
+			input: NewPathMetadataForProperty("propName", sp),
+			wantData: want{
+				wantType:     reflect.TypeOf(Property),
+				wantPathType: Property,
+				wantParent:   sp,
+				wantRoot:     sp.Root(),
+				wantIsRoot:   false,
+				wantElem:     "propName",
+				wantName:     "propName",
+			},
+		},
+	}
+
+	for idx, tc := range tests {
+//line dsl_test.go2:67
+  instantiate୦୦OnNotEqualFatalf୦reflect୮aType(t, idx, tc.tname, "Type", tc.input.Type(), tc.wantData.wantType)
+				instantiate୦୦OnNotEqualFatalf୦lingo୮aPathType(t, idx, tc.tname, "PathType", tc.input.PathType(), tc.wantData.wantPathType)
+				instantiate୦୦OnNotEqualFatalf୦lingo୮aPath(t, idx, tc.tname, "Parent", tc.input.Parent(), tc.wantData.wantParent)
+				instantiate୦୦OnNotEqualFatalf୦lingo୮aPath(t, idx, tc.tname, "Root", tc.input.Root(), tc.wantData.wantRoot)
+				instantiate୦୦OnNotEqualFatalf୦bool(t, idx, tc.tname, "IsRoot", tc.input.IsRoot(), tc.wantData.wantIsRoot)
+				instantiate୦୦OnNotEqualFatalf୦interface୮4୮5(t, idx, tc.tname, "Elem", tc.input.Elem(), tc.wantData.wantElem)
+				instantiate୦୦OnNotEqualFatalf୦string(t, idx, tc.tname, "Name", tc.input.Name(), tc.wantData.wantName)
+//line dsl_test.go2:75
+ }
 }
 
-//line dsl_test.go2:28
+//line dsl_test.go2:90
 func TestDSL(t *testing.T) {
-	var tactor = NewTActorForVariable("asdf")
+	var tactor = NewTActorForVariable("a")
 	printDebug("tactor", tactor)
-	printDebug("tactor.type", tactor.Type())
 	printDebug("tactor.ActorID", tactor.ActorID)
-	printDebug("tactor.ActorID.Type()", tactor.ActorID.Type())
-	printDebug("tactor.IsActive", tactor.IsActive)
-	printDebug("tactor.IsActive.Type()", tactor.IsActive.Type())
-	printDebug("tactor.ActorID.Eq(tactor.ActorID)", tactor.ActorID.Eq(tactor.ActorID))
+	printDebug("tactor.ActorID.EqValue(int16(10))", tactor.ActorID.EqValue(int16(10)))
+}
+//line paths.go2:88
+func instantiate୦୦NewSimplePath୦bool(value bool,
 
-//line dsl_test.go2:43
+//line paths.go2:88
+ pm PathMetadata) instantiate୦୦SimplePath୦bool {
+	return instantiate୦୦SimplePath୦bool{
+		value: value,
+		pm:    pm,
+	}
+}
+//line dsl_test.go2:84
+func instantiate୦୦OnNotEqualFatalf୦reflect୮aType(t *testing.T, idx int, name, sub string, left, right reflect.Type,) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+//line dsl_test.go2:84
+func instantiate୦୦OnNotEqualFatalf୦lingo୮aPathType(t *testing.T, idx int, name, sub string, left, right PathType,) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+//line dsl_test.go2:84
+func instantiate୦୦OnNotEqualFatalf୦lingo୮aPath(t *testing.T, idx int, name, sub string, left, right Path,) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+//line dsl_test.go2:84
+func instantiate୦୦OnNotEqualFatalf୦bool(t *testing.T, idx int, name, sub string, left, right bool,) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+//line dsl_test.go2:84
+func instantiate୦୦OnNotEqualFatalf୦interface୮4୮5(t *testing.T, idx int, name, sub string, left, right interface {
+//line dsl_test.go2:84
+}) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
+}
+//line dsl_test.go2:84
+func instantiate୦୦OnNotEqualFatalf୦string(t *testing.T, idx int, name, sub string, left, right string,) {
+	if left != right {
+		t.Fatalf("error[%d-%s-%s] expected %+v, got: %+v", idx, name, sub, left, right)
+	}
 }
 
-//line dsl_test.go2:43
-var _ = json.Compact
-//line dsl_test.go2:43
+//line dsl_test.go2:88
+type instantiate୦୦SimplePath୦bool struct {
+//line paths.go2:95
+ value bool
+
+//line paths.go2:96
+ pm PathMetadata
+}
+
+//line paths.go2:98
+func (p instantiate୦୦SimplePath୦bool,) Type() reflect.Type { return p.pm.Type() }
+func (p instantiate୦୦SimplePath୦bool,) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+}
+func (p instantiate୦୦SimplePath୦bool,) Metadata() PathMetadata { return p.pm }
+func (p instantiate୦୦SimplePath୦bool,) Root() Path             { return p.pm.Root() }
+//line expression.go2:8
+func instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(b instantiate୦୦TypedBuilder୦lingo୮aTemplates୦string, buildCtx Templates, e Expression) string {
+	return b.Visit(buildCtx, e)
+}
+
+//line expression.go2:10
+type instantiate୦୦TypedBuilder୦lingo୮aTemplates୦string interface {
+//line expression.go2:13
+ Visit(ctx Templates, e Expression) string
+}
+
+//line expression.go2:14
 var _ = fmt.Errorf
-//line dsl_test.go2:43
+//line expression.go2:14
 var _ = reflect.Append
-//line dsl_test.go2:43
+//line expression.go2:14
+var _ = regexp.Compile
+//line expression.go2:14
 var _ = strconv.AppendBool
 
-//line dsl_test.go2:43
+//line expression.go2:14
 type _ strings.Builder
 
-//line dsl_test.go2:43
+//line expression.go2:14
 var _ = atomic.AddInt32
-//line dsl_test.go2:43
+//line expression.go2:14
 var _ = testing.AllocsPerRun

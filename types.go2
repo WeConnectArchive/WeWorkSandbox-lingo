@@ -1,7 +1,12 @@
 package lingo
 
-import "reflect"
+import (
+	"reflect"
+	"strconv"
+	"sync/atomic"
+)
 
+type noType struct{}
 type numeric interface {
 	type int, int16, int32, int64
 }
@@ -13,3 +18,9 @@ var (
 
 func TypeOfInt16() reflect.Type { return typeInt16 }
 func TypeOfBool() reflect.Type  { return typeBool }
+
+var counter int64
+func newRandomName() string {
+	value := atomic.AddInt64(&counter, 1)
+	return strconv.FormatInt(value, 10)
+}

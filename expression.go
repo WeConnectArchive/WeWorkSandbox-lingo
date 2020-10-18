@@ -7,11 +7,11 @@ package lingo
 //line expression.go2:1
 import (
 //line expression.go2:1
- "encoding/json"
-//line expression.go2:1
  "fmt"
 //line expression.go2:1
  "reflect"
+//line expression.go2:1
+ "regexp"
 //line expression.go2:1
  "strconv"
 //line expression.go2:1
@@ -23,63 +23,192 @@ import (
 //line expression.go2:1
 )
 
-//line expression.go2:9
-type Expression interface {
-	Type() reflect.Type
-}
+//line expression.go2:16
+type PathBuilder struct{}
 
 //line expression.go2:17
+func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
+	if p, ok := e.(Path); ok {
+		return p
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			if p := b.Visit(ctx, arg); p != nil {
+				return p
+			}
+		}
+	}
+	return nil
+}
+
+type PathsBuilder struct{}
+
+//line expression.go2:32
+func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
+	if p, ok := e.(Path); ok {
+		paths = append(paths, p)
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			paths = b.Visit(paths, arg)
+		}
+	}
+	return paths
+}
+
+type ToStringBuilder struct{}
+
+//line expression.go2:45
+func (b ToStringBuilder) Visit(t Templates, e Expression) string {
+	if c, ok := e.(ConstantExpression); ok {
+		return fmt.Sprintf("%v", c.Interface())
+	}
+	if o, ok := e.(Operation); ok {
+		op := o.Operator()
+
+		syntax, ok := t[op]
+		if !ok {
+			return fmt.Sprintf("unknown operation for operator %s and args %v", op, o.Args())
+		}
+
+		value := syntax.Replace(func(idx int) string {
+			arg := o.Arg(idx)
+			if arg == nil {
+				return fmt.Sprintf("unknown argument at index '%d' for syntax '%s'", idx, syntax)
+			}
+			if argOp, ok := arg.(Operation); ok {
+				return "(" + b.Visit(t, argOp) + ")"
+			} else {
+				return b.Visit(t, arg)
+			}
+		})
+		return value
+	}
+	if p, ok := e.(Path); ok {
+		parent := p.Metadata().Parent()
+		elem := p.Metadata().Elem()
+
+		if parent == nil {
+			return fmt.Sprintf("%v", elem)
+		}
+
+		syntax, ok := t[p.Metadata().PathType()]
+		if !ok {
+			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
+		}
+
+		values := []interface{}{parent, elem}
+		value := syntax.Replace(func(idx int) string {
+			if idx > 2 {
+				return ""
+			}
+			if exp, ok := values[idx].(Expression); ok {
+				return b.Visit(t, exp)
+			}
+			return fmt.Sprintf("%v", values[idx])
+		})
+		return value
+	}
+	return b.Visit(t, e)
+}
+
+//line expression.go2:103
+type Expression interface {
+	Type() reflect.Type
+	String() string
+}
+
 type ConstantExpression interface {
 	Expression
 	Interface() interface{}
 }
 
+type ParamExpression interface {
+	Expression
+	Name() string
+	Anonymus() bool
+}
+
+//line expression.go2:126
 type PredicateExpression interface {
-//line expression.go2:22
+//line expression.go2:126
  instantiate୦୦TypedExpression୦bool
 
 				Not() PredicateExpression
 }
 
-//line expression.go2:38
+//line expression.go2:142
 type BooleanExpression interface {
-//line expression.go2:38
+//line expression.go2:142
  instantiate୦୦TypedExpression୦bool
 
 				EqValue(b bool) BooleanExpression
 				Eq(e instantiate୦୦TypedExpression୦bool,) BooleanExpression
 }
 
-//line expression.go2:81
-var counter int64
+//line expression.go2:153
+type StringExpression interface {
+//line expression.go2:153
+ instantiate୦୦LiteralExpression୦string
 
-//line expression.go2:82
-func newRandomName() string {
-	value := atomic.AddInt64(&counter, 1)
-	return strconv.FormatInt(value, 10)
+				As(alias instantiate୦୦TypedPath୦string,) StringExpression
+				Alias(alias string) StringExpression
 }
-
-//line expression.go2:85
+//line expression.go2:157
 type instantiate୦୦TypedExpression୦bool interface {
-//line expression.go2:14
+//line expression.go2:123
  Expression
 }
-//line expression.go2:15
+//line expression.go2:124
+type instantiate୦୦LiteralExpression୦string interface {
+//line expression.go2:148
+ instantiate୦୦ComparableExpression୦string
+
+	StringValue()
+}
+//line expression.go2:151
+type instantiate୦୦TypedPath୦string interface {
+//line paths.go2:75
+ instantiate୦୦TypedExpression୦string
+
+			Path
+}
+//line paths.go2:78
+type instantiate୦୦ComparableExpression୦string interface {
+//line expression.go2:136
+ instantiate୦୦AnyComparableExpression୦string
+
+	GTValue(v string) BooleanExpression
+	GT(e instantiate୦୦TypedExpression୦string,) BooleanExpression
+}
+//line expression.go2:140
+type instantiate୦୦TypedExpression୦string interface {
+//line expression.go2:123
+ Expression
+}
+//line expression.go2:124
+type instantiate୦୦AnyComparableExpression୦string interface {
+//line expression.go2:131
+ instantiate୦୦TypedExpression୦string
+
+	Desc()
+}
+//line expression.go2:134
 type Importable୦ int
 
-//line expression.go2:15
-var _ = json.Compact
-//line expression.go2:15
+//line expression.go2:134
 var _ = fmt.Errorf
-//line expression.go2:15
+//line expression.go2:134
 var _ = reflect.Append
-//line expression.go2:15
+//line expression.go2:134
+var _ = regexp.Compile
+//line expression.go2:134
 var _ = strconv.AppendBool
 
-//line expression.go2:15
+//line expression.go2:134
 type _ strings.Builder
 
-//line expression.go2:15
+//line expression.go2:134
 var _ = atomic.AddInt32
-//line expression.go2:15
+//line expression.go2:134
 var _ = testing.AllocsPerRun

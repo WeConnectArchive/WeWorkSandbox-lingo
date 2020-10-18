@@ -7,11 +7,11 @@ package lingo
 //line paths.go2:1
 import (
 //line paths.go2:1
- "encoding/json"
-//line paths.go2:1
  "fmt"
 //line paths.go2:1
  "reflect"
+//line paths.go2:1
+ "regexp"
 //line paths.go2:1
  "strconv"
 //line paths.go2:1
@@ -50,13 +50,13 @@ func NewPathMetadataForVariable(varName string) PathMetadata {
  return NewPathMetadata(Variable, varName, nil)
 //line paths.go2:29
 }
-func NewPathMetadataForProperty(propName string, parent PathMetadata) PathMetadata {
+func NewPathMetadataForProperty(propName string, parent Path) PathMetadata {
 //line paths.go2:30
- return NewPathMetadata(Property, propName, &parent)
+ return NewPathMetadata(Property, propName, parent)
 //line paths.go2:30
 }
-func NewPathMetadata(pt PathType, element interface{}, parent *PathMetadata) PathMetadata {
-	var root *PathMetadata
+func NewPathMetadata(pt PathType, element interface{}, parent Path) PathMetadata {
+	var root Path
 	if parent != nil {
 		root = parent.Root()
 	}
@@ -71,75 +71,78 @@ func NewPathMetadata(pt PathType, element interface{}, parent *PathMetadata) Pat
 //line paths.go2:43
 type PathMetadata struct {
 	pathType PathType
-	root     *PathMetadata
-	parent   *PathMetadata
+	root     Path
+	parent   Path
 	element  interface{}
 }
 
 //line paths.go2:49
 func (pm PathMetadata) Type() reflect.Type { return reflect.TypeOf(pm.pathType) }
-func (pm PathMetadata) PathType() PathType                     { return pm.pathType }
-func (pm PathMetadata) Parent() *PathMetadata                  { return pm.parent }
-func (pm PathMetadata) Root() *PathMetadata                    { return pm.root }
-func (pm PathMetadata) IsRoot() bool {
-	return pm.parent == nil && (pm.pathType == Delegate && pm.parent.IsRoot())
+func (pm PathMetadata) IsZero() bool {
+	return pm == PathMetadata{}
 }
-func (pm PathMetadata) Element() interface{} { return pm.element }
+func (pm PathMetadata) PathType() PathType { return pm.pathType }
+func (pm PathMetadata) Parent() Path       { return pm.parent }
+func (pm PathMetadata) Root() Path         { return pm.root }
+func (pm PathMetadata) IsRoot() bool {
+	return pm.Parent() == nil || (pm.PathType() == Delegate && pm.Parent().Metadata().IsRoot())
+}
+func (pm PathMetadata) Elem() interface{} { return pm.element }
 func (pm PathMetadata) Name() string {
 	switch pm.pathType {
 	case Variable, Property:
-		return pm.element.(string)
+		return pm.Elem().(string)
 	}
 	panic(fmt.Sprintf("name property not available for path type %d, must be accessed with Element()", pm.pathType))
 }
 
-//line paths.go2:67
+//line paths.go2:70
 type Path interface {
-	Type() reflect.Type
-	Metadata()
+	Expression
+	Metadata() PathMetadata
+	Root() Path
 }
 
-//line paths.go2:88
+//line paths.go2:107
 func NewBoolPath(p instantiate୦୦SimplePath୦bool,) BoolPath {
-	return BoolPath(p)
+	return BoolPath{
+		mixin: p,
+	}
 }
 
-//line paths.go2:91
-type BoolPath instantiate୦୦SimplePath୦bool
+//line paths.go2:112
+type BoolPath struct {
+	mixin instantiate୦୦SimplePath୦bool
+}
 
-//line paths.go2:92
-func (p BoolPath) Type() reflect.Type { return reflect.TypeOf(p) }
+//line paths.go2:115
+func (p BoolPath) Type() reflect.Type { return p.mixin.Type() }
+func (p BoolPath) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), p)
+}
+func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
+func (p BoolPath) Root() Path             { return p.mixin.Root() }
+
 func (p BoolPath) EqValue(v bool) BooleanExpression {
-	return BooleanExpression(nil)
+	return p.Eq(instantiate୦୦NewSimpleConstant୦bool(v))
 }
 func (p BoolPath) Eq(v instantiate୦୦TypedExpression୦bool,) BooleanExpression {
 	return NewOpEqual(p, v)
 }
 
-//line paths.go2:98
-type instantiate୦୦SimplePath୦bool struct {
-//line paths.go2:80
- value bool
-			pm    PathMetadata
-}
-
-//line paths.go2:83
-func (p instantiate୦୦SimplePath୦bool,) Type() reflect.Type { return reflect.TypeOf(p.value) }
-func (p instantiate୦୦SimplePath୦bool,) Metadata() PathMetadata                 { return p.pm }
-
-//line paths.go2:84
-var _ = json.Compact
-//line paths.go2:84
+//line paths.go2:127
 var _ = fmt.Errorf
-//line paths.go2:84
+//line paths.go2:127
 var _ = reflect.Append
-//line paths.go2:84
+//line paths.go2:127
+var _ = regexp.Compile
+//line paths.go2:127
 var _ = strconv.AppendBool
 
-//line paths.go2:84
+//line paths.go2:127
 type _ strings.Builder
 
-//line paths.go2:84
+//line paths.go2:127
 var _ = atomic.AddInt32
-//line paths.go2:84
+//line paths.go2:127
 var _ = testing.AllocsPerRun

@@ -7,11 +7,11 @@ package lingo
 //line queries.go2:1
 import (
 //line queries.go2:1
- "encoding/json"
-//line queries.go2:1
  "fmt"
 //line queries.go2:1
  "reflect"
+//line queries.go2:1
+ "regexp"
 //line queries.go2:1
  "strconv"
 //line queries.go2:1
@@ -24,11 +24,11 @@ import (
 )
 
 //line queries.go2:1
-var _ = json.Compact
-//line queries.go2:1
 var _ = fmt.Errorf
 //line queries.go2:1
 var _ = reflect.Append
+//line queries.go2:1
+var _ = regexp.Compile
 //line queries.go2:1
 var _ = strconv.AppendBool
 
