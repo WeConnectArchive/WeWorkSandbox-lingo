@@ -94,8 +94,19 @@ func TestDSL(t *testing.T) {
 	printDebug("tactor", tactor)
 	printDebug("tactor.ActorID", tactor.ActorID)
 	printDebug("tactor.ActorID.EqValue(int16(10))", tactor.ActorID.EqValue(int16(10)))
-	var exp Expression = tactor.IsActive.Eq(tactor.IsActive.EqValue(true))
+	var exp = tactor.IsActive.Eq(tactor.IsActive.IsTrue())
 	printDebug("tactor.IsActive.Eq(tactor.IsActive.EqValue(true))", exp)
+	printDebug(`exp.As("aliasName")`, exp.As("aliasName"))
+
+	var exp2 = tactor.ActorID.Eq(tactor.ActorID.EqValue(10))
+	printDebug("tactor.ActorID.Eq(tactor.ActorID.Eq(10))", exp2)
+	printDebug(`exp2.As("aliasName")`, exp2.As("aliasName"))
+
+	var exp3 = tactor.ActorID.BetweenValues(int16(10), int16(15))
+	printDebug("tactor.ActorID.BetweenValues(10, 15)", exp3)
+
+	var mathExp instantiate୦୦NumberExpression୦int16 = tactor.ActorID
+	printDebug("NumberExpression[int16](tactor.ActorID)", mathExp)
 }
 //line paths.go2:88
 func instantiate୦୦NewSimplePath୦bool(value bool,
@@ -147,6 +158,65 @@ func instantiate୦୦OnNotEqualFatalf୦string(t *testing.T, idx int, name, sub
 }
 
 //line dsl_test.go2:88
+type instantiate୦୦NumberExpression୦int16 interface {
+//line expression.go2:290
+ instantiate୦୦ComparableExpression୦int16
+
+	Abs() instantiate୦୦NumberExpression୦int16
+	AddValue(v int16,
+
+//line expression.go2:293
+ ) instantiate୦୦NumberExpression୦int16
+				Add(t instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+				AsPath(p instantiate୦୦TypedPath୦int16,) instantiate୦୦NumberExpression୦int16
+				As(alias string) instantiate୦୦NumberExpression୦int16
+
+//line expression.go2:305
+ Ceil() instantiate୦୦NumberExpression୦int16
+	DivideValue(v int16,
+
+//line expression.go2:306
+ ) instantiate୦୦NumberExpression୦int16
+				Divide(e instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+				EqValue(v int16,
+
+//line expression.go2:308
+ ) BooleanExpression
+				Eq(v instantiate୦୦TypedExpression୦int16,) BooleanExpression
+				Floor() instantiate୦୦NumberExpression୦int16
+
+//line expression.go2:313
+ ModValue(v int16,
+
+//line expression.go2:313
+ ) instantiate୦୦NumberExpression୦int16
+	Mod(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+	MultiplyValue(v int16,
+
+//line expression.go2:315
+ ) instantiate୦୦NumberExpression୦int16
+				Multiply(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+				Negate() instantiate୦୦NumberExpression୦int16
+				Round() instantiate୦୦NumberExpression୦int16
+				Sqrt() instantiate୦୦NumberExpression୦int16
+				SubtractValue(v int16,
+
+//line expression.go2:320
+ ) instantiate୦୦NumberExpression୦int16
+				Subtract(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+
+				InValues(v ...int16,
+
+//line expression.go2:323
+ ) instantiate୦୦NumberExpression୦int16
+				In(v ...instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+				NotInValues(v ...int16,
+
+//line expression.go2:325
+ ) instantiate୦୦NumberExpression୦int16
+				NotIn(v ...instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16
+}
+//line expression.go2:327
 type instantiate୦୦SimplePath୦bool struct {
 //line paths.go2:95
  value bool
@@ -166,18 +236,82 @@ func (p instantiate୦୦SimplePath୦bool,) Metadata() PathMetadata { return p.
 func (p instantiate୦୦SimplePath୦bool,) Root() Path             { return p.pm.Root() }
 
 //line paths.go2:101
+type instantiate୦୦ComparableExpression୦int16 interface {
+//line expression.go2:197
+ instantiate୦୦AnyComparableExpression୦int16
+
+	Asc() instantiate୦୦Order୦int16
+	BetweenValues(l, r int16,
+
+//line expression.go2:200
+ ) BooleanExpression
+				Between(l, r instantiate୦୦TypedExpression୦int16,) BooleanExpression
+				NotBetweenValues(l, r int16,
+
+//line expression.go2:202
+ ) BooleanExpression
+				NotBetween(l, r instantiate୦୦TypedExpression୦int16,) BooleanExpression
+				GTValue(v int16,
+
+//line expression.go2:204
+ ) BooleanExpression
+				GT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression
+				GTOrEqValue(v int16,
+
+//line expression.go2:206
+ ) BooleanExpression
+				GTOrEq(v instantiate୦୦TypedExpression୦int16,) BooleanExpression
+				LTValue(v int16,
+
+//line expression.go2:208
+ ) BooleanExpression
+				LT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression
+				LTOrEqValue(v int16,
+
+//line expression.go2:210
+ ) BooleanExpression
+				LTOrEq(v instantiate୦୦TypedExpression୦int16,) BooleanExpression
+}
+//line expression.go2:212
+type instantiate୦୦TypedExpression୦int16 interface {
+//line expression.go2:156
+ Expression
+}
+//line expression.go2:157
+type instantiate୦୦TypedPath୦int16 interface {
+//line paths.go2:75
+ instantiate୦୦TypedExpression୦int16
+
+			Path
+}
+//line paths.go2:78
+type instantiate୦୦AnyComparableExpression୦int16 interface {
+//line expression.go2:180
+ instantiate୦୦TypedExpression୦int16
+
+	Desc()
+}
+//line expression.go2:183
+type instantiate୦୦Order୦int16 interface {
+//line expression.go2:192
+ Order() Ordering
+	Ascending() bool
+	Path() instantiate୦୦TypedExpression୦int16
+}
+
+//line expression.go2:195
 var _ = fmt.Errorf
-//line paths.go2:101
+//line expression.go2:195
 var _ = reflect.Append
-//line paths.go2:101
+//line expression.go2:195
 var _ = regexp.Compile
-//line paths.go2:101
+//line expression.go2:195
 var _ = strconv.AppendBool
 
-//line paths.go2:101
+//line expression.go2:195
 type _ strings.Builder
 
-//line paths.go2:101
+//line expression.go2:195
 var _ = atomic.AddInt32
-//line paths.go2:101
+//line expression.go2:195
 var _ = testing.AllocsPerRun

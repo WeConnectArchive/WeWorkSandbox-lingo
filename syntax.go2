@@ -114,19 +114,31 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	OpExists:     NewSyntax("EXISTS ({0})"),
 
 	// CatSet
+	OpSet:       NewSyntax("{0}, {1}"),
+	OpList:      NewSyntax("{0}, {1}"),
 	OpUnion:     NewSyntax("{0} UNION {1}"),
 	OpExcept:    NewSyntax("{0} EXCEPT {1}"),
 	OpIntersect: NewSyntax("{0} INTERSECT {1}"),
 
 	// CatString
+	OpStringCast:   NewSyntax("STR({0})"),
 	OpStringConcat: NewSyntax("CONCAT({0}, {1})"),
+
+	// CatNumeric
+	OpAbs:        NewSyntax("ABS({0})"),
+	OpCeiling:    NewSyntax("CEIL({0}"),
+	OpFloor:      NewSyntax("FLOOR({0})"),
+	OpMax:        NewSyntax("MAX({0}, {1})"),
+	OpMin:        NewSyntax("MIN({0}, {1})"),
+	OpNumCast:    NewSyntax("CAST({0}, {1})"),
+	OpRound:      NewSyntax("ROUND({0})"),
+	OpSquareRoot: NewSyntax("SQRT({0})"),
 
 	// CatUnary
 	OpSingleton: NewSyntax("{0}"),
 	OpNegate:    NewSyntax("-{0}"),
 
 	// ???
-	OpList:             NewSyntax("{0}, {1}"),
 	OpCount:            NewSyntax("COUNT({0})"),
 	OpLike:             NewSyntax("{0} LIKE {1}"),
 	OpNotLike:          NewSyntax("{0} NOT LIKE {1}"),
@@ -137,7 +149,7 @@ func requireSyntaxForEveryOperator(ops Templates) Templates {
 	for op := OpUnknown + 1; op < OpLastOperation; op++ {
 		_, found := ops[op]
 		if !found {
-			panic(fmt.Sprintf("Operator %d does not have a default Syntax", op))
+			panic(fmt.Sprintf("Operator %s(%d) does not have a default Syntax", op, op))
 		}
 	}
 	return ops

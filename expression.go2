@@ -3,19 +3,40 @@ package lingo
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 )
-
-func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) T {
-	return b.Visit(buildCtx, e)
-}
 
 type TypedBuilder[C, T any] interface {
 	Visit(ctx C, e Expression) T
 }
+func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) T {
+	return b.Visit(buildCtx, e)
+}
 
+type QueryMetadata struct {}
+
+// ParamsBuilder
+func VisitWithDefaultParamsBuilder(e Expression) QueryMetadata {
+	qm := QueryMetadata{}
+	VisitWithBuilder[*QueryMetadata, struct{}](ParamsBuilder{}, &qm, e)
+	return qm
+}
+type ParamsBuilder struct{}
+func (b ParamsBuilder) Visit(qm *QueryMetadata, e Expression) struct{} {
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			b.Visit(qm, arg)
+		}
+		b.Visit(qm, e)
+	}
+	// TODO - QueryExpressions / SubQueryExpression - This will pul l in 
+	return struct{}{}
+}
+
+// PathBuilder
 func VisitWithDefaultPathBuilder(e Expression) Path {
 	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e) 
-} 
+}
 type PathBuilder struct {}
 func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	if p, ok := e.(Path); ok {
@@ -32,6 +53,7 @@ func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 }
 
 
+// PathsBuilder
 func VisitWithDefaultPathsBuilder(e Expression) []Path {
 	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e) 
 } 
@@ -48,6 +70,7 @@ func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	return paths
 }
 
+// ToStringBuilder
 func VisitWithDefaultToStringBuilder(e Expression) string {
 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e) 
 } 
@@ -138,37 +161,169 @@ type PredicateExpression interface {
 	Not() PredicateExpression
 }
 
-type AnyComparableExpression[T any] interface { 
-	TypedExpression[T]
-	Desc()
-}
-
-type ComparableExpression[T comparable] interface {
-	AnyComparableExpression[T]
-	GTValue(v T) BooleanExpression
-	GT(e TypedExpression[T]) BooleanExpression
-}
-
 type BooleanExpression interface {
 	TypedExpression[bool]
+	AsPath(p TypedPath[bool]) BooleanExpression
+	As(alias string) BooleanExpression
+	
+	And(e PredicateExpression) BooleanExpression
+	Not() BooleanExpression
+	Or(e PredicateExpression) BooleanExpression
+
+	IsTrue() BooleanExpression
+	IsFalse() BooleanExpression
+
 	EqValue(b bool) BooleanExpression
 	Eq(e TypedExpression[bool]) BooleanExpression
 }
 
+type AnyComparableExpression[T any] interface { 
+	TypedExpression[T]
+	Desc() // Descending
+}
+git 
+type Ordering int
+const (
+	OrderUnknown Ordering = iota
+	OrderAsc
+	OrderDesc
+)
+type Order[T any] interface {
+	Order() Ordering
+	Ascending() bool
+	Path() TypedExpression[T]
+}
+
+type ComparableExpression[T comparable] interface {
+	AnyComparableExpression[T]
+	Asc() Order[T]
+	BetweenValues(l, r T) BooleanExpression
+	Between(l, r TypedExpression[T]) BooleanExpression
+	NotBetweenValues(l, r T) BooleanExpression
+	NotBetween(l, r TypedExpression[T]) BooleanExpression
+	GTValue(v T) BooleanExpression
+	GT(e TypedExpression[T]) BooleanExpression
+	GTOrEqValue(v T) BooleanExpression
+	GTOrEq(v TypedExpression[T]) BooleanExpression
+	LTValue(v T) BooleanExpression
+	LT(e TypedExpression[T]) BooleanExpression
+	LTOrEqValue(v T) BooleanExpression
+	LTOrEq(v TypedExpression[T]) BooleanExpression
+}
+
 type LiteralExpression[T comparable] interface {
 	ComparableExpression[T]
-	StringValue() // StringExpression
+	StringValue() StringExpression
 }
 
 type StringExpression interface {
 	LiteralExpression[string]
 	As(alias TypedPath[string]) StringExpression
 	Alias(alias string) StringExpression
+	AppendValue(v string) StringExpression
+	Append(v TypedExpression[string]) StringExpression
+	CharAtValue(idx int) TypedExpression[rune]
+	CharAt(idx TypedExpression[int]) TypedExpression[rune]
+	ConcatValue(v string) StringExpression
+	Concat(v TypedExpression[string]) StringExpression
+	ContainsValue(v string) BooleanExpression
+	Contains(v TypedExpression[string]) BooleanExpression
+	ContainsFoldValue(v string) BooleanExpression
+	ContainsFold(v TypedExpression[string]) BooleanExpression
+	EqualsFoldValue(v string) BooleanExpression
+	EqualsFold(v TypedExpression[string]) BooleanExpression
+	HasPrefixValue(v string) BooleanExpression
+	HasPrefix(v TypedExpression[string]) BooleanExpression
+	HasPrefixFoldValue(v string) BooleanExpression
+	HasPrefixFold(v TypedExpression[string]) BooleanExpression
+	HasSuffixValue(v string) BooleanExpression
+	HasSuffix(v TypedExpression[string]) BooleanExpression
+	HasSuffixFoldValue(v string) BooleanExpression
+	HasSuffixFold(v TypedExpression[string]) BooleanExpression
+	IndexOfValue(v string) NumberExpression[int]
+	IndexOf(v TypedExpression[string]) NumberExpression[int]
+	IndexOfNValue(v string, n int) NumberExpression[int]
+	IndexOfN(v TypedExpression[string], n int) NumberExpression[int]
+	IsEmpty() BooleanExpression
+	IsNotEmpty() BooleanExpression
+	Len() NumberExpression[int]
+	LikeValue(v string) BooleanExpression
+	Like(v TypedExpression[string]) BooleanExpression
+	LikeFoldValue(v string) BooleanExpression
+	LikeFold(v TypedExpression[string]) BooleanExpression
+	LikeEscapeValue(v string, escape rune) BooleanExpression
+	LikeEscape(v TypedExpression[string], escape rune) BooleanExpression
+	LikeFoldEscapeValue(v string, escape rune) BooleanExpression
+	LikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression
+	LocateValue(v string) NumberExpression[int]
+	Locate(v TypedExpression[string]) NumberExpression[int]
+	LocateFromValue(v string, start int) NumberExpression[int]
+	LocateFrom(v TypedExpression[string], start TypedExpression[int]) NumberExpression[int]
+	Lower() StringExpression
+	MatchesValue(regex regexp.Regexp) BooleanExpression
+	Matches(regex TypedExpression[string]) BooleanExpression
+	// Max() StringExpression -- Aggregate
+	// Min() StringExpression -- Aggregate
+	NotEqFoldValue(v string) BooleanExpression
+	NotEqFold(v TypedExpression[string]) BooleanExpression
+	NotLikeValue(v string) BooleanExpression
+	NotLike(v TypedExpression[string]) BooleanExpression
+	NotLikeFoldValue(v string) BooleanExpression
+	NotLikeFold(v TypedExpression[string]) BooleanExpression
+	NotLikeEscapeValue(v string, escape rune) BooleanExpression
+	NotLikeEscape(v TypedExpression[string], escape rune) BooleanExpression
+	NotLikeFoldEscapeValue(v string, escape rune) BooleanExpression
+	NotLikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression
+	PrependValue(v string) StringExpression
+	Prepend(v TypedExpression[string]) StringExpression
+	StringValue() StringExpression
+	SubstringStartValue(begin int) StringExpression
+	SubstringStart(begin TypedExpression[int]) StringExpression
+	SubstringStartValueEnd(begin int, end TypedExpression[int]) StringExpression
+	SubstringStartEndValue(begin TypedExpression[int], end int) StringExpression
+	SubstringStartAndEndValue(begin, end int) StringExpression
+	SubstringStartEnd(begin, end TypedExpression[int]) StringExpression
+	Trim() StringExpression
+	Upper() StringExpression
 }
 
 type NumberExpression[T numeric] interface {
 	ComparableExpression[T]
-	Max() NumberExpression[T]
+	Abs() NumberExpression[T]
+	AddValue(v T) NumberExpression[T]
+	Add(t TypedExpression[T]) NumberExpression[T]
+	AsPath(p TypedPath[T]) NumberExpression[T]
+	As(alias string) NumberExpression[T]
+	// Avg() NumberExpression[T] -- Aggregate
+	// CastToBytes() NumberExpression[?]
+	// CastToNumber() NumberExpression[?]
+	// CastToDouble() NumberExpression[?]
+	// CastToFloat() NumberExpression[?]
+	// CastToInt16() NumberExpression[?]
+	// CastToInt32() NumberExpression[?]
+	// CastToInt64() NumberExpression[?]
+	Ceil() NumberExpression[T]
+	DivideValue(v T) NumberExpression[T]
+	Divide(e TypedExpression[T]) NumberExpression[T]
+	EqValue(v T) BooleanExpression
+	Eq(v TypedExpression[T]) BooleanExpression
+	Floor() NumberExpression[T]
+	// Max() NumberExpression[T] -- Aggregate
+	// Min() NumberExpression[T] -- Aggregate
+	ModValue(v T) NumberExpression[T]
+	Mod(v TypedExpression[T]) NumberExpression[T]
+	MultiplyValue(v T) NumberExpression[T]
+	Multiply(v TypedExpression[T]) NumberExpression[T]
+	Negate() NumberExpression[T]
+	Round() NumberExpression[T]
+	Sqrt() NumberExpression[T]
+	SubtractValue(v T) NumberExpression[T]
+	Subtract(v TypedExpression[T]) NumberExpression[T]
+	// Sum() -- Aggregate
+	InValues(v ...T) NumberExpression[T]
+	In(v ...TypedExpression[T]) NumberExpression[T]
+	NotInValues(v ...T) NumberExpression[T]
+	NotIn(v ...TypedExpression[T]) NumberExpression[T]
 }
 
 // =======================================================

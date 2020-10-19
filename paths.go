@@ -121,6 +121,23 @@ func (p BoolPath) String() string                          { return VisitWithDef
 func (p BoolPath) Metadata() PathMetadata                  { return p.mixin.Metadata() }
 func (p BoolPath) Root() Path                              { return p.mixin.Root() }
 
+func (p BoolPath) And(e PredicateExpression) BooleanExpression {
+	return NewOpAnd(p, e)
+}
+func (p BoolPath) Not() BooleanExpression {
+	return NewOpNot(p)
+}
+func (p BoolPath) Or(e PredicateExpression) BooleanExpression {
+	return NewOpOr(p, e)
+}
+
+func (p BoolPath) IsTrue() BooleanExpression {
+	return p.EqValue(true)
+}
+func (p BoolPath) IsFalse() BooleanExpression {
+	return p.EqValue(false)
+}
+
 func (p BoolPath) EqValue(v bool) BooleanExpression {
 	return p.Eq(instantiate୦୦NewSimpleConstant୦bool(v))
 }
@@ -128,32 +145,32 @@ func (p BoolPath) Eq(v instantiate୦୦TypedExpression୦bool,) BooleanExpressi
 	return NewOpEqual(p, v)
 }
 
-//line paths.go2:157
+//line paths.go2:230
 func NewStringPath(p instantiate୦୦SimplePath୦string,) StringPath {
 	return StringPath{
 		mixin: p,
 	}
 }
 
-//line paths.go2:162
+//line paths.go2:235
 type StringPath struct {
 	StringExpression
 	mixin instantiate୦୦SimplePath୦string
 }
 
-//line paths.go2:165
+//line paths.go2:238
 var _ = fmt.Errorf
-//line paths.go2:165
+//line paths.go2:238
 var _ = reflect.Append
-//line paths.go2:165
+//line paths.go2:238
 var _ = regexp.Compile
-//line paths.go2:165
+//line paths.go2:238
 var _ = strconv.AppendBool
 
-//line paths.go2:165
+//line paths.go2:238
 type _ strings.Builder
 
-//line paths.go2:165
+//line paths.go2:238
 var _ = atomic.AddInt32
-//line paths.go2:165
+//line paths.go2:238
 var _ = testing.AllocsPerRun

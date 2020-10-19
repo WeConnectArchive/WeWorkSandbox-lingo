@@ -115,6 +115,23 @@ func (p BoolPath) String() string { return VisitWithDefaultToStringBuilder(p) }
 func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p BoolPath) Root() Path { return p.mixin.Root() }
 
+func (p BoolPath) And(e PredicateExpression) BooleanExpression {
+	return NewOpAnd(p, e)
+}
+func (p BoolPath) Not() BooleanExpression {
+	return NewOpNot(p)
+}
+func (p BoolPath) Or(e PredicateExpression) BooleanExpression {
+	return NewOpOr(p, e)
+}
+
+func (p BoolPath) IsTrue() BooleanExpression {
+	return p.EqValue(true)
+}
+func (p BoolPath) IsFalse() BooleanExpression {
+	return p.EqValue(false)
+}
+
 func (p BoolPath) EqValue(v bool) BooleanExpression {
 	return p.Eq(NewSimpleConstant[bool](v))
 }
@@ -138,11 +155,26 @@ func (p NumberPath[T]) String() string { return VisitWithDefaultToStringBuilder(
 func (p NumberPath[T]) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p NumberPath[T]) Root() Path { return p.mixin.Root() }
 
-func (p NumberPath[T]) EqValue(v T) BooleanExpression {
-	return p.Eq(NewSimpleConstant[T](v))
+// -- LiteralExpression
+func (p NumberPath[T]) StringValue() StringExpression {
+	return NewStringOperation(OpStringCast, p)
 }
-func (p NumberPath[T]) Eq(v TypedExpression[T]) BooleanExpression {
-	return NewOpEqual(p, v)
+
+// -- ComparableExpression
+func (p NumberPath[T]) Asc() Order[T] {
+	return nil
+}
+func (p NumberPath[T]) BetweenValues(l, r T) BooleanExpression {
+	return p.Between(NewSimpleConstant[T](l), NewSimpleConstant[T](r))
+}
+func (p NumberPath[T]) Between(l, r TypedExpression[T]) BooleanExpression {
+	return NewOpBetween(p, l, r)
+}
+func (p NumberPath[T]) NotBetweenValues(l, r T) BooleanExpression {
+	return p.NotBetween(NewSimpleConstant[T](l), NewSimpleConstant[T](r))
+}
+func (p NumberPath[T]) NotBetween(l, r TypedExpression[T]) BooleanExpression {
+	return NewOpNotBetween(p, l, r)
 }
 func (p NumberPath[T]) GTValue(v T) BooleanExpression {
 	return p.GT(NewSimpleConstant[T](v))
@@ -150,6 +182,47 @@ func (p NumberPath[T]) GTValue(v T) BooleanExpression {
 func (p NumberPath[T]) GT(e TypedExpression[T]) BooleanExpression {
 	return NewOpGreaterThan(p, e)
 }
+func (p NumberPath[T]) GTOrEqValue(v T) BooleanExpression {
+	return p.GTOrEq(NewSimpleConstant[T](v))
+}
+func (p NumberPath[T]) GTOrEq(e TypedExpression[T]) BooleanExpression {
+	return NewOpGreaterThanOrEqual(p, e)
+}
+func (p NumberPath[T]) LTValue(v T) BooleanExpression {
+	return p.LT(NewSimpleConstant[T](v))
+}
+func (p NumberPath[T]) LT(e TypedExpression[T]) BooleanExpression {
+	return NewOpLessThan(p, e)
+}
+func (p NumberPath[T]) LTOrEqValue(v T) BooleanExpression {
+	return p.LTOrEq(NewSimpleConstant[T](v))
+}
+func (p NumberPath[T]) LTOrEq(e TypedExpression[T]) BooleanExpression {
+	return NewOpLessThanOrEqual(p, e)
+}
+
+// -- NumberExpression
+func (p NumberPath[T]) AsPath(a TypedPath[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpAlias, p, a)
+}
+func (p NumberPath[T]) As(alias string) NumberExpression[T] {
+	return p.AsPath(NewSimplePathForVariable[T](T(0), alias))
+}
+
+func (p NumberPath[T]) EqValue(v T) BooleanExpression {
+	return p.Eq(NewSimpleConstant[T](v))
+}
+func (p NumberPath[T]) Eq(v TypedExpression[T]) BooleanExpression {
+	return NewOpEqual(p, v)
+}
+
+func (p NumberPath[T]) Max(l, r TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpMax, l, r)
+}
+func (p NumberPath[T]) Min(l, r TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpMin, l, r)
+}
+
 
 
 // -------------------------------------

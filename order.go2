@@ -1,0 +1,22 @@
+package lingo
+
+func NewOrderBy[T any](order Ordering, path TypedExpression[T]) OrderBy[T] {
+	return OrderBy[T]{
+		ordering: order,
+		path: path,
+	}
+}
+type OrderBy[T any] struct {
+	ordering Ordering
+	path TypedExpression[T]
+}
+
+func (o OrderBy[T]) Order() Ordering {
+	return o.ordering
+}
+func (o OrderBy[T]) Ascending() bool {
+	return o.ordering == OrderAsc
+}
+func (o OrderBy[T]) Path() TypedExpression[T] {
+	return o.path
+}

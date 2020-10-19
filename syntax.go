@@ -130,20 +130,32 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 			OpExists:     NewSyntax("EXISTS ({0})"),
 
 //line syntax.go2:117
- OpUnion:     NewSyntax("{0} UNION {1}"),
+ OpSet:       NewSyntax("{0}, {1}"),
+			OpList:      NewSyntax("{0}, {1}"),
+			OpUnion:     NewSyntax("{0} UNION {1}"),
 			OpExcept:    NewSyntax("{0} EXCEPT {1}"),
 			OpIntersect: NewSyntax("{0} INTERSECT {1}"),
 
-//line syntax.go2:122
- OpStringConcat: NewSyntax("CONCAT({0}, {1})"),
+//line syntax.go2:124
+ OpStringCast:   NewSyntax("STR({0})"),
+			OpStringConcat: NewSyntax("CONCAT({0}, {1})"),
 
-//line syntax.go2:125
+//line syntax.go2:128
+ OpAbs:        NewSyntax("ABS({0})"),
+			OpCeiling:    NewSyntax("CEIL({0}"),
+			OpFloor:      NewSyntax("FLOOR({0})"),
+			OpMax:        NewSyntax("MAX({0}, {1})"),
+			OpMin:        NewSyntax("MIN({0}, {1})"),
+			OpNumCast:    NewSyntax("CAST({0}, {1})"),
+			OpRound:      NewSyntax("ROUND({0})"),
+			OpSquareRoot: NewSyntax("SQRT({0})"),
+
+//line syntax.go2:138
  OpSingleton: NewSyntax("{0}"),
 			OpNegate:    NewSyntax("-{0}"),
 
-//line syntax.go2:129
- OpList:             NewSyntax("{0}, {1}"),
-			OpCount:            NewSyntax("COUNT({0})"),
+//line syntax.go2:142
+ OpCount:            NewSyntax("COUNT({0})"),
 			OpLike:             NewSyntax("{0} LIKE {1}"),
 			OpNotLike:          NewSyntax("{0} NOT LIKE {1}"),
 			OpCurrentTimestamp: NewSyntax("CURRENT_TIMESTAMP"),
@@ -153,25 +165,25 @@ func requireSyntaxForEveryOperator(ops Templates) Templates {
 	for op := OpUnknown + 1; op < OpLastOperation; op++ {
 		_, found := ops[op]
 		if !found {
-			panic(fmt.Sprintf("Operator %d does not have a default Syntax", op))
+			panic(fmt.Sprintf("Operator %s(%d) does not have a default Syntax", op, op))
 		}
 	}
 	return ops
 }
 
-//line syntax.go2:144
+//line syntax.go2:156
 var _ = fmt.Errorf
-//line syntax.go2:144
+//line syntax.go2:156
 var _ = reflect.Append
-//line syntax.go2:144
+//line syntax.go2:156
 var _ = regexp.Compile
-//line syntax.go2:144
+//line syntax.go2:156
 var _ = strconv.AppendBool
 
-//line syntax.go2:144
+//line syntax.go2:156
 type _ strings.Builder
 
-//line syntax.go2:144
+//line syntax.go2:156
 var _ = atomic.AddInt32
-//line syntax.go2:144
+//line syntax.go2:156
 var _ = testing.AllocsPerRun

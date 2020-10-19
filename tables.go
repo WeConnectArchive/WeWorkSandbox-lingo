@@ -104,7 +104,7 @@ func instantiate୦୦NewSimplePathForProperty୦int16(value int16,
 	return instantiate୦୦NewSimplePath୦int16(value, NewPathMetadataForProperty(propName, parent))
 }
 
-//line paths.go2:127
+//line paths.go2:144
 func instantiate୦୦NewNumberPath୦int16(p instantiate୦୦SimplePath୦int16,) instantiate୦୦NumberPath୦int16 {
 	return instantiate୦୦NumberPath୦int16{
 		mixin: p,
@@ -120,42 +120,112 @@ func instantiate୦୦NewSimplePathForProperty୦bool(value bool,
 
 //line paths.go2:84
 type instantiate୦୦NumberPath୦int16 struct {
-//line paths.go2:132
+//line paths.go2:149
  instantiate୦୦NumberExpression୦int16
 
 	mixin instantiate୦୦SimplePath୦int16
 }
 
-//line paths.go2:136
+//line paths.go2:153
 func (p instantiate୦୦NumberPath୦int16,) Type() reflect.Type { return p.mixin.Type() }
 func (p instantiate୦୦NumberPath୦int16,) String() string {
-//line paths.go2:137
+//line paths.go2:154
  return VisitWithDefaultToStringBuilder(p)
-//line paths.go2:137
+//line paths.go2:154
 }
 func (p instantiate୦୦NumberPath୦int16,) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p instantiate୦୦NumberPath୦int16,) Root() Path             { return p.mixin.Root() }
 
-func (p instantiate୦୦NumberPath୦int16,) EqValue(v int16,
-
-//line paths.go2:141
-) BooleanExpression {
-	return p.Eq(instantiate୦୦NewSimpleConstant୦int16(v))
+//line paths.go2:159
+func (p instantiate୦୦NumberPath୦int16,) StringValue() StringExpression {
+	return NewStringOperation(OpStringCast, p)
 }
-func (p instantiate୦୦NumberPath୦int16,) Eq(v instantiate୦୦TypedExpression୦int16,) BooleanExpression {
-	return NewOpEqual(p, v)
+
+//line paths.go2:164
+func (p instantiate୦୦NumberPath୦int16,) Asc() instantiate୦୦Order୦int16 {
+	return nil
+}
+func (p instantiate୦୦NumberPath୦int16,) BetweenValues(l, r int16,
+
+//line paths.go2:167
+) BooleanExpression {
+	return p.Between(instantiate୦୦NewSimpleConstant୦int16(l), instantiate୦୦NewSimpleConstant୦int16(r))
+}
+func (p instantiate୦୦NumberPath୦int16,) Between(l, r instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpBetween(p, l, r)
+}
+func (p instantiate୦୦NumberPath୦int16,) NotBetweenValues(l, r int16,
+
+//line paths.go2:173
+) BooleanExpression {
+	return p.NotBetween(instantiate୦୦NewSimpleConstant୦int16(l), instantiate୦୦NewSimpleConstant୦int16(r))
+}
+func (p instantiate୦୦NumberPath୦int16,) NotBetween(l, r instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpNotBetween(p, l, r)
 }
 func (p instantiate୦୦NumberPath୦int16,) GTValue(v int16,
 
-//line paths.go2:147
+//line paths.go2:179
 ) BooleanExpression {
 	return p.GT(instantiate୦୦NewSimpleConstant୦int16(v))
 }
 func (p instantiate୦୦NumberPath୦int16,) GT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
 	return NewOpGreaterThan(p, e)
 }
+func (p instantiate୦୦NumberPath୦int16,) GTOrEqValue(v int16,
 
-//line paths.go2:152
+//line paths.go2:185
+) BooleanExpression {
+	return p.GTOrEq(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (p instantiate୦୦NumberPath୦int16,) GTOrEq(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpGreaterThanOrEqual(p, e)
+}
+func (p instantiate୦୦NumberPath୦int16,) LTValue(v int16,
+
+//line paths.go2:191
+) BooleanExpression {
+	return p.LT(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (p instantiate୦୦NumberPath୦int16,) LT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpLessThan(p, e)
+}
+func (p instantiate୦୦NumberPath୦int16,) LTOrEqValue(v int16,
+
+//line paths.go2:197
+) BooleanExpression {
+	return p.LTOrEq(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (p instantiate୦୦NumberPath୦int16,) LTOrEq(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpLessThanOrEqual(p, e)
+}
+
+//line paths.go2:205
+func (p instantiate୦୦NumberPath୦int16,) AsPath(a instantiate୦୦TypedPath୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpAlias, p, a)
+}
+func (p instantiate୦୦NumberPath୦int16,) As(alias string) instantiate୦୦NumberExpression୦int16 {
+	return p.AsPath(instantiate୦୦NewSimplePathForVariable୦int16(int16(0), alias))
+}
+
+func (p instantiate୦୦NumberPath୦int16,) EqValue(v int16,
+
+//line paths.go2:212
+) BooleanExpression {
+	return p.Eq(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (p instantiate୦୦NumberPath୦int16,) Eq(v instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpEqual(p, v)
+}
+
+func (p instantiate୦୦NumberPath୦int16,) Max(l, r instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpMax, l, r)
+}
+func (p instantiate୦୦NumberPath୦int16,) Min(l, r instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpMin, l, r)
+}
+
+//line paths.go2:224
 type instantiate୦୦SimplePath୦int16 struct {
 //line paths.go2:95
  value int16
@@ -184,80 +254,337 @@ func instantiate୦୦NewSimplePath୦int16(value int16,
 	}
 }
 
-//line paths.go2:93
-type instantiate୦୦NumberExpression୦int16 interface {
-//line expression.go2:169
- instantiate୦୦ComparableExpression୦int16
-
-	Max() instantiate୦୦NumberExpression୦int16
-}
-
-//line expression.go2:178
+//line expression.go2:333
 func instantiate୦୦NewSimpleConstant୦int16(v int16,
 
-//line expression.go2:178
+//line expression.go2:333
 ) instantiate୦୦SimpleConstant୦int16 {
 	return instantiate୦୦SimpleConstant୦int16{
 		value: v,
 	}
 }
-
-//line expression.go2:182
-type instantiate୦୦TypedExpression୦int16 interface {
-//line expression.go2:133
- Expression
+//line operation.go2:123
+func instantiate୦୦NewNumberOperation୦int16(op Operator, args ...Expression) instantiate୦୦NumberOperation୦int16 {
+	return instantiate୦୦NumberOperation୦int16{
+		mixin: instantiate୦୦NewSimpleOperation୦int16(op, args...),
+	}
 }
-//line expression.go2:134
-type instantiate୦୦ComparableExpression୦int16 interface {
-//line expression.go2:146
- instantiate୦୦AnyComparableExpression୦int16
+//line paths.go2:85
+func instantiate୦୦NewSimplePathForVariable୦int16(value int16,
 
-	GTValue(v int16,
-
-//line expression.go2:148
- ) BooleanExpression
-				GT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression
+//line paths.go2:85
+ variableName string) instantiate୦୦SimplePath୦int16 {
+	return instantiate୦୦NewSimplePath୦int16(value, NewPathMetadataForVariable(variableName))
 }
-//line expression.go2:150
+
+//line paths.go2:87
 type instantiate୦୦SimpleConstant୦int16 struct {
-//line expression.go2:183
+//line expression.go2:338
  instantiate୦୦TypedExpression୦int16
 
 	value int16
 }
 
-//line expression.go2:187
+//line expression.go2:342
 func (e instantiate୦୦SimpleConstant୦int16,) Type() reflect.Type {
-//line expression.go2:187
+//line expression.go2:342
  return reflect.TypeOf(int16(e.value))
-//line expression.go2:187
+//line expression.go2:342
 }
 func (e instantiate୦୦SimpleConstant୦int16,) String() string {
 	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), e)
 }
 func (e instantiate୦୦SimpleConstant୦int16,) Interface() interface{} { return e.value }
 
-//line expression.go2:191
-type instantiate୦୦AnyComparableExpression୦int16 interface {
-//line expression.go2:141
- instantiate୦୦TypedExpression୦int16
+//line expression.go2:346
+type instantiate୦୦NumberOperation୦int16 struct {
+//line operation.go2:131
+ instantiate୦୦NumberExpression୦int16
 
-				Desc()
+				mixin instantiate୦୦TypedExpression୦int16
 }
 
-//line expression.go2:144
+//line operation.go2:135
+func (o instantiate୦୦NumberOperation୦int16,) Type() reflect.Type { return o.mixin.Type() }
+func (o instantiate୦୦NumberOperation୦int16,) String() string {
+//line operation.go2:136
+ return VisitWithDefaultToStringBuilder(o)
+//line operation.go2:136
+}
+
+//line operation.go2:139
+func (o instantiate୦୦NumberOperation୦int16,) StringValue() StringExpression {
+	return NewStringOperation(OpStringCast, o)
+}
+
+//line operation.go2:144
+func (o instantiate୦୦NumberOperation୦int16,) Asc() instantiate୦୦Order୦int16 {
+	return instantiate୦୦NewOrderBy୦int16(OrderAsc, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) BetweenValues(l, r int16,
+
+//line operation.go2:147
+) BooleanExpression {
+	return o.Between(instantiate୦୦NewSimpleConstant୦int16(l), instantiate୦୦NewSimpleConstant୦int16(r))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Between(l, r instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpBetween(o, l, r)
+}
+func (o instantiate୦୦NumberOperation୦int16,) NotBetweenValues(l, r int16,
+
+//line operation.go2:153
+) BooleanExpression {
+	return o.NotBetween(instantiate୦୦NewSimpleConstant୦int16(l), instantiate୦୦NewSimpleConstant୦int16(r))
+}
+func (o instantiate୦୦NumberOperation୦int16,) NotBetween(l, r instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpNotBetween(o, l, r)
+}
+func (o instantiate୦୦NumberOperation୦int16,) GTValue(v int16,
+
+//line operation.go2:159
+) BooleanExpression {
+	return o.GT(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) GT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpGreaterThan(o, e)
+}
+func (o instantiate୦୦NumberOperation୦int16,) GTOrEqValue(v int16,
+
+//line operation.go2:165
+) BooleanExpression {
+	return o.GTOrEq(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) GTOrEq(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpGreaterThanOrEqual(o, e)
+}
+func (o instantiate୦୦NumberOperation୦int16,) LTValue(v int16,
+
+//line operation.go2:171
+) BooleanExpression {
+	return o.LT(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) LT(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpLessThan(o, e)
+}
+func (o instantiate୦୦NumberOperation୦int16,) LTOrEqValue(v int16,
+
+//line operation.go2:177
+) BooleanExpression {
+	return o.LTOrEq(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) LTOrEq(e instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpLessThanOrEqual(o, e)
+}
+
+//line operation.go2:185
+func (o instantiate୦୦NumberOperation୦int16,) Abs() instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpAbs, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) AddValue(v int16,
+
+//line operation.go2:188
+) instantiate୦୦NumberExpression୦int16 {
+	return o.Add(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Add(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpAddition, o, v)
+}
+func (o instantiate୦୦NumberOperation୦int16,) AsPath(p instantiate୦୦TypedPath୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpAlias, o, p)
+}
+func (o instantiate୦୦NumberOperation୦int16,) As(alias string) instantiate୦୦NumberExpression୦int16 {
+	return o.AsPath(instantiate୦୦NewSimplePathForVariable୦int16(int16(0), alias))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Ceil() instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpCeiling, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) DivideValue(v int16,
+
+//line operation.go2:203
+) instantiate୦୦NumberExpression୦int16 {
+	return o.Divide(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Divide(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpDivision, o, v)
+}
+func (o instantiate୦୦NumberOperation୦int16,) EqValue(v int16,
+
+//line operation.go2:209
+) BooleanExpression {
+	return o.Eq(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Eq(v instantiate୦୦TypedExpression୦int16,) BooleanExpression {
+	return NewOpEqual(o, v)
+}
+func (o instantiate୦୦NumberOperation୦int16,) Floor() instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpFloor, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) ModValue(v int16,
+
+//line operation.go2:218
+) instantiate୦୦NumberExpression୦int16 {
+	return o.Mod(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Mod(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpModulo, o, v)
+}
+func (o instantiate୦୦NumberOperation୦int16,) MultiplyValue(v int16,
+
+//line operation.go2:224
+) instantiate୦୦NumberExpression୦int16 {
+	return o.Multiply(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Multiply(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpMultiplication, o, v)
+}
+func (o instantiate୦୦NumberOperation୦int16,) Negate() instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpNegate, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) Round() instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpRound, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) Sqrt() instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpSquareRoot, o)
+}
+func (o instantiate୦୦NumberOperation୦int16,) SubtractValue(v int16,
+
+//line operation.go2:239
+) instantiate୦୦NumberExpression୦int16 {
+	return o.Subtract(instantiate୦୦NewSimpleConstant୦int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) Subtract(v instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpSubtraction, o, v)
+}
+func (o instantiate୦୦NumberOperation୦int16,) InValues(v ...int16,
+
+//line operation.go2:245
+) instantiate୦୦NumberExpression୦int16 {
+	return o.In(instantiate୦୦NewSimpleConstant୦୮6୮7int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) In(v ...instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpIn, o, instantiate୦୦NewSet୦int16(v...))
+}
+func (o instantiate୦୦NumberOperation୦int16,) NotInValues(v ...int16,
+
+//line operation.go2:251
+) instantiate୦୦NumberExpression୦int16 {
+	return o.NotIn(instantiate୦୦NewSimpleConstant୦୮6୮7int16(v))
+}
+func (o instantiate୦୦NumberOperation୦int16,) NotIn(v ...instantiate୦୦TypedExpression୦int16,) instantiate୦୦NumberExpression୦int16 {
+	return instantiate୦୦NewNumberOperation୦int16(OpNotIn, o, instantiate୦୦NewSet୦int16(v...))
+}
+//line operation.go2:25
+func instantiate୦୦NewSimpleOperation୦int16(op Operator, args ...Expression) instantiate୦୦SimpleOperation୦int16 {
+	return instantiate୦୦SimpleOperation୦int16{
+		op:   op,
+		args: args,
+	}
+}
+//line order.go2:3
+func instantiate୦୦NewOrderBy୦int16(order Ordering, path instantiate୦୦TypedExpression୦int16) instantiate୦୦OrderBy୦int16 {
+	return instantiate୦୦OrderBy୦int16{
+		ordering: order,
+		path:     path,
+	}
+}
+
+//line expression.go2:333
+func instantiate୦୦NewSimpleConstant୦୮6୮7int16(v []int16,
+
+//line expression.go2:333
+) instantiate୦୦SimpleConstant୦୮6୮7int16 {
+	return instantiate୦୦SimpleConstant୦୮6୮7int16{
+		value: v,
+	}
+}
+//line operation.go2:18
+func instantiate୦୦NewSet୦int16(args ...instantiate୦୦TypedExpression୦int16,) instantiate୦୦TypedExpression୦int16 {
+	var result instantiate୦୦TypedExpression୦int16
+	for _, arg := range args {
+		result = instantiate୦୦NewSimpleOperation୦int16(OpSet, result, arg)
+	}
+	return result
+}
+
+//line operation.go2:24
+type instantiate୦୦SimpleOperation୦int16 struct {
+//line operation.go2:32
+ op Operator
+	args []Expression
+}
+
+//line operation.go2:35
+func (o instantiate୦୦SimpleOperation୦int16,) Type() reflect.Type { return o.op.Type() }
+func (o instantiate୦୦SimpleOperation୦int16,) String() string {
+//line operation.go2:36
+ return VisitWithDefaultToStringBuilder(o)
+//line operation.go2:36
+}
+func (o instantiate୦୦SimpleOperation୦int16,) Operator() Operator     { return o.op }
+func (o instantiate୦୦SimpleOperation୦int16,) Args() []Expression     { return o.args }
+func (o instantiate୦୦SimpleOperation୦int16,) Arg(idx int) Expression { return o.arg(idx) }
+func (o instantiate୦୦SimpleOperation୦int16,) arg(idx int) Expression {
+	if idx >= len(o.args) {
+		return nil
+	}
+	return o.args[idx]
+}
+
+//line operation.go2:45
+type instantiate୦୦OrderBy୦int16 struct {
+//line order.go2:10
+ ordering Ordering
+			path     instantiate୦୦TypedExpression୦int16
+}
+
+func (o instantiate୦୦OrderBy୦int16,) Order() Ordering {
+	return o.ordering
+}
+func (o instantiate୦୦OrderBy୦int16,) Ascending() bool {
+	return o.ordering == OrderAsc
+}
+func (o instantiate୦୦OrderBy୦int16,) Path() instantiate୦୦TypedExpression୦int16 {
+	return o.path
+}
+
+//line order.go2:22
+type instantiate୦୦SimpleConstant୦୮6୮7int16 struct {
+//line expression.go2:338
+ instantiate୦୦TypedExpression୦୮6୮7int16
+
+	value []int16
+}
+
+//line expression.go2:342
+func (e instantiate୦୦SimpleConstant୦୮6୮7int16,) Type() reflect.Type {
+//line expression.go2:342
+ return reflect.TypeOf([]int16(e.value))
+//line expression.go2:342
+}
+func (e instantiate୦୦SimpleConstant୦୮6୮7int16,) String() string {
+	return instantiate୦୦VisitWithBuilder୦lingo୮aTemplates୦string(ToStringBuilder{}, DefaultTemplates(), e)
+}
+func (e instantiate୦୦SimpleConstant୦୮6୮7int16,) Interface() interface{} { return e.value }
+
+//line expression.go2:346
+type instantiate୦୦TypedExpression୦୮6୮7int16 interface {
+//line expression.go2:156
+ Expression
+}
+
+//line expression.go2:157
 var _ = fmt.Errorf
-//line expression.go2:144
+//line expression.go2:157
 var _ = reflect.Append
-//line expression.go2:144
+//line expression.go2:157
 var _ = regexp.Compile
-//line expression.go2:144
+//line expression.go2:157
 var _ = strconv.AppendBool
 
-//line expression.go2:144
+//line expression.go2:157
 type _ strings.Builder
 
-//line expression.go2:144
+//line expression.go2:157
 var _ = atomic.AddInt32
-//line expression.go2:144
+//line expression.go2:157
 var _ = testing.AllocsPerRun
