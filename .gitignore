@@ -37,6 +37,9 @@ mock_*_test.go
 # But include our custom Test Matchers
 !/internal/test/matchers/***
 
+# Ignore any generated Go files from Go2
+/*.go
+
 # Binaries
 /lingo
 /output/

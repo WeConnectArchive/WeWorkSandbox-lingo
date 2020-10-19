@@ -1,0 +1,129 @@
+package lingo
+
+import (
+	"fmt"
+)
+
+type TypedBuilder[C, T any] interface {
+	Visit(ctx C, e Expression) T
+}
+func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) T {
+	return b.Visit(buildCtx, e)
+}
+
+type QueryMetadata struct {}
+
+// ParamsBuilder
+func VisitWithDefaultParamsBuilder(e Expression) QueryMetadata {
+	qm := QueryMetadata{}
+	VisitWithBuilder[*QueryMetadata, struct{}](ParamsBuilder{}, &qm, e)
+	return qm
+}
+type ParamsBuilder struct{}
+func (b ParamsBuilder) Visit(qm *QueryMetadata, e Expression) struct{} {
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			b.Visit(qm, arg)
+		}
+		b.Visit(qm, e)
+	}
+	// TODO - QueryExpressions / SubQueryExpression - This will pul l in 
+	return struct{}{}
+}
+
+// PathBuilder
+func VisitWithDefaultPathBuilder(e Expression) Path {
+	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e) 
+}
+type PathBuilder struct {}
+func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
+	if p, ok := e.(Path); ok {
+		return p
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			if p := b.Visit(ctx, arg); p != nil {
+				return p
+			}
+		}
+	}
+	return nil
+}
+
+
+// PathsBuilder
+func VisitWithDefaultPathsBuilder(e Expression) []Path {
+	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e) 
+} 
+type PathsBuilder struct {}
+func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
+	if p, ok := e.(Path); ok {
+		paths = append(paths, p)
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			paths = b.Visit(paths, arg)
+		}
+	}
+	return paths
+}
+
+// ToStringBuilder
+func VisitWithDefaultToStringBuilder(e Expression) string {
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e) 
+} 
+type ToStringBuilder struct {}
+func (b ToStringBuilder) Visit(t Templates, e Expression) string {
+	if c, ok := e.(ConstantExpression); ok {
+		return fmt.Sprintf("%v", c.Interface())
+	}
+	if o, ok := e.(Operation); ok {
+		op := o.Operator()
+		// Make sure this is something we _should_ be able to build.
+		syntax, ok := t[op]
+		if !ok {
+			return fmt.Sprintf("unknown operation for operator %s and args %v", op, o.Args())
+		}
+
+		value := syntax.Replace(func(idx int) string {
+			arg := o.Arg(idx)
+			if arg == nil {
+				return fmt.Sprintf("unknown argument at index '%d' for syntax '%s'", idx, syntax)
+			}
+			if argOp, ok := arg.(Operation); ok {
+				return "(" + b.Visit(t, argOp) + ")"
+			} else {
+				return b.Visit(t, arg)
+			}
+		})
+		return value
+	}
+	if p, ok := e.(Path); ok {
+		parent := p.Metadata().Parent()
+		elem := p.Metadata().Elem()
+
+		if parent == nil {
+			return fmt.Sprintf("%v", elem)
+		}
+		// Make sure this is a path type we can build
+		syntax, ok := t[p.Metadata().PathType()]
+		if !ok {
+			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
+		}
+		
+		values := []interface{}{parent, elem}
+		value := syntax.Replace(func(idx int) string {
+			if idx > 2 {
+				return ""
+			}
+			if exp, ok := values[idx].(Expression); ok {
+				return b.Visit(t, exp)
+			}
+			return fmt.Sprintf("%v", values[idx])
+		})
+		return value
+	}
+	return b.Visit(t, e)
+}
+
+
