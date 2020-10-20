@@ -3,6 +3,7 @@ package lingo
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 )
 
 type PathType int
@@ -110,11 +111,19 @@ func NewBoolPath(p SimplePath[bool]) BoolPath {
 type BoolPath struct {
 	mixin SimplePath[bool] // & BooleanExpression
 }
+// -- Expression
 func (p BoolPath) Type() reflect.Type { return p.mixin.Type() }
 func (p BoolPath) String() string { return VisitWithDefaultToStringBuilder(p) }
+// -- Path
 func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p BoolPath) Root() Path { return p.mixin.Root() }
-
+// -- BooleanExpression
+func (o BoolPath) As(alias string) BooleanExpression { 
+	return o.AsPath(NewSimplePathForVariable[bool](false, alias))
+}
+func (o BoolPath) AsPath(p TypedPath[bool]) BooleanExpression { 
+	return NewBooleanOperation(OpAlias, o, p) 
+}
 func (p BoolPath) And(e PredicateExpression) BooleanExpression {
 	return NewOpAnd(p, e)
 }
@@ -124,14 +133,12 @@ func (p BoolPath) Not() BooleanExpression {
 func (p BoolPath) Or(e PredicateExpression) BooleanExpression {
 	return NewOpOr(p, e)
 }
-
 func (p BoolPath) IsTrue() BooleanExpression {
 	return p.EqValue(true)
 }
 func (p BoolPath) IsFalse() BooleanExpression {
 	return p.EqValue(false)
 }
-
 func (p BoolPath) EqValue(v bool) BooleanExpression {
 	return p.Eq(NewSimpleConstant[bool](v))
 }
@@ -146,24 +153,28 @@ func NewNumberPath[T numeric](p SimplePath[T]) NumberPath[T] {
 		mixin: p,
 	}
 }
+// NumberPath is a basic NumberExpression of numberic type T
 type NumberPath[T numeric] struct {
-	NumberExpression[T]
 	mixin SimplePath[T]
 }
+// -- Expression
 func (p NumberPath[T]) Type() reflect.Type { return p.mixin.Type() }
 func (p NumberPath[T]) String() string { return VisitWithDefaultToStringBuilder(p) }
+// -- Path
 func (p NumberPath[T]) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p NumberPath[T]) Root() Path { return p.mixin.Root() }
-
 // -- LiteralExpression
 func (p NumberPath[T]) StringValue() StringExpression {
 	return NewStringOperation(OpStringCast, p)
 }
-
-// -- ComparableExpression
+// -- AnyComparableExpression
 func (p NumberPath[T]) Asc() Order[T] {
-	return nil
+	return NewOrderBy[T](OrderAsc, p)
 }
+func (p NumberPath[T]) Desc() Order[T] {
+	return NewOrderBy[T](OrderDesc, p)
+}
+// -- ComparableExpression
 func (p NumberPath[T]) BetweenValues(l, r T) BooleanExpression {
 	return p.Between(NewSimpleConstant[T](l), NewSimpleConstant[T](r))
 }
@@ -200,39 +211,343 @@ func (p NumberPath[T]) LTOrEqValue(v T) BooleanExpression {
 func (p NumberPath[T]) LTOrEq(e TypedExpression[T]) BooleanExpression {
 	return NewOpLessThanOrEqual(p, e)
 }
-
 // -- NumberExpression
-func (p NumberPath[T]) AsPath(a TypedPath[T]) NumberExpression[T] {
-	return NewNumberOperation[T](OpAlias, p, a)
+func (o NumberPath[T]) Abs() NumberExpression[T] {
+	return NewNumberOperation[T](OpAbs, o)
 }
-func (p NumberPath[T]) As(alias string) NumberExpression[T] {
-	return p.AsPath(NewSimplePathForVariable[T](T(0), alias))
+func (o NumberPath[T]) AddValue(v T) NumberExpression[T] {
+	return o.Add(NewSimpleConstant[T](v))
 }
-
-func (p NumberPath[T]) EqValue(v T) BooleanExpression {
-	return p.Eq(NewSimpleConstant[T](v))
+func (o NumberPath[T]) Add(v TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpAddition, o, v)
 }
-func (p NumberPath[T]) Eq(v TypedExpression[T]) BooleanExpression {
-	return NewOpEqual(p, v)
+func (o NumberPath[T]) AsPath(p TypedPath[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpAlias, o, p)
 }
-
-func (p NumberPath[T]) Max(l, r TypedExpression[T]) NumberExpression[T] {
-	return NewNumberOperation[T](OpMax, l, r)
+func (o NumberPath[T]) As(alias string) NumberExpression[T] {
+	return o.AsPath(NewSimplePathForVariable[T](T(0), alias))
 }
-func (p NumberPath[T]) Min(l, r TypedExpression[T]) NumberExpression[T] {
-	return NewNumberOperation[T](OpMin, l, r)
+func (o NumberPath[T]) Ceil() NumberExpression[T] {
+	return NewNumberOperation[T](OpCeiling, o)
+}
+func (o NumberPath[T]) DivideValue(v T) NumberExpression[T] {
+	return o.Divide(NewSimpleConstant[T](v))
+}
+func (o NumberPath[T]) Divide(v TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpDivision, o, v)
+}
+func (o NumberPath[T]) EqValue(v T) BooleanExpression {
+	return o.Eq(NewSimpleConstant[T](v))
+}
+func (o NumberPath[T]) Eq(v TypedExpression[T]) BooleanExpression {
+	return NewOpEqual(o, v)
+}
+func (o NumberPath[T]) Floor() NumberExpression[T] {
+	return NewNumberOperation[T](OpFloor, o)
+}
+func (o NumberPath[T]) ModValue(v T) NumberExpression[T] {
+	return o.Mod(NewSimpleConstant[T](v))
+}
+func (o NumberPath[T]) Mod(v TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpModulo, o, v)
+}
+func (o NumberPath[T]) MultiplyValue(v T) NumberExpression[T] {
+	return o.Multiply(NewSimpleConstant[T](v))
+}
+func (o NumberPath[T]) Multiply(v TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpMultiplication, o, v)
+}
+func (o NumberPath[T]) Negate() NumberExpression[T] {
+	return NewNumberOperation[T](OpNegate, o)
+}
+func (o NumberPath[T]) Round() NumberExpression[T] {
+	return NewNumberOperation[T](OpRound, o)
+}
+func (o NumberPath[T]) Sqrt() NumberExpression[T] {
+	return NewNumberOperation[T](OpSquareRoot, o)
+}
+func (o NumberPath[T]) SubtractValue(v T) NumberExpression[T] {
+	return o.Subtract(NewSimpleConstant[T](v))
+}
+func (o NumberPath[T]) Subtract(v TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpSubtraction, o, v)
+}
+func (o NumberPath[T]) InValues(v ...T) NumberExpression[T] {
+	return o.In(NewSimpleConstant[[]T](v))
+}
+func (o NumberPath[T]) In(v ...TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpIn, o, NewSet[T](v...))
+}
+func (o NumberPath[T]) NotInValues(v ...T) NumberExpression[T] {
+	return o.NotIn(NewSimpleConstant[[]T](v))
+}
+func (o NumberPath[T]) NotIn(v ...TypedExpression[T]) NumberExpression[T] {
+	return NewNumberOperation[T](OpNotIn, o, NewSet[T](v...))
 }
 
 
 
 // -------------------------------------
-// NewStringPath
+// NewStringPath is a basic StringExpression path
 func NewStringPath(p SimplePath[string]) StringPath {
 	return StringPath{
 		mixin: p,
 	}
 }
 type StringPath struct {
-	StringExpression
 	mixin SimplePath[string]
+}
+// -- Expression
+func (o StringPath) Type() reflect.Type { return o.mixin.Type() }
+func (o StringPath) String() string { 
+	return o.mixin.String()
+}
+
+// -- AnyComparableExpression
+func (o StringPath) Asc() Order[string] {
+	return NewOrderBy[string](OrderAsc, o)
+}
+func (o StringPath) Desc() Order[string] {
+	return NewOrderBy[string](OrderDesc, o)
+}
+
+// -- ComparableExpression
+func (o StringPath) BetweenValues(l, r string) BooleanExpression {
+	return o.Between(NewSimpleConstant[string](l), NewSimpleConstant[string](r))
+}
+func (o StringPath) Between(l, r TypedExpression[string]) BooleanExpression {
+	return NewOpBetween(o, l, r)
+}
+func (o StringPath) NotBetweenValues(l, r string) BooleanExpression {
+	return o.NotBetween(NewSimpleConstant[string](l), NewSimpleConstant[string](r))
+}
+func (o StringPath) NotBetween(l, r TypedExpression[string]) BooleanExpression {
+	return NewOpNotBetween(o, l, r)
+}
+func (o StringPath) GTValue(v string) BooleanExpression {
+	return o.GT(NewSimpleConstant[string](v))
+}
+func (o StringPath) GT(v TypedExpression[string]) BooleanExpression {
+	return NewOpGreaterThan(o, v)
+}
+func (o StringPath) GTOrEqValue(v string) BooleanExpression {
+	return o.GTOrEq(NewSimpleConstant[string](v))
+}
+func (o StringPath) GTOrEq(v TypedExpression[string]) BooleanExpression {
+	return NewOpGreaterThanOrEqual(o, v)
+}
+func (o StringPath) LTValue(v string) BooleanExpression {
+	return o.LT(NewSimpleConstant[string](v))
+}
+func (o StringPath) LT(v TypedExpression[string]) BooleanExpression {
+	return NewOpLessThan(o, v)
+}
+func (o StringPath) LTOrEqValue(v string) BooleanExpression {
+	return o.LTOrEq(NewSimpleConstant[string](v))
+}
+func (o StringPath) LTOrEq(v TypedExpression[string]) BooleanExpression {
+	return NewOpLessThanOrEqual(o, v)
+}
+
+// -- LiteralExpression
+func (o StringPath) StringValue() StringExpression {
+	return o
+}
+
+// -- StringExpression
+func (o StringPath) As(alias TypedPath[string]) StringExpression {
+	return NewStringOperation(OpAlias, o, alias)
+}
+func (o StringPath) Alias(alias string) StringExpression {
+	return o.As(NewSimplePathForVariable[string]("", alias))
+}
+func (o StringPath) AppendValue(v string) StringExpression {
+	return o.Append(NewSimpleConstant[string](v))
+}
+func (o StringPath) Append(v TypedExpression[string]) StringExpression {
+	return NewStringOperation(OpStringConcat, o, v)
+}
+func (o StringPath) CharAtValue(idx int) TypedExpression[rune] {
+	return o.CharAt(NewSimpleConstant[int](idx))
+}
+func (o StringPath) CharAt(idx TypedExpression[int]) TypedExpression[rune] {
+	return NewComparableOperation[rune](OpCharAt, o, idx)
+}
+func (o StringPath) ConcatValue(v string) StringExpression {
+	return o.AppendValue(v)
+}
+func (o StringPath) Concat(v TypedExpression[string]) StringExpression {
+	return o.Append(v)
+}
+func (o StringPath) ContainsValue(v string) BooleanExpression {
+	return o.Contains(NewSimpleConstant[string](v))
+}
+func (o StringPath) Contains(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpStringContains, o, v)
+}
+func (o StringPath) ContainsFoldValue(v string) BooleanExpression {
+	return o.ContainsFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) ContainsFold(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpStringContainsFold, o, v)
+}
+func (o StringPath) EqualsFoldValue(v string) BooleanExpression {
+	return o.EqualsFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) EqualsFold(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpEqualsFold, o, v)
+}
+func (o StringPath) HasPrefixValue(v string) BooleanExpression {
+	return o.HasPrefix(NewSimpleConstant[string](v))
+}
+func (o StringPath) HasPrefix(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpHasPrefix, o, v)
+}
+func (o StringPath) HasPrefixFoldValue(v string) BooleanExpression {
+	return o.HasPrefixFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) HasPrefixFold(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpHasPrefixFold, o, v)
+}
+func (o StringPath) HasSuffixValue(v string) BooleanExpression {
+	return o.HasSuffix(NewSimpleConstant[string](v))
+}
+func (o StringPath) HasSuffix(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpHasSuffix, o, v)
+}
+func (o StringPath) HasSuffixFoldValue(v string) BooleanExpression {
+	return o.HasSuffixFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) HasSuffixFold(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpHasSuffixFold, o, v)
+}
+func (o StringPath) IndexOfValue(v string) NumberExpression[int] {
+	return o.IndexOf(NewSimpleConstant[string](v))
+}
+func (o StringPath) IndexOf(v TypedExpression[string]) NumberExpression[int] {
+	return NewNumberOperation[int](OpIndexOf, o, v)
+}
+func (o StringPath) IndexOfNValue(v string, n int) NumberExpression[int] {
+	return o.IndexOfN(NewSimpleConstant[string](v), n)
+}
+func (o StringPath) IndexOfN(v TypedExpression[string], n int) NumberExpression[int] {
+	return NewNumberOperation[int](OpIndexOfN, o, v, NewSimpleConstant[int](n))
+}
+func (o StringPath) IsEmpty() BooleanExpression {
+	return NewBooleanOperation(OpStringIsEmpty, o)
+}
+func (o StringPath) IsNotEmpty() BooleanExpression {
+	return o.IsEmpty().Not()
+}
+func (o StringPath) Len() NumberExpression[int] {
+	return NewNumberOperation[int](OpStringLength, o)
+}
+func (o StringPath) LikeValue(v string) BooleanExpression {
+	return o.Like(NewSimpleConstant[string](v))
+}
+func (o StringPath) Like(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpStringLike, o, v)
+}
+func (o StringPath) LikeFoldValue(v string) BooleanExpression {
+	return o.LikeFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) LikeFold(v TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpStringLikeFold, o, v)
+}
+func (o StringPath) LikeEscapeValue(v string, escape rune) BooleanExpression {
+	return o.LikeEscape(NewSimpleConstant[string](v), escape)
+}
+func (o StringPath) LikeEscape(v TypedExpression[string], escape rune) BooleanExpression {
+	return NewBooleanOperation(OpStringLikeEscape, o, v, NewSimpleConstant[rune](escape))
+}
+func (o StringPath) LikeFoldEscapeValue(v string, escape rune) BooleanExpression {
+	return o.LikeFoldEscape(NewSimpleConstant[string](v), escape)
+}
+func (o StringPath) LikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression {
+	return NewBooleanOperation(OpStringLikeFoldEscape, o, v, NewSimpleConstant[rune](escape))
+}
+func (o StringPath) LocateValue(v string) NumberExpression[int] {
+	return o.Locate(NewSimpleConstant[string](v))
+}
+func (o StringPath) Locate(v TypedExpression[string]) NumberExpression[int] {
+	return NewNumberOperation[int](OpStringLocate, v)
+}
+func (o StringPath) LocateFromValues(v string, start int) NumberExpression[int] {
+	return o.LocateFromValue(NewSimpleConstant[string](v), start)
+}
+func (o StringPath) LocateFromValue(v TypedExpression[string], start int) NumberExpression[int] {
+	return o.LocateFrom(v, NewSimpleConstant[int](start))
+}
+func (o StringPath) LocateFrom(v TypedExpression[string], start TypedExpression[int]) NumberExpression[int] {
+	return NewNumberOperation[int](OpStringLocate2, v)
+}
+func (o StringPath) Lower() StringExpression {
+	return NewStringOperation(OpStringLower, o)
+}
+func (o StringPath) MatchesValue(regex regexp.Regexp) BooleanExpression {
+	return o.Matches(NewSimpleConstant[string](regex.String()))
+}
+func (o StringPath) Matches(regex TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpStringMatches, o, regex)
+}
+func (o StringPath) NotEqFoldValue(v string) BooleanExpression {
+	return o.NotEqFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) NotEqFold(v TypedExpression[string]) BooleanExpression {
+	return o.EqualsFold(v).Not()
+}
+
+func (o StringPath) NotLikeValue(v string) BooleanExpression {
+	return o.NotLike(NewSimpleConstant[string](v))
+}
+func (o StringPath) NotLike(v TypedExpression[string]) BooleanExpression {
+	return o.Like(v).Not()
+}
+func (o StringPath) NotLikeFoldValue(v string) BooleanExpression {
+	return o.NotLikeFold(NewSimpleConstant[string](v))
+}
+func (o StringPath) NotLikeFold(v TypedExpression[string]) BooleanExpression {
+	return o.LikeFold(v).Not()
+}
+func (o StringPath) NotLikeEscapeValue(v string, escape rune) BooleanExpression {
+	return o.NotLikeEscape(NewSimpleConstant[string](v), escape)
+}
+func (o StringPath) NotLikeEscape(v TypedExpression[string], escape rune) BooleanExpression {
+	return o.LikeEscape(v, escape).Not()
+}
+func (o StringPath) NotLikeFoldEscapeValue(v string, escape rune) BooleanExpression {
+	return o.NotLikeFoldEscape(NewSimpleConstant[string](v), escape)
+}
+func (o StringPath) NotLikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression {
+	return o.LikeFoldEscape(v, escape).Not()
+}
+func (o StringPath) PrependValue(v string) StringExpression {
+	return o.Prepend(NewSimpleConstant[string](v))
+}
+func (o StringPath) Prepend(v TypedExpression[string]) StringExpression {
+	return NewStringOperation(OpStringConcat, o, v)
+}
+func (o StringPath) SubstringStartValue(begin int) StringExpression {
+	return o.SubstringStart(NewSimpleConstant[int](begin))
+}
+func (o StringPath) SubstringStart(begin TypedExpression[int]) StringExpression {
+	return NewStringOperation(OpStringSubstring, o, begin)
+}
+func (o StringPath) SubstringStartValueEnd(begin int, end TypedExpression[int]) StringExpression {
+	return o.SubstringStartEnd(NewSimpleConstant[int](begin), end)
+}
+func (o StringPath) SubstringStartEndValue(begin TypedExpression[int], end int) StringExpression {
+	return o.SubstringStartEnd(begin, NewSimpleConstant[int](end))
+}
+func (o StringPath) SubstringStartAndEndValue(begin, end int) StringExpression {
+	return o.SubstringStartEnd(NewSimpleConstant[int](begin), NewSimpleConstant[int](end))
+}
+func (o StringPath) SubstringStartEnd(begin, end TypedExpression[int]) StringExpression {
+	return NewStringOperation(OpStringSubstring2, o, begin, end)
+}
+func (o StringPath) Trim() StringExpression {
+	return NewStringOperation(OpStringTrim, o)
+}
+func (o StringPath) Upper() StringExpression {
+	return NewStringOperation(OpStringToUpper, o)
 }

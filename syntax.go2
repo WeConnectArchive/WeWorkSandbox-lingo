@@ -68,6 +68,7 @@ func DefaultTemplates() Templates {
 	return t
 }
 
+var escape = "ESCAPEVALUE" // TODO
 var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	Property: NewSyntax("{0}.{1}"),
 	Variable: NewSyntax("{0}"),
@@ -121,8 +122,32 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	OpIntersect: NewSyntax("{0} INTERSECT {1}"),
 
 	// CatString
-	OpStringCast:   NewSyntax("STR({0})"),
-	OpStringConcat: NewSyntax("CONCAT({0}, {1})"),
+	OpStringCast:           NewSyntax("STR({0})"),
+	OpStringConcat:         NewSyntax("{0} || {1}"),
+	OpCharAt:               NewSyntax("CAST(SUBSTR({0}, {1}, 1) AS CHAR)"),
+	OpStringContains:       NewSyntax("{0} LIKE {%1%} ESCAPE '" + escape + "'"),
+	OpStringContainsFold:   NewSyntax("{0l} LIKE {%%1%%} ESCAPE '" + escape + "'"),
+	OpEqualsFold:           NewSyntax("{0l} = {1l}"),
+	OpHasPrefix:            NewSyntax("{0} LIKE {1%} ESCAPE '" + escape + "'"),
+	OpHasPrefixFold:        NewSyntax("{0l} LIKE {1%%} ESCAPE '" + escape + "'"),
+	OpHasSuffix:            NewSyntax("{0} LIKE {%1} ESCAPE '" + escape + "'"),
+	OpHasSuffixFold:        NewSyntax("{0l} LIKE {%%1} ESCAPE '" + escape + "'"),
+	OpIndexOf:              NewSyntax("LOCATE({1},{0})-1"),
+	OpIndexOfN:             NewSyntax("LOCATE({1},{0},{2+'1's})-1"),
+	OpStringIsEmpty:        NewSyntax("LENGTH({0}) = 0"),
+	OpStringLength:         NewSyntax("LENGTH({0})"),
+	OpStringLike:           NewSyntax("{0} LIKE {1} ESCAPE '" + escape + "'"),
+	OpStringLikeFold:       NewSyntax("{0l} LIKE {1l}"),
+	OpStringLikeEscape:     NewSyntax("{0} LIKE {1} ESCAPE '{2s}'"),
+	OpStringLikeFoldEscape: NewSyntax("{0l} LIKE {1l} ESCAPE '{2s}'"),
+	OpStringLocate:         NewSyntax("LOCATE({0}, {1})"),
+	OpStringLocate2:        NewSyntax("LOCATE({0}, {1}, {2s})"),
+	OpStringLower:          NewSyntax("LOWER({0})"),
+	OpStringMatches:        NewSyntax("{0} REGEXP {1}"),
+	OpStringSubstring:      NewSyntax("SUBSTR({0},{1s}+1)"),
+	OpStringSubstring2:     NewSyntax("SUBSTR({0},{1+'1's},{2-1s})"),
+	OpStringTrim:           NewSyntax("TRIM({0})"),
+	OpStringToUpper:        NewSyntax("UPPER({0})"),
 
 	// CatNumeric
 	OpAbs:        NewSyntax("ABS({0})"),

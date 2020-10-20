@@ -27,7 +27,8 @@ func (b ParamsBuilder) Visit(qm *QueryMetadata, e Expression) struct{} {
 		}
 		b.Visit(qm, e)
 	}
-	// TODO - QueryExpressions / SubQueryExpression - This will pul l in 
+	// TODO - QueryExpressions / SubQueryExpression - This will pull in the SQL logic
+	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
 	return struct{}{}
 }
 
@@ -47,6 +48,7 @@ func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 			}
 		}
 	}
+	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
 	return nil
 }
 
@@ -58,13 +60,15 @@ func VisitWithDefaultPathsBuilder(e Expression) []Path {
 type PathsBuilder struct {}
 func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	if p, ok := e.(Path); ok {
-		paths = append(paths, p)
+		return append(paths, p)
 	}
 	if o, ok := e.(Operation); ok {
 		for _, arg := range o.Args() {
 			paths = b.Visit(paths, arg)
 		}
+		return paths
 	}
+	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
 	return paths
 }
 
@@ -123,7 +127,7 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		})
 		return value
 	}
-	return b.Visit(t, e)
+	panic(fmt.Errorf("there is no case for this expression: %+v", e))
 }
 
 

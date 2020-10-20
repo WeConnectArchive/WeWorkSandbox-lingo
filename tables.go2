@@ -21,6 +21,7 @@ func NewTActorForPath(p SimplePath[Actor]) TActor {
 	}
 	t.ActorID = NewNumberPath[int16](NewSimplePathForProperty[int16](0, "actor_id", p))
 	t.IsActive = NewBoolPath(NewSimplePathForProperty[bool](false, "is_active", p))
+	t.FirstName = NewStringPath(NewSimplePathForProperty[string]("", "first_name", p))
 	return t
 }
 
@@ -29,6 +30,7 @@ type TActor struct {
 
 	ActorID NumberPath[int16]
 	IsActive BoolPath
+	FirstName StringPath
 }
 func (t TActor) Type() reflect.Type {
 	return t.mixin.Type()

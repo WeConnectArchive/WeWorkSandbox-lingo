@@ -105,4 +105,10 @@ func TestDSL(t *testing.T) {
 
 	var mathExp NumberExpression[int16] = tactor.ActorID
 	printDebug("NumberExpression[int16](tactor.ActorID)", mathExp)
+
+	var boolExp BooleanExpression = tactor.IsActive
+	printDebug("BooleanExpression(tactor.IsActive)", boolExp)
+
+	var strExp StringExpression = tactor.FirstName
+	printDebug("StringExpression(tactor.FirstName)", strExp)
 }

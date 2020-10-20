@@ -27,9 +27,7 @@ type ParamExpression interface {
 // ============================================================
 // Typed Expressions Below
 
-type TypedExpression[T any] interface{
-	Expression
-}
+type TypedExpression[T any] Expression
 
 type PredicateExpression interface {
 	TypedExpression[bool]
@@ -54,7 +52,8 @@ type BooleanExpression interface {
 
 type AnyComparableExpression[T any] interface { 
 	TypedExpression[T]
-	Desc() // Descending
+	Asc() Order[T]
+	Desc() Order[T]
 }
 
 type Ordering int
@@ -71,7 +70,6 @@ type Order[T any] interface {
 
 type ComparableExpression[T comparable] interface {
 	AnyComparableExpression[T]
-	Asc() Order[T]
 	BetweenValues(l, r T) BooleanExpression
 	Between(l, r TypedExpression[T]) BooleanExpression
 	NotBetweenValues(l, r T) BooleanExpression
@@ -132,13 +130,14 @@ type StringExpression interface {
 	LikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression
 	LocateValue(v string) NumberExpression[int]
 	Locate(v TypedExpression[string]) NumberExpression[int]
-	LocateFromValue(v string, start int) NumberExpression[int]
+	LocateFromValues(v string, start int) NumberExpression[int]
+	LocateFromValue(v TypedExpression[string], start int) NumberExpression[int]
 	LocateFrom(v TypedExpression[string], start TypedExpression[int]) NumberExpression[int]
 	Lower() StringExpression
 	MatchesValue(regex regexp.Regexp) BooleanExpression
 	Matches(regex TypedExpression[string]) BooleanExpression
-	// Max() StringExpression -- Aggregate
-	// Min() StringExpression -- Aggregate
+	// // Max() StringExpression -- Aggregate
+	// // Min() StringExpression -- Aggregate
 	NotEqFoldValue(v string) BooleanExpression
 	NotEqFold(v TypedExpression[string]) BooleanExpression
 	NotLikeValue(v string) BooleanExpression
@@ -171,7 +170,6 @@ type NumberExpression[T numeric] interface {
 	As(alias string) NumberExpression[T]
 	// Avg() NumberExpression[T] -- Aggregate
 	// CastToBytes() NumberExpression[?]
-	// CastToNumber() NumberExpression[?]
 	// CastToDouble() NumberExpression[?]
 	// CastToFloat() NumberExpression[?]
 	// CastToInt16() NumberExpression[?]
