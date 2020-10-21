@@ -36,7 +36,7 @@ type Fetchable[T any] interface {
 	// TODO - FetchPage(ctx context.Context, limit, offset int64) (T, error)
 }
 
-func Select[T any](exp TypedExpression[T]) FetchableQuery[T] {
+func Select[T, Q any](exp TypedExpression[T]) FetchableQuery[T, Q] {
 	return nil
 }
 
@@ -82,9 +82,8 @@ type FetchableSubQueryBase[T, Q any] interface {
 	// mixin SubQueryExpression[T]
 }
 
-type ProjectableQuery[T any] interface {
-	FetchableQuery[T]
-
+type ProjectableQuery[T, Q any] interface {
+	FetchableQuery[T, Q]
 }
 
 type InsertClause[T any] interface {
