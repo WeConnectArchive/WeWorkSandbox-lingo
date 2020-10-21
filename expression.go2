@@ -48,12 +48,16 @@ type BooleanExpression interface {
 
 	EqValue(b bool) BooleanExpression
 	Eq(e TypedExpression[bool]) BooleanExpression
+	NotEqValue(b bool) BooleanExpression
+	NotEq(e TypedExpression[bool]) BooleanExpression
 }
+
+// TODO - somewhere below should go IsNull() and IsNotNull()
 
 type AnyComparableExpression[T any] interface { 
 	TypedExpression[T]
-	Asc() Order[T]
-	Desc() Order[T]
+	Asc() Order
+	Desc() Order
 }
 
 type Ordering int
@@ -62,10 +66,19 @@ const (
 	OrderAsc
 	OrderDesc
 )
-type Order[T any] interface {
-	Order() Ordering
+type NullOrdering int
+const (
+	NullsDefault NullOrdering = iota
+	NullsFirst
+	NullsLast
+)
+type Order interface {
+	NullsFirst() Order
+	NullsLast() Order
 	Ascending() bool
-	Path() TypedExpression[T]
+	Order() Ordering
+	NullOrder() NullOrdering
+	Path() Expression
 }
 
 type ComparableExpression[T comparable] interface {
@@ -241,3 +254,25 @@ func (p SimpleParam[T]) String() string {
 }
 func (p SimpleParam[T]) Name() string { return p.name }
 func (p SimpleParam[T]) Anonymus() bool { return p.anonymus }
+
+
+// SimpleSubQueryExpression
+func NewSimpleSubQueryExpression[T any](t T, qm QueryMetadata) SubQueryExpression {
+	return SimpleSubQueryExpression[T]{
+		t: reflect.TypeOf(t),
+		qm: qm,
+	}
+}
+type SimpleSubQueryExpression[T any] struct {
+	t reflect.Type
+	qm QueryMetadata
+}
+func (e SimpleSubQueryExpression[T]) Type() reflect.Type {
+	return e.t
+}
+func (e SimpleSubQueryExpression[T]) String() string {
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
+}
+func (e SimpleSubQueryExpression[T]) QueryMetadata() QueryMetadata {
+	return e.qm
+}

@@ -111,4 +111,9 @@ func TestDSL(t *testing.T) {
 
 	var strExp StringExpression = tactor.FirstName
 	printDebug("StringExpression(tactor.FirstName)", strExp)
+
+	var qm QueryMetadata = &BasicQueryMetadata{}
+	qm.AddJoin(InnerJoinType(), strExp)
+	// qm.AddWhere(exp3)
+	printDebug("qm", qm)
 }

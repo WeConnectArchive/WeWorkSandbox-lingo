@@ -1,0 +1,52 @@
+package lingo
+
+import "fmt"
+
+func Limit(limit int64) QueryModifiers {
+	return newQueryModifiers(true, false, limit, noQMValueSet)
+}
+func Offset(offset int64) QueryModifiers {
+	return newQueryModifiers(false, true, noQMValueSet, offset)
+}
+func LimitOffset(limit, offset int64) QueryModifiers {
+	return newQueryModifiers(true, true, limit, offset)
+}
+func EmptyQueryModifier() QueryModifiers {
+	return newQueryModifiers(false, false, noQMValueSet, noQMValueSet)
+}
+
+func newQueryModifiers(lSet, oSet bool, limit, offset int64) QueryModifiers {
+	if lSet && limit <= 0 {
+		panic(fmt.Errorf("limit for QueryModifiers must be greater than zero, got '%d'", limit))
+	} else {
+		limit = noQMValueSet
+	}
+	if oSet && offset < 0 {
+		panic(fmt.Errorf("offset for QueryModifiers cannot be negative, got '%d'", limit))
+	} else {
+		offset = noQMValueSet
+	}
+	return QueryModifiers{
+		lSet:   lSet,
+		limit:  limit,
+		oSet:   oSet,
+		offset: offset,
+	}
+}
+
+const noQMValueSet = -1
+
+type QueryModifiers struct {
+	limit, offset int64
+	lSet, oSet    bool
+}
+
+func (qm QueryModifiers) IsSet() bool {
+	return qm.lSet || qm.oSet
+}
+func (qm QueryModifiers) Limit() (int64, bool) {
+	return qm.limit, qm.lSet
+}
+func (qm QueryModifiers) Offset() (int64, bool) {
+	return qm.offset, qm.oSet
+}

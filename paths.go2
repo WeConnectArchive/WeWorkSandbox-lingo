@@ -145,6 +145,12 @@ func (p BoolPath) EqValue(v bool) BooleanExpression {
 func (p BoolPath) Eq(v TypedExpression[bool]) BooleanExpression {
 	return NewOpEqual(p, v)
 }
+func (p BoolPath) NotEqValue(v bool) BooleanExpression {
+	return p.NotEq(NewSimpleConstant[bool](v))
+}
+func (p BoolPath) NotEq(v TypedExpression[bool]) BooleanExpression {
+	return p.Eq(v).Not()
+}
 
 // -------------------------------------
 // NewNumberPath
@@ -168,11 +174,11 @@ func (p NumberPath[T]) StringValue() StringExpression {
 	return NewStringOperation(OpStringCast, p)
 }
 // -- AnyComparableExpression
-func (p NumberPath[T]) Asc() Order[T] {
-	return NewOrderBy[T](OrderAsc, p)
+func (p NumberPath[T]) Asc() Order {
+	return NewOrderByDefaultNull[T](OrderAsc, p)
 }
-func (p NumberPath[T]) Desc() Order[T] {
-	return NewOrderBy[T](OrderDesc, p)
+func (p NumberPath[T]) Desc() Order {
+	return NewOrderByDefaultNull[T](OrderDesc, p)
 }
 // -- ComparableExpression
 func (p NumberPath[T]) BetweenValues(l, r T) BooleanExpression {
@@ -304,11 +310,11 @@ func (o StringPath) String() string {
 }
 
 // -- AnyComparableExpression
-func (o StringPath) Asc() Order[string] {
-	return NewOrderBy[string](OrderAsc, o)
+func (o StringPath) Asc() Order {
+	return NewOrderByDefaultNull[string](OrderAsc, o)
 }
-func (o StringPath) Desc() Order[string] {
-	return NewOrderBy[string](OrderDesc, o)
+func (o StringPath) Desc() Order {
+	return NewOrderByDefaultNull[string](OrderDesc, o)
 }
 
 // -- ComparableExpression

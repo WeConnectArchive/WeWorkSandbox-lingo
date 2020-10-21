@@ -11,16 +11,69 @@ func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) 
 	return b.Visit(buildCtx, e)
 }
 
-type QueryMetadata struct {}
+type ParamMetadata struct {
+	e Expression
+	v interface{}
+}
+
+type QueryMetadata interface {
+	// -- Config
+	ShouldValidate(validate bool)
+	
+	AddGroupBy(e Expression)
+
+	AddHaving(e PredicateExpression)
+	
+	AddJoin(jt JoinType, e Expression)
+	AddJoinFlag(jf JoinFlag)
+	AddJoinCondition(e PredicateExpression)
+	Joins() []JoinExpression
+	
+	AddOrderBy(o Order)
+	OrderBy() []Order
+	ClearOrderBy()
+	
+	// AddQueryFlag(qf QueryFlag)
+	// HasQueryFlag(qf QueryFlag) bool
+	// Flags() []QueryFlag
+	// RemoveQueryFlag(qf QueryFlag)
+	
+	AddWhere(e PredicateExpression)
+	Where() PredicateExpression
+	ClearWhere()
+	
+	GroupBy() []Expression
+	
+	Having() PredicateExpression
+	
+	SetModifiers(m QueryModifiers)
+	SetOffset(l int64)
+	SetLimit(l int64)
+	Modifiers() QueryModifiers
+	
+	Projection() Expression
+	SetProjection(e Expression)
+	
+	SetParam(e ParamExpression, v interface{})
+	Params() []ParamMetadata
+	
+	SetDistinct(d bool)
+	Distinct() bool
+	
+	SetUnique(u bool)
+	Unique() bool
+	
+	Reset()
+}
 
 // ParamsBuilder
 func VisitWithDefaultParamsBuilder(e Expression) QueryMetadata {
-	qm := QueryMetadata{}
-	VisitWithBuilder[*QueryMetadata, struct{}](ParamsBuilder{}, &qm, e)
+	qm := &BasicQueryMetadata{}
+	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e)
 	return qm
 }
 type ParamsBuilder struct{}
-func (b ParamsBuilder) Visit(qm *QueryMetadata, e Expression) struct{} {
+func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 	if o, ok := e.(Operation); ok {
 		for _, arg := range o.Args() {
 			b.Visit(qm, arg)
@@ -30,6 +83,35 @@ func (b ParamsBuilder) Visit(qm *QueryMetadata, e Expression) struct{} {
 	// TODO - QueryExpressions / SubQueryExpression - This will pull in the SQL logic
 	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
 	return struct{}{}
+}
+
+// ValidatingBuilder
+func VisitWithDefaultValidatingBuilder(e Expression) []Expression {
+	return VisitWithBuilder[[]Expression, []Expression](ValidatingBuilder{}, make([]Expression, 0, 10), e) 
+}
+type ValidatingBuilder struct {}
+func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression {
+	if o, ok := e.(Operation); ok {
+		if o.Operator() == OpAlias {
+			known = append(known, o.Arg(1))
+		}
+		for _, arg := range o.Args() {
+			known = append(known, b.Visit(known, arg)...)
+		}
+	}
+	if p, ok := e.(Path); ok {
+		var found = false
+		for _, k := range known {
+			if k == p || k == e {
+				found = true
+				break
+			}
+		}
+		if !found {
+			panic(fmt.Errorf("unknown path '%s' - add the path as a source to the query to be able to use it", p.Root()))
+		}
+	}
+	return known
 }
 
 // PathBuilder

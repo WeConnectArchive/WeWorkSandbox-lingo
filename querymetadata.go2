@@ -1,0 +1,224 @@
+package lingo
+
+import "fmt"
+
+type BasicQueryMetadata struct {
+	// config
+	shouldValidate bool
+
+	// members
+	distinct      bool
+	unique        bool
+	groupBy       []Expression
+	having        PredicateExpression
+	expsInJoin    []Expression
+	// This map NEEDS TO BE fixed somehow. This is super slow to process String().
+	//   I dont know what "unique" data to use for the key, but we need to filter out ones
+	//   we already visited.
+	params        map[string]ParamMetadata // key = `ParamExpression.String()`
+	joins         []JoinExpression
+	joinTarget    Expression
+	joinType      JoinType
+	joinCondition PredicateExpression
+	joinFlags     []JoinFlag
+	modifiers     QueryModifiers
+	where         PredicateExpression
+	orderBy       []Order
+	projection    Expression
+}
+
+func (qm *BasicQueryMetadata) ShouldValidate(validate bool) {
+	qm.shouldValidate = validate
+}
+
+func (qm *BasicQueryMetadata) AddGroupBy(e Expression) {
+	if e == nil {
+		return
+	}
+	qm.groupBy = append(qm.groupBy, e)
+}
+
+func (qm *BasicQueryMetadata) AddHaving(e PredicateExpression) {
+	if e == nil {
+		return
+	}
+	qm.having = qm.and(qm.having, e)
+}
+
+func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) {
+	qm.addLastJoin()
+	
+	var found bool
+	for _, exp := range qm.expsInJoin {
+		if exp == e {
+			found = true
+			break
+		}
+	}
+	if found {
+		if qm.shouldValidate {
+			panic(fmt.Errorf("join expression '%s' is already used", e.String()))
+		} else {
+			return
+		}
+	}
+
+	if p, ok := e.(Path); ok && p.Metadata().IsRoot() {
+		qm.expsInJoin = append(qm.expsInJoin, e)
+	} else {
+		qm.validate(e)
+	}
+	qm.joinType = jt
+	qm.joinTarget = e
+}
+func (qm *BasicQueryMetadata) addLastJoin() {
+	if qm.joinTarget == nil {
+		return
+	}
+
+	join := NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags)
+	if qm.expsInJoin == nil {
+		qm.expsInJoin = append(qm.expsInJoin, join)
+	}
+	qm.joins = append(qm.joins, join)
+	// reset the join info here for next join
+	qm.joinType = DefaultJoinType()
+	qm.joinTarget = nil
+	qm.joinFlags = nil
+}
+func (qm *BasicQueryMetadata) AddJoinFlag(jf JoinFlag) {
+	qm.joinFlags = append(qm.joinFlags, jf)
+}
+func (qm *BasicQueryMetadata) AddJoinCondition(e PredicateExpression) {
+	qm.validate(e)
+	qm.joinCondition = qm.and(qm.joinCondition, e)
+}
+func (qm BasicQueryMetadata) Joins() []JoinExpression {
+	return qm.joins
+}
+
+func (qm *BasicQueryMetadata) AddOrderBy(o Order) {
+	if o == nil {
+		return
+	}
+	qm.orderBy = append(qm.orderBy, o)
+}
+func (qm BasicQueryMetadata) OrderBy() []Order {
+	return qm.orderBy
+}
+func (qm *BasicQueryMetadata) ClearOrderBy() {
+	qm.orderBy = nil
+}
+
+// func (qm BasicQueryMetadata) AddQueryFlag(qf QueryFlag) {
+
+// }
+// func (qm BasicQueryMetadata) HasQueryFlag(qf QueryFlag) bool {
+
+// }
+// func (qm BasicQueryMetadata) Flags() []QueryFlag {
+
+// }
+// func (qm BasicQueryMetadata) RemoveQueryFlag(qf QueryFlag) {
+
+// }
+
+func (qm *BasicQueryMetadata) AddWhere(e PredicateExpression) {
+	if e == nil {
+		return
+	}
+	qm.validate(e)
+	qm.where = qm.and(qm.where, e)
+}
+func (qm BasicQueryMetadata) Where() PredicateExpression {
+	return qm.where
+}
+func (qm *BasicQueryMetadata) ClearWhere() {
+	qm.where = nil
+}
+
+func (qm BasicQueryMetadata) GroupBy() []Expression {
+	return qm.groupBy
+}
+
+func (qm BasicQueryMetadata) Having() PredicateExpression {
+	return qm.having
+}
+
+func (qm *BasicQueryMetadata) SetModifiers(m QueryModifiers) {
+	qm.modifiers = m
+}
+func (qm *BasicQueryMetadata) SetOffset(o int64) {
+	if l, set := qm.modifiers.Limit(); set {
+		qm.modifiers = LimitOffset(o, l)
+	} else {
+		qm.modifiers = Offset(o)
+	}
+}
+func (qm *BasicQueryMetadata) SetLimit(l int64) {
+	if o, set := qm.modifiers.Offset(); set {
+		qm.modifiers = LimitOffset(l, o)
+	} else {
+		qm.modifiers = Limit(l)
+	}
+}
+func (qm BasicQueryMetadata) Modifiers() QueryModifiers {
+	return qm.modifiers
+}
+
+func (qm BasicQueryMetadata) Projection() Expression {
+	return qm.projection
+}
+func (qm *BasicQueryMetadata) SetProjection(e Expression) {
+	qm.validate(e)
+	qm.projection = e
+}
+
+func (qm *BasicQueryMetadata) SetParam(e ParamExpression, v interface{}) {
+	if qm.params == nil {
+		qm.params = make(map[string]ParamMetadata, 5)
+	}
+	paramExpStr := e.String()
+	qm.params[paramExpStr] = ParamMetadata{e: e, v: v}
+}
+func (qm BasicQueryMetadata) Params() []ParamMetadata {
+	var result = make([]ParamMetadata, 0, len(qm.params))
+	for _, v := range qm.params {
+		result = append(result, v)
+	}
+	return result
+}
+
+func (qm *BasicQueryMetadata) SetDistinct(d bool) {
+	qm.distinct = d
+}
+func (qm BasicQueryMetadata) Distinct() bool {
+	return qm.distinct
+}
+
+func (qm *BasicQueryMetadata) SetUnique(u bool) {
+	qm.unique = u
+}
+func (qm BasicQueryMetadata) Unique() bool {
+	return qm.unique
+}
+
+func (qm *BasicQueryMetadata) Reset() {
+	*qm = BasicQueryMetadata{} // TODO - check if this actually works? (doubtful)
+}
+
+func (qm BasicQueryMetadata) and(l, r PredicateExpression) PredicateExpression {
+	if l == nil {
+		return r
+	}
+	return NewPredicateOperation(OpAnd, l, r)
+}
+
+func (qm *BasicQueryMetadata) validate(e Expression) {
+	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e) // Pull all child query parameters
+
+	if qm.shouldValidate {
+		// TODO - Validating Visitor
+		VisitWithDefaultValidatingBuilder(e)
+	}
+}

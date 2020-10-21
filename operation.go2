@@ -118,6 +118,12 @@ func (o BooleanOperation) EqValue(v bool) BooleanExpression {
 func (o BooleanOperation) Eq(e TypedExpression[bool]) BooleanExpression { 
 	return NewOpEqual(o, e) 
 }
+func (o BooleanOperation) NotEqValue(v bool) BooleanExpression { 
+	return o.NotEq(NewSimpleConstant[bool](v))
+}
+func (o BooleanOperation) NotEq(e TypedExpression[bool]) BooleanExpression { 
+	return o.Eq(e).Not() 
+}
 
 // NewComparableOperation creates a ComparableExpression of the specified type
 func NewComparableOperation[T comparable](op Operator, args...Expression) ComparableOperation[T] {
@@ -133,11 +139,11 @@ type ComparableOperation[T comparable] struct {
 func (o ComparableOperation[T]) Type() reflect.Type { return o.mixin.Type() }
 func (o ComparableOperation[T]) String() string { return VisitWithDefaultToStringBuilder(o) }
 // -- AnyComparableExpression
-func (o ComparableOperation[T]) Asc() Order[T] {
-	return NewOrderBy[T](OrderAsc, o)
+func (o ComparableOperation[T]) Asc() Order {
+	return NewOrderByDefaultNull[T](OrderAsc, o)
 }
-func (o ComparableOperation[T]) Desc() Order[T] {
-	return NewOrderBy[T](OrderDesc, o)
+func (o ComparableOperation[T]) Desc() Order {
+	return NewOrderByDefaultNull[T](OrderDesc, o)
 }
 // -- ComparableExpression
 func (o ComparableOperation[T]) BetweenValues(l, r T) BooleanExpression {
@@ -198,11 +204,11 @@ func (o NumberOperation[T]) StringValue() StringExpression {
 	return NewStringOperation(OpStringCast, o)
 }
 // -- AnyComparableExpression
-func (o NumberOperation[T]) Asc() Order[T] {
-	return NewOrderBy[T](OrderAsc, o)
+func (o NumberOperation[T]) Asc() Order {
+	return NewOrderByDefaultNull[T](OrderAsc, o)
 }
-func (o NumberOperation[T]) Desc() Order[T] {
-	return NewOrderBy[T](OrderDesc, o)
+func (o NumberOperation[T]) Desc() Order {
+	return NewOrderByDefaultNull[T](OrderDesc, o)
 }
 // -- ComparableExpression
 func (o NumberOperation[T]) BetweenValues(l, r T) BooleanExpression {
@@ -329,11 +335,11 @@ type StringOperation struct {
 func (o StringOperation) Type() reflect.Type { return o.mixin.Type() }
 func (o StringOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
 // -- AnyComparableExpression
-func (o StringOperation) Asc() Order[string] {
-	return NewOrderBy[string](OrderAsc, o)
+func (o StringOperation) Asc() Order {
+	return NewOrderByDefaultNull[string](OrderAsc, o)
 }
-func (o StringOperation) Desc() Order[string] {
-	return NewOrderBy[string](OrderDesc, o)
+func (o StringOperation) Desc() Order {
+	return NewOrderByDefaultNull[string](OrderDesc, o)
 }
 // -- ComparableExpression
 func (o StringOperation) BetweenValues(l, r string) BooleanExpression {

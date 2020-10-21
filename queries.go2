@@ -1,14 +1,21 @@
 package lingo
 
+import (
+	"context"
+)
+
 type WhereClause[T any] interface {
 	Where(e ...PredicateExpression) WhereClause[T]
 }
 
 type SimpleQuery[T any] interface {
 	WhereClause[T]
-	Limit(v int64) T
-	Offset(v int64) T
-	Set()
+	Distinct() SimpleQuery[T]
+	Limit(v int64) SimpleQuery[T]
+	Offset(v int64) SimpleQuery[T]
+	Restrict(m QueryModifiers) SimpleQuery[T]
+	OrderBy(o ...Order) SimpleQuery[T]
+	Set(e ParamExpression, value interface{}) SimpleQuery[T]
 }
 
 type Query[T any] interface {
@@ -16,3 +23,115 @@ type Query[T any] interface {
 	GroupBy(e ...Expression) Query[T]
 	Having(e ...PredicateExpression) Query[T]
 }
+
+type Fetchable[T any] interface {
+	// FetchCount will retrieve the count of records in the result set
+	FetchCount(ctx context.Context) (int64, error)
+	// Fetch will retrieve all the results in the result set
+	Fetch(ctx context.Context) (<-chan T, error)
+	// FetchOne will retrieve only the first result (even if there is more than one)
+	FetchOne(ctx context.Context) (T, error)
+	// FetchOneOnly is the same as First, but will return an error if there is more than one record retrieved
+	FetchOneOnly(ctx context.Context) (T, error)
+	// TODO - FetchPage(ctx context.Context, limit, offset int64) (T, error)
+}
+
+func Select[T any](exp TypedExpression[T]) FetchableQuery[T] {
+	return nil
+}
+
+type FetchableQuery[T, Q any] interface {
+	Fetchable[T]
+	SimpleQuery[Q]
+	// Select(exp TypedExpression[T]) FetchableQuery[T]
+	// SelectMany(exp []Expression) FetchableQuery[Tuple?]
+}
+
+type SubQueryExpression interface {
+	Expression
+	QueryMetadata() QueryMetadata
+}
+type ExtendedSubQuery[T any] interface {
+	SubQueryExpression
+	EqValue(v T) BooleanExpression
+	Eq(v TypedExpression[T]) BooleanExpression
+	NotEqValue(v T) BooleanExpression
+	NotEq(v TypedExpression[T]) BooleanExpression
+	ContainsValue(v T) BooleanExpression
+	Contains(v TypedExpression[T]) BooleanExpression
+	Exists() BooleanExpression
+	NotExists() BooleanExpression
+	GTValue(v T) BooleanExpression
+	GT(e TypedExpression[T]) BooleanExpression
+	GTOrEqValue(v T) BooleanExpression
+	GTOrEq(v TypedExpression[T]) BooleanExpression
+	LTValue(v T) BooleanExpression
+	LT(e TypedExpression[T]) BooleanExpression
+	LTOrEqValue(v T) BooleanExpression
+	LTOrEq(v TypedExpression[T]) BooleanExpression
+	IsNull() BooleanExpression
+	IsNotNull() BooleanExpression
+	InValues(v ...T) BooleanExpression
+	In(v ...TypedExpression[T]) BooleanExpression
+	NotInValues(v ...T) BooleanExpression
+	NotIn(v ...TypedExpression[T]) BooleanExpression
+}
+
+type FetchableSubQueryBase[T, Q any] interface {
+	FetchableQuery[T, Q]
+	// mixin SubQueryExpression[T]
+}
+
+type ProjectableQuery[T any] interface {
+	FetchableQuery[T]
+
+}
+
+type InsertClause[T any] interface {
+	Columns(cols ...Path) InsertClause[T]
+	// TODO
+}
+
+
+type QueryRole int
+const (
+	selectRole = iota
+	fromRole
+	whereRole
+	groupByRole
+	havingRole
+	orderByRole
+)
+
+
+
+
+
+func NewQueryMixin[T any](self T, qm QueryMetadata, expandPaths bool) QueryMixin[T] {
+	return QueryMixin[T]{
+		qm: qm,
+		expandPaths: expandPaths,
+		self: self,
+	}
+}
+type QueryMixin[T any] struct {
+	qm QueryMetadata
+	expandPaths bool
+	self T
+}
+func (q QueryMixin[T]) AddJoin(jt JoinType, target Expression) T {
+	q.qm.AddJoin(jt, target)
+	return q.self
+}
+// func (q QueryMixin[T]) AddFlag(qf QueryFlag) T {
+// 	q.qm.AddFlag(qf)
+// 	return q.self
+// }
+func (q QueryMixin[T]) AddJoinFlag(jf JoinFlag) T {
+	q.qm.AddJoinFlag(jf)
+	return q.self
+}
+// func (q QueryMixin[T]) RemoveFlag(qf QueryFlag) T {
+// 	q.qm.RemoveFlag(qf)
+// 	return q.self
+// }
