@@ -12,7 +12,7 @@ func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) 
 }
 
 type ParamMetadata struct {
-	e Expression
+	e ParamExpression
 	v interface{}
 }
 
@@ -74,11 +74,26 @@ func VisitWithDefaultParamsBuilder(e Expression) QueryMetadata {
 }
 type ParamsBuilder struct{}
 func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
+	if sqe, ok := e.(SubQueryExpression); ok {
+		md := sqe.Metadata()
+		for _, p := range md.Params() {
+			qm.SetParam(p.e, p.v)
+		}
+		for _, gb := range md.GroupBy() {
+			b.Visit(qm, gb)
+		}
+		b.Visit(qm, md.Having())
+		for _, j := range md.Joins() {
+			b.Visit(qm, j.Target())
+			b.Visit(qm, j.Condition())
+		}
+		b.Visit(qm, md.Projection())
+		b.Visit(qm, md.Where())
+	}
 	if o, ok := e.(Operation); ok {
 		for _, arg := range o.Args() {
 			b.Visit(qm, arg)
 		}
-		b.Visit(qm, e)
 	}
 	// TODO - QueryExpressions / SubQueryExpression - This will pull in the SQL logic
 	// panic(fmt.Errorf("there is no case for this expression: %+v", e))

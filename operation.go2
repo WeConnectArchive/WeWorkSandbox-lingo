@@ -15,7 +15,6 @@ type Operation interface {
 	Args() []Expression
 }
 
-// NewSimpleOperation
 func NewSet[T any](args ...TypedExpression[T]) TypedExpression[T] {
 	var result TypedExpression[T]
 	for _, arg := range args {
@@ -23,6 +22,8 @@ func NewSet[T any](args ...TypedExpression[T]) TypedExpression[T] {
 	}
 	return result
 }
+
+// NewSimpleOperation
 func NewSimpleOperation[T any](op Operator, args...Expression) SimpleOperation[T] {
 	return SimpleOperation[T]{
 		op: op,
@@ -52,7 +53,7 @@ func NewPredicateOperation(op Operator, args...Expression) PredicateOperation {
 type PredicateOperation SimpleOperation[bool]
 func (o PredicateOperation) Type() reflect.Type { return o.Type() }
 func (o PredicateOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
-func (o PredicateOperation) Not() PredicateExpression { return NewPredicateOperation(OpNot, o) }
+func (o PredicateOperation) Not() BooleanExpression { return NewOpNot(o) }
 func (o PredicateOperation) Operator() Operator { return o.op }
 func (o PredicateOperation) Args() []Expression { return o.args }
 func (o PredicateOperation) Arg(idx int) Expression { 
@@ -64,6 +65,7 @@ func (o PredicateOperation) Arg(idx int) Expression {
 
 
 // BooleanOperations
+func NewOpAlias(source, alias Expression) BooleanExpression { return NewBooleanOperation(OpAlias, source, alias) }
 func NewOpAnd(l, r Expression) BooleanExpression { return NewBooleanOperation(OpAnd, l, r) }
 func NewOpNot(e Expression) BooleanExpression { return NewBooleanOperation(OpNot, e) }
 func NewOpOr(l, r Expression) BooleanExpression { return NewBooleanOperation(OpOr, l, r) }

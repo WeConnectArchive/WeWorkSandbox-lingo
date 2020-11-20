@@ -31,7 +31,7 @@ type TypedExpression[T any] Expression
 
 type PredicateExpression interface {
 	TypedExpression[bool]
-	Not() PredicateExpression
+	Not() BooleanExpression
 }
 
 type BooleanExpression interface {
@@ -215,6 +215,11 @@ type NumberExpression[T numeric] interface {
 // =======================================================
 // Implementations
 
+var nullExp = NewSimpleConstant[struct{}](struct{}{})
+func Null() ConstantExpression {
+	return nullExp
+}
+
 // NewSimpleConstant
 func NewSimpleConstant[T](v T) SimpleConstant[T] {
 	return SimpleConstant[T]{
@@ -273,6 +278,6 @@ func (e SimpleSubQueryExpression[T]) Type() reflect.Type {
 func (e SimpleSubQueryExpression[T]) String() string {
 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
 }
-func (e SimpleSubQueryExpression[T]) QueryMetadata() QueryMetadata {
+func (e SimpleSubQueryExpression[T]) Metadata() QueryMetadata {
 	return e.qm
 }

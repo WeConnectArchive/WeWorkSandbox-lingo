@@ -122,7 +122,7 @@ func (o BoolPath) As(alias string) BooleanExpression {
 	return o.AsPath(NewSimplePathForVariable[bool](false, alias))
 }
 func (o BoolPath) AsPath(p TypedPath[bool]) BooleanExpression { 
-	return NewBooleanOperation(OpAlias, o, p) 
+	return NewOpAlias(o, p)
 }
 func (p BoolPath) And(e PredicateExpression) BooleanExpression {
 	return NewOpAnd(p, e)

@@ -1,0 +1,9 @@
+package lingo
+
+type Tuple struct {
+	values []interface{}
+}
+
+func NewTuple(args []interface{}) {
+	
+}

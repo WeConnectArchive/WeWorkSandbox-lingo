@@ -2,6 +2,7 @@ package lingo
 
 import (
 	"context"
+	"fmt"
 )
 
 type WhereClause[T any] interface {
@@ -49,7 +50,7 @@ type FetchableQuery[T, Q any] interface {
 
 type SubQueryExpression interface {
 	Expression
-	QueryMetadata() QueryMetadata
+	Metadata() QueryMetadata
 }
 type ExtendedSubQuery[T any] interface {
 	SubQueryExpression
@@ -86,11 +87,133 @@ type ProjectableQuery[T, Q any] interface {
 	FetchableQuery[T, Q]
 }
 
+
+// InsertClause
 type InsertClause[T any] interface {
-	Columns(cols ...Path) InsertClause[T]
-	// TODO
+	TypedExpression[T]
+	IsEmpty() bool
+	Columns(cols ...Path)
+
+	Set(p Path, v interface{})
+	Values(v ...interface{})
+
+	Select(subQuery SubQueryExpression)
+}
+// NewSQLInsertClause
+func NewSQLInsertClause() SQLInsertClause {
+	return SQLInsertClause{
+		qm: &BasicQueryMetadata{},
+	}
+}
+type SQLInsertClause struct {
+	qm   QueryMetadata
+	cols []Path
+	vals []Expression
+	subQuery SubQueryExpression
+	// TODO - Add Batch Inserts
+}
+func (c SQLInsertClause) IsEmpty() bool {
+	return len(c.vals) == 0
+}
+func (c *SQLInsertClause) Columns(cols ...Path) {
+	c.cols = append(c.cols, cols...)
+}
+func (c *SQLInsertClause) Set(p Path, v interface{}) {
+	c.Columns(p)
+	c.Values(v)
+}
+func (c *SQLInsertClause) Values(v ...interface{}) {
+	for idx := range v {
+		if e, ok := v[idx].(Expression); ok {
+			c.vals = append(c.vals, e)
+		} else if v[idx] != nil {
+			c.vals = append(c.vals, NewSimpleConstant[interface{}](v[idx]))
+		} else {
+			c.vals = append(c.vals, Null())
+		}
+	}
+}
+func (c *SQLInsertClause) Select(subQuery SubQueryExpression) {
+	c.subQuery = subQuery
 }
 
+// UpdateClause
+type UpdateClause[T any] interface {
+	TypedExpression[T]
+	IsEmpty() bool
+
+	Where(p ...TypedExpression[bool]) UpdateClause[T]
+	Limit(l int64) UpdateClause[T]
+
+	Set(p Path, v interface{})
+}
+// NewSQLUpdateClause
+func NewSQLUpdateClause() SQLUpdateClause {
+	return SQLUpdateClause{
+		qm: &BasicQueryMetadata{},
+	}
+}
+type SQLUpdateClause struct {
+	qm QueryMetadata
+	updates map[Path]Expression
+}
+func (c *SQLUpdateClause) IsEmpty() bool {
+	return true
+}
+func (c *SQLUpdateClause) Where(p ...PredicateExpression) *SQLUpdateClause {
+	for idx := range p {
+		c.qm.AddWhere(p[idx])
+	}
+	return c
+}
+func (c *SQLUpdateClause) Limit(l int64) *SQLUpdateClause {
+	c.qm.SetLimit(l)
+	return c
+}
+func (c *SQLUpdateClause) Set(p Path, v interface{}) {
+	if c.updates == nil {
+		c.updates = make(map[Path]Expression)
+	}
+	if e, ok := v.(Expression); ok {
+		c.updates[p] = e
+	} else if v != nil {
+		c.updates[p] = NewSimpleConstant[interface{}](v)
+	} else {
+		c.updates[p] = Null()
+	}
+}
+
+type DeleteClause[T any] interface {
+	TypedExpression[T]
+
+	Limit(l int64) DeleteClause[T]
+	Where(p ...PredicateExpression) DeleteClause[T]
+}
+// NewSQLDeleteClause
+func NewSQLDeleteClause() SQLDeleteClause {
+	qm := &BasicQueryMetadata{}
+	// qm.AddJoin(DefaultJoinType, entity)
+	// qm.SetValiditngVisitor(validatingVisitor)
+	return SQLDeleteClause{
+		qm: qm,
+	}
+}
+type SQLDeleteClause struct {
+	qm QueryMetadata
+}
+// func (c *SQLDeleteClause) AddFlag(pos Position, flag string) {
+// 	qm.AddFlag()
+// }
+func (c *SQLDeleteClause) Limit(l int64) *SQLDeleteClause {
+	c.qm.SetLimit(l)
+	return c
+}
+func (c *SQLDeleteClause) Where(p ...PredicateExpression) *SQLDeleteClause {
+	for idx := range p {
+		c.qm.AddWhere(p[idx])
+	}
+	return c
+}
 
 type QueryRole int
 const (
@@ -134,3 +257,158 @@ func (q QueryMixin[T]) AddJoinFlag(jf JoinFlag) T {
 // 	q.qm.RemoveFlag(qf)
 // 	return q.self
 // }
+
+// func (q QueryMixin[T]) SetProjection(e Expression) Expression {
+//
+// }
+
+func (q QueryMixin[T]) Distinct() T {
+	q.qm.SetDistinct(true)
+	return q.self
+}
+
+func (q QueryMixin[T]) From(args ...Expression) T {
+	for _, arg := range args {
+		q.qm.AddJoin(DefaultJoinType(), arg)
+	}
+	return q.self
+}
+
+func (q QueryMixin[T]) FullJoin(target Expression) T {
+	q.qm.AddJoin(FullJoinType(), target)
+	return q.self
+}
+
+func (q QueryMixin[T]) FullJoinAlias(t Expression, a Path) T {
+	q.qm.AddJoin(FullJoinType(), q.createAlias(t, a))
+	return q.self
+}
+
+func (q QueryMixin[T]) Metadata() QueryMetadata {
+	return q.qm
+}
+
+func (q QueryMixin[T]) GroupBy(exp ...Expression) T {
+	for _, e := range exp {
+		// e = convert(e, Role.GROUP_BY);	
+		q.qm.AddGroupBy(e)
+	}
+	return q.self
+}
+
+func (q QueryMixin[T]) Having(exp ...PredicateExpression) T {
+	for _, e := range exp {
+		// e = convert(e, Role.HAVING);	
+		q.qm.AddHaving(e)
+	}
+	return q.self
+}
+
+func (q QueryMixin[T]) InnerJoin(target Expression) T {
+	q.qm.AddJoin(InnerJoinType(), target)
+	return q.self
+}
+
+func (q QueryMixin[T]) InnerJoinAlias(t Expression, a Path) T {
+	q.qm.AddJoin(InnerJoinType(), q.createAlias(t, a))
+	return q.self
+}
+
+func (q QueryMixin[T]) IsDistinct() bool {
+	return q.qm.Distinct()
+}
+
+func (q QueryMixin[T]) IsUnique() bool {
+	return q.qm.Unique()
+}
+
+func (q QueryMixin[T]) Join(target Expression) T {
+	q.qm.AddJoin(JoinJoinType(), target)
+	return q.self
+}
+
+func (q QueryMixin[T]) JoinAlias(t Expression, a Path) T {
+	q.qm.AddJoin(JoinJoinType(), q.createAlias(t, a))
+	return q.self
+}
+
+func (q QueryMixin[T]) LeftJoin(target Expression) T {
+	q.qm.AddJoin(LeftJoinType(), target)
+	return q.self
+}
+
+func (q QueryMixin[T]) LeftJoinAlias(t Expression, a Path) T {
+	q.qm.AddJoin(LeftJoinType(), q.createAlias(t, a))
+	return q.self
+}
+
+func (q QueryMixin[T]) Limit(l int64) T {
+	q.qm.SetLimit(l)
+	return q.self
+}
+
+func (q QueryMixin[T]) Offset(o int64) T {
+	q.qm.SetLimit(o)
+	return q.self
+}
+
+func (q QueryMixin[T]) On(conditions ...PredicateExpression) T {
+	for _, exp := range conditions {
+		q.qm.AddJoinCondition(exp)
+	}
+	return q.self
+}
+
+func (q QueryMixin[T]) OrderBy(obs ...Order) T {
+	for _, exp := range obs {
+		q.qm.AddOrderBy(exp)
+	}
+	return q.self
+}
+
+func (q QueryMixin[T]) Restrict(qm QueryModifiers) T {
+	q.qm.SetModifiers(qm)
+	return q.self
+}
+
+func (q QueryMixin[T]) RightJoin(target Expression) T {
+	q.qm.AddJoin(RightJoinType(), target)
+	return q.self
+}
+
+func (q QueryMixin[T]) RightJoinAlias(t Expression, a Path) T {
+	q.qm.AddJoin(RightJoinType(), q.createAlias(t, a))
+	return q.self
+}
+
+func (q QueryMixin[T]) SetParam(e ParamExpression, v interface{}) T {
+	q.qm.SetParam(e, v)
+	return q.self
+}
+
+func (q QueryMixin[T]) SetDistinct(d bool) {
+	q.qm.SetDistinct(d)
+}
+func (q QueryMixin[T]) SetSelf(s T) {
+	q.self = s
+}
+func (q QueryMixin[T]) SetUnique(d bool) {
+	q.qm.SetUnique(d)
+}
+func (q QueryMixin[T]) Where(exp ...PredicateExpression) T {
+	for _, e := range exp {
+		q.qm.AddWhere(e)
+	}
+	return q.self
+}
+
+func (q QueryMixin[T]) createAlias(e Expression, a Path) Expression {
+	q.assertRoot(a)
+	return NewOpAlias(e, a)
+}
+
+func (q QueryMixin[T]) assertRoot(p Path) {
+	if p.Root() != p {
+		panic(fmt.Errorf("path %s is not a root path", p))
+	}
+}
