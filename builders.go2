@@ -16,6 +16,44 @@ type ParamMetadata struct {
 	v interface{}
 }
 
+type ourFlagPos int
+type FlagPos ourFlagPos
+const (
+	PosWith FlagPos = FlagPos(iota)
+	PosStart
+	PosStartOverride
+	PosAfterSelect
+	PosAfterProjection
+	PosBeforeFilters
+	PosAfterFilters
+	PosBeforeGroupBy
+	PosAfterGroupBy
+	PosBeforeHaving
+	PosAfterHaving
+	PosBeforeOrder
+	PosAfterOrder
+	PosEnd
+)
+
+// NewQueryFlag
+func NewQueryFlag(pos FlagPos, flag Expression) QueryFlag {
+	return QueryFlag {
+		pos:  pos,
+		flag: flag,
+	}
+}
+type QueryFlag struct {
+	pos FlagPos
+	flag Expression
+}
+func (qf QueryFlag) Position() FlagPos {
+	return qf.pos
+}
+func (qf QueryFlag) Flag() Expression {
+	return qf.flag
+}
+
+// QueryMetadata
 type QueryMetadata interface {
 	// -- Config
 	ShouldValidate(validate bool)
@@ -33,10 +71,10 @@ type QueryMetadata interface {
 	OrderBy() []Order
 	ClearOrderBy()
 	
-	// AddQueryFlag(qf QueryFlag)
-	// HasQueryFlag(qf QueryFlag) bool
-	// Flags() []QueryFlag
-	// RemoveQueryFlag(qf QueryFlag)
+	AddFlag(qf QueryFlag)
+	HasFlag(qf QueryFlag) bool
+	Flags() []QueryFlag
+	RemoveFlag(qf QueryFlag)
 	
 	AddWhere(e PredicateExpression)
 	Where() PredicateExpression

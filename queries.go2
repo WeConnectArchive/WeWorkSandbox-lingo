@@ -91,9 +91,10 @@ type ProjectableQuery[T, Q any] interface {
 // InsertClause
 type InsertClause[T any] interface {
 	TypedExpression[T]
+	AddFlag(qf QueryFlag)
 	IsEmpty() bool
-	Columns(cols ...Path)
 
+	Columns(cols ...Path)
 	Set(p Path, v interface{})
 	Values(v ...interface{})
 
@@ -111,6 +112,9 @@ type SQLInsertClause struct {
 	vals []Expression
 	subQuery SubQueryExpression
 	// TODO - Add Batch Inserts
+}
+func (c *SQLInsertClause) AddFlag(qf QueryFlag) {
+	c.qm.AddFlag(qf)
 }
 func (c SQLInsertClause) IsEmpty() bool {
 	return len(c.vals) == 0
@@ -140,6 +144,7 @@ func (c *SQLInsertClause) Select(subQuery SubQueryExpression) {
 // UpdateClause
 type UpdateClause[T any] interface {
 	TypedExpression[T]
+	AddFlag(qf QueryFlag)
 	IsEmpty() bool
 
 	Where(p ...TypedExpression[bool]) UpdateClause[T]
@@ -156,6 +161,9 @@ func NewSQLUpdateClause() SQLUpdateClause {
 type SQLUpdateClause struct {
 	qm QueryMetadata
 	updates map[Path]Expression
+}
+func (c *SQLUpdateClause) AddFlag(qf QueryFlag) {
+	c.qm.AddFlag(qf)
 }
 func (c *SQLUpdateClause) IsEmpty() bool {
 	return true
@@ -185,6 +193,7 @@ func (c *SQLUpdateClause) Set(p Path, v interface{}) {
 
 type DeleteClause[T any] interface {
 	TypedExpression[T]
+	AddFlag(qf QueryFlag)
 
 	Limit(l int64) DeleteClause[T]
 	Where(p ...PredicateExpression) DeleteClause[T]
@@ -201,9 +210,9 @@ func NewSQLDeleteClause() SQLDeleteClause {
 type SQLDeleteClause struct {
 	qm QueryMetadata
 }
-// func (c *SQLDeleteClause) AddFlag(pos Position, flag string) {
-// 	qm.AddFlag()
-// }
+func (c *SQLDeleteClause) AddFlag(qf QueryFlag) {
+	c.qm.AddFlag(qf)
+}
 func (c *SQLDeleteClause) Limit(l int64) *SQLDeleteClause {
 	c.qm.SetLimit(l)
 	return c

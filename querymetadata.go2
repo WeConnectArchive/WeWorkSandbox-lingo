@@ -21,6 +21,7 @@ type BasicQueryMetadata struct {
 	joinType      JoinType
 	joinCondition PredicateExpression
 	joinFlags     []JoinFlag
+	flags         []QueryFlag
 	modifiers     QueryModifiers
 	where         PredicateExpression
 	orderBy       []Order
@@ -110,18 +111,27 @@ func (qm *BasicQueryMetadata) ClearOrderBy() {
 	qm.orderBy = nil
 }
 
-// func (qm BasicQueryMetadata) AddQueryFlag(qf QueryFlag) {
-
-// }
-// func (qm BasicQueryMetadata) HasQueryFlag(qf QueryFlag) bool {
-
-// }
-// func (qm BasicQueryMetadata) Flags() []QueryFlag {
-
-// }
-// func (qm BasicQueryMetadata) RemoveQueryFlag(qf QueryFlag) {
-
-// }
+func (qm *BasicQueryMetadata) AddFlag(qf QueryFlag) {
+	qm.flags = append(qm.flags, qf)
+}
+func (qm BasicQueryMetadata) HasFlag(qf QueryFlag) bool {
+	for _, f := range qm.flags {
+		if f == qf {
+			return true
+		}
+	}
+	return false
+}
+func (qm BasicQueryMetadata) Flags() []QueryFlag {
+	return qm.flags
+}
+func (qm *BasicQueryMetadata) RemoveFlag(qf QueryFlag) {
+	for i, f := range qm.flags {
+		if f == qf {
+			qm.flags = append(qm.flags[:i], qm.flags[i+1:]...) // cut the entry out
+		}
+	}
+}
 
 func (qm *BasicQueryMetadata) AddWhere(e PredicateExpression) {
 	if e == nil {
