@@ -212,6 +212,12 @@ type NumberExpression[T numeric] interface {
 	NotIn(v ...TypedExpression[T]) NumberExpression[T]
 }
 
+type FactoryExpression[T any] interface {
+	TypedExpression[T]
+	Args() []Expression
+	New() T
+}
+
 // =======================================================
 // Implementations
 

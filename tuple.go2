@@ -1,9 +1,45 @@
 package lingo
 
-type Tuple struct {
-	values []interface{}
+type binding struct {
+	exp Expression
+	pos int
 }
 
-func NewTuple(args []interface{}) {
-	
+type Tuple struct {
+	values   []Expression
+	bindings []binding
+}
+
+func NewTuple(args []Expression) Tuple {
+	values := make([]Expression, len(args))
+	copy(values, args)
+	return Tuple{
+		values:   values,
+		bindings: createBindings(args),
+	}
+}
+
+func createBindings(args []Expression) []binding {
+	// might need to change this to a map from `binding`
+	var bindings []binding
+	for idx, arg := range args {
+		// if its an alias, include the alias name
+		if op, ok := arg.(Operation); ok {
+			if op.Operator() == OpAlias {
+				bindings = append(bindings, binding{
+					exp: op.Arg(1),
+					pos: idx,
+				})
+			}
+		}
+		bindings = append(bindings, binding{
+			exp: arg,
+			pos: idx,
+		})
+	}
+	return bindings
+}
+
+func (t Tuple) Args() []Expression {
+	return t.values
 }
