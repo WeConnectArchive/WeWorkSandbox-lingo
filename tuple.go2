@@ -1,5 +1,7 @@
 package lingo
 
+import "reflect"
+
 type binding struct {
 	exp Expression
 	pos int
@@ -42,4 +44,16 @@ func createBindings(args []Expression) []binding {
 
 func (t Tuple) Args() []Expression {
 	return t.values
+}
+
+func (t Tuple) Type() reflect.Type {
+	return reflect.TypeOf(t)
+}
+
+func (t Tuple) NewInstance() Tuple {
+	return NewTuple(nil)
+}
+
+func (t Tuple) String() string {
+	return VisitWithDefaultToStringBuilder(t)
 }

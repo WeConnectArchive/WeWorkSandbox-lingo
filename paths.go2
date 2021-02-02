@@ -2,8 +2,8 @@ package lingo
 
 import (
 	"fmt"
-	"reflect"
 	"regexp"
+	"reflect"
 )
 
 type PathType int
@@ -27,8 +27,12 @@ const (
 	Variable
 )
 
-func NewPathMetadataForVariable(varName string) PathMetadata { return NewPathMetadata(Variable, varName, nil) }
-func NewPathMetadataForProperty(propName string, parent Path) PathMetadata { return NewPathMetadata(Property, propName, parent)}
+func NewPathMetadataForVariable(varName string) PathMetadata {
+	return NewPathMetadata(Variable, varName, nil)
+}
+func NewPathMetadataForProperty(propName string, parent Path) PathMetadata {
+	return NewPathMetadata(Property, propName, parent)
+}
 func NewPathMetadata(pt PathType, element interface{}, parent Path) PathMetadata {
 	var root Path
 	if parent != nil {
@@ -36,24 +40,26 @@ func NewPathMetadata(pt PathType, element interface{}, parent Path) PathMetadata
 	}
 	return PathMetadata{
 		pathType: pt,
-		root: root,
-		parent: parent,
-		element: element,
+		root:     root,
+		parent:   parent,
+		element:  element,
 	}
 }
+
 type PathMetadata struct {
 	pathType PathType
-	root Path
-	parent Path
-	element interface{}
+	root     Path
+	parent   Path
+	element  interface{}
 }
+
 func (pm PathMetadata) Type() reflect.Type { return reflect.TypeOf(pm.pathType) }
 func (pm PathMetadata) IsZero() bool {
 	return pm == PathMetadata{}
 }
 func (pm PathMetadata) PathType() PathType { return pm.pathType }
-func (pm PathMetadata) Parent() Path { return pm.parent }
-func (pm PathMetadata) Root() Path { return pm.root }
+func (pm PathMetadata) Parent() Path       { return pm.parent }
+func (pm PathMetadata) Root() Path         { return pm.root }
 func (pm PathMetadata) IsRoot() bool {
 	return pm.Parent() == nil || (pm.PathType() == Delegate && pm.Parent().Metadata().IsRoot())
 }
@@ -73,8 +79,9 @@ type Path interface {
 	Metadata() PathMetadata
 	Root() Path
 }
+
 type TypedPath[T any] interface {
-	TypedExpression[T]
+	// TypedExpression[T]
 	Path
 }
 
@@ -118,10 +125,10 @@ func (p BoolPath) String() string { return VisitWithDefaultToStringBuilder(p) }
 func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
 func (p BoolPath) Root() Path { return p.mixin.Root() }
 // -- BooleanExpression
-func (o BoolPath) As(alias string) BooleanExpression { 
+func (o BoolPath) As(alias string) BooleanExpression {
 	return o.AsPath(NewSimplePathForVariable[bool](false, alias))
 }
-func (o BoolPath) AsPath(p TypedPath[bool]) BooleanExpression { 
+func (o BoolPath) AsPath(p TypedPath[bool]) BooleanExpression {
 	return NewOpAlias(o, p)
 }
 func (p BoolPath) And(e PredicateExpression) BooleanExpression {
@@ -231,7 +238,8 @@ func (o NumberPath[T]) AsPath(p TypedPath[T]) NumberExpression[T] {
 	return NewNumberOperation[T](OpAlias, o, p)
 }
 func (o NumberPath[T]) As(alias string) NumberExpression[T] {
-	return o.AsPath(NewSimplePathForVariable[T](T(0), alias))
+	var defValue T
+	return o.AsPath(NewSimplePathForVariable[T](defValue, alias))
 }
 func (o NumberPath[T]) Ceil() NumberExpression[T] {
 	return NewNumberOperation[T](OpCeiling, o)
@@ -291,8 +299,6 @@ func (o NumberPath[T]) NotIn(v ...TypedExpression[T]) NumberExpression[T] {
 	return NewNumberOperation[T](OpNotIn, o, NewSet[T](v...))
 }
 
-
-
 // -------------------------------------
 // NewStringPath is a basic StringExpression path
 func NewStringPath(p SimplePath[string]) StringPath {
@@ -305,7 +311,7 @@ type StringPath struct {
 }
 // -- Expression
 func (o StringPath) Type() reflect.Type { return o.mixin.Type() }
-func (o StringPath) String() string { 
+func (o StringPath) String() string {
 	return o.mixin.String()
 }
 
@@ -556,4 +562,20 @@ func (o StringPath) Trim() StringExpression {
 }
 func (o StringPath) Upper() StringExpression {
 	return NewStringOperation(OpStringToUpper, o)
+}
+
+// -------------------------------------
+// NewEntityPath is a basic Table path
+func NewEntityPath(p Path[T]) EntityPath {
+	return EntityPath{
+		mixin: p,
+	}
+}
+type EntityPath[T any] struct {
+	mixin Path[T]
+}
+// -- Expression
+func (o StringPath) Type() reflect.Type { return o.mixin.Type() }
+func (o StringPath) String() string {
+	return o.mixin.String()
 }

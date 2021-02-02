@@ -2,6 +2,7 @@ package lingo
 
 import (
 	"fmt"
+	"strings"
 )
 
 type TypedBuilder[C, T any] interface {
@@ -55,52 +56,51 @@ func (qf QueryFlag) Flag() Expression {
 
 // QueryMetadata
 type QueryMetadata interface {
-	// -- Config
 	ShouldValidate(validate bool)
-	
+
 	AddGroupBy(e Expression)
 
 	AddHaving(e PredicateExpression)
-	
+
 	AddJoin(jt JoinType, e Expression)
 	AddJoinFlag(jf JoinFlag)
 	AddJoinCondition(e PredicateExpression)
 	Joins() []JoinExpression
-	
+
 	AddOrderBy(o Order)
 	OrderBy() []Order
 	ClearOrderBy()
-	
+
 	AddFlag(qf QueryFlag)
 	HasFlag(qf QueryFlag) bool
 	Flags() []QueryFlag
 	RemoveFlag(qf QueryFlag)
-	
+
 	AddWhere(e PredicateExpression)
 	Where() PredicateExpression
 	ClearWhere()
-	
+
 	GroupBy() []Expression
-	
+
 	Having() PredicateExpression
-	
+
 	SetModifiers(m QueryModifiers)
 	SetOffset(l int64)
 	SetLimit(l int64)
 	Modifiers() QueryModifiers
-	
+
 	Projection() Expression
 	SetProjection(e Expression)
-	
+
 	SetParam(e ParamExpression, v interface{})
 	Params() []ParamMetadata
-	
+
 	SetDistinct(d bool)
 	Distinct() bool
-	
+
 	SetUnique(u bool)
 	Unique() bool
-	
+
 	Reset()
 }
 
@@ -140,7 +140,7 @@ func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 
 // ValidatingBuilder
 func VisitWithDefaultValidatingBuilder(e Expression) []Expression {
-	return VisitWithBuilder[[]Expression, []Expression](ValidatingBuilder{}, make([]Expression, 0, 10), e) 
+	return VisitWithBuilder[[]Expression, []Expression](ValidatingBuilder{}, make([]Expression, 0, 10), e)
 }
 type ValidatingBuilder struct {}
 func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression {
@@ -169,7 +169,7 @@ func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression 
 
 // PathBuilder
 func VisitWithDefaultPathBuilder(e Expression) Path {
-	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e) 
+	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e)
 }
 type PathBuilder struct {}
 func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
@@ -187,11 +187,10 @@ func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	return nil
 }
 
-
 // PathsBuilder
 func VisitWithDefaultPathsBuilder(e Expression) []Path {
-	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e) 
-} 
+	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e)
+}
 type PathsBuilder struct {}
 func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	if p, ok := e.(Path); ok {
@@ -209,8 +208,8 @@ func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 
 // ToStringBuilder
 func VisitWithDefaultToStringBuilder(e Expression) string {
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e) 
-} 
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
+}
 type ToStringBuilder struct {}
 func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 	if c, ok := e.(ConstantExpression); ok {
@@ -249,7 +248,7 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		if !ok {
 			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
 		}
-		
+
 		values := []interface{}{parent, elem}
 		value := syntax.Replace(func(idx int) string {
 			if idx > 2 {
@@ -266,3 +265,40 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 }
 
 
+type SQLBuilderStage int
+const (
+	SelectStage SQLBuilderStage = iota
+	FromStage
+	WhereStage
+	GroupByStage
+	HavingStage
+	OrderByStage
+	ModifierStage
+)
+
+type SQLBuilder struct{
+	b strings.Builder // TODO - Optimize strings!
+	dml bool // ModifyQuery=true vs Read=false
+	constants []interface{}
+	constantPaths []Path
+	aliases []Path
+	stage SQLBuilderStage
+}
+func (b SQLBuilder) Visit(d *SQLData, e Expression) struct{} {
+	if p, ok := e.(ParamExpression); ok {
+		b.b.WriteRune('?')
+		b.d.constants = append(d.constants, p)
+		if len(b.d.constantPaths) < len(b.d.constants) {
+			b.d.constantPaths = append(nil)
+		}
+		return struct{}
+	}
+
+	if p, ok := e.(Path); ok {
+		if b.dml {
+			if p == 
+		}
+		
+	}
+
+}

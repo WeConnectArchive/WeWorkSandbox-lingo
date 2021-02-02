@@ -38,7 +38,7 @@ type BooleanExpression interface {
 	TypedExpression[bool]
 	AsPath(p TypedPath[bool]) BooleanExpression
 	As(alias string) BooleanExpression
-	
+
 	And(e PredicateExpression) BooleanExpression
 	Not() BooleanExpression
 	Or(e PredicateExpression) BooleanExpression
@@ -52,9 +52,9 @@ type BooleanExpression interface {
 	NotEq(e TypedExpression[bool]) BooleanExpression
 }
 
-// TODO - somewhere below should go IsNull() and IsNotNull()
+// // TODO - somewhere below should go IsNull() and IsNotNull()
 
-type AnyComparableExpression[T any] interface { 
+type AnyComparableExpression[T any] interface {
 	TypedExpression[T]
 	Asc() Order
 	Desc() Order
@@ -175,7 +175,7 @@ type StringExpression interface {
 }
 
 type NumberExpression[T numeric] interface {
-	ComparableExpression[T]
+	// ComparableExpression[T]
 	Abs() NumberExpression[T]
 	AddValue(v T) NumberExpression[T]
 	Add(t TypedExpression[T]) NumberExpression[T]
@@ -212,14 +212,14 @@ type NumberExpression[T numeric] interface {
 	NotIn(v ...TypedExpression[T]) NumberExpression[T]
 }
 
-type FactoryExpression[T any] interface {
+type ExpressionFactory[T any] interface {
 	TypedExpression[T]
 	Args() []Expression
 	New() T
 }
 
-// =======================================================
-// Implementations
+// // =======================================================
+// // Implementations
 
 var nullExp = NewSimpleConstant[struct{}](struct{}{})
 func Null() ConstantExpression {
@@ -227,7 +227,7 @@ func Null() ConstantExpression {
 }
 
 // NewSimpleConstant
-func NewSimpleConstant[T](v T) SimpleConstant[T] {
+func NewSimpleConstant[T any](v T) SimpleConstant[T] {
 	return SimpleConstant[T]{
 		value: v,
 	}
@@ -237,11 +237,10 @@ type SimpleConstant[T any] struct {
 	value T
 }
 func (e SimpleConstant[T]) Type() reflect.Type { return reflect.TypeOf(T(e.value)) }
-func (e SimpleConstant[T]) String() string { 
+func (e SimpleConstant[T]) String() string {
 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
 }
 func (e SimpleConstant[T]) Interface() interface{} { return e.value }
-
 
 // NewSimpleParam
 func NewSimpleParam[T any](t reflect.Type, anonymus bool, name string) SimpleParam[T] {
@@ -260,30 +259,30 @@ type SimpleParam[T any] struct {
 	name string
 }
 func (p SimpleParam[T]) Type() reflect.Type { return p.t }
-func (p SimpleParam[T]) String() string { 
+func (p SimpleParam[T]) String() string {
 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p)
 }
 func (p SimpleParam[T]) Name() string { return p.name }
 func (p SimpleParam[T]) Anonymus() bool { return p.anonymus }
 
+// // SimpleSubQueryExpression
+// func NewSimpleSubQueryExpression[T any](t T, qm QueryMetadata) SubQueryExpression {
+// 	return SimpleSubQueryExpression[T]{
+// 		t: reflect.TypeOf(t),
+// 		qm: qm,
+// 	}
+// }
+// type SimpleSubQueryExpression[T any] struct {
+// 	t reflect.Type
+// 	qm QueryMetadata
+// }
+// func (e SimpleSubQueryExpression[T]) Type() reflect.Type {
+// 	return e.t
+// }
+// func (e SimpleSubQueryExpression[T]) String() string {
+// 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
+// }
+// func (e SimpleSubQueryExpression[T]) Metadata() QueryMetadata {
+// 	return e.qm
+// }
 
-// SimpleSubQueryExpression
-func NewSimpleSubQueryExpression[T any](t T, qm QueryMetadata) SubQueryExpression {
-	return SimpleSubQueryExpression[T]{
-		t: reflect.TypeOf(t),
-		qm: qm,
-	}
-}
-type SimpleSubQueryExpression[T any] struct {
-	t reflect.Type
-	qm QueryMetadata
-}
-func (e SimpleSubQueryExpression[T]) Type() reflect.Type {
-	return e.t
-}
-func (e SimpleSubQueryExpression[T]) String() string {
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
-}
-func (e SimpleSubQueryExpression[T]) Metadata() QueryMetadata {
-	return e.qm
-}

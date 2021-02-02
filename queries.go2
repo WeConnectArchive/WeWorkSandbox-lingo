@@ -2,6 +2,7 @@ package lingo
 
 import (
 	"context"
+	"reflect"
 	"fmt"
 )
 
@@ -37,21 +38,33 @@ type Fetchable[T any] interface {
 	// TODO - FetchPage(ctx context.Context, limit, offset int64) (T, error)
 }
 type FetchableQuery[T, Q any] interface {
-	// Fetchable[T]
+	Fetchable[T]
 	SimpleQuery[Q]
 	// Select(exp TypedExpression[T]) FetchableQuery[T]
 	// SelectMany(exp []Expression) FetchableQuery[Tuple?]
 }
 
-func SelectColumn[T any](exp TypedExpression[T]) SimpleQuery[T] {
+func SelectColumn[T any](exp TypedExpression[T]) SimpleQuery[TypedExpression[T]] {
 	q := SQLQuery[TypedExpression[T]]{}
 	md := &BasicQueryMetadata{}
-	q.mixin = NewQueryMixin(q, md, true)
+	q.mixin = NewQueryMixin(exp, md, true)
 	q.mixin.SetProjection(exp)
 	return q
 }
+func SelectColumns(exps []Expression) SimpleQuery[Tuple] {
+	t := NewTuple(exps)
+	q := SQLQuery[Tuple]{}
+	md := &BasicQueryMetadata{}
+	q.mixin = NewQueryMixin(t, md, true)
+	q.mixin.SetProjection(t)
+	return q
+}
+
 type SQLQuery[T any] struct {
 	mixin QueryMixin[T]
+}
+func (q SQLQuery[T]) Type() reflect.Type {
+	return reflect.TypeOf(q)
 }
 func (q SQLQuery[T]) Distinct() T {
 	return q.mixin.SetDistinct(true)
@@ -74,11 +87,6 @@ func (q SQLQuery[T]) Set(e ParamExpression, value interface{}) T {
 func (q SQLQuery[T]) Where(p ...PredicateExpression) T {
 	return q.mixin.Where(p...)
 }
-
-
-
-
-
 
 type SubQueryExpression interface {
 	Expression
@@ -110,15 +118,14 @@ type ExtendedSubQuery[T any] interface {
 	NotIn(v ...TypedExpression[T]) BooleanExpression
 }
 
-type FetchableSubQueryBase[T, Q any] interface {
-	FetchableQuery[T, Q]
-	// mixin SubQueryExpression[T]
-}
+// type FetchableSubQueryBase[T, Q any] interface {
+// 	// FetchableQuery[T, Q]
+// 	// mixin SubQueryExpression[T]
+// }
 
-type ProjectableQuery[T, Q any] interface {
-	FetchableQuery[T, Q]
-}
-
+// // type ProjectableQuery[T, Q any] interface {
+// // 	// FetchableQuery[T, Q]
+// // }
 
 // InsertClause
 type InsertClause[T any] interface {
@@ -224,7 +231,7 @@ func (c *SQLUpdateClause) Set(p Path, v interface{}) {
 }
 
 type DeleteClause[T any] interface {
-	TypedExpression[T]
+	// TypedExpression[T]
 	AddFlag(qf QueryFlag)
 
 	Limit(l int64) DeleteClause[T]
@@ -266,15 +273,12 @@ const (
 	orderByRole
 )
 
-
-
-
-func NewQueryMixin2[T any](qm QueryMetadata, expandPaths bool) QueryMixin[T] {
-	return QueryMixin[T]{
-		qm: qm,
-		expandPaths: expandPaths,
-	}
-}
+// func NewQueryMixin2[T any](qm QueryMetadata, expandPaths bool) QueryMixin[T] {
+// 	return QueryMixin[T]{
+// 		qm: qm,
+// 		expandPaths: expandPaths,
+// 	}
+// }
 
 func NewQueryMixin[T any](self T, qm QueryMetadata, expandPaths bool) QueryMixin[T] {
 	return QueryMixin[T]{
@@ -292,18 +296,18 @@ func (q QueryMixin[T]) AddJoin(jt JoinType, target Expression) T {
 	q.qm.AddJoin(jt, target)
 	return q.self
 }
-// func (q QueryMixin[T]) AddFlag(qf QueryFlag) T {
-// 	q.qm.AddFlag(qf)
-// 	return q.self
-// }
+func (q QueryMixin[T]) AddFlag(qf QueryFlag) T {
+	q.qm.AddFlag(qf)
+	return q.self
+}
 func (q QueryMixin[T]) AddJoinFlag(jf JoinFlag) T {
 	q.qm.AddJoinFlag(jf)
 	return q.self
 }
-// func (q QueryMixin[T]) RemoveFlag(qf QueryFlag) T {
-// 	q.qm.RemoveFlag(qf)
-// 	return q.self
-// }
+func (q QueryMixin[T]) RemoveFlag(qf QueryFlag) T {
+	q.qm.RemoveFlag(qf)
+	return q.self
+}
 
 func (q QueryMixin[T]) SetProjection(e Expression) Expression {
 	q.qm.SetProjection(e)
@@ -338,7 +342,7 @@ func (q QueryMixin[T]) Metadata() QueryMetadata {
 
 func (q QueryMixin[T]) GroupBy(exp ...Expression) T {
 	for _, e := range exp {
-		// e = convert(e, Role.GROUP_BY);	
+		// e = convert(e, Role.GROUP_BY);
 		q.qm.AddGroupBy(e)
 	}
 	return q.self
@@ -346,7 +350,7 @@ func (q QueryMixin[T]) GroupBy(exp ...Expression) T {
 
 func (q QueryMixin[T]) Having(exp ...PredicateExpression) T {
 	for _, e := range exp {
-		// e = convert(e, Role.HAVING);	
+		// e = convert(e, Role.HAVING);
 		q.qm.AddHaving(e)
 	}
 	return q.self

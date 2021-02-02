@@ -10,15 +10,8 @@ import (
 func printDebug(msg string, v interface{}) {
 	countNum := atomic.AddInt64(&counter, 1)
 	fmt.Println(msg)
-	fmt.Printf("%d => %+v\n", countNum, v)
+	fmt.Printf("   %3d => %+v\n\n", countNum, v)
 }
-
-// The playground now uses square brackets for type parameters. Otherwise,
-// the syntax of type parameter lists matches the one of regular parameter
-// lists except that all type parameters must have a name, and the type
-// parameter list cannot be empty. The predeclared identifier "any" may be
-// used in the position of a type parameter constraint (and only there);
-// it indicates that there are no constraints.
 
 func TestPathMetadata_VariableProperty(t *testing.T) {
 	type want struct {
@@ -114,7 +107,7 @@ func TestDSL(t *testing.T) {
 
 	var qm QueryMetadata = &BasicQueryMetadata{}
 	qm.AddJoin(InnerJoinType(), strExp)
-	// qm.AddWhere(exp3)
+	qm.AddWhere(exp3)
 	printDebug("qm", qm)
 
 	var ic = NewSQLInsertClause()
@@ -124,4 +117,9 @@ func TestDSL(t *testing.T) {
 	var uc = NewSQLUpdateClause()
 	uc.Where(exp)
 	printDebug("uc", uc)
+
+	// TODO: Have to type cast this, I dont think the new Type system does this many levels deep yet?
+	firstNameTE := TypedExpression[string](tactor.FirstName)
+	var selQuery = SelectColumn(firstNameTE)
+	printDebug("selQuery", selQuery)
 }
