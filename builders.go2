@@ -8,6 +8,7 @@ import (
 type TypedBuilder[C, T any] interface {
 	Visit(ctx C, e Expression) T
 }
+
 func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) T {
 	return b.Visit(buildCtx, e)
 }
@@ -19,6 +20,7 @@ type ParamMetadata struct {
 
 type ourFlagPos int
 type FlagPos ourFlagPos
+
 const (
 	PosWith FlagPos = FlagPos(iota)
 	PosStart
@@ -38,15 +40,17 @@ const (
 
 // NewQueryFlag
 func NewQueryFlag(pos FlagPos, flag Expression) QueryFlag {
-	return QueryFlag {
+	return QueryFlag{
 		pos:  pos,
 		flag: flag,
 	}
 }
+
 type QueryFlag struct {
-	pos FlagPos
+	pos  FlagPos
 	flag Expression
 }
+
 func (qf QueryFlag) Position() FlagPos {
 	return qf.pos
 }
@@ -110,7 +114,9 @@ func VisitWithDefaultParamsBuilder(e Expression) QueryMetadata {
 	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e)
 	return qm
 }
+
 type ParamsBuilder struct{}
+
 func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 	if sqe, ok := e.(SubQueryExpression); ok {
 		md := sqe.Metadata()
@@ -133,7 +139,7 @@ func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 			b.Visit(qm, arg)
 		}
 	}
-	// TODO - QueryExpressions / SubQueryExpression - This will pull in the SQL logic
+	// TODO - QueryExpressions - This will pull in the SQL logic
 	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
 	return struct{}{}
 }
@@ -142,7 +148,9 @@ func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 func VisitWithDefaultValidatingBuilder(e Expression) []Expression {
 	return VisitWithBuilder[[]Expression, []Expression](ValidatingBuilder{}, make([]Expression, 0, 10), e)
 }
-type ValidatingBuilder struct {}
+
+type ValidatingBuilder struct{}
+
 func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression {
 	if o, ok := e.(Operation); ok {
 		if o.Operator() == OpAlias {
@@ -171,7 +179,9 @@ func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression 
 func VisitWithDefaultPathBuilder(e Expression) Path {
 	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e)
 }
-type PathBuilder struct {}
+
+type PathBuilder struct{}
+
 func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 	if p, ok := e.(Path); ok {
 		return p
@@ -191,7 +201,9 @@ func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
 func VisitWithDefaultPathsBuilder(e Expression) []Path {
 	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e)
 }
-type PathsBuilder struct {}
+
+type PathsBuilder struct{}
+
 func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 	if p, ok := e.(Path); ok {
 		return append(paths, p)
@@ -210,7 +222,9 @@ func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
 func VisitWithDefaultToStringBuilder(e Expression) string {
 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
 }
-type ToStringBuilder struct {}
+
+type ToStringBuilder struct{}
+
 func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 	if c, ok := e.(ConstantExpression); ok {
 		return fmt.Sprintf("%v", c.Interface())
@@ -264,8 +278,8 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 	panic(fmt.Errorf("there is no case for this expression: %+v", e))
 }
 
-
 type SQLBuilderStage int
+
 const (
 	SelectStage SQLBuilderStage = iota
 	FromStage
@@ -276,29 +290,111 @@ const (
 	ModifierStage
 )
 
-type SQLBuilder struct{
-	b strings.Builder // TODO - Optimize strings!
-	dml bool // ModifyQuery=true vs Read=false
-	constants []interface{}
+type SQLBuilder struct {
+	b             strings.Builder // TODO - Optimize strings!
+	dml           bool            // ModifyQuery=true vs Read=false
+	includeSchema bool            // includeSchema on statements
+	skipParent    bool
+	constants     []interface{}
+	entity        Path
 	constantPaths []Path
-	aliases []Path
-	stage SQLBuilderStage
+	aliases       []Path
+	stage         SQLBuilderStage
 }
-func (b SQLBuilder) Visit(d *SQLData, e Expression) struct{} {
+
+func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 	if p, ok := e.(ParamExpression); ok {
 		b.b.WriteRune('?')
-		b.d.constants = append(d.constants, p)
-		if len(b.d.constantPaths) < len(b.d.constants) {
-			b.d.constantPaths = append(nil)
+		b.constants = append(b.constants, p)
+		if len(b.constantPaths) < len(b.constants) {
+			b.constantPaths = append(b.constantPaths, nil)
 		}
-		return struct{}
+		return struct{}{}
 	}
+	if op, ok := e.(Operation); ok {
+		args := op.Args()
+		if len(args) == 2 {
+			// NumCast
+		}
+
+		// if op.Operator() == OpSet && op.Arg(0) == SubQueryExpression {
+		// 	// Union Stuff
+		// }
+
+		// Others
+		stx, ok := t.FindSyntax(op)
+		if !ok {
+			panic(fmt.Sprintf("unknown snytax for operation %v", op))
+		}
+
+		value := stx.Replace(func(idx int) string {
+			if idx >= len(args) {
+				return ""
+			}
+			return fmt.Sprintf("%v", args[idx])
+		})
+		b.append(value)
+	}
+
+	// Operator() Operator
+	// Arg(idx int) Expression
+	// Args() []Expression
 
 	if p, ok := e.(Path); ok {
 		if b.dml {
-			if p == 
-		}
-		
-	}
+			relPath, ok := e.(RelationalPath)
+			if p == b.entity && ok {
+				schema, table := relPath.Schema(), relPath.Table()
 
+				var hasDot bool
+				if b.includeSchema && t.ShouldPrintSchema() {
+					hasDot = true
+					b.appendSchema(t, schema)
+					b.appendDot()
+				}
+				b.appendTable(t, table, hasDot)
+				return struct{}{}
+			}
+			if e == p.Metadata().Parent() && b.skipParent {
+				b.appendAsColumnName(t, p, false)
+				return struct{}{}
+			}
+		}
+
+		var hasDot bool
+		if parent := p.Metadata().Parent(); parent != nil && (!b.skipParent || b.dml) {
+			hasDot = true
+
+			b.Visit(t, parent)
+			b.appendDot()
+		}
+		b.appendAsColumnName(t, p, hasDot)
+	}
+	return struct{}{}
+}
+
+func (b *SQLBuilder) append(s string) {
+	b.b.WriteString(s)
+}
+
+func (b *SQLBuilder) appendDot() {
+	b.b.WriteRune('.')
+}
+
+func (b *SQLBuilder) appendSchema(t SQLTemplates, name string) {
+	b.append(t.QuoteID(name, false))
+}
+
+func (b *SQLBuilder) appendTable(t SQLTemplates, name string, hasDot bool) {
+	b.append(t.QuoteID(name, hasDot))
+}
+
+func (b *SQLBuilder) appendAsColumnName(t SQLTemplates, p Path, hasDot bool) {
+	name := p.Metadata().Name()
+
+	parent := p.Metadata().Parent()
+	if ep, ok := parent.(EntityPath); ok {
+		name = ep.MetadataForPath(p).Name()
+	}
+	b.append(t.QuoteID(name, hasDot))
 }

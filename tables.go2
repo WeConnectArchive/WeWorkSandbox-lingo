@@ -1,9 +1,11 @@
 package lingo
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type Actor struct {
-	ActorID int16
+	ActorID  int16
 	IsActive bool
 }
 
@@ -28,10 +30,11 @@ func NewTActorForPath(p SimplePath[Actor]) TActor {
 type TActor struct {
 	mixin SimplePath[Actor]
 
-	ActorID NumberPath[int16]
-	IsActive BoolPath
+	ActorID   NumberPath[int16]
+	IsActive  BoolPath
 	FirstName StringPath
 }
+
 func (t TActor) Type() reflect.Type {
 	return t.mixin.Type()
 }

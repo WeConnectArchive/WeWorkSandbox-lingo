@@ -58,8 +58,6 @@ func (s Syntax) Replace(replaceFunc func(idx int) string) string {
 	)
 }
 
-type Templates map[Operator]Syntax
-
 func DefaultTemplates() Templates {
 	var t = make(Templates, len(defaultTemplate))
 	for k, v := range defaultTemplate {
@@ -67,6 +65,8 @@ func DefaultTemplates() Templates {
 	}
 	return t
 }
+
+type Templates map[Operator]Syntax
 
 var escape = "ESCAPEVALUE" // TODO
 var defaultTemplate = requireSyntaxForEveryOperator(Templates{

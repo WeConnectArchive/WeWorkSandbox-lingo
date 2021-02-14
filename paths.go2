@@ -2,8 +2,8 @@ package lingo
 
 import (
 	"fmt"
-	"regexp"
 	"reflect"
+	"regexp"
 )
 
 type PathType int
@@ -96,17 +96,19 @@ func NewSimplePathForVariable[T any](value T, variableName string) SimplePath[T]
 func NewSimplePath[T any](value T, pm PathMetadata) SimplePath[T] {
 	return SimplePath[T]{
 		value: value,
-		pm: pm,
+		pm:    pm,
 	}
 }
+
 type SimplePath[T any] struct {
 	value T
-	pm PathMetadata
+	pm    PathMetadata
 }
-func (p SimplePath[T]) Type() reflect.Type { return p.pm.Type() }
-func (p SimplePath[T]) String() string { return VisitWithDefaultToStringBuilder(p) }
+
+func (p SimplePath[T]) Type() reflect.Type     { return p.pm.Type() }
+func (p SimplePath[T]) String() string         { return VisitWithDefaultToStringBuilder(p) }
 func (p SimplePath[T]) Metadata() PathMetadata { return p.pm }
-func (p SimplePath[T]) Root() Path { return p.pm.Root() }
+func (p SimplePath[T]) Root() Path             { return p.pm.Root() }
 
 // -------------------------------------
 // NewBoolPath
@@ -115,15 +117,19 @@ func NewBoolPath(p SimplePath[bool]) BoolPath {
 		mixin: p,
 	}
 }
+
 type BoolPath struct {
 	mixin SimplePath[bool] // & BooleanExpression
 }
+
 // -- Expression
 func (p BoolPath) Type() reflect.Type { return p.mixin.Type() }
-func (p BoolPath) String() string { return VisitWithDefaultToStringBuilder(p) }
+func (p BoolPath) String() string     { return VisitWithDefaultToStringBuilder(p) }
+
 // -- Path
 func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
-func (p BoolPath) Root() Path { return p.mixin.Root() }
+func (p BoolPath) Root() Path             { return p.mixin.Root() }
+
 // -- BooleanExpression
 func (o BoolPath) As(alias string) BooleanExpression {
 	return o.AsPath(NewSimplePathForVariable[bool](false, alias))
@@ -166,20 +172,25 @@ func NewNumberPath[T numeric](p SimplePath[T]) NumberPath[T] {
 		mixin: p,
 	}
 }
+
 // NumberPath is a basic NumberExpression of numberic type T
 type NumberPath[T numeric] struct {
 	mixin SimplePath[T]
 }
+
 // -- Expression
 func (p NumberPath[T]) Type() reflect.Type { return p.mixin.Type() }
-func (p NumberPath[T]) String() string { return VisitWithDefaultToStringBuilder(p) }
+func (p NumberPath[T]) String() string     { return VisitWithDefaultToStringBuilder(p) }
+
 // -- Path
 func (p NumberPath[T]) Metadata() PathMetadata { return p.mixin.Metadata() }
-func (p NumberPath[T]) Root() Path { return p.mixin.Root() }
+func (p NumberPath[T]) Root() Path             { return p.mixin.Root() }
+
 // -- LiteralExpression
 func (p NumberPath[T]) StringValue() StringExpression {
 	return NewStringOperation(OpStringCast, p)
 }
+
 // -- AnyComparableExpression
 func (p NumberPath[T]) Asc() Order {
 	return NewOrderByDefaultNull[T](OrderAsc, p)
@@ -187,6 +198,7 @@ func (p NumberPath[T]) Asc() Order {
 func (p NumberPath[T]) Desc() Order {
 	return NewOrderByDefaultNull[T](OrderDesc, p)
 }
+
 // -- ComparableExpression
 func (p NumberPath[T]) BetweenValues(l, r T) BooleanExpression {
 	return p.Between(NewSimpleConstant[T](l), NewSimpleConstant[T](r))
@@ -224,6 +236,7 @@ func (p NumberPath[T]) LTOrEqValue(v T) BooleanExpression {
 func (p NumberPath[T]) LTOrEq(e TypedExpression[T]) BooleanExpression {
 	return NewOpLessThanOrEqual(p, e)
 }
+
 // -- NumberExpression
 func (o NumberPath[T]) Abs() NumberExpression[T] {
 	return NewNumberOperation[T](OpAbs, o)
@@ -306,9 +319,11 @@ func NewStringPath(p SimplePath[string]) StringPath {
 		mixin: p,
 	}
 }
+
 type StringPath struct {
 	mixin SimplePath[string]
 }
+
 // -- Expression
 func (o StringPath) Type() reflect.Type { return o.mixin.Type() }
 func (o StringPath) String() string {
@@ -564,18 +579,34 @@ func (o StringPath) Upper() StringExpression {
 	return NewStringOperation(OpStringToUpper, o)
 }
 
+type RelationalPath interface {
+	Schema() string
+	Table() string
+	Columns() []Path
+	// PrimaryKey() PrimaryKey
+	// ForeignKeys() []ForeignKey
+	// InverseForeignKeys() []ForeignKey
+	// Metadata(column Path) ColumnMetadata
+}
+
+type EntityPath interface {
+	MetadataForPath(p Path) PathMetadata
+}
+
 // -------------------------------------
-// NewEntityPath is a basic Table path
-func NewEntityPath(p Path[T]) EntityPath {
-	return EntityPath{
+// NewTypedEntityPath is a basic Table path
+func NewTypedEntityPath[T any](p TypedPath[T]) TypedEntityPath[T] {
+	return TypedEntityPath[T]{
 		mixin: p,
 	}
 }
-type EntityPath[T any] struct {
-	mixin Path[T]
+
+type TypedEntityPath[T any] struct {
+	mixin TypedPath[T]
 }
+
 // -- Expression
-func (o StringPath) Type() reflect.Type { return o.mixin.Type() }
-func (o StringPath) String() string {
+func (o TypedEntityPath[T]) Type() reflect.Type { return o.mixin.Type() }
+func (o TypedEntityPath[T]) String() string {
 	return o.mixin.String()
 }

@@ -20,7 +20,7 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 		wantParent   Path
 		wantRoot     Path
 		wantIsRoot   bool
-		wantElem  interface{}
+		wantElem     interface{}
 		wantName     string
 	}
 	sp := NewSimplePath[bool](false, NewPathMetadataForVariable("bool_simple_path"))
@@ -38,7 +38,7 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 				wantParent:   nil,
 				wantRoot:     nil,
 				wantIsRoot:   true,
-				wantElem:  "varName",
+				wantElem:     "varName",
 				wantName:     "varName",
 			},
 		},

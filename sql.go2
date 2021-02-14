@@ -1,1 +1,32 @@
 package lingo
+
+import (
+	"fmt"
+)
+
+type SQLTemplates struct {
+	templates   Templates
+	quote       rune
+	quoteIDs    bool
+	printSchema bool
+}
+
+func (t SQLTemplates) FindSyntax(o Operator) (Syntax, bool) {
+	stx, ok := t.templates[o]
+	return stx, ok
+}
+
+func (t SQLTemplates) QuoteID(id string, withDot bool) string {
+	if t.quoteIDs || t.TequiresQuotes(id, withDot) {
+		return fmt.Sprintf("%c%s%c", t.quote, id, t.quote)
+	}
+	return id
+}
+
+func (t SQLTemplates) TequiresQuotes(id string, withDot bool) bool {
+	return true // TODO
+}
+
+func (t SQLTemplates) ShouldPrintSchema() bool {
+	return t.printSchema
+}
