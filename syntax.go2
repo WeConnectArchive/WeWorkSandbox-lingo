@@ -4,37 +4,54 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
-var numRegex = regexp.MustCompile(`{(\d+)}`)
+var numRegex = regexp.MustCompile(`{(\d+).?}`)
 
 // NewSyntax will check the positional argument expression and will panic if it doesnt meet
 // requirements. This should only be used during init code.
 func NewSyntax(exp string) Syntax {
-	args := numRegex.FindAllString(exp, -1)
+	groups := numRegex.FindAllStringSubmatch(exp, -1)
 	// If there are no arguments, nothing to check.
-	if len(args) == 0 {
+	if len(groups) == 0 {
 		return Syntax{expression: exp}
 	}
+
+	fmt.Println(groups)
 	// TODO - Replace all of this with the new Gv2 generic slices functions
-	var set = make(map[string]struct{})
+	var set = make(map[int]syntaxEntry, len(groups))
 	// Add all args to the set, checking for duplicates
-	for _, arg := range args {
-		if _, alreadyFound := set[arg]; alreadyFound {
-			panic(fmt.Errorf("syntax expression '%s' has a duplicate index argument '%s'", exp, arg))
+	for groupIdx, group := range groups {
+		if len(group) != 2 {
+			panic(fmt.Errorf("group has too many or too little arguments: '%+v'", group))
 		}
-		set[arg] = struct{}{}
+		originalVal, idxVal := group[0], group[1]
+		idx, _ := strconv.Atoi(idxVal) // Ignore err because regex validates it is an int
+
+		if _, alreadyFound := set[idx]; alreadyFound {
+			panic(fmt.Errorf("syntax expression '%s' has a duplicate index argument '%s' with value '%v'", exp, idxVal, originalVal))
+		}
+
+		beginIdx := strings.Index(exp, originalVal)
+		set[idx] = syntaxEntry{
+			value:    originalVal,
+			groupIdx: groupIdx,
+			beginIdx: beginIdx,
+			endIdx:   beginIdx + len(originalVal),
+		}
 	}
+
 	// Check each arg starting from zero to ensure each in order exists.
-	for idx := 0; idx < len(args); idx++ {
-		argVal := fmt.Sprintf("{%d}", idx)
-		if _, ok := set[argVal]; !ok {
-			panic(fmt.Errorf("syntax expression '%s' is missing an index argument '%s'", exp, argVal))
+	for idx := 0; idx < len(set); idx++ {
+		if _, ok := set[idx]; !ok {
+			panic(fmt.Errorf("syntax expression '%s' is missing an index argument '%d'", exp, idx))
 		}
 	}
+
 	return Syntax{
 		expression: exp,
-		argCount:   len(args),
+		idxToExpr:  set,
 	}
 }
 
@@ -42,13 +59,23 @@ func NewSyntax(exp string) Syntax {
 // Note: The Syntax type expects `{\d+}` as the basic positional token.
 type Syntax struct {
 	expression string
-	argCount   int
+	idxToExpr  map[int]syntaxEntry
+}
+
+type syntaxEntry struct {
+	value    string
+	groupIdx int
+	beginIdx int
+	endIdx   int
 }
 
 func (s Syntax) String() string { return s.expression }
-func (s Syntax) ArgCount() int  { return s.argCount }
+func (s Syntax) ArgCount() int  { return len(s.idxToExpr) }
 
 func (s Syntax) Replace(replaceFunc func(idx int) string) string {
+	for syntaxIdx := 0; syntaxIdx < len(s.idxToExpr); syntaxIdx++ {
+		s.idxToExpr[syntaxIdx]
+	}
 	return numRegex.ReplaceAllStringFunc(s.expression,
 		func(s string) string {
 			value := s[1 : len(s)-1] // We know its surrounded in `{` and `}`
@@ -67,6 +94,11 @@ func DefaultTemplates() Templates {
 }
 
 type Templates map[Operator]Syntax
+
+func (t Templates) FindSyntax(o Operator) (Syntax, bool) {
+	stx, ok := t[o]
+	return stx, ok
+}
 
 var escape = "ESCAPEVALUE" // TODO
 var defaultTemplate = requireSyntaxForEveryOperator(Templates{
@@ -125,13 +157,13 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	OpStringCast:           NewSyntax("STR({0})"),
 	OpStringConcat:         NewSyntax("{0} || {1}"),
 	OpCharAt:               NewSyntax("CAST(SUBSTR({0}, {1}, 1) AS CHAR)"),
-	OpStringContains:       NewSyntax("{0} LIKE {%1%} ESCAPE '" + escape + "'"),
-	OpStringContainsFold:   NewSyntax("{0l} LIKE {%%1%%} ESCAPE '" + escape + "'"),
+	OpStringContains:       NewSyntax("{0} LIKE %{1}% ESCAPE '" + escape + "'"),
+	OpStringContainsFold:   NewSyntax("{0l} LIKE %%{1}%% ESCAPE '" + escape + "'"),
 	OpEqualsFold:           NewSyntax("{0l} = {1l}"),
-	OpHasPrefix:            NewSyntax("{0} LIKE {1%} ESCAPE '" + escape + "'"),
-	OpHasPrefixFold:        NewSyntax("{0l} LIKE {1%%} ESCAPE '" + escape + "'"),
-	OpHasSuffix:            NewSyntax("{0} LIKE {%1} ESCAPE '" + escape + "'"),
-	OpHasSuffixFold:        NewSyntax("{0l} LIKE {%%1} ESCAPE '" + escape + "'"),
+	OpHasPrefix:            NewSyntax("{0} LIKE {1}% ESCAPE '" + escape + "'"),
+	OpHasPrefixFold:        NewSyntax("{0l} LIKE {1}%% ESCAPE '" + escape + "'"),
+	OpHasSuffix:            NewSyntax("{0} LIKE %{1} ESCAPE '" + escape + "'"),
+	OpHasSuffixFold:        NewSyntax("{0l} LIKE %%{1} ESCAPE '" + escape + "'"),
 	OpIndexOf:              NewSyntax("LOCATE({1},{0})-1"),
 	OpIndexOfN:             NewSyntax("LOCATE({1},{0},{2+'1's})-1"),
 	OpStringIsEmpty:        NewSyntax("LENGTH({0}) = 0"),

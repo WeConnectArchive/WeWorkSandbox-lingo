@@ -1,6 +1,7 @@
 package lingo
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 )
@@ -21,13 +22,15 @@ type ConstantExpression interface {
 type ParamExpression interface {
 	Expression
 	Name() string
-	Anonymus() bool
+	Anonymous() bool
 }
 
 // ============================================================
 // Typed Expressions Below
 
-type TypedExpression[T any] Expression
+type TypedExpression[T any] interface {
+	Expression
+}
 
 type PredicateExpression interface {
 	TypedExpression[bool]
@@ -61,17 +64,21 @@ type AnyComparableExpression[T any] interface {
 }
 
 type Ordering int
+
 const (
 	OrderUnknown Ordering = iota
 	OrderAsc
 	OrderDesc
 )
+
 type NullOrdering int
+
 const (
 	NullsDefault NullOrdering = iota
 	NullsFirst
 	NullsLast
 )
+
 type Order interface {
 	NullsFirst() Order
 	NullsLast() Order
@@ -126,6 +133,8 @@ type StringExpression interface {
 	HasSuffix(v TypedExpression[string]) BooleanExpression
 	HasSuffixFoldValue(v string) BooleanExpression
 	HasSuffixFold(v TypedExpression[string]) BooleanExpression
+	InValues(v ...string) BooleanExpression
+	In(v ...TypedExpression[string]) BooleanExpression
 	IndexOfValue(v string) NumberExpression[int]
 	IndexOf(v TypedExpression[string]) NumberExpression[int]
 	IndexOfNValue(v string, n int) NumberExpression[int]
@@ -193,6 +202,10 @@ type NumberExpression[T numeric] interface {
 	Divide(e TypedExpression[T]) NumberExpression[T]
 	EqValue(v T) BooleanExpression
 	Eq(v TypedExpression[T]) BooleanExpression
+	GTValue(v T) BooleanExpression
+	GT(v TypedExpression[T]) BooleanExpression
+	LTValue(v T) BooleanExpression
+	LT(v TypedExpression[T]) BooleanExpression
 	Floor() NumberExpression[T]
 	// Max() NumberExpression[T] -- Aggregate
 	// Min() NumberExpression[T] -- Aggregate
@@ -222,6 +235,7 @@ type ExpressionFactory[T any] interface {
 // // Implementations
 
 var nullExp = NewSimpleConstant[struct{}](struct{}{})
+
 func Null() ConstantExpression {
 	return nullExp
 }
@@ -232,38 +246,45 @@ func NewSimpleConstant[T any](v T) SimpleConstant[T] {
 		value: v,
 	}
 }
+
 type SimpleConstant[T any] struct {
 	TypedExpression[T]
 	value T
 }
+
 func (e SimpleConstant[T]) Type() reflect.Type { return reflect.TypeOf(T(e.value)) }
 func (e SimpleConstant[T]) String() string {
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
+	return fmt.Sprintf("%v", e.Interface())
+	// return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
 }
-func (e SimpleConstant[T]) Interface() interface{} { return e.value }
+func (e SimpleConstant[T]) Interface() interface{} {
+	return e.value
+}
 
 // NewSimpleParam
-func NewSimpleParam[T any](t reflect.Type, anonymus bool, name string) SimpleParam[T] {
-	if anonymus {
+func NewSimpleParam[T any](t reflect.Type, anon bool, name string) SimpleParam[T] {
+	if anon {
 		name = newRandomName()
 	}
 	return SimpleParam[T]{
-		t: t,
-		anonymus: anonymus,
-		name: name,
+		t:         t,
+		anonymous: anon,
+		name:      name,
 	}
 }
+
 type SimpleParam[T any] struct {
-	t reflect.Type
-	anonymus bool
-	name string
+	t         reflect.Type
+	anonymous bool
+	name      string
 }
+
 func (p SimpleParam[T]) Type() reflect.Type { return p.t }
 func (p SimpleParam[T]) String() string {
 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p)
 }
-func (p SimpleParam[T]) Name() string { return p.name }
-func (p SimpleParam[T]) Anonymus() bool { return p.anonymus }
+func (p SimpleParam[T]) Name() string    { return p.name }
+func (p SimpleParam[T]) Anonymous() bool { return p.anonymous }
 
 // // SimpleSubQueryExpression
 // func NewSimpleSubQueryExpression[T any](t T, qm QueryMetadata) SubQueryExpression {
@@ -285,4 +306,3 @@ func (p SimpleParam[T]) Anonymus() bool { return p.anonymus }
 // func (e SimpleSubQueryExpression[T]) Metadata() QueryMetadata {
 // 	return e.qm
 // }
-

@@ -99,11 +99,26 @@ func TestDSL(t *testing.T) {
 	var mathExp NumberExpression[int16] = tactor.ActorID
 	printDebug("NumberExpression[int16](tactor.ActorID)", mathExp)
 
+	var mathPath NumberPath[int16] = tactor.ActorID
+	printDebug("NumberPath[int16](tactor.ActorID)", mathPath)
+
 	var boolExp BooleanExpression = tactor.IsActive
 	printDebug("BooleanExpression(tactor.IsActive)", boolExp)
 
+	var boolPath BoolPath = tactor.IsActive
+	printDebug("BoolPath(tactor.IsActive)", boolPath)
+
+	var typedBoolPath TypedPath[bool] = tactor.IsActive
+	printDebug("TypedPath[bool](tactor.IsActive)", typedBoolPath)
+
 	var strExp StringExpression = tactor.FirstName
 	printDebug("StringExpression(tactor.FirstName)", strExp)
+
+	var stringPath StringPath = tactor.FirstName
+	printDebug("StringPath(tactor.FirstName)", stringPath)
+
+	var constExp ConstantExpression = NewSimpleConstant[string]("constantExpressionHere")
+	printDebug("ConstantExpression()", constExp)
 
 	var qm QueryMetadata = &BasicQueryMetadata{}
 	qm.AddJoin(InnerJoinType(), strExp)
@@ -121,5 +136,25 @@ func TestDSL(t *testing.T) {
 	// TODO: Have to type cast this, I dont think the new Type system does this many levels deep yet?
 	firstNameTE := TypedExpression[string](tactor.FirstName)
 	var selQuery = SelectColumn(firstNameTE)
+	selQuery.Where(tactor.FirstName.LocateValue("123").GTValue(10))
+	selQuery.Where(tactor.FirstName.InValues("abc", "def", "ghi"))
 	printDebug("selQuery", selQuery)
+
+	joinTypes := map[JoinType]string{
+		DefaultJoinType(): DefaultJoinType().String(),
+		InnerJoinType():   InnerJoinType().String(),
+		JoinJoinType():    JoinJoinType().String(),
+		LeftJoinType():    LeftJoinType().String(),
+		RightJoinType():   RightJoinType().String(),
+		FullJoinType():    FullJoinType().String(),
+	}
+
+	defTemplates := DefaultTemplates()
+	sqlTemplates := SQLTemplates{
+		templates: defTemplates,
+		joinTypes: joinTypes,
+	}
+
+	sqlStr, _ := selQuery.Build(sqlTemplates)
+	printDebug("sqlStr", sqlStr)
 }

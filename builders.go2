@@ -2,6 +2,7 @@ package lingo
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -27,8 +28,8 @@ const (
 	PosStartOverride
 	PosAfterSelect
 	PosAfterProjection
-	PosBeforeFilters
-	PosAfterFilters
+	PosBeforeWheres
+	PosAfterWheress
 	PosBeforeGroupBy
 	PosAfterGroupBy
 	PosBeforeHaving
@@ -230,6 +231,9 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		return fmt.Sprintf("%v", c.Interface())
 	}
 	if o, ok := e.(Operation); ok {
+		fmt.Println("OPERATOR: ", o.Operator())
+		fmt.Println("ARGS: ", o.Args())
+
 		op := o.Operator()
 		// Make sure this is something we _should_ be able to build.
 		syntax, ok := t[op]
@@ -240,7 +244,7 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		value := syntax.Replace(func(idx int) string {
 			arg := o.Arg(idx)
 			if arg == nil {
-				return fmt.Sprintf("unknown argument at index '%d' for syntax '%s'", idx, syntax)
+				return fmt.Sprintf("unknown 'nil' argument at index '%d' for syntax '%s'", idx, syntax)
 			}
 			if argOp, ok := arg.(Operation); ok {
 				return "(" + b.Visit(t, argOp) + ")"
@@ -275,7 +279,8 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		})
 		return value
 	}
-	panic(fmt.Errorf("there is no case for this expression: %+v", e))
+	to := reflect.TypeOf(e)
+	panic(fmt.Errorf("there is no case for this expression: %s", to))
 }
 
 type SQLBuilderStage int
@@ -294,51 +299,215 @@ type SQLBuilder struct {
 	b             strings.Builder // TODO - Optimize strings!
 	dml           bool            // ModifyQuery=true vs Read=false
 	includeSchema bool            // includeSchema on statements
+	inSubQuery    bool
+	inJoin        bool
 	skipParent    bool
-	constants     []interface{}
+	constants     map[string]interface{}
 	entity        Path
 	constantPaths []Path
 	aliases       []Path
 	stage         SQLBuilderStage
 }
 
+func (b *SQLBuilder) String() string {
+	return b.b.String()
+}
+
+func (b *SQLBuilder) hasData() bool {
+	return b.b.Len() > 0
+}
+
+func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates, md QueryMetadata) {
+	wasStage := b.stage
+
+	wasInSubQuery := b.inSubQuery
+	b.inSubQuery = wasInSubQuery || b.hasData()
+
+	wasSkipParent := b.skipParent
+	b.skipParent = false
+
+	selectExpr := md.Projection()
+	joinExprs := md.Joins()
+	whereExpr := md.Where()
+	groupByExprs := md.GroupBy()
+	havingExprs := md.Having()
+	orderByExprs := md.OrderBy()
+	queryFlags := md.Flags()
+
+	b.VisitQueryFlags(t, queryFlags, PosStart)
+
+	// Select Stage
+	b.stage = SelectStage
+
+	// if forCountRow {} else
+	if selectExpr != nil {
+		b.append("SELECT ")
+		if md.Distinct() {
+			b.append("DISTINCT ")
+		}
+
+		b.VisitQueryFlags(t, queryFlags, PosAfterSelect)
+
+		b.VisitSelect(t, []Expression{selectExpr}, ", ")
+	}
+	b.VisitQueryFlags(t, queryFlags, PosAfterProjection)
+
+	// FROM
+	b.stage = FromStage
+
+	b.VisitJoins(t, joinExprs)
+
+	// Where
+	b.VisitQueryFlags(t, queryFlags, PosBeforeWheres)
+	b.stage = WhereStage
+
+	if whereExpr != nil {
+		b.append("WHERE ")
+		b.Visit(t, whereExpr)
+	}
+
+	_ = wasSkipParent
+	_ = joinExprs
+	_ = whereExpr
+	_ = groupByExprs
+	_ = havingExprs
+	_ = orderByExprs
+	_ = wasStage
+}
+
+func (b *SQLBuilder) VisitSelect(t SQLTemplates, exprs []Expression, sep string) {
+	if !b.inSubQuery {
+		b.VisitWithSep(t, exprs, sep)
+		return
+	}
+	// Subquery work
+}
+
+func (b *SQLBuilder) VisitJoins(t SQLTemplates, joinExprs []JoinExpression) {
+	b.append(" FROM ")
+	for idx, join := range joinExprs {
+		jfs := join.Flags()
+
+		b.VisitJoinFlags(t, jfs, JoinPosStart)
+		if idx > 0 {
+			b.VisitJoinFlags(t, jfs, JoinPosOverride)
+			jt, _ := t.FindJoinType(join.JoinType())
+			b.append(jt)
+			b.append(" ")
+		}
+		b.VisitJoinFlags(t, jfs, JoinPosBeforeTarget)
+
+		// if RelationalPath
+		// { Aliases, or TableName }
+
+		b.inJoin = true
+		b.Visit(t, join.Target())
+		b.inJoin = false
+
+		b.VisitJoinFlags(t, jfs, JoinPosBeforeCondition)
+		if join.Condition() != nil {
+			b.append("ON ")
+			b.Visit(t, join.Condition())
+		}
+		b.VisitJoinFlags(t, jfs, JoinPosEnd)
+	}
+}
+
+func (b *SQLBuilder) VisitJoinFlags(t SQLTemplates, jfs []JoinFlag, joinPos JoinFlagPosition) {
+	for _, jf := range jfs {
+		if jf.Pos() == joinPos {
+			b.Visit(t, jf.Flag())
+		}
+	}
+}
+
+func (b *SQLBuilder) VisitQueryFlags(t SQLTemplates, qfs []QueryFlag, currPos FlagPos) {
+	for _, qf := range qfs {
+		if qf.Position() == currPos {
+			b.Visit(t, qf.Flag())
+		}
+	}
+}
+
+func (b *SQLBuilder) VisitWithSep(t SQLTemplates, exps []Expression, sep string) {
+	for idx, exp := range exps {
+		if idx != 0 {
+			b.append(sep)
+		}
+		b.Visit(t, exp)
+	}
+}
+
 func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
+	funcNameConst := func() string {
+		if b.constants == nil {
+			b.constants = map[string]interface{}{}
+		}
+		return fmt.Sprintf("_const_%d", len(b.constants))
+	}
+
+	to := reflect.TypeOf(e)
+	fmt.Println("In Visit: ", to, to.String())
+
+	if c, ok := e.(ConstantExpression); ok {
+		// Base
+		name := funcNameConst()
+		b.b.WriteRune('?')
+		b.constants[name] = c.Interface()
+		return struct{}{}
+	}
 	if p, ok := e.(ParamExpression); ok {
 		b.b.WriteRune('?')
-		b.constants = append(b.constants, p)
+
+		name := funcNameConst()
+		b.constants[name] = p
 		if len(b.constantPaths) < len(b.constants) {
 			b.constantPaths = append(b.constantPaths, nil)
 		}
 		return struct{}{}
 	}
 	if op, ok := e.(Operation); ok {
-		args := op.Args()
-		if len(args) == 2 {
-			// NumCast
+		stx, ok := t.FindSyntax(op.Operator())
+		if ok {
+			// for _, arg := range op.Args() {
+			// 	if op, ok := arg.(Operation); ok {
+			// 		b.Visit(t, op)
+			// 	}
+			// }
+			replaceResult := stx.Replace(func(idx int) string {
+				if idx >= len(op.Args()) {
+					return ""
+				}
+				argAt := op.Arg(idx)
+				b.Visit(t, argAt)
+				return ""
+			})
+			fmt.Println("Replace Result: ", replaceResult)
+			b.append(replaceResult)
+			return struct{}{}
 		}
-
-		// if op.Operator() == OpSet && op.Arg(0) == SubQueryExpression {
-		// 	// Union Stuff
-		// }
+		panic(fmt.Sprintf("unknown syntax for operator %v", op.Operator()))
 
 		// Others
-		stx, ok := t.FindSyntax(op)
-		if !ok {
-			panic(fmt.Sprintf("unknown snytax for operation %v", op))
-		}
+		// stx, ok := t.FindSyntax(op.Operator())
+		// if ok {
+		// 	value := stx.Replace(func(idx int) string {
+		// 		if idx >= len(op.Args()) {
+		// 			return ""
+		// 		}
+		// 		argAt := op.Arg(idx)
+		// 		return fmt.Sprintf("%v", argAt)
+		// 	})
+		// 	b.append(value)
+		// } else {
+		// 	panic(fmt.Sprintf("unknown snytax for operator %v", op.Operator()))
 
-		value := stx.Replace(func(idx int) string {
-			if idx >= len(args) {
-				return ""
-			}
-			return fmt.Sprintf("%v", args[idx])
-		})
-		b.append(value)
+		// 	// b.append(op.String())
+		// 	// b.append("(")
+		// 	// b.VisitWithSep(t, args, ", ")
+		// 	// b.append(")")
+		// }
 	}
-
-	// Operator() Operator
-	// Arg(idx int) Expression
-	// Args() []Expression
 
 	if p, ok := e.(Path); ok {
 		if b.dml {

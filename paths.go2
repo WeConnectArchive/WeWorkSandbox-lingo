@@ -330,6 +330,14 @@ func (o StringPath) String() string {
 	return o.mixin.String()
 }
 
+// -- Path
+func (o StringPath) Metadata() PathMetadata {
+	return o.mixin.Metadata()
+}
+func (o StringPath) Root() Path {
+	return o.mixin.Root()
+}
+
 // -- AnyComparableExpression
 func (o StringPath) Asc() Order {
 	return NewOrderByDefaultNull[string](OrderAsc, o)
@@ -448,6 +456,12 @@ func (o StringPath) HasSuffixFoldValue(v string) BooleanExpression {
 func (o StringPath) HasSuffixFold(v TypedExpression[string]) BooleanExpression {
 	return NewBooleanOperation(OpHasSuffixFold, o, v)
 }
+func (o StringPath) InValues(v ...string) BooleanExpression {
+	return NewBooleanOperation(OpIn, o, NewSimpleConstant[[]string](v))
+}
+func (o StringPath) In(v ...TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpIn, o, NewSet(v...))
+}
 func (o StringPath) IndexOfValue(v string) NumberExpression[int] {
 	return o.IndexOf(NewSimpleConstant[string](v))
 }
@@ -497,7 +511,7 @@ func (o StringPath) LocateValue(v string) NumberExpression[int] {
 	return o.Locate(NewSimpleConstant[string](v))
 }
 func (o StringPath) Locate(v TypedExpression[string]) NumberExpression[int] {
-	return NewNumberOperation[int](OpStringLocate, v)
+	return NewNumberOperation[int](OpStringLocate, o, v)
 }
 func (o StringPath) LocateFromValues(v string, start int) NumberExpression[int] {
 	return o.LocateFromValue(NewSimpleConstant[string](v), start)
@@ -506,7 +520,7 @@ func (o StringPath) LocateFromValue(v TypedExpression[string], start int) Number
 	return o.LocateFrom(v, NewSimpleConstant[int](start))
 }
 func (o StringPath) LocateFrom(v TypedExpression[string], start TypedExpression[int]) NumberExpression[int] {
-	return NewNumberOperation[int](OpStringLocate2, v)
+	return NewNumberOperation[int](OpStringLocate2, o, v)
 }
 func (o StringPath) Lower() StringExpression {
 	return NewStringOperation(OpStringLower, o)

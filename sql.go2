@@ -6,14 +6,19 @@ import (
 
 type SQLTemplates struct {
 	templates   Templates
+	joinTypes   map[JoinType]string
 	quote       rune
 	quoteIDs    bool
 	printSchema bool
 }
 
 func (t SQLTemplates) FindSyntax(o Operator) (Syntax, bool) {
-	stx, ok := t.templates[o]
-	return stx, ok
+	return t.templates.FindSyntax(o)
+}
+
+func (t SQLTemplates) FindJoinType(jt JoinType) (string, bool) {
+	str, ok := t.joinTypes[jt]
+	return str, ok
 }
 
 func (t SQLTemplates) QuoteID(id string, withDot bool) string {

@@ -96,6 +96,12 @@ func (e JoinExpression) String() string {
 	}
 	return b.String()
 }
+func (e JoinExpression) JoinType() JoinType {
+	return e.joinType
+}
+func (e JoinExpression) Flags() []JoinFlag {
+	return e.joinFlags
+}
 func (e JoinExpression) Condition() PredicateExpression {
 	return e.condition
 }

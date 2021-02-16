@@ -2,28 +2,40 @@ package lingo
 
 import (
 	"context"
-	"reflect"
 	"fmt"
+	"reflect"
 )
 
 type WhereClause[T any] interface {
-	Where(e ...PredicateExpression) T
+	Where(e ...PredicateExpression) WhereClause[T]
 }
 
 type SimpleQuery[T any] interface {
-	WhereClause[T]
-	Distinct() T
-	Limit(v int64) T
-	Offset(v int64) T
-	Restrict(m QueryModifiers) T
-	OrderBy(o ...Order) T
-	Set(e ParamExpression, value interface{}) T
+	Where(e ...PredicateExpression) SimpleQuery[T]
+	Distinct() SimpleQuery[T]
+	Limit(v int64) SimpleQuery[T]
+	Offset(v int64) SimpleQuery[T]
+	Restrict(m QueryModifiers) SimpleQuery[T]
+	OrderBy(o ...Order) SimpleQuery[T]
+	Set(e ParamExpression, value interface{}) SimpleQuery[T]
+
+	Build(t SQLTemplates) (string, []interface{})
 }
 
 type Query[T any] interface {
-	SimpleQuery[T]
-	GroupBy(e ...Expression) T
-	Having(e ...PredicateExpression) T
+	Where(e ...PredicateExpression) Query[T]
+
+	Distinct() Query[T]
+	Limit(v int64) Query[T]
+	Offset(v int64) Query[T]
+	Restrict(m QueryModifiers) Query[T]
+	OrderBy(o ...Order) Query[T]
+	Set(e ParamExpression, value interface{}) Query[T]
+
+	GroupBy(e ...Expression) Query[T]
+	Having(e ...PredicateExpression) Query[T]
+
+	Build(t SQLTemplates) (string, []interface{})
 }
 
 type Fetchable[T any] interface {
@@ -61,31 +73,49 @@ func SelectColumns(exps []Expression) SimpleQuery[Tuple] {
 }
 
 type SQLQuery[T any] struct {
-	mixin QueryMixin[T]
+	mixin              QueryMixin[T]
+	union              Expression
+	firstUnionSubQuery SubQueryExpression
+	unionAll           bool
 }
+
 func (q SQLQuery[T]) Type() reflect.Type {
 	return reflect.TypeOf(q)
 }
-func (q SQLQuery[T]) Distinct() T {
-	return q.mixin.SetDistinct(true)
+func (q SQLQuery[T]) Distinct() SimpleQuery[T] {
+	q.mixin.SetDistinct(true)
+	return q
 }
-func (q SQLQuery[T]) Limit(v int64) T {
-	return q.mixin.Limit(v)
+func (q SQLQuery[T]) Limit(v int64) SimpleQuery[T] {
+	q.mixin.Limit(v)
+	return q
 }
-func (q SQLQuery[T]) Offset(v int64) T {
-	return q.mixin.Offset(v)
+func (q SQLQuery[T]) Offset(v int64) SimpleQuery[T] {
+	q.mixin.Offset(v)
+	return q
 }
-func (q SQLQuery[T]) Restrict(m QueryModifiers) T {
-	return q.mixin.Restrict(m)
+func (q SQLQuery[T]) Restrict(m QueryModifiers) SimpleQuery[T] {
+	q.mixin.Restrict(m)
+	return q
 }
-func (q SQLQuery[T]) OrderBy(o ...Order) T {
-	return q.mixin.OrderBy(o...)
+func (q SQLQuery[T]) OrderBy(o ...Order) SimpleQuery[T] {
+	q.mixin.OrderBy(o...)
+	return q
 }
-func (q SQLQuery[T]) Set(e ParamExpression, value interface{}) T {
-	return q.mixin.SetParam(e, value)
+func (q SQLQuery[T]) Set(e ParamExpression, value interface{}) SimpleQuery[T] {
+	q.mixin.SetParam(e, value)
+	return q
 }
-func (q SQLQuery[T]) Where(p ...PredicateExpression) T {
-	return q.mixin.Where(p...)
+func (q SQLQuery[T]) Where(p ...PredicateExpression) SimpleQuery[T] {
+	q.mixin.Where(p...)
+	return q
+}
+func (q SQLQuery[T]) Build(t SQLTemplates) (string, []interface{}) {
+	var builder SQLBuilder
+	if q.union == nil {
+		builder.VisitQueryMetadata(t, q.mixin.Metadata())
+	}
+	return builder.String(), nil
 }
 
 type SubQueryExpression interface {
@@ -139,19 +169,22 @@ type InsertClause[T any] interface {
 
 	Select(subQuery SubQueryExpression)
 }
+
 // NewSQLInsertClause
 func NewSQLInsertClause() SQLInsertClause {
 	return SQLInsertClause{
 		qm: &BasicQueryMetadata{},
 	}
 }
+
 type SQLInsertClause struct {
-	qm   QueryMetadata
-	cols []Path
-	vals []Expression
+	qm       QueryMetadata
+	cols     []Path
+	vals     []Expression
 	subQuery SubQueryExpression
 	// TODO - Add Batch Inserts
 }
+
 func (c *SQLInsertClause) AddFlag(qf QueryFlag) {
 	c.qm.AddFlag(qf)
 }
@@ -191,16 +224,19 @@ type UpdateClause[T any] interface {
 
 	Set(p Path, v interface{})
 }
+
 // NewSQLUpdateClause
 func NewSQLUpdateClause() SQLUpdateClause {
 	return SQLUpdateClause{
 		qm: &BasicQueryMetadata{},
 	}
 }
+
 type SQLUpdateClause struct {
-	qm QueryMetadata
+	qm      QueryMetadata
 	updates map[Path]Expression
 }
+
 func (c *SQLUpdateClause) AddFlag(qf QueryFlag) {
 	c.qm.AddFlag(qf)
 }
@@ -237,6 +273,7 @@ type DeleteClause[T any] interface {
 	Limit(l int64) DeleteClause[T]
 	Where(p ...PredicateExpression) DeleteClause[T]
 }
+
 // NewSQLDeleteClause
 func NewSQLDeleteClause() SQLDeleteClause {
 	qm := &BasicQueryMetadata{}
@@ -246,9 +283,11 @@ func NewSQLDeleteClause() SQLDeleteClause {
 		qm: qm,
 	}
 }
+
 type SQLDeleteClause struct {
 	qm QueryMetadata
 }
+
 func (c *SQLDeleteClause) AddFlag(qf QueryFlag) {
 	c.qm.AddFlag(qf)
 }
@@ -264,6 +303,7 @@ func (c *SQLDeleteClause) Where(p ...PredicateExpression) *SQLDeleteClause {
 }
 
 type QueryRole int
+
 const (
 	selectRole = iota
 	fromRole
@@ -282,16 +322,18 @@ const (
 
 func NewQueryMixin[T any](self T, qm QueryMetadata, expandPaths bool) QueryMixin[T] {
 	return QueryMixin[T]{
-		qm: qm,
+		qm:          qm,
 		expandPaths: expandPaths,
-		self: self,
+		self:        self,
 	}
 }
+
 type QueryMixin[T any] struct {
-	qm QueryMetadata
+	qm          QueryMetadata
 	expandPaths bool
-	self T
+	self        T
 }
+
 func (q QueryMixin[T]) AddJoin(jt JoinType, target Expression) T {
 	q.qm.AddJoin(jt, target)
 	return q.self

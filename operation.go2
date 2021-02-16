@@ -3,8 +3,8 @@ package lingo
 import (
 	"fmt"
 	"reflect"
-	"strings"
 	"regexp"
+	"strings"
 )
 
 // Operation
@@ -24,59 +24,77 @@ func NewSet[T any](args ...TypedExpression[T]) TypedExpression[T] {
 }
 
 // NewSimpleOperation
-func NewSimpleOperation[T any](op Operator, args...Expression) SimpleOperation[T] {
+func NewSimpleOperation[T any](op Operator, args ...Expression) SimpleOperation[T] {
 	return SimpleOperation[T]{
-		op: op,
+		op:   op,
 		args: args,
 	}
 }
+
 type SimpleOperation[T any] struct {
-	op Operator
+	op   Operator
 	args []Expression
 }
-func (o SimpleOperation[T]) Type() reflect.Type { return o.op.Type() }
-func (o SimpleOperation[T]) String() string { return VisitWithDefaultToStringBuilder(o) }
-func (o SimpleOperation[T]) Operator() Operator { return o.op }
-func (o SimpleOperation[T]) Args() []Expression { return o.args }
+
+func (o SimpleOperation[T]) Type() reflect.Type     { return o.op.Type() }
+func (o SimpleOperation[T]) String() string         { return VisitWithDefaultToStringBuilder(o) }
+func (o SimpleOperation[T]) Operator() Operator     { return o.op }
+func (o SimpleOperation[T]) Args() []Expression     { return o.args }
 func (o SimpleOperation[T]) Arg(idx int) Expression { return o.arg(idx) }
 func (o SimpleOperation[T]) arg(idx int) Expression {
-	if idx >= len(o.args) {
+	if idx < 0 || idx >= len(o.args) {
 		return nil
 	}
 	return o.args[idx]
 }
 
 // NewPredicateOperation
-func NewPredicateOperation(op Operator, args...Expression) PredicateOperation {
-	return PredicateOperation(NewSimpleOperation[bool](op, args...))
-}
-type PredicateOperation SimpleOperation[bool]
-func (o PredicateOperation) Type() reflect.Type { return o.Type() }
-func (o PredicateOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
-func (o PredicateOperation) Not() BooleanExpression { return NewOpNot(o) }
-func (o PredicateOperation) Operator() Operator { return o.op }
-func (o PredicateOperation) Args() []Expression { return o.args }
-func (o PredicateOperation) Arg(idx int) Expression {
-	if idx >= len(o.args) {
-		return nil
+func NewPredicateOperation(op Operator, args ...Expression) PredicateOperation {
+	return PredicateOperation{
+		NewSimpleOperation[bool](op, args...),
 	}
-	return o.args[idx]
 }
 
-// // BooleanOperations
-func NewOpAlias(source, alias Expression) BooleanExpression { return NewBooleanOperation(OpAlias, source, alias) }
-func NewOpAnd(l, r Expression) BooleanExpression { return NewBooleanOperation(OpAnd, l, r) }
-func NewOpNot(e Expression) BooleanExpression { return NewBooleanOperation(OpNot, e) }
-func NewOpOr(l, r Expression) BooleanExpression { return NewBooleanOperation(OpOr, l, r) }
-func NewIsNull(e Expression) BooleanExpression { return NewBooleanOperation(OpIsNull, e) }
-func NewIsNotNull(e Expression) BooleanExpression { return NewBooleanOperation(OpIsNotNull, e) }
+type PredicateOperation struct {
+	SimpleOperation[bool]
+}
+
+func (o PredicateOperation) Type() reflect.Type     { return o.Type() }
+func (o PredicateOperation) String() string         { return VisitWithDefaultToStringBuilder(o) }
+func (o PredicateOperation) Not() BooleanExpression { return NewOpNot(o) }
+
+// -- Operation
+func (o PredicateOperation) Operator() Operator     { return o.SimpleOperation.Operator() }
+func (o PredicateOperation) Args() []Expression     { return o.SimpleOperation.Args() }
+func (o PredicateOperation) Arg(idx int) Expression { return o.SimpleOperation.Arg(idx) }
+
+// -----------------
+// BooleanOperations
+func NewOpAlias(source, alias Expression) BooleanExpression {
+	return NewBooleanOperation(OpAlias, source, alias)
+}
+func NewOpAnd(l, r Expression) BooleanExpression   { return NewBooleanOperation(OpAnd, l, r) }
+func NewOpNot(e Expression) BooleanExpression      { return NewBooleanOperation(OpNot, e) }
+func NewOpOr(l, r Expression) BooleanExpression    { return NewBooleanOperation(OpOr, l, r) }
+func NewIsNull(e Expression) BooleanExpression     { return NewBooleanOperation(OpIsNull, e) }
+func NewIsNotNull(e Expression) BooleanExpression  { return NewBooleanOperation(OpIsNotNull, e) }
 func NewOpEqual(l, r Expression) BooleanExpression { return NewBooleanOperation(OpEqual, l, r) }
-func NewOpGreaterThan(l, r Expression) BooleanExpression { return NewBooleanOperation(OpGreaterThan, l, r) }
+func NewOpGreaterThan(l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpGreaterThan, l, r)
+}
 func NewOpLessThan(l, r Expression) BooleanExpression { return NewBooleanOperation(OpLessThan, l, r) }
-func NewOpGreaterThanOrEqual(l, r Expression) BooleanExpression { return NewBooleanOperation(OpGreaterThanOrEqual, l, r) }
-func NewOpLessThanOrEqual(l, r Expression) BooleanExpression { return NewBooleanOperation(OpLessThanOrEqual, l, r) }
-func NewOpBetween(p, l, r Expression) BooleanExpression { return NewBooleanOperation(OpBetween, p, l, r) }
-func NewOpNotBetween(p, l, r Expression) BooleanExpression { return NewBooleanOperation(OpNotBetween, p, l, r) }
+func NewOpGreaterThanOrEqual(l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpGreaterThanOrEqual, l, r)
+}
+func NewOpLessThanOrEqual(l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpLessThanOrEqual, l, r)
+}
+func NewOpBetween(p, l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpBetween, p, l, r)
+}
+func NewOpNotBetween(p, l, r Expression) BooleanExpression {
+	return NewBooleanOperation(OpNotBetween, p, l, r)
+}
 
 // NewBooleanOperation
 func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
@@ -84,12 +102,19 @@ func NewBooleanOperation(op Operator, args ...Expression) BooleanOperation {
 		PredicateOperation: NewPredicateOperation(op, args...),
 	}
 }
+
 type BooleanOperation struct {
 	PredicateOperation
 }
+
 // -- Expression
 func (o BooleanOperation) Type() reflect.Type { return o.PredicateOperation.Type() }
-func (o BooleanOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
+func (o BooleanOperation) String() string     { return VisitWithDefaultToStringBuilder(o) }
+
+// -- Operation
+func (o BooleanOperation) Operator() Operator     { return o.PredicateOperation.Operator() }
+func (o BooleanOperation) Args() []Expression     { return o.PredicateOperation.Args() }
+func (o BooleanOperation) Arg(idx int) Expression { return o.PredicateOperation.Arg(idx) }
 
 // -- BooleanExpression
 func (o BooleanOperation) As(alias string) BooleanExpression {
@@ -127,18 +152,26 @@ func (o BooleanOperation) NotEq(e TypedExpression[bool]) BooleanExpression {
 }
 
 // NewComparableOperation creates a ComparableExpression of the specified type
-func NewComparableOperation[T comparable](op Operator, args...Expression) ComparableOperation[T] {
+func NewComparableOperation[T comparable](op Operator, args ...Expression) ComparableOperation[T] {
 	return ComparableOperation[T]{
 		mixin: NewSimpleOperation[T](op, args...),
 	}
 }
+
 // ComparableOperation is a basic ComparableExpression
 type ComparableOperation[T comparable] struct {
 	mixin SimpleOperation[T]
 }
+
 // -- Expression
 func (o ComparableOperation[T]) Type() reflect.Type { return o.mixin.Type() }
-func (o ComparableOperation[T]) String() string { return VisitWithDefaultToStringBuilder(o) }
+func (o ComparableOperation[T]) String() string     { return VisitWithDefaultToStringBuilder(o) }
+
+// -- Operation
+func (o ComparableOperation[T]) Operator() Operator     { return o.mixin.Operator() }
+func (o ComparableOperation[T]) Args() []Expression     { return o.mixin.Args() }
+func (o ComparableOperation[T]) Arg(idx int) Expression { return o.mixin.Arg(idx) }
+
 // -- AnyComparableExpression
 func (o ComparableOperation[T]) Asc() Order {
 	return NewOrderByDefaultNull[T](OrderAsc, o)
@@ -146,6 +179,7 @@ func (o ComparableOperation[T]) Asc() Order {
 func (o ComparableOperation[T]) Desc() Order {
 	return NewOrderByDefaultNull[T](OrderDesc, o)
 }
+
 // -- ComparableExpression
 func (o ComparableOperation[T]) BetweenValues(l, r T) BooleanExpression {
 	return o.Between(NewSimpleConstant[T](l), NewSimpleConstant[T](r))
@@ -186,6 +220,11 @@ func (o ComparableOperation[T]) LTOrEq(e TypedExpression[T]) BooleanExpression {
 
 // NewNumberOperation creates a NumberOperation of the specified numeric type N
 func NewNumberOperation[N numeric](op Operator, args ...Expression) NumberOperation[N] {
+	fmt.Println("NewNumberOperation(", op, ",")
+	fmt.Println("Args")
+	for _, arg := range args {
+		fmt.Println(arg)
+	}
 	return NumberOperation[N]{
 		mixin: NewSimpleOperation[N](op, args...),
 	}
@@ -193,17 +232,26 @@ func NewNumberOperation[N numeric](op Operator, args ...Expression) NumberOperat
 func CastToNumber[L comparable, N numeric](e LiteralExpression[L], numberType N) NumberExpression[N] {
 	return NewNumberOperation[N](OpNumCast, e, NewSimpleConstant[N](numberType))
 }
+
 // NumberOperation is a basic NumberExpression of numeric type N
 type NumberOperation[T numeric] struct {
-	mixin TypedExpression[T]
+	mixin SimpleOperation[T]
 }
+
 // -- Expression
 func (o NumberOperation[T]) Type() reflect.Type { return o.mixin.Type() }
-func (o NumberOperation[T]) String() string { return VisitWithDefaultToStringBuilder(o) }
+func (o NumberOperation[T]) String() string     { return o.mixin.String() }
+
+// -- Operation
+func (o NumberOperation[T]) Operator() Operator     { return o.mixin.Operator() }
+func (o NumberOperation[T]) Args() []Expression     { return o.mixin.Args() }
+func (o NumberOperation[T]) Arg(idx int) Expression { return o.mixin.Arg(idx) }
+
 // -- LiteralExpression
 func (o NumberOperation[T]) StringValue() StringExpression {
 	return NewStringOperation(OpStringCast, o)
 }
+
 // -- AnyComparableExpression
 func (o NumberOperation[T]) Asc() Order {
 	return NewOrderByDefaultNull[T](OrderAsc, o)
@@ -211,6 +259,7 @@ func (o NumberOperation[T]) Asc() Order {
 func (o NumberOperation[T]) Desc() Order {
 	return NewOrderByDefaultNull[T](OrderDesc, o)
 }
+
 // -- ComparableExpression
 func (o NumberOperation[T]) BetweenValues(l, r T) BooleanExpression {
 	return o.Between(NewSimpleConstant[T](l), NewSimpleConstant[T](r))
@@ -248,6 +297,7 @@ func (o NumberOperation[T]) LTOrEqValue(v T) BooleanExpression {
 func (o NumberOperation[T]) LTOrEq(e TypedExpression[T]) BooleanExpression {
 	return NewOpLessThanOrEqual(o, e)
 }
+
 // -- NumberExpression
 func (o NumberOperation[T]) Abs() NumberExpression[T] {
 	return NewNumberOperation[T](OpAbs, o)
@@ -329,13 +379,16 @@ func NewStringOperation(op Operator, args ...Expression) StringOperation {
 		mixin: NewSimpleOperation[string](op, args...),
 	}
 }
+
 // StringOperation is a basic StringExpression
 type StringOperation struct {
 	mixin SimpleOperation[string]
 }
+
 // -- Expression
 func (o StringOperation) Type() reflect.Type { return o.mixin.Type() }
-func (o StringOperation) String() string { return VisitWithDefaultToStringBuilder(o) }
+func (o StringOperation) String() string     { return VisitWithDefaultToStringBuilder(o) }
+
 // -- AnyComparableExpression
 func (o StringOperation) Asc() Order {
 	return NewOrderByDefaultNull[string](OrderAsc, o)
@@ -343,6 +396,7 @@ func (o StringOperation) Asc() Order {
 func (o StringOperation) Desc() Order {
 	return NewOrderByDefaultNull[string](OrderDesc, o)
 }
+
 // -- ComparableExpression
 func (o StringOperation) BetweenValues(l, r string) BooleanExpression {
 	return o.Between(NewSimpleConstant[string](l), NewSimpleConstant[string](r))
@@ -380,10 +434,12 @@ func (o StringOperation) LTOrEqValue(v string) BooleanExpression {
 func (o StringOperation) LTOrEq(v TypedExpression[string]) BooleanExpression {
 	return NewOpLessThanOrEqual(o, v)
 }
+
 // -- LiteralExpression
 func (o StringOperation) StringValue() StringExpression {
 	return o
 }
+
 // -- StringExpression
 func (o StringOperation) As(alias TypedPath[string]) StringExpression {
 	return NewStringOperation(OpAlias, o, alias)
@@ -451,6 +507,12 @@ func (o StringOperation) HasSuffixFoldValue(v string) BooleanExpression {
 func (o StringOperation) HasSuffixFold(v TypedExpression[string]) BooleanExpression {
 	return NewBooleanOperation(OpHasSuffixFold, o, v)
 }
+func (o StringOperation) InValues(v ...string) BooleanExpression {
+	return NewBooleanOperation(OpIn, o, NewSimpleConstant[[]string](v))
+}
+func (o StringOperation) In(v ...TypedExpression[string]) BooleanExpression {
+	return NewBooleanOperation(OpIn, o, NewSet(v...))
+}
 func (o StringOperation) IndexOfValue(v string) NumberExpression[int] {
 	return o.IndexOf(NewSimpleConstant[string](v))
 }
@@ -500,7 +562,8 @@ func (o StringOperation) LocateValue(v string) NumberExpression[int] {
 	return o.Locate(NewSimpleConstant[string](v))
 }
 func (o StringOperation) Locate(v TypedExpression[string]) NumberExpression[int] {
-	return NewNumberOperation[int](OpStringLocate, v)
+	fmt.Println("StringOperation.Locate(", v)
+	return NewNumberOperation[int](OpStringLocate, o, v)
 }
 func (o StringOperation) LocateFromValues(v string, start int) NumberExpression[int] {
 	return o.LocateFromValue(NewSimpleConstant[string](v), start)
@@ -509,7 +572,7 @@ func (o StringOperation) LocateFromValue(v TypedExpression[string], start int) N
 	return o.LocateFrom(v, NewSimpleConstant[int](start))
 }
 func (o StringOperation) LocateFrom(v TypedExpression[string], start TypedExpression[int]) NumberExpression[int] {
-	return NewNumberOperation[int](OpStringLocate2, v, start)
+	return NewNumberOperation[int](OpStringLocate2, o, v, start)
 }
 func (o StringOperation) Lower() StringExpression {
 	return NewStringOperation(OpStringLower, o)
