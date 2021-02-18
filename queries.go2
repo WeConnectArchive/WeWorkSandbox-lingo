@@ -12,6 +12,7 @@ type WhereClause[T any] interface {
 
 type SimpleQuery[T any] interface {
 	Where(e ...PredicateExpression) SimpleQuery[T]
+	From(f ...Expression) SimpleQuery[T]
 	Distinct() SimpleQuery[T]
 	Limit(v int64) SimpleQuery[T]
 	Offset(v int64) SimpleQuery[T]
@@ -104,6 +105,10 @@ func (q SQLQuery[T]) OrderBy(o ...Order) SimpleQuery[T] {
 }
 func (q SQLQuery[T]) Set(e ParamExpression, value interface{}) SimpleQuery[T] {
 	q.mixin.SetParam(e, value)
+	return q
+}
+func (q SQLQuery[T]) From(f ...Expression) SimpleQuery[T] {
+	q.mixin.From(f...)
 	return q
 }
 func (q SQLQuery[T]) Where(p ...PredicateExpression) SimpleQuery[T] {
@@ -312,13 +317,6 @@ const (
 	havingRole
 	orderByRole
 )
-
-// func NewQueryMixin2[T any](qm QueryMetadata, expandPaths bool) QueryMixin[T] {
-// 	return QueryMixin[T]{
-// 		qm: qm,
-// 		expandPaths: expandPaths,
-// 	}
-// }
 
 func NewQueryMixin[T any](self T, qm QueryMetadata, expandPaths bool) QueryMixin[T] {
 	return QueryMixin[T]{

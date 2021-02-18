@@ -241,18 +241,8 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 			return fmt.Sprintf("unknown operation for operator %s and args %v", op, o.Args())
 		}
 
-		value := syntax.Replace(func(idx int) string {
-			arg := o.Arg(idx)
-			if arg == nil {
-				return fmt.Sprintf("unknown 'nil' argument at index '%d' for syntax '%s'", idx, syntax)
-			}
-			if argOp, ok := arg.(Operation); ok {
-				return "(" + b.Visit(t, argOp) + ")"
-			} else {
-				return b.Visit(t, arg)
-			}
-		})
-		return value
+		values := ForEachSyntaxArg[Templates, string](b, t, syntax, o.Arg)
+		return strings.Join(values, "")
 	}
 	if p, ok := e.(Path); ok {
 		parent := p.Metadata().Parent()
@@ -267,17 +257,17 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
 		}
 
-		values := []interface{}{parent, elem}
-		value := syntax.Replace(func(idx int) string {
-			if idx > 2 {
-				return ""
+		args := []Expression{parent, elem}
+		values := ForEachSyntaxArg[Templates, string](b, t, syntax, func(idx int) Expression {
+			if idx >= len(args) {
+				return nil
 			}
-			if exp, ok := values[idx].(Expression); ok {
-				return b.Visit(t, exp)
-			}
-			return fmt.Sprintf("%v", values[idx])
+			return args[idx]
 		})
-		return value
+		return strings.Join(values, "")
+	}
+	if e.Type() == reflect.TypeOf("") {
+		return e.String()
 	}
 	to := reflect.TypeOf(e)
 	panic(fmt.Errorf("there is no case for this expression: %s", to))
@@ -362,7 +352,7 @@ func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates, md QueryMetadata) {
 	b.stage = WhereStage
 
 	if whereExpr != nil {
-		b.append("WHERE ")
+		b.append(" WHERE ")
 		b.Visit(t, whereExpr)
 	}
 
@@ -467,46 +457,13 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 		return struct{}{}
 	}
 	if op, ok := e.(Operation); ok {
-		stx, ok := t.FindSyntax(op.Operator())
-		if ok {
-			// for _, arg := range op.Args() {
-			// 	if op, ok := arg.(Operation); ok {
-			// 		b.Visit(t, op)
-			// 	}
-			// }
-			replaceResult := stx.Replace(func(idx int) string {
-				if idx >= len(op.Args()) {
-					return ""
-				}
-				argAt := op.Arg(idx)
-				b.Visit(t, argAt)
-				return ""
-			})
-			fmt.Println("Replace Result: ", replaceResult)
-			b.append(replaceResult)
-			return struct{}{}
+		syntax, ok := t.FindSyntax(op.Operator())
+		if !ok {
+			panic(fmt.Sprintf("unknown syntax for operator %v", op.Operator()))
 		}
-		panic(fmt.Sprintf("unknown syntax for operator %v", op.Operator()))
 
-		// Others
-		// stx, ok := t.FindSyntax(op.Operator())
-		// if ok {
-		// 	value := stx.Replace(func(idx int) string {
-		// 		if idx >= len(op.Args()) {
-		// 			return ""
-		// 		}
-		// 		argAt := op.Arg(idx)
-		// 		return fmt.Sprintf("%v", argAt)
-		// 	})
-		// 	b.append(value)
-		// } else {
-		// 	panic(fmt.Sprintf("unknown snytax for operator %v", op.Operator()))
-
-		// 	// b.append(op.String())
-		// 	// b.append("(")
-		// 	// b.VisitWithSep(t, args, ", ")
-		// 	// b.append(")")
-		// }
+		ForEachSyntaxArg[SQLTemplates, struct{}](b, t, syntax, op.Arg)
+		return struct{}{}
 	}
 
 	if p, ok := e.(Path); ok {
@@ -538,7 +495,10 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 			b.appendDot()
 		}
 		b.appendAsColumnName(t, p, hasDot)
+		return struct{}{}
 	}
+	// Finally, if all else fails, just append the string
+	b.append(e.String())
 	return struct{}{}
 }
 

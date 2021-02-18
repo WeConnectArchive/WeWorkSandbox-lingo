@@ -95,7 +95,14 @@ func (qm *BasicQueryMetadata) AddJoinCondition(e PredicateExpression) {
 	qm.joinCondition = qm.and(qm.joinCondition, e)
 }
 func (qm BasicQueryMetadata) Joins() []JoinExpression {
-	return qm.joins
+	if qm.joinTarget == nil {
+		return qm.joins
+	}
+
+	result := make([]JoinExpression, len(qm.joins) + 1)
+	copy(result, qm.joins)
+	result[len(qm.joins)] = NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags)
+	return result
 }
 
 func (qm *BasicQueryMetadata) AddOrderBy(o Order) {

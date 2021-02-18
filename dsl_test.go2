@@ -20,7 +20,7 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 		wantParent   Path
 		wantRoot     Path
 		wantIsRoot   bool
-		wantElem     interface{}
+		wantElem     Expression
 		wantName     string
 	}
 	sp := NewSimplePath[bool](false, NewPathMetadataForVariable("bool_simple_path"))
@@ -38,7 +38,7 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 				wantParent:   nil,
 				wantRoot:     nil,
 				wantIsRoot:   true,
-				wantElem:     "varName",
+				wantElem:     constantStringExpression("varName"),
 				wantName:     "varName",
 			},
 		},
@@ -51,7 +51,7 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 				wantParent:   sp,
 				wantRoot:     sp.Root(),
 				wantIsRoot:   false,
-				wantElem:     "propName",
+				wantElem:     constantStringExpression("propName"),
 				wantName:     "propName",
 			},
 		},
@@ -135,7 +135,7 @@ func TestDSL(t *testing.T) {
 
 	// TODO: Have to type cast this, I dont think the new Type system does this many levels deep yet?
 	firstNameTE := TypedExpression[string](tactor.FirstName)
-	var selQuery = SelectColumn(firstNameTE)
+	var selQuery = SelectColumn(firstNameTE).From(tactor)
 	selQuery.Where(tactor.FirstName.LocateValue("123").GTValue(10))
 	selQuery.Where(tactor.FirstName.InValues("abc", "def", "ghi"))
 	printDebug("selQuery", selQuery)

@@ -255,7 +255,6 @@ type SimpleConstant[T any] struct {
 func (e SimpleConstant[T]) Type() reflect.Type { return reflect.TypeOf(T(e.value)) }
 func (e SimpleConstant[T]) String() string {
 	return fmt.Sprintf("%v", e.Interface())
-	// return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
 }
 func (e SimpleConstant[T]) Interface() interface{} {
 	return e.value

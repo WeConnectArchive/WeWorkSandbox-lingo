@@ -28,12 +28,12 @@ const (
 )
 
 func NewPathMetadataForVariable(varName string) PathMetadata {
-	return NewPathMetadata(Variable, varName, nil)
+	return NewPathMetadata(Variable, constantStringExpression(varName), nil)
 }
 func NewPathMetadataForProperty(propName string, parent Path) PathMetadata {
-	return NewPathMetadata(Property, propName, parent)
+	return NewPathMetadata(Property, constantStringExpression(propName), parent)
 }
-func NewPathMetadata(pt PathType, element interface{}, parent Path) PathMetadata {
+func NewPathMetadata(pt PathType, element Expression, parent Path) PathMetadata {
 	var root Path
 	if parent != nil {
 		root = parent.Root()
@@ -50,7 +50,7 @@ type PathMetadata struct {
 	pathType PathType
 	root     Path
 	parent   Path
-	element  interface{}
+	element  Expression
 }
 
 func (pm PathMetadata) Type() reflect.Type { return reflect.TypeOf(pm.pathType) }
@@ -63,11 +63,11 @@ func (pm PathMetadata) Root() Path         { return pm.root }
 func (pm PathMetadata) IsRoot() bool {
 	return pm.Parent() == nil || (pm.PathType() == Delegate && pm.Parent().Metadata().IsRoot())
 }
-func (pm PathMetadata) Elem() interface{} { return pm.element }
+func (pm PathMetadata) Elem() Expression { return pm.element }
 func (pm PathMetadata) Name() string {
 	switch pm.pathType {
 	case Variable, Property:
-		return pm.Elem().(string)
+		return pm.Elem().String()
 	}
 	panic(fmt.Sprintf("name property not available for path type %d, must be accessed with Element()", pm.pathType))
 }
