@@ -5,11 +5,11 @@ import (
 )
 
 type SQLTemplates struct {
-	templates   Templates
-	joinTypes   map[JoinType]string
-	quote       rune
-	quoteIDs    bool
-	printSchema bool
+	templates     Templates
+	joinTypes     map[JoinType]string
+	quote         rune
+	quoteIDs      bool
+	includeSchema bool
 }
 
 func (t SQLTemplates) FindSyntax(o Operator) (Syntax, bool) {
@@ -32,6 +32,6 @@ func (t SQLTemplates) TequiresQuotes(id string, withDot bool) bool {
 	return true // TODO
 }
 
-func (t SQLTemplates) ShouldPrintSchema() bool {
-	return t.printSchema
+func (t SQLTemplates) IncludeSchema() bool {
+	return t.includeSchema
 }

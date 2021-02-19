@@ -19,8 +19,8 @@ var (
 func TypeOfInt16() reflect.Type { return typeInt16 }
 func TypeOfBool() reflect.Type  { return typeBool }
 
-var counter int64
+var counter uint64
 func newRandomName() string {
-	value := atomic.AddInt64(&counter, 1)
-	return strconv.FormatInt(value, 10)
+	value := atomic.AddUint64(&counter, 1)
+	return strconv.FormatUint(value, 10)
 }

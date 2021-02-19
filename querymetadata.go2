@@ -2,9 +2,53 @@ package lingo
 
 import "fmt"
 
+// QueryMetadata
+type QueryMetadata interface {
+	AddJoin(jt JoinType, e Expression) error
+	AddJoinFlag(jf JoinFlag)
+	AddJoinCondition(e PredicateExpression) error
+	Joins() []JoinExpression
+
+	AddOrderBy(o Order)
+	OrderBy() []Order
+	ClearOrderBy()
+
+	AddFlag(qf QueryFlag)
+	HasFlag(qf QueryFlag) bool
+	Flags() []QueryFlag
+	RemoveFlag(qf QueryFlag)
+
+	AddWhere(e PredicateExpression) error
+	Where() PredicateExpression
+	ClearWhere()
+
+	AddGroupBy(e Expression)
+	GroupBy() []Expression
+
+	AddHaving(e PredicateExpression)
+	Having() PredicateExpression
+
+	SetModifiers(m QueryModifiers)
+	SetOffset(l int64)
+	SetLimit(l int64)
+	Modifiers() QueryModifiers
+
+	Projection() Expression
+	SetProjection(e Expression) error
+
+	SetParam(e ParamExpression, v interface{})
+	Params() []ParamMetadata
+
+	SetDistinct(d bool)
+	Distinct() bool
+
+	SetUnique(u bool)
+	Unique() bool
+}
+
 type BasicQueryMetadata struct {
 	// config
-	shouldValidate bool
+	validationError error
 
 	// members
 	distinct      bool
@@ -12,10 +56,7 @@ type BasicQueryMetadata struct {
 	groupBy       []Expression
 	having        PredicateExpression
 	expsInJoin    []Expression
-	// This map NEEDS TO BE fixed somehow. This is super slow to process String().
-	//   I dont know what "unique" data to use for the key, but we need to filter out ones
-	//   we already visited.
-	params        map[string]ParamMetadata // key = `ParamExpression.String()`
+	params        []ParamMetadata
 	joins         []JoinExpression
 	joinTarget    Expression
 	joinType      JoinType
@@ -26,10 +67,6 @@ type BasicQueryMetadata struct {
 	where         PredicateExpression
 	orderBy       []Order
 	projection    Expression
-}
-
-func (qm *BasicQueryMetadata) ShouldValidate(validate bool) {
-	qm.shouldValidate = validate
 }
 
 func (qm *BasicQueryMetadata) AddGroupBy(e Expression) {
@@ -46,7 +83,7 @@ func (qm *BasicQueryMetadata) AddHaving(e PredicateExpression) {
 	qm.having = qm.and(qm.having, e)
 }
 
-func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) {
+func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) error {
 	qm.addLastJoin()
 	
 	var found bool
@@ -57,20 +94,18 @@ func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) {
 		}
 	}
 	if found {
-		if qm.shouldValidate {
-			panic(fmt.Errorf("join expression '%s' is already used", e.String()))
-		} else {
-			return
-		}
+		return fmt.Errorf("join expression '%s' is already used", e.String())
 	}
 
+	// Add the root if its a Path, else make sure somewhere we have this root
 	if p, ok := e.(Path); ok && p.Metadata().IsRoot() {
 		qm.expsInJoin = append(qm.expsInJoin, e)
-	} else {
-		qm.validate(e)
+	} else if err := qm.validate(e); err != nil {
+		return err
 	}
 	qm.joinType = jt
 	qm.joinTarget = e
+	return nil
 }
 func (qm *BasicQueryMetadata) addLastJoin() {
 	if qm.joinTarget == nil {
@@ -90,19 +125,23 @@ func (qm *BasicQueryMetadata) addLastJoin() {
 func (qm *BasicQueryMetadata) AddJoinFlag(jf JoinFlag) {
 	qm.joinFlags = append(qm.joinFlags, jf)
 }
-func (qm *BasicQueryMetadata) AddJoinCondition(e PredicateExpression) {
-	qm.validate(e)
+func (qm *BasicQueryMetadata) AddJoinCondition(e PredicateExpression) error {
+	if err := qm.validate(e); err != nil {
+		return err
+	}
 	qm.joinCondition = qm.and(qm.joinCondition, e)
+	return nil
 }
 func (qm BasicQueryMetadata) Joins() []JoinExpression {
 	if qm.joinTarget == nil {
 		return qm.joins
 	}
 
-	result := make([]JoinExpression, len(qm.joins) + 1)
+	// Copy the current joins, append the most recent to the end. Dont return the actual values, 
+	// because then they could be modified.
+	result := make([]JoinExpression, len(qm.joins), len(qm.joins) + 1)
 	copy(result, qm.joins)
-	result[len(qm.joins)] = NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags)
-	return result
+	return append(result, NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags))
 }
 
 func (qm *BasicQueryMetadata) AddOrderBy(o Order) {
@@ -140,12 +179,15 @@ func (qm *BasicQueryMetadata) RemoveFlag(qf QueryFlag) {
 	}
 }
 
-func (qm *BasicQueryMetadata) AddWhere(e PredicateExpression) {
+func (qm *BasicQueryMetadata) AddWhere(e PredicateExpression) error {
 	if e == nil {
-		return
+		return nil
 	}
-	qm.validate(e)
+	if err := qm.validate(e); err != nil {
+		return err
+	}
 	qm.where = qm.and(qm.where, e)
+	return nil
 }
 func (qm BasicQueryMetadata) Where() PredicateExpression {
 	return qm.where
@@ -186,17 +228,16 @@ func (qm BasicQueryMetadata) Modifiers() QueryModifiers {
 func (qm BasicQueryMetadata) Projection() Expression {
 	return qm.projection
 }
-func (qm *BasicQueryMetadata) SetProjection(e Expression) {
-	qm.validate(e)
+func (qm *BasicQueryMetadata) SetProjection(e Expression) error {
+	if err := qm.validate(e); err != nil {
+		return err
+	}
 	qm.projection = e
+	return nil
 }
 
 func (qm *BasicQueryMetadata) SetParam(e ParamExpression, v interface{}) {
-	if qm.params == nil {
-		qm.params = make(map[string]ParamMetadata, 5)
-	}
-	paramExpStr := e.String()
-	qm.params[paramExpStr] = ParamMetadata{e: e, v: v}
+	qm.params = append(qm.params, ParamMetadata{e: e, v: v})
 }
 func (qm BasicQueryMetadata) Params() []ParamMetadata {
 	var result = make([]ParamMetadata, 0, len(qm.params))
@@ -220,10 +261,6 @@ func (qm BasicQueryMetadata) Unique() bool {
 	return qm.unique
 }
 
-func (qm *BasicQueryMetadata) Reset() {
-	*qm = BasicQueryMetadata{} // TODO - check if this actually works? (doubtful)
-}
-
 func (qm BasicQueryMetadata) and(l, r PredicateExpression) PredicateExpression {
 	if l == nil {
 		return r
@@ -231,11 +268,17 @@ func (qm BasicQueryMetadata) and(l, r PredicateExpression) PredicateExpression {
 	return NewPredicateOperation(OpAnd, l, r)
 }
 
-func (qm *BasicQueryMetadata) validate(e Expression) {
-	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e) // Pull all child query parameters
+func (qm *BasicQueryMetadata) validate(e Expression) error {
+	// Pull all child query parameters into this
+	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e)
 
-	if qm.shouldValidate {
-		// TODO - Validating Visitor
-		VisitWithDefaultValidatingBuilder(e)
+	b := ValidatingBuilder{}
+	exps := VisitWithBuilder[[]Expression, []Expression](b, qm.expsInJoin, e)
+
+	if b.unknownRoot != nil {
+		return fmt.Errorf("unknown path '%s' - if this is a Delete query, only one root can be used. Else, add the "+
+			"path as a source to the query to be able to use it", b.unknownRoot)
 	}
+	qm.expsInJoin = exps
+	return nil
 }

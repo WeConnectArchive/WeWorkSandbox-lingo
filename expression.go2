@@ -231,24 +231,23 @@ type ExpressionFactory[T any] interface {
 	New() T
 }
 
-// // =======================================================
-// // Implementations
+// =======================================================
+// Implementations
 
-var nullExp = NewSimpleConstant[struct{}](struct{}{})
+var nullExp = NewConstant[struct{}](struct{}{})
 
 func Null() ConstantExpression {
 	return nullExp
 }
 
-// NewSimpleConstant
-func NewSimpleConstant[T any](v T) SimpleConstant[T] {
+// NewConstant should be used to declare a Go constant value.
+func NewConstant[T any](v T) SimpleConstant[T] {
 	return SimpleConstant[T]{
 		value: v,
 	}
 }
 
 type SimpleConstant[T any] struct {
-	TypedExpression[T]
 	value T
 }
 
@@ -260,48 +259,28 @@ func (e SimpleConstant[T]) Interface() interface{} {
 	return e.value
 }
 
+
 // NewSimpleParam
-func NewSimpleParam[T any](t reflect.Type, anon bool, name string) SimpleParam[T] {
-	if anon {
-		name = newRandomName()
-	}
-	return SimpleParam[T]{
+func NewSimpleParam(t reflect.Type, anon bool, name string) SimpleParam {
+	return SimpleParam{
 		t:         t,
 		anonymous: anon,
 		name:      name,
 	}
 }
+func NewAnonParam(t reflect.Type) SimpleParam {
+	return NewSimpleParam(t, true, newRandomName())
+}
 
-type SimpleParam[T any] struct {
+type SimpleParam struct {
 	t         reflect.Type
 	anonymous bool
 	name      string
 }
 
-func (p SimpleParam[T]) Type() reflect.Type { return p.t }
-func (p SimpleParam[T]) String() string {
-	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), p)
+func (p SimpleParam) Type() reflect.Type { return p.t }
+func (p SimpleParam) String() string {
+	return p.name
 }
-func (p SimpleParam[T]) Name() string    { return p.name }
-func (p SimpleParam[T]) Anonymous() bool { return p.anonymous }
-
-// // SimpleSubQueryExpression
-// func NewSimpleSubQueryExpression[T any](t T, qm QueryMetadata) SubQueryExpression {
-// 	return SimpleSubQueryExpression[T]{
-// 		t: reflect.TypeOf(t),
-// 		qm: qm,
-// 	}
-// }
-// type SimpleSubQueryExpression[T any] struct {
-// 	t reflect.Type
-// 	qm QueryMetadata
-// }
-// func (e SimpleSubQueryExpression[T]) Type() reflect.Type {
-// 	return e.t
-// }
-// func (e SimpleSubQueryExpression[T]) String() string {
-// 	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
-// }
-// func (e SimpleSubQueryExpression[T]) Metadata() QueryMetadata {
-// 	return e.qm
-// }
+func (p SimpleParam) Name() string    { return p.name }
+func (p SimpleParam) Anonymous() bool { return p.anonymous }

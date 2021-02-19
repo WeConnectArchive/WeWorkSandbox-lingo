@@ -7,8 +7,9 @@ import (
 	"testing"
 )
 
+var printDebugCounter uint64
 func printDebug(msg string, v interface{}) {
-	countNum := atomic.AddInt64(&counter, 1)
+	countNum := atomic.AddUint64(&printDebugCounter, 1)
 	fmt.Println(msg)
 	fmt.Printf("   %3d => %+v\n\n", countNum, v)
 }
@@ -23,7 +24,7 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 		wantElem     Expression
 		wantName     string
 	}
-	sp := NewSimplePath[bool](false, NewPathMetadataForVariable("bool_simple_path"))
+	sp := NewSimplePath[bool](NewPathMetadataForVariable("bool_simple_path"))
 	tests := []struct {
 		tname    string
 		input    PathMetadata
@@ -117,7 +118,7 @@ func TestDSL(t *testing.T) {
 	var stringPath StringPath = tactor.FirstName
 	printDebug("StringPath(tactor.FirstName)", stringPath)
 
-	var constExp ConstantExpression = NewSimpleConstant[string]("constantExpressionHere")
+	var constExp ConstantExpression = NewConstant[string]("constantExpressionHere")
 	printDebug("ConstantExpression()", constExp)
 
 	var qm QueryMetadata = &BasicQueryMetadata{}
@@ -125,28 +126,24 @@ func TestDSL(t *testing.T) {
 	qm.AddWhere(exp3)
 	printDebug("qm", qm)
 
-	var ic = NewSQLInsertClause()
-	ic.Set(tactor.IsActive, true)
-	printDebug("ic", ic)
-
-	var uc = NewSQLUpdateClause()
-	uc.Where(exp)
-	printDebug("uc", uc)
+	var tfilm = NewTFilmForVariable("f")
+	printDebug("tfilm", tfilm)
 
 	// TODO: Have to type cast this, I dont think the new Type system does this many levels deep yet?
 	firstNameTE := TypedExpression[string](tactor.FirstName)
 	var selQuery = SelectColumn(firstNameTE).From(tactor)
-	selQuery.Where(tactor.FirstName.LocateValue("123").GTValue(10))
-	selQuery.Where(tactor.FirstName.InValues("abc", "def", "ghi"))
+	selQuery.LeftJoin(tfilm, tfilm.MainActorID.Eq(tactor.ActorID))
+	selQuery.Where(tactor.IsActive.IsTrue())
+	selQuery.Where(tactor.FirstName.LocateValue("123").GTValue(10).Or(tactor.FirstName.InValues("abc", "def", "ghi")))
 	printDebug("selQuery", selQuery)
 
 	joinTypes := map[JoinType]string{
-		DefaultJoinType(): DefaultJoinType().String(),
-		InnerJoinType():   InnerJoinType().String(),
-		JoinJoinType():    JoinJoinType().String(),
-		LeftJoinType():    LeftJoinType().String(),
-		RightJoinType():   RightJoinType().String(),
-		FullJoinType():    FullJoinType().String(),
+		DefaultJoinType(): "JOIN",
+		InnerJoinType():   "INNER JOIN",
+		JoinJoinType():    "JOIN",
+		LeftJoinType():    "LEFT JOIN",
+		RightJoinType():   "RIGHT JOIN",
+		FullJoinType():    "FULL JOIN",
 	}
 
 	defTemplates := DefaultTemplates()
@@ -155,6 +152,15 @@ func TestDSL(t *testing.T) {
 		joinTypes: joinTypes,
 	}
 
-	sqlStr, _ := selQuery.Build(sqlTemplates)
+	sqlStr, sqlStrValues := selQuery.Build(sqlTemplates)
 	printDebug("sqlStr", sqlStr)
+	printDebug("sqlStrValues", sqlStrValues)
+
+	// var ic = NewSQLInsertClause()
+	// ic.Set(tactor.IsActive, true)
+	// printDebug("ic", ic)
+
+	// var uc = NewSQLUpdateClause()
+	// uc.Where(exp)
+	// printDebug("uc", uc)
 }

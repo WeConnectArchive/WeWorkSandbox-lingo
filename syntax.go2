@@ -26,24 +26,21 @@ func NewSyntax(exp string) Syntax {
 
 	groupIndexes := numRegex.FindAllStringSubmatchIndex(exp, -1)
 
-	fmt.Println("========================")
-	fmt.Println(groupIndexes)
-	fmt.Println("value: " + exp)
-
-	// Add all args to the set, checking for duplicates
-	var lastIdx int
-	var parts []syntaxPart
+	var lastIdx int // Store the last index we worked on
+	var parts []syntaxPart // Store each syntax part we find
 	argsIdxsFound := make(map[int]struct{}, len(groupIndexes))
 	for _, argGroup := range groupIndexes {
+		// We expect 4 values for each argGroup. See below.
 		if len(argGroup) != 4 {
 			panic(fmt.Errorf("expression '%s' has a group with too many or too little arguments: '%+v'", exp, argGroup))
 		}
-
 		matchStartIdx := argGroup[0]
 		matchEndIdx := argGroup[1]
 		argDigitStartIdx := argGroup[2]
 		argDigitEndIdx := argGroup[3]
-		argIdx, _ := strconv.Atoi(exp[argDigitStartIdx:argDigitEndIdx]) // Ignore err because regex validates it is an int
+
+		// Convert the digit found into a number. We can ignore the error because regex validates it is a digit / int
+		argIdx, _ := strconv.Atoi(exp[argDigitStartIdx:argDigitEndIdx])
 
 		// Finish off the last part
 		if lastIdx != matchStartIdx {
@@ -107,7 +104,6 @@ func ForEachSyntaxArg[C, T any](builder TypedBuilder[C, T], buildCtx C, s Syntax
 			exp = constantStringExpression(s.expression[part.fromIdx:part.toIdx]) // SQL part string			
 		} else { // expression
 			exp = argAt(part.argNum)
-			fmt.Println("ForEachSyntaxArg", part.argNum, reflect.TypeOf(exp))
 		}
 		if exp != nil {
 			parts = append(parts, builder.Visit(buildCtx, exp))
@@ -176,7 +172,7 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 
 	// CatLogical
 	OpAnd:        NewSyntax("{0} AND {1}"),
-	OpOr:         NewSyntax("{0} OR {1}"),
+	OpOr:         NewSyntax("( {0} OR {1} )"),
 	OpNot:        NewSyntax("NOT {0}"),
 	OpIn:         NewSyntax("{0} IN {1}"),
 	OpNotIn:      NewSyntax("{0} NOT IN {1}"),

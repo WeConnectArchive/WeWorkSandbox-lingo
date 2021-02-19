@@ -18,6 +18,9 @@ type ParamMetadata struct {
 	e ParamExpression
 	v interface{}
 }
+func (p ParamMetadata) Value() interface{} {
+	return p.v
+}
 
 type ourFlagPos int
 type FlagPos ourFlagPos
@@ -47,6 +50,7 @@ func NewQueryFlag(pos FlagPos, flag Expression) QueryFlag {
 	}
 }
 
+// QueryFlag puts an expression in the specified position of the Query
 type QueryFlag struct {
 	pos  FlagPos
 	flag Expression
@@ -59,63 +63,7 @@ func (qf QueryFlag) Flag() Expression {
 	return qf.flag
 }
 
-// QueryMetadata
-type QueryMetadata interface {
-	ShouldValidate(validate bool)
-
-	AddGroupBy(e Expression)
-
-	AddHaving(e PredicateExpression)
-
-	AddJoin(jt JoinType, e Expression)
-	AddJoinFlag(jf JoinFlag)
-	AddJoinCondition(e PredicateExpression)
-	Joins() []JoinExpression
-
-	AddOrderBy(o Order)
-	OrderBy() []Order
-	ClearOrderBy()
-
-	AddFlag(qf QueryFlag)
-	HasFlag(qf QueryFlag) bool
-	Flags() []QueryFlag
-	RemoveFlag(qf QueryFlag)
-
-	AddWhere(e PredicateExpression)
-	Where() PredicateExpression
-	ClearWhere()
-
-	GroupBy() []Expression
-
-	Having() PredicateExpression
-
-	SetModifiers(m QueryModifiers)
-	SetOffset(l int64)
-	SetLimit(l int64)
-	Modifiers() QueryModifiers
-
-	Projection() Expression
-	SetProjection(e Expression)
-
-	SetParam(e ParamExpression, v interface{})
-	Params() []ParamMetadata
-
-	SetDistinct(d bool)
-	Distinct() bool
-
-	SetUnique(u bool)
-	Unique() bool
-
-	Reset()
-}
-
 // ParamsBuilder
-func VisitWithDefaultParamsBuilder(e Expression) QueryMetadata {
-	qm := &BasicQueryMetadata{}
-	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e)
-	return qm
-}
-
 type ParamsBuilder struct{}
 
 func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
@@ -134,31 +82,37 @@ func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 		}
 		b.Visit(qm, md.Projection())
 		b.Visit(qm, md.Where())
+		return struct{}{}
 	}
 	if o, ok := e.(Operation); ok {
 		for _, arg := range o.Args() {
 			b.Visit(qm, arg)
 		}
+		return struct{}{}
 	}
-	// TODO - QueryExpressions - This will pull in the SQL logic
-	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
+	if c, ok := e.(ConstantExpression); ok {
+		anonParam := NewAnonParam(reflect.TypeOf(c.Interface()))
+		qm.SetParam(anonParam, c.Interface())
+		return struct{}{}
+	}
+	// if pe, ok := e.(ParamExpression); ok {
+
+	// }
 	return struct{}{}
 }
 
 // ValidatingBuilder
-func VisitWithDefaultValidatingBuilder(e Expression) []Expression {
-	return VisitWithBuilder[[]Expression, []Expression](ValidatingBuilder{}, make([]Expression, 0, 10), e)
+type ValidatingBuilder struct{
+	unknownRoot Path
 }
-
-type ValidatingBuilder struct{}
 
 func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression {
 	if o, ok := e.(Operation); ok {
 		if o.Operator() == OpAlias {
-			known = append(known, o.Arg(1))
+			known = append(known, o.Arg(1)) // Get the table from the Alias
 		}
 		for _, arg := range o.Args() {
-			known = append(known, b.Visit(known, arg)...)
+			known = append(known, b.Visit(known, arg)...) // Check all the args too
 		}
 	}
 	if p, ok := e.(Path); ok {
@@ -170,53 +124,12 @@ func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression 
 			}
 		}
 		if !found {
-			panic(fmt.Errorf("unknown path '%s' - add the path as a source to the query to be able to use it", p.Root()))
-		}
-	}
-	return known
-}
-
-// PathBuilder
-func VisitWithDefaultPathBuilder(e Expression) Path {
-	return VisitWithBuilder[struct{}, Path](PathBuilder{}, struct{}{}, e)
-}
-
-type PathBuilder struct{}
-
-func (b PathBuilder) Visit(ctx struct{}, e Expression) Path {
-	if p, ok := e.(Path); ok {
-		return p
-	}
-	if o, ok := e.(Operation); ok {
-		for _, arg := range o.Args() {
-			if p := b.Visit(ctx, arg); p != nil {
-				return p
+			if b.unknownRoot == nil {
+				b.unknownRoot = p.Root()
 			}
 		}
 	}
-	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
-	return nil
-}
-
-// PathsBuilder
-func VisitWithDefaultPathsBuilder(e Expression) []Path {
-	return VisitWithBuilder[[]Path, []Path](PathsBuilder{}, make([]Path, 0, 10), e)
-}
-
-type PathsBuilder struct{}
-
-func (b PathsBuilder) Visit(paths []Path, e Expression) []Path {
-	if p, ok := e.(Path); ok {
-		return append(paths, p)
-	}
-	if o, ok := e.(Operation); ok {
-		for _, arg := range o.Args() {
-			paths = b.Visit(paths, arg)
-		}
-		return paths
-	}
-	// panic(fmt.Errorf("there is no case for this expression: %+v", e))
-	return paths
+	return known
 }
 
 // ToStringBuilder
@@ -231,9 +144,6 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		return fmt.Sprintf("%v", c.Interface())
 	}
 	if o, ok := e.(Operation); ok {
-		fmt.Println("OPERATOR: ", o.Operator())
-		fmt.Println("ARGS: ", o.Args())
-
 		op := o.Operator()
 		// Make sure this is something we _should_ be able to build.
 		syntax, ok := t[op]
@@ -241,20 +151,21 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 			return fmt.Sprintf("unknown operation for operator %s and args %v", op, o.Args())
 		}
 
+		fmt.Printf("ToStringBuilder.Visit %s -> %+v\n", syntax.expression, o.Args())
+
 		values := ForEachSyntaxArg[Templates, string](b, t, syntax, o.Arg)
 		return strings.Join(values, "")
 	}
 	if p, ok := e.(Path); ok {
-		parent := p.Metadata().Parent()
-		elem := p.Metadata().Elem()
-
-		if parent == nil {
-			return fmt.Sprintf("%v", elem)
-		}
-		// Make sure this is a path type we can build
 		syntax, ok := t[p.Metadata().PathType()]
 		if !ok {
 			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
+		}
+
+		elem := p.Metadata().Elem()
+		parent := p.Metadata().Parent()
+		if parent == nil {
+			return b.Visit(t, elem)
 		}
 
 		args := []Expression{parent, elem}
@@ -293,6 +204,7 @@ type SQLBuilder struct {
 	inJoin        bool
 	skipParent    bool
 	constants     map[string]interface{}
+	qmd           QueryMetadata
 	entity        Path
 	constantPaths []Path
 	aliases       []Path
@@ -307,7 +219,7 @@ func (b *SQLBuilder) hasData() bool {
 	return b.b.Len() > 0
 }
 
-func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates, md QueryMetadata) {
+func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates) {
 	wasStage := b.stage
 
 	wasInSubQuery := b.inSubQuery
@@ -316,13 +228,13 @@ func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates, md QueryMetadata) {
 	wasSkipParent := b.skipParent
 	b.skipParent = false
 
-	selectExpr := md.Projection()
-	joinExprs := md.Joins()
-	whereExpr := md.Where()
-	groupByExprs := md.GroupBy()
-	havingExprs := md.Having()
-	orderByExprs := md.OrderBy()
-	queryFlags := md.Flags()
+	selectExpr := b.qmd.Projection()
+	joinExprs := b.qmd.Joins()
+	whereExpr := b.qmd.Where()
+	groupByExprs := b.qmd.GroupBy()
+	havingExprs := b.qmd.Having()
+	orderByExprs := b.qmd.OrderBy()
+	queryFlags := b.qmd.Flags()
 
 	b.VisitQueryFlags(t, queryFlags, PosStart)
 
@@ -332,7 +244,7 @@ func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates, md QueryMetadata) {
 	// if forCountRow {} else
 	if selectExpr != nil {
 		b.append("SELECT ")
-		if md.Distinct() {
+		if b.qmd.Distinct() {
 			b.append("DISTINCT ")
 		}
 
@@ -352,17 +264,17 @@ func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates, md QueryMetadata) {
 	b.stage = WhereStage
 
 	if whereExpr != nil {
-		b.append(" WHERE ")
+		b.append("\nWHERE ")
 		b.Visit(t, whereExpr)
 	}
 
-	_ = wasSkipParent
 	_ = joinExprs
 	_ = whereExpr
 	_ = groupByExprs
 	_ = havingExprs
 	_ = orderByExprs
-	_ = wasStage
+	b.stage = wasStage
+	b.skipParent = wasSkipParent
 }
 
 func (b *SQLBuilder) VisitSelect(t SQLTemplates, exprs []Expression, sep string) {
@@ -374,21 +286,43 @@ func (b *SQLBuilder) VisitSelect(t SQLTemplates, exprs []Expression, sep string)
 }
 
 func (b *SQLBuilder) VisitJoins(t SQLTemplates, joinExprs []JoinExpression) {
-	b.append(" FROM ")
 	for idx, join := range joinExprs {
 		jfs := join.Flags()
 
 		b.VisitJoinFlags(t, jfs, JoinPosStart)
-		if idx > 0 {
+		if idx == 0 {
+			b.append("\nFROM ")
+		} else {
 			b.VisitJoinFlags(t, jfs, JoinPosOverride)
 			jt, _ := t.FindJoinType(join.JoinType())
+			b.append("\n")
 			b.append(jt)
 			b.append(" ")
 		}
 		b.VisitJoinFlags(t, jfs, JoinPosBeforeTarget)
 
-		// if RelationalPath
-		// { Aliases, or TableName }
+		var foundAlias Path
+		for _, alias := range b.aliases {
+			if alias == join.Target() {
+				foundAlias = alias
+				break
+			}
+		}
+		if foundAlias != nil {
+			b.appendTable(t, foundAlias.Metadata().Name(), false)
+		} else {
+			tableInfo, ok := join.Target().(TableInfo)
+			if ok {
+				b.appendSchemaAndTable(t, tableInfo)
+			}
+
+			// If the table name does not match the path's name, its an alias
+			if p, ok := join.Target().(Path); ok {
+				if tableInfo.Table() != p.Metadata().Name() {
+					b.append(" AS ")
+				}
+			}
+		}
 
 		b.inJoin = true
 		b.Visit(t, join.Target())
@@ -396,7 +330,7 @@ func (b *SQLBuilder) VisitJoins(t SQLTemplates, joinExprs []JoinExpression) {
 
 		b.VisitJoinFlags(t, jfs, JoinPosBeforeCondition)
 		if join.Condition() != nil {
-			b.append("ON ")
+			b.append(" ON ")
 			b.Visit(t, join.Condition())
 		}
 		b.VisitJoinFlags(t, jfs, JoinPosEnd)
@@ -437,10 +371,8 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 	}
 
 	to := reflect.TypeOf(e)
-	fmt.Println("In Visit: ", to, to.String())
-
+	fmt.Println("SQLBuilder Visit: ", to)
 	if c, ok := e.(ConstantExpression); ok {
-		// Base
 		name := funcNameConst()
 		b.b.WriteRune('?')
 		b.constants[name] = c.Interface()
@@ -457,23 +389,37 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 		return struct{}{}
 	}
 	if op, ok := e.(Operation); ok {
-		syntax, ok := t.FindSyntax(op.Operator())
+		oper := op.Operator()
+		fmt.Println("OPERATOR: ", oper)
+		if oper == OpAlias {
+			fmt.Println("ALIAS")
+			arg := op.Arg(0)
+			if p, ok := arg.(Path); ok {
+				fmt.Println("appended alias")
+				b.aliases = append(b.aliases, p)
+			} else {
+				fmt.Println("other append")
+				// b.aliases = append(b.aliases, arg)
+			}
+			return struct{}{}
+		}
+
+		syntax, ok := t.FindSyntax(oper)
 		if !ok {
-			panic(fmt.Sprintf("unknown syntax for operator %v", op.Operator()))
+			panic(fmt.Sprintf("unknown syntax for operator %v", oper))
 		}
 
 		ForEachSyntaxArg[SQLTemplates, struct{}](b, t, syntax, op.Arg)
 		return struct{}{}
 	}
-
 	if p, ok := e.(Path); ok {
 		if b.dml {
-			relPath, ok := e.(RelationalPath)
+			tableInfo, ok := e.(TableInfo)
 			if p == b.entity && ok {
-				schema, table := relPath.Schema(), relPath.Table()
+				schema, table := tableInfo.Schema(), tableInfo.Table()
 
 				var hasDot bool
-				if b.includeSchema && t.ShouldPrintSchema() {
+				if b.includeSchema && t.IncludeSchema() {
 					hasDot = true
 					b.appendSchema(t, schema)
 					b.appendDot()
@@ -503,6 +449,7 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 }
 
 func (b *SQLBuilder) append(s string) {
+	fmt.Println("APPEND: ", s)
 	b.b.WriteString(s)
 }
 
@@ -518,12 +465,19 @@ func (b *SQLBuilder) appendTable(t SQLTemplates, name string, hasDot bool) {
 	b.append(t.QuoteID(name, hasDot))
 }
 
+func (b *SQLBuilder) appendSchemaAndTable(t SQLTemplates, ti TableInfo) {
+	schema, table := ti.Schema(), ti.Table()
+
+	var hasDot bool
+	if b.includeSchema && t.IncludeSchema() {
+		hasDot = true
+		b.appendSchema(t, schema)
+		b.appendDot()
+	}
+	b.appendTable(t, table, hasDot)
+}
+
 func (b *SQLBuilder) appendAsColumnName(t SQLTemplates, p Path, hasDot bool) {
 	name := p.Metadata().Name()
-
-	parent := p.Metadata().Parent()
-	if ep, ok := parent.(EntityPath); ok {
-		name = ep.MetadataForPath(p).Name()
-	}
 	b.append(t.QuoteID(name, hasDot))
 }
