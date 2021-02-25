@@ -27,6 +27,6 @@ require (
 	github.com/spf13/viper v1.7.0
 	go.opentelemetry.io/otel v0.8.0
 	golang.org/x/tools v0.0.0-20200225230052-807dcd883420 // indirect
-	google.golang.org/grpc v1.30.0
+	google.golang.org/grpc v1.36.0
 	gopkg.in/ini.v1 v1.55.0 // indirect
 )
