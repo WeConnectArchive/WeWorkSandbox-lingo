@@ -10,6 +10,7 @@
 *.ipr
 *.iws
 *.iml
+*.code-workspace
 
 cmake-build-*/
 out/
@@ -33,9 +34,11 @@ test_results/
 mock_*_test.go
 # Ignore mocking matchers
 **/matchers/**
-
 # But include our custom Test Matchers
 !/internal/test/matchers/***
+
+# Ignore any generated Go files from Go2
+/*.go
 
 # Binaries
 /lingo

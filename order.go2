@@ -1,0 +1,37 @@
+package lingo
+
+func NewOrderByDefaultNull[T any](order Ordering, path TypedExpression[T]) OrderBy[T] {
+	return NewOrderBy[T](order, path, NullsDefault)
+}
+
+func NewOrderBy[T any](order Ordering, path TypedExpression[T], nullOrder NullOrdering) OrderBy[T] {
+	return OrderBy[T]{
+		order: order,
+		path: path,
+		nullOrder: nullOrder,
+	}
+}
+type OrderBy[T any] struct {
+	order Ordering
+	nullOrder NullOrdering
+	path TypedExpression[T]
+}
+
+func (o OrderBy[T]) Order() Ordering {
+	return o.order
+}
+func (o OrderBy[T]) Ascending() bool {
+	return o.order == OrderAsc
+}
+func (o OrderBy[T]) Path() Expression {
+	return o.path
+}
+func (o OrderBy[T]) NullOrder() NullOrdering {
+	return o.nullOrder
+}
+func (o OrderBy[T]) NullsFirst() Order {
+	return NewOrderBy[T](o.order, o.path, NullsFirst)
+}
+func (o OrderBy[T]) NullsLast() Order {
+	return NewOrderBy[T](o.order, o.path, NullsLast)
+}

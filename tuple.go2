@@ -1,0 +1,28 @@
+package lingo
+
+import "reflect"
+
+type TupleExpression interface {
+	Expression
+	Args() []Expression
+	Arg(i int) Expression
+}
+
+func NewTuple(args []Expression) Tuple {
+	return Tuple(args)
+}
+
+type Tuple []Expression
+
+func (t Tuple) Type() reflect.Type { return reflect.TypeOf(t) }
+func (t Tuple) String() string {
+	return VisitWithDefaultToStringBuilder(t)
+}
+
+func (t Tuple) Args() []Expression { return t }
+func (t Tuple) Arg(i int) Expression {
+	if i >= len(t) {
+		return nil
+	}
+	return t[i]
+}

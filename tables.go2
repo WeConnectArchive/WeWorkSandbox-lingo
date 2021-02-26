@@ -1,0 +1,87 @@
+package lingo
+
+import (
+	"reflect"
+)
+
+type Actor struct {
+	ActorID  int16
+	IsActive bool
+}
+
+func NewTActor() TActor {
+	return NewTActorAs("actor")
+}
+func NewTActorAs(variable string) TActor {
+	var t TActor = TActor{
+		info: NewTable[TActor](variable, "", "actor"),
+	}
+	t.ActorID = NewNumberPath[int16](NewProperty[int16]("actor_id", t.info))
+	t.IsActive = NewBoolPath(NewProperty[bool]("is_active", t.info))
+	t.FirstName = NewStringPath(NewProperty[string]("first_name", t.info))
+	t.LastName = NewStringPath(NewProperty[string]("last_name", t.info))
+	return t
+}
+
+type TActor struct {
+	info Table
+
+	ActorID   NumberPath[int16]
+	IsActive  BoolPath
+	FirstName StringPath
+	LastName  StringPath
+}
+
+// -- Expression
+func (t TActor) Type() reflect.Type {
+	return t.info.Type()
+}
+func (t TActor) String() string {
+	return t.info.String()
+}
+
+// -- Path
+func (t TActor) LingoPathData() PathData { return t.info.LingoPathData() }
+
+// -- Table
+func (t TActor) LingoTableData() TableData { return t.info.LingoTableData() }
+
+// ============================================================
+
+type Film struct {
+	MainActorID int16
+	Name        string
+}
+
+func NewTFilm() TFilm {
+	return NewTFilmAs("film")
+}
+func NewTFilmAs(variable string) TFilm {
+	var t TFilm = TFilm{
+		info: NewTable[TFilm](variable, "", "film"),
+	}
+	t.MainActorID = NewNumberPath[int16](NewProperty[int16]("main_actor_id", t.info))
+	t.NameP = NewStringPath(NewProperty[string]("first_name", t.info))
+	return t
+}
+
+type TFilm struct {
+	info Table
+
+	MainActorID NumberPath[int16]
+	NameP       StringPath
+}
+
+// -- Expression
+func (t TFilm) Type() reflect.Type {
+	return t.info.Type()
+}
+func (t TFilm) String() string {
+	return VisitWithDefaultToStringBuilder(t)
+}
+
+// -- Path
+func (t TFilm) LingoPathData() PathData { return t.info.LingoPathData() }
+
+// -- TableInfo
+func (t TFilm) LingoTableData() TableData { return t.info.LingoTableData() }

@@ -1,0 +1,280 @@
+package lingo
+
+import "fmt"
+
+// QueryMetadata
+type QueryMetadata interface {
+	AddJoin(jt JoinType, e Expression) error
+	AddJoinFlag(jf JoinFlag)
+	AddJoinCondition(e PredicateExpression) error
+	Joins() []JoinExpression
+
+	AddOrderBy(o Order)
+	OrderBy() []Order
+	ClearOrderBy()
+
+	AddFlag(qf QueryFlag)
+	HasFlag(qf QueryFlag) bool
+	Flags() []QueryFlag
+	RemoveFlag(qf QueryFlag)
+
+	AddWhere(e PredicateExpression) error
+	Where() PredicateExpression
+	ClearWhere()
+
+	AddGroupBy(e Expression)
+	GroupBy() []Expression
+
+	AddHaving(e PredicateExpression)
+	Having() PredicateExpression
+
+	SetModifiers(m QueryModifiers)
+	SetOffset(l int64)
+	SetLimit(l int64)
+	Modifiers() QueryModifiers
+
+	Projection() Expression
+	SetProjection(e Expression) error
+
+	SetParam(e ParamExpression, v interface{})
+	Params() []ParamMetadata
+
+	SetDistinct(d bool)
+	Distinct() bool
+
+	SetUnique(u bool)
+	Unique() bool
+}
+
+type BasicQueryMetadata struct {
+	distinct      bool
+	unique        bool
+	groupBy       []Expression
+	having        PredicateExpression
+	expsInJoin    []Expression
+	params        []ParamMetadata
+	joins         []JoinExpression
+	joinTarget    Expression
+	joinType      JoinType
+	joinCondition PredicateExpression
+	joinFlags     []JoinFlag
+	flags         []QueryFlag
+	modifiers     QueryModifiers
+	where         PredicateExpression
+	orderBy       []Order
+	projection    Expression
+}
+
+func (qm *BasicQueryMetadata) AddGroupBy(e Expression) {
+	if e == nil {
+		return
+	}
+	qm.groupBy = append(qm.groupBy, e)
+}
+
+func (qm *BasicQueryMetadata) AddHaving(e PredicateExpression) {
+	if e == nil {
+		return
+	}
+	qm.having = qm.and(qm.having, e)
+}
+
+func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) error {
+	qm.addLastJoin()
+
+	var found bool
+	for _, exp := range qm.expsInJoin {
+		if exp == e {
+			found = true
+			break
+		}
+	}
+	if found {
+		return fmt.Errorf("join expression '%s' is already used", e.String())
+	}
+
+	// Add the base Parent if its a Path, else make sure somewhere we have the parent for this entry
+	if p, ok := e.(Path); ok && p.LingoPathData().Parent() == nil {
+		qm.expsInJoin = append(qm.expsInJoin, e)
+	} else if err := qm.validate(e); err != nil {
+		return err
+	}
+	qm.joinType = jt
+	qm.joinTarget = e
+	return nil
+}
+func (qm *BasicQueryMetadata) addLastJoin() {
+	if qm.joinTarget == nil {
+		return
+	}
+
+	join := NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags)
+	if qm.expsInJoin == nil {
+		qm.expsInJoin = append(qm.expsInJoin, join)
+	}
+	qm.joins = append(qm.joins, join)
+	// reset the join info here for next join
+	qm.joinType = DefaultJoinType()
+	qm.joinTarget = nil
+	qm.joinFlags = nil
+}
+func (qm *BasicQueryMetadata) AddJoinFlag(jf JoinFlag) {
+	qm.joinFlags = append(qm.joinFlags, jf)
+}
+func (qm *BasicQueryMetadata) AddJoinCondition(e PredicateExpression) error {
+	if err := qm.validate(e); err != nil {
+		return err
+	}
+	qm.joinCondition = qm.and(qm.joinCondition, e)
+	return nil
+}
+func (qm BasicQueryMetadata) Joins() []JoinExpression {
+	if qm.joinTarget == nil {
+		return qm.joins
+	}
+
+	// Copy the current joins, append the most recent to the end. Dont return the actual values,
+	// because then they could be modified.
+	result := make([]JoinExpression, len(qm.joins), len(qm.joins)+1)
+	copy(result, qm.joins)
+	return append(result, NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags))
+}
+
+func (qm *BasicQueryMetadata) AddOrderBy(o Order) {
+	if o == nil {
+		return
+	}
+	qm.orderBy = append(qm.orderBy, o)
+}
+func (qm BasicQueryMetadata) OrderBy() []Order {
+	return qm.orderBy
+}
+func (qm *BasicQueryMetadata) ClearOrderBy() {
+	qm.orderBy = nil
+}
+
+func (qm *BasicQueryMetadata) AddFlag(qf QueryFlag) {
+	qm.flags = append(qm.flags, qf)
+}
+func (qm BasicQueryMetadata) HasFlag(qf QueryFlag) bool {
+	for _, f := range qm.flags {
+		if f == qf {
+			return true
+		}
+	}
+	return false
+}
+func (qm BasicQueryMetadata) Flags() []QueryFlag {
+	return qm.flags
+}
+func (qm *BasicQueryMetadata) RemoveFlag(qf QueryFlag) {
+	for i, f := range qm.flags {
+		if f == qf {
+			qm.flags = append(qm.flags[:i], qm.flags[i+1:]...) // cut the entry out
+		}
+	}
+}
+
+func (qm *BasicQueryMetadata) AddWhere(e PredicateExpression) error {
+	if e == nil {
+		return nil
+	}
+	if err := qm.validate(e); err != nil {
+		return err
+	}
+	qm.where = qm.and(qm.where, e)
+	return nil
+}
+func (qm BasicQueryMetadata) Where() PredicateExpression {
+	return qm.where
+}
+func (qm *BasicQueryMetadata) ClearWhere() {
+	qm.where = nil
+}
+
+func (qm BasicQueryMetadata) GroupBy() []Expression {
+	return qm.groupBy
+}
+
+func (qm BasicQueryMetadata) Having() PredicateExpression {
+	return qm.having
+}
+
+func (qm *BasicQueryMetadata) SetModifiers(m QueryModifiers) {
+	qm.modifiers = m
+}
+func (qm *BasicQueryMetadata) SetOffset(o int64) {
+	if l, set := qm.modifiers.Limit(); set {
+		qm.modifiers = LimitOffset(o, l)
+	} else {
+		qm.modifiers = Offset(o)
+	}
+}
+func (qm *BasicQueryMetadata) SetLimit(l int64) {
+	if o, set := qm.modifiers.Offset(); set {
+		qm.modifiers = LimitOffset(l, o)
+	} else {
+		qm.modifiers = Limit(l)
+	}
+}
+func (qm BasicQueryMetadata) Modifiers() QueryModifiers {
+	return qm.modifiers
+}
+
+func (qm BasicQueryMetadata) Projection() Expression {
+	return qm.projection
+}
+func (qm *BasicQueryMetadata) SetProjection(e Expression) error {
+	if err := qm.validate(e); err != nil {
+		return err
+	}
+	qm.projection = e
+	return nil
+}
+
+func (qm *BasicQueryMetadata) SetParam(e ParamExpression, v interface{}) {
+	qm.params = append(qm.params, ParamMetadata{e: e, v: v})
+}
+func (qm BasicQueryMetadata) Params() []ParamMetadata {
+	var result = make([]ParamMetadata, 0, len(qm.params))
+	for _, v := range qm.params {
+		result = append(result, v)
+	}
+	return result
+}
+
+func (qm *BasicQueryMetadata) SetDistinct(d bool) {
+	qm.distinct = d
+}
+func (qm BasicQueryMetadata) Distinct() bool {
+	return qm.distinct
+}
+
+func (qm *BasicQueryMetadata) SetUnique(u bool) {
+	qm.unique = u
+}
+func (qm BasicQueryMetadata) Unique() bool {
+	return qm.unique
+}
+
+func (qm BasicQueryMetadata) and(l, r PredicateExpression) PredicateExpression {
+	if l == nil {
+		return r
+	}
+	return NewOpAnd(l, r)
+}
+
+func (qm *BasicQueryMetadata) validate(e Expression) error {
+	// Pull all child query parameters into this
+	VisitWithBuilder[QueryMetadata, struct{}](ParamsBuilder{}, qm, e)
+
+	b := ValidatingBuilder{}
+	exps := VisitWithBuilder[[]Expression, []Expression](b, qm.expsInJoin, e)
+
+	if b.unknownRoot != nil {
+		return fmt.Errorf("unknown path '%s' - if this is a Delete query, only one root can be used. Else, add the "+
+			"path as a source to the query to be able to use it", b.unknownRoot)
+	}
+	qm.expsInJoin = exps
+	return nil
+}

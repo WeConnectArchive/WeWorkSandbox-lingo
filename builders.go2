@@ -1,0 +1,490 @@
+package lingo
+
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
+
+type TypedBuilder[C, T any] interface {
+	Visit(ctx C, e Expression) T
+}
+
+func VisitWithBuilder[C, T any](b TypedBuilder[C, T], buildCtx C, e Expression) T {
+	return b.Visit(buildCtx, e)
+}
+
+type ParamMetadata struct {
+	e ParamExpression
+	v interface{}
+}
+
+func (p ParamMetadata) Value() interface{} {
+	return p.v
+}
+
+type ourFlagPos int
+type FlagPos ourFlagPos
+
+const (
+	PosWith FlagPos = FlagPos(iota)
+	PosStart
+	PosStartOverride
+	PosAfterSelect
+	PosAfterProjection
+	PosBeforeWheres
+	PosAfterWheress
+	PosBeforeGroupBy
+	PosAfterGroupBy
+	PosBeforeHaving
+	PosAfterHaving
+	PosBeforeOrder
+	PosAfterOrder
+	PosEnd
+)
+
+// NewQueryFlag
+func NewQueryFlag(pos FlagPos, flag Expression) QueryFlag {
+	return QueryFlag{
+		pos:  pos,
+		flag: flag,
+	}
+}
+
+// QueryFlag puts an expression in the specified position of the Query
+type QueryFlag struct {
+	pos  FlagPos
+	flag Expression
+}
+
+func (qf QueryFlag) Position() FlagPos {
+	return qf.pos
+}
+func (qf QueryFlag) Flag() Expression {
+	return qf.flag
+}
+
+// ParamsBuilder
+type ParamsBuilder struct{}
+
+func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
+	if sqe, ok := e.(SubQueryExpression); ok {
+		md := sqe.Metadata()
+		for _, p := range md.Params() {
+			qm.SetParam(p.e, p.v)
+		}
+		for _, gb := range md.GroupBy() {
+			b.Visit(qm, gb)
+		}
+		b.Visit(qm, md.Having())
+		for _, j := range md.Joins() {
+			b.Visit(qm, j.Target())
+			b.Visit(qm, j.Condition())
+		}
+		b.Visit(qm, md.Projection())
+		b.Visit(qm, md.Where())
+		return struct{}{}
+	}
+	if o, ok := e.(Operation); ok {
+		for _, arg := range o.Args() {
+			b.Visit(qm, arg)
+		}
+		return struct{}{}
+	}
+	if c, ok := e.(ConstantExpression); ok {
+		anonParam := NewAnonParam(reflect.TypeOf(c.Interface()))
+		qm.SetParam(anonParam, c.Interface())
+		return struct{}{}
+	}
+	// if pe, ok := e.(ParamExpression); ok {
+
+	// }
+	return struct{}{}
+}
+
+// ValidatingBuilder
+type ValidatingBuilder struct {
+	unknownRoot Path
+}
+
+func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression {
+	if o, ok := e.(Operation); ok {
+		if o.Operator() == OpAlias {
+			known = append(known, o.Arg(1)) // Get the table from the Alias
+		}
+		for _, arg := range o.Args() {
+			known = append(known, b.Visit(known, arg)...) // Check all the args too
+		}
+	}
+	if p, ok := e.(Path); ok {
+		var found = false
+		for _, k := range known {
+			if k == p || k == e {
+				found = true
+				break
+			}
+		}
+		if !found {
+			if b.unknownRoot == nil {
+				b.unknownRoot = p.LingoPathData().Root()
+			}
+		}
+	}
+	return known
+}
+
+// ToStringBuilder
+func VisitWithDefaultToStringBuilder(e Expression) string {
+	return VisitWithBuilder[Templates, string](ToStringBuilder{}, DefaultTemplates(), e)
+}
+
+type ToStringBuilder struct{}
+
+func (b ToStringBuilder) Visit(t Templates, e Expression) string {
+	if c, ok := e.(ConstantExpression); ok {
+		return fmt.Sprintf("%v", c.Interface())
+	}
+	if o, ok := e.(Operation); ok {
+		op := o.Operator()
+		// Make sure this is something we _should_ be able to build.
+		syntax, ok := t[op]
+		if !ok {
+			return fmt.Sprintf("unknown operation for operator %s and args %v", op, o.Args())
+		}
+
+		fmt.Printf("ToStringBuilder.Visit %s -> %+v\n", syntax.expression, o.Args())
+
+		values := ForEachSyntaxArg[Templates, string](b, t, syntax, o.Arg)
+		return strings.Join(values, "")
+	}
+	if tuple, ok := e.(TupleExpression); ok {
+		argStrs := make([]string, len(tuple.Args()))
+		for idx, arg := range tuple.Args() {
+			argStrs[idx] = b.Visit(t, arg)
+		}
+		return strings.Join(argStrs, ", ")
+	}
+	if p, ok := e.(Path); ok {
+		syntax, ok := t[p]
+		if !ok {
+			return fmt.Sprintf("unknown syntax for path type %v", p.Type())
+		}
+
+		value := p.LingoPathData().Value()
+		parent := p.LingoPathData().Parent()
+		if parent == nil {
+			return b.Visit(t, value)
+		}
+
+		args := []Expression{parent, value}
+		values := ForEachSyntaxArg[Templates, string](b, t, syntax, func(idx int) Expression {
+			if idx >= len(args) {
+				return nil
+			}
+			return args[idx]
+		})
+		return strings.Join(values, "")
+	}
+	if e.Type() == reflect.TypeOf("") {
+		return e.String()
+	}
+	to := reflect.TypeOf(e)
+	panic(fmt.Errorf("there is no case for this expression: %s", to))
+}
+
+type SQLBuilderStage int
+
+const (
+	SelectStage SQLBuilderStage = iota
+	FromStage
+	WhereStage
+	GroupByStage
+	HavingStage
+	OrderByStage
+	ModifierStage
+)
+
+type SQLBuilder struct {
+	b             strings.Builder // TODO - Optimize strings!
+	dml           bool            // ModifyQuery=true vs Read=false
+	includeSchema bool            // includeSchema on statements
+	inSubQuery    bool
+	inJoin        bool
+	skipParent    bool
+	constants     map[string]interface{}
+	qmd           QueryMetadata
+	entity        Path
+	constantPaths []Path
+	aliases       []Path
+	stage         SQLBuilderStage
+}
+
+func (b *SQLBuilder) String() string {
+	return b.b.String()
+}
+
+func (b *SQLBuilder) hasData() bool {
+	return b.b.Len() > 0
+}
+
+func (b *SQLBuilder) VisitQueryMetadata(t SQLTemplates) {
+	wasStage := b.stage
+
+	wasInSubQuery := b.inSubQuery
+	b.inSubQuery = wasInSubQuery || b.hasData()
+
+	wasSkipParent := b.skipParent
+	b.skipParent = false
+
+	selectExpr := b.qmd.Projection()
+	joinExprs := b.qmd.Joins()
+	whereExpr := b.qmd.Where()
+	groupByExprs := b.qmd.GroupBy()
+	havingExprs := b.qmd.Having()
+	orderByExprs := b.qmd.OrderBy()
+	queryFlags := b.qmd.Flags()
+
+	b.VisitQueryFlags(t, queryFlags, PosStart)
+
+	// Select Stage
+	b.stage = SelectStage
+
+	// if forCountRow {} else
+	if selectExpr != nil {
+		b.append("SELECT ")
+		if b.qmd.Distinct() {
+			b.append("DISTINCT ")
+		}
+
+		b.VisitQueryFlags(t, queryFlags, PosAfterSelect)
+
+		b.VisitSelect(t, []Expression{selectExpr}, ", ")
+	}
+	b.VisitQueryFlags(t, queryFlags, PosAfterProjection)
+
+	// FROM
+	b.stage = FromStage
+
+	b.VisitJoins(t, joinExprs)
+
+	// Where
+	b.VisitQueryFlags(t, queryFlags, PosBeforeWheres)
+	b.stage = WhereStage
+
+	if whereExpr != nil {
+		b.append("\nWHERE ")
+		b.Visit(t, whereExpr)
+	}
+
+	_ = joinExprs
+	_ = whereExpr
+	_ = groupByExprs
+	_ = havingExprs
+	_ = orderByExprs
+	b.stage = wasStage
+	b.skipParent = wasSkipParent
+}
+
+func (b *SQLBuilder) VisitSelect(t SQLTemplates, exprs []Expression, sep string) {
+	if !b.inSubQuery {
+		b.VisitWithSep(t, exprs, sep)
+		return
+	}
+	// Subquery work
+}
+
+func (b *SQLBuilder) VisitJoins(t SQLTemplates, joinExprs []JoinExpression) {
+	for idx, join := range joinExprs {
+		jfs := join.Flags()
+
+		b.VisitJoinFlags(t, jfs, JoinPosStart)
+		if idx == 0 {
+			b.append("\nFROM ")
+		} else {
+			b.VisitJoinFlags(t, jfs, JoinPosOverride)
+			jt, _ := t.FindJoinType(join.JoinType())
+			b.append("\n")
+			b.append(jt)
+			b.append(" ")
+		}
+		b.VisitJoinFlags(t, jfs, JoinPosBeforeTarget)
+
+		var foundAlias Path
+		for _, alias := range b.aliases {
+			if alias == join.Target() {
+				foundAlias = alias
+				break
+			}
+		}
+		if foundAlias != nil {
+			b.appendTable(t, foundAlias.LingoPathData().Name(), false)
+		} else {
+			joinTable, isTable := join.Target().(interface {
+				Path
+				LingoTableData() TableData
+			})
+			if isTable {
+				b.appendSchemaAndTable(t, joinTable.LingoTableData().Schema(), joinTable.LingoTableData().Name())
+
+				// If the table name does not match the path's name, its an alias
+				if !strings.EqualFold(joinTable.LingoTableData().Name(), joinTable.LingoPathData().Name()) {
+					b.append(" AS ")
+				}
+			}
+		}
+
+		b.inJoin = true
+		b.Visit(t, join.Target())
+		b.inJoin = false
+
+		b.VisitJoinFlags(t, jfs, JoinPosBeforeCondition)
+		if join.Condition() != nil {
+			b.append(" ON ")
+			b.Visit(t, join.Condition())
+		}
+		b.VisitJoinFlags(t, jfs, JoinPosEnd)
+	}
+}
+
+func (b *SQLBuilder) VisitJoinFlags(t SQLTemplates, jfs []JoinFlag, joinPos JoinFlagPosition) {
+	for _, jf := range jfs {
+		if jf.Pos() == joinPos {
+			b.Visit(t, jf.Flag())
+		}
+	}
+}
+
+func (b *SQLBuilder) VisitQueryFlags(t SQLTemplates, qfs []QueryFlag, currPos FlagPos) {
+	for _, qf := range qfs {
+		if qf.Position() == currPos {
+			b.Visit(t, qf.Flag())
+		}
+	}
+}
+
+func (b *SQLBuilder) VisitWithSep(t SQLTemplates, exps []Expression, sep string) {
+	for idx, exp := range exps {
+		if idx != 0 {
+			b.append(sep)
+		}
+		b.Visit(t, exp)
+	}
+}
+
+func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
+	funcNameConst := func() string {
+		if b.constants == nil {
+			b.constants = map[string]interface{}{}
+		}
+		return fmt.Sprintf("_const_%d", len(b.constants))
+	}
+
+	to := reflect.TypeOf(e)
+	fmt.Println("SQLBuilder Visit: ", to)
+	if c, ok := e.(ConstantExpression); ok {
+		name := funcNameConst()
+		b.b.WriteRune('?')
+		b.constants[name] = c.Interface()
+		return struct{}{}
+	}
+	if tuple, ok := e.(TupleExpression); ok {
+		for idx, arg := range tuple.Args() {
+			if idx > 0 {
+				b.append(", ")
+			}
+			b.Visit(t, arg)
+		}
+		return struct{}{}
+	}
+	if p, ok := e.(ParamExpression); ok {
+		b.b.WriteRune('?')
+
+		name := funcNameConst()
+		b.constants[name] = p
+		if len(b.constantPaths) < len(b.constants) {
+			b.constantPaths = append(b.constantPaths, nil)
+		}
+		return struct{}{}
+	}
+	if op, ok := e.(Operation); ok {
+		oper := op.Operator()
+		fmt.Println("OPERATOR: ", oper)
+		if oper == OpAlias {
+			fmt.Println("ALIAS")
+			arg := op.Arg(0)
+			if p, ok := arg.(Path); ok {
+				fmt.Println("appended alias")
+				b.aliases = append(b.aliases, p)
+			} else {
+				fmt.Println("other append")
+				// b.aliases = append(b.aliases, arg)
+			}
+			return struct{}{}
+		}
+
+		syntax, ok := t.FindSyntax(oper)
+		if !ok {
+			panic(fmt.Sprintf("unknown syntax for operator %v", oper))
+		}
+
+		ForEachSyntaxArg[SQLTemplates, struct{}](b, t, syntax, op.Arg)
+		return struct{}{}
+	}
+
+	// Check Table (more methods) before Path (less restrictive)
+	if table, ok := e.(interface {
+		Path
+		LingoTableData() TableData
+	}); ok {
+		if table == b.entity {
+			schema, table := table.LingoTableData().Schema(), table.LingoTableData().Name()
+			b.appendSchemaAndTable(t, schema, table)
+			return struct{}{}
+		}
+	}
+	if p, ok := e.(Path); ok {
+		var hasDot bool
+		if parent := p.LingoPathData().Parent(); parent != nil && (!b.skipParent || b.dml) {
+			hasDot = true
+
+			b.Visit(t, parent)
+			b.appendDot()
+		}
+		b.appendAsColumnName(t, p, hasDot)
+		return struct{}{}
+	}
+	// Finally, if all else fails, just append the string
+	b.append(e.String())
+	return struct{}{}
+}
+
+func (b *SQLBuilder) append(s string) {
+	fmt.Println("APPEND: ", s)
+	b.b.WriteString(s)
+}
+
+func (b *SQLBuilder) appendDot() {
+	b.b.WriteRune('.')
+}
+
+func (b *SQLBuilder) appendSchema(t SQLTemplates, name string) {
+	b.append(t.QuoteID(name, false))
+}
+
+func (b *SQLBuilder) appendTable(t SQLTemplates, name string, hasDot bool) {
+	b.append(t.QuoteID(name, hasDot))
+}
+
+func (b *SQLBuilder) appendSchemaAndTable(t SQLTemplates, schema, table string) {
+	var hasDot bool
+	if b.includeSchema && t.IncludeSchema() {
+		hasDot = true
+		b.appendSchema(t, schema)
+		b.appendDot()
+	}
+	b.appendTable(t, table, hasDot)
+}
+
+func (b *SQLBuilder) appendAsColumnName(t SQLTemplates, p Path, hasDot bool) {
+	b.append(t.QuoteID(p.LingoPathData().Name(), hasDot))
+}

@@ -1,0 +1,497 @@
+package lingo
+
+import (
+	"context"
+	"fmt"
+	"reflect"
+)
+
+type WhereClause[T any] interface {
+	Where(e ...PredicateExpression) WhereClause[T]
+}
+
+type SimpleQuery[T any] interface {
+	Where(e ...PredicateExpression) SimpleQuery[T]
+	From(f ...Expression) SimpleQuery[T]
+	LeftJoin(t Expression, on PredicateExpression) SimpleQuery[T]
+	Distinct() SimpleQuery[T]
+	Limit(v int64) SimpleQuery[T]
+	Offset(v int64) SimpleQuery[T]
+	Restrict(m QueryModifiers) SimpleQuery[T]
+	OrderBy(o ...Order) SimpleQuery[T]
+	Set(e ParamExpression, value interface{}) SimpleQuery[T]
+
+	Build(t SQLTemplates) (string, []interface{})
+}
+
+type Query[T any] interface {
+	Where(e ...PredicateExpression) Query[T]
+
+	Distinct() Query[T]
+	Limit(v int64) Query[T]
+	Offset(v int64) Query[T]
+	Restrict(m QueryModifiers) Query[T]
+	OrderBy(o ...Order) Query[T]
+	Set(e ParamExpression, value interface{}) Query[T]
+
+	GroupBy(e ...Expression) Query[T]
+	Having(e ...PredicateExpression) Query[T]
+
+	Build(t SQLTemplates) (string, []interface{})
+}
+
+type Fetchable[T any] interface {
+	// FetchCount will retrieve the count of records in the result set
+	FetchCount(ctx context.Context) (int64, error)
+	// Fetch will retrieve all the results in the result set
+	Fetch(ctx context.Context) (<-chan T, error)
+	// FetchOne will retrieve only the first result (even if there is more than one)
+	FetchOne(ctx context.Context) (T, error)
+	// FetchOneOnly is the same as First, but will return an error if there is more than one record retrieved
+	FetchOneOnly(ctx context.Context) (T, error)
+	// TODO - FetchPage(ctx context.Context, limit, offset int64) (T, error)
+}
+type FetchableQuery[T, Q any] interface {
+	Fetchable[T]
+	SimpleQuery[Q]
+	// Select(exp TypedExpression[T]) FetchableQuery[T]
+	// SelectMany(exp []Expression) FetchableQuery[Tuple?]
+}
+
+func SelectColumn[T any](exp TypedExpression[T]) SimpleQuery[TypedExpression[T]] {
+	q := SQLQuery[TypedExpression[T]]{}
+	md := &BasicQueryMetadata{}
+	q.mixin = NewQueryMixin(md, true)
+	q.mixin.SetProjection(exp)
+	return q
+}
+func SelectColumns(exps ...Expression) SimpleQuery[Tuple] {
+	t := NewTuple(exps)
+	q := SQLQuery[Tuple]{}
+	md := &BasicQueryMetadata{}
+	q.mixin = NewQueryMixin(md, true)
+	q.mixin.SetProjection(t)
+	return q
+}
+
+type SQLQuery[T any] struct {
+	mixin              QueryMixin
+	union              Expression
+	firstUnionSubQuery SubQueryExpression
+	unionAll           bool
+}
+
+func (q SQLQuery[T]) Type() reflect.Type {
+	return reflect.TypeOf(q)
+}
+func (q SQLQuery[T]) Distinct() SimpleQuery[T] {
+	q.mixin.SetDistinct(true)
+	return q
+}
+func (q SQLQuery[T]) Limit(v int64) SimpleQuery[T] {
+	q.mixin.Limit(v)
+	return q
+}
+func (q SQLQuery[T]) Offset(v int64) SimpleQuery[T] {
+	q.mixin.Offset(v)
+	return q
+}
+func (q SQLQuery[T]) Restrict(m QueryModifiers) SimpleQuery[T] {
+	q.mixin.Restrict(m)
+	return q
+}
+func (q SQLQuery[T]) OrderBy(o ...Order) SimpleQuery[T] {
+	q.mixin.OrderBy(o...)
+	return q
+}
+func (q SQLQuery[T]) Set(e ParamExpression, value interface{}) SimpleQuery[T] {
+	q.mixin.SetParam(e, value)
+	return q
+}
+func (q SQLQuery[T]) From(f ...Expression) SimpleQuery[T] {
+	q.mixin.From(f...)
+	return q
+}
+func (q SQLQuery[T]) Where(p ...PredicateExpression) SimpleQuery[T] {
+	q.mixin.Where(p...)
+	return q
+}
+func (q SQLQuery[T]) LeftJoin(t Expression, on PredicateExpression) SimpleQuery[T] {
+	q.mixin.LeftJoin(t)
+	q.mixin.On(on)
+	return q
+}
+
+func (q SQLQuery[T]) Build(t SQLTemplates) (string, []interface{}) {
+	var builder = SQLBuilder{
+		qmd: q.mixin.Metadata(),
+	}
+	if q.union == nil {
+		builder.VisitQueryMetadata(t)
+
+		paramMD := builder.qmd.Params()
+		values := make([]interface{}, len(paramMD))
+		for idx := range paramMD {
+			values[idx] = paramMD[idx].Value()
+		}
+		return builder.String(), values
+	}
+	panic("need to do unions still")
+}
+
+type SubQueryExpression interface {
+	Expression
+	Metadata() QueryMetadata
+}
+type ExtendedSubQuery[T any] interface {
+	SubQueryExpression
+	EqValue(v T) BooleanExpression
+	Eq(v TypedExpression[T]) BooleanExpression
+	NotEqValue(v T) BooleanExpression
+	NotEq(v TypedExpression[T]) BooleanExpression
+	ContainsValue(v T) BooleanExpression
+	Contains(v TypedExpression[T]) BooleanExpression
+	Exists() BooleanExpression
+	NotExists() BooleanExpression
+	GTValue(v T) BooleanExpression
+	GT(e TypedExpression[T]) BooleanExpression
+	GTOrEqValue(v T) BooleanExpression
+	GTOrEq(v TypedExpression[T]) BooleanExpression
+	LTValue(v T) BooleanExpression
+	LT(e TypedExpression[T]) BooleanExpression
+	LTOrEqValue(v T) BooleanExpression
+	LTOrEq(v TypedExpression[T]) BooleanExpression
+	IsNull() BooleanExpression
+	IsNotNull() BooleanExpression
+	InValues(v ...T) BooleanExpression
+	In(v ...TypedExpression[T]) BooleanExpression
+	NotInValues(v ...T) BooleanExpression
+	NotIn(v ...TypedExpression[T]) BooleanExpression
+}
+
+// InsertClause
+type InsertClause[T any] interface {
+	TypedExpression[T]
+	AddFlag(qf QueryFlag)
+	IsEmpty() bool
+
+	Columns(cols ...Path)
+	Set(p Path, v interface{})
+	Values(v ...interface{})
+
+	Select(subQuery SubQueryExpression)
+}
+
+// NewSQLInsertClause
+func NewSQLInsertClause() SQLInsertClause {
+	return SQLInsertClause{
+		qm: &BasicQueryMetadata{},
+	}
+}
+
+type SQLInsertClause struct {
+	qm       QueryMetadata
+	cols     []Path
+	vals     []Expression
+	subQuery SubQueryExpression
+	// TODO - Add Batch Inserts
+}
+
+func (c *SQLInsertClause) AddFlag(qf QueryFlag) {
+	c.qm.AddFlag(qf)
+}
+func (c SQLInsertClause) IsEmpty() bool {
+	return len(c.vals) == 0
+}
+func (c *SQLInsertClause) Columns(cols ...Path) {
+	c.cols = append(c.cols, cols...)
+}
+func (c *SQLInsertClause) Set(p Path, v interface{}) {
+	c.Columns(p)
+	c.Values(v)
+}
+func (c *SQLInsertClause) Values(v ...interface{}) {
+	for idx := range v {
+		if e, ok := v[idx].(Expression); ok {
+			c.vals = append(c.vals, e)
+		} else if v[idx] != nil {
+			c.vals = append(c.vals, NewConstant[interface{}](v[idx]))
+		} else {
+			c.vals = append(c.vals, Null())
+		}
+	}
+}
+func (c *SQLInsertClause) Select(subQuery SubQueryExpression) {
+	c.subQuery = subQuery
+}
+
+// UpdateClause
+type UpdateClause[T any] interface {
+	TypedExpression[T]
+	AddFlag(qf QueryFlag)
+	IsEmpty() bool
+
+	Where(p ...TypedExpression[bool]) UpdateClause[T]
+	Limit(l int64) UpdateClause[T]
+
+	Set(p Path, v interface{})
+}
+
+// NewSQLUpdateClause
+func NewSQLUpdateClause() SQLUpdateClause {
+	return SQLUpdateClause{
+		qm: &BasicQueryMetadata{},
+	}
+}
+
+type SQLUpdateClause struct {
+	qm      QueryMetadata
+	updates map[Path]Expression
+}
+
+func (c *SQLUpdateClause) AddFlag(qf QueryFlag) {
+	c.qm.AddFlag(qf)
+}
+func (c *SQLUpdateClause) IsEmpty() bool {
+	return true
+}
+func (c *SQLUpdateClause) Where(p ...PredicateExpression) *SQLUpdateClause {
+	for idx := range p {
+		c.qm.AddWhere(p[idx])
+	}
+	return c
+}
+func (c *SQLUpdateClause) Limit(l int64) *SQLUpdateClause {
+	c.qm.SetLimit(l)
+	return c
+}
+
+// TODO - see how useful this is, maybe use this instead of `Set` below.
+func SetValue[T any](c *SQLUpdateClause, p TypedPath[T], v T) {
+	c.Set(p, v)
+}
+
+func (c *SQLUpdateClause) Set(p Path, v interface{}) {
+	if c.updates == nil {
+		c.updates = make(map[Path]Expression)
+	}
+	if e, ok := v.(Expression); ok {
+		c.updates[p] = e
+	} else if v != nil {
+		c.updates[p] = NewConstant[interface{}](v)
+	} else {
+		c.updates[p] = Null()
+	}
+}
+
+type DeleteClause[T any] interface {
+	// TypedExpression[T]
+	AddFlag(qf QueryFlag)
+
+	Limit(l int64) DeleteClause[T]
+	Where(p ...PredicateExpression) DeleteClause[T]
+}
+
+// NewSQLDeleteClause
+func NewSQLDeleteClause() SQLDeleteClause {
+	qm := &BasicQueryMetadata{}
+	// qm.AddJoin(DefaultJoinType, entity)
+	// qm.SetValiditngVisitor(validatingVisitor)
+	return SQLDeleteClause{
+		qm: qm,
+	}
+}
+
+type SQLDeleteClause struct {
+	qm QueryMetadata
+}
+
+func (c *SQLDeleteClause) AddFlag(qf QueryFlag) {
+	c.qm.AddFlag(qf)
+}
+func (c *SQLDeleteClause) Limit(l int64) *SQLDeleteClause {
+	c.qm.SetLimit(l)
+	return c
+}
+func (c *SQLDeleteClause) Where(p ...PredicateExpression) *SQLDeleteClause {
+	for idx := range p {
+		c.qm.AddWhere(p[idx])
+	}
+	return c
+}
+
+type QueryRole int
+
+const (
+	selectRole = iota
+	fromRole
+	whereRole
+	groupByRole
+	havingRole
+	orderByRole
+)
+
+func NewQueryMixin(qm QueryMetadata, expandPaths bool) QueryMixin {
+	return QueryMixin{
+		qm:          qm,
+		expandPaths: expandPaths,
+	}
+}
+
+type QueryMixin struct {
+	qm          QueryMetadata
+	expandPaths bool
+}
+
+func (q QueryMixin) AddJoin(jt JoinType, target Expression) error {
+	return q.qm.AddJoin(jt, target)
+}
+func (q QueryMixin) AddFlag(qf QueryFlag) {
+	q.qm.AddFlag(qf)
+}
+func (q QueryMixin) AddJoinFlag(jf JoinFlag) {
+	q.qm.AddJoinFlag(jf)
+}
+func (q QueryMixin) RemoveFlag(qf QueryFlag) {
+	q.qm.RemoveFlag(qf)
+}
+
+func (q QueryMixin) SetProjection(e Expression) error {
+	return q.qm.SetProjection(e)
+}
+
+func (q QueryMixin) Distinct() {
+	q.qm.SetDistinct(true)
+}
+
+func (q QueryMixin) From(args ...Expression) error {
+	for _, arg := range args {
+		if err := q.qm.AddJoin(DefaultJoinType(), arg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (q QueryMixin) FullJoin(target Expression) {
+	q.qm.AddJoin(FullJoinType(), target)
+}
+
+func (q QueryMixin) FullJoinAlias(t Expression, a Path) {
+	q.qm.AddJoin(FullJoinType(), q.createJoinAlias(t, a))
+}
+
+func (q QueryMixin) Metadata() QueryMetadata {
+	return q.qm
+}
+
+func (q QueryMixin) GroupBy(exp ...Expression) {
+	for _, e := range exp {
+		// e = convert(e, Role.GROUP_BY);
+		q.qm.AddGroupBy(e)
+	}
+}
+
+func (q QueryMixin) Having(exp ...PredicateExpression) {
+	for _, e := range exp {
+		// e = convert(e, Role.HAVING);
+		q.qm.AddHaving(e)
+	}
+}
+
+func (q QueryMixin) InnerJoin(target Expression) {
+	q.qm.AddJoin(InnerJoinType(), target)
+}
+
+func (q QueryMixin) InnerJoinAlias(t Expression, a Path) {
+	q.qm.AddJoin(InnerJoinType(), q.createJoinAlias(t, a))
+}
+
+func (q QueryMixin) IsDistinct() bool {
+	return q.qm.Distinct()
+}
+
+func (q QueryMixin) IsUnique() bool {
+	return q.qm.Unique()
+}
+
+func (q QueryMixin) Join(target Expression) {
+	q.qm.AddJoin(JoinJoinType(), target)
+}
+
+func (q QueryMixin) JoinAlias(t Expression, a Path) {
+	q.qm.AddJoin(JoinJoinType(), q.createJoinAlias(t, a))
+}
+
+func (q QueryMixin) LeftJoin(target Expression) {
+	q.qm.AddJoin(LeftJoinType(), target)
+}
+
+func (q QueryMixin) LeftJoinAlias(t Expression, a Path) {
+	q.qm.AddJoin(LeftJoinType(), q.createJoinAlias(t, a))
+}
+
+func (q QueryMixin) Limit(l int64) {
+	q.qm.SetLimit(l)
+}
+
+func (q QueryMixin) Offset(o int64) {
+	q.qm.SetLimit(o)
+}
+
+func (q QueryMixin) On(conditions ...PredicateExpression) error {
+	for _, exp := range conditions {
+		if err := q.qm.AddJoinCondition(exp); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (q QueryMixin) OrderBy(obs ...Order) {
+	for _, exp := range obs {
+		q.qm.AddOrderBy(exp)
+	}
+}
+
+func (q QueryMixin) Restrict(qm QueryModifiers) {
+	q.qm.SetModifiers(qm)
+}
+
+func (q QueryMixin) RightJoin(target Expression) error {
+	return q.qm.AddJoin(RightJoinType(), target)
+}
+
+func (q QueryMixin) RightJoinAlias(t Expression, a Path) error {
+	return q.qm.AddJoin(RightJoinType(), q.createJoinAlias(t, a))
+}
+
+func (q QueryMixin) SetParam(e ParamExpression, v interface{}) {
+	q.qm.SetParam(e, v)
+}
+
+func (q QueryMixin) SetDistinct(d bool) {
+	q.qm.SetDistinct(d)
+}
+func (q QueryMixin) SetUnique(d bool) {
+	q.qm.SetUnique(d)
+}
+func (q QueryMixin) Where(exp ...PredicateExpression) error {
+	for _, e := range exp {
+		if err := q.qm.AddWhere(e); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (q QueryMixin) createJoinAlias(e Expression, a Path) Expression {
+	q.assertRoot(a)
+	return NewOpAlias(e, a)
+}
+
+func (q QueryMixin) assertRoot(p Path) {
+	if p.LingoPathData().Root() != p {
+		panic(fmt.Errorf("path %s is not a root path", p))
+	}
+}

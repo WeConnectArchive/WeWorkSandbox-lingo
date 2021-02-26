@@ -1,0 +1,242 @@
+package lingo
+
+import (
+	"fmt"
+	"reflect"
+	"regexp"
+	"strconv"
+)
+
+// NewSyntax will check the positional argument expression and will panic if it doesnt meet
+// requirements. This should only be used during init code.
+func NewSyntax(exp string) Syntax {
+	if exp == "" {
+		panic("must have a valid syntax expression")
+	}
+
+	groupIndexes := argPosRegex.FindAllStringSubmatchIndex(exp, -1)
+
+	var lastIdx int        // Store the last index we worked on
+	var parts []syntaxPart // Store each syntax part we find
+	argsIdxsFound := make(map[int]struct{}, len(groupIndexes))
+	for _, argGroup := range groupIndexes {
+		// We expect 4 values for each argGroup. See below.
+		if len(argGroup) != 4 {
+			panic(fmt.Errorf("expression '%s' has a group with too many or too little arguments: '%+v'", exp, argGroup))
+		}
+		matchStartIdx := argGroup[0] // Match Group
+		matchEndIdx := argGroup[1]
+		argDigitStartIdx := argGroup[2] // Capture Group
+		argDigitEndIdx := argGroup[3]
+
+		// Convert the digit found into a number. We can ignore the error because regex validates it is a digit / int
+		argIdx, _ := strconv.Atoi(exp[argDigitStartIdx:argDigitEndIdx])
+
+		// Finish off the last part
+		if lastIdx != matchStartIdx {
+			// If there was actually data in the last part, append it.
+			parts = append(parts, syntaxPart{
+				argNum:  noArgNum,
+				fromIdx: lastIdx,
+				toIdx:   matchStartIdx,
+			})
+		}
+		parts = append(parts, syntaxPart{
+			argNum:  argIdx,
+			fromIdx: matchStartIdx,
+			toIdx:   matchEndIdx,
+		})
+
+		// Update global args
+		lastIdx = matchEndIdx
+		argsIdxsFound[argIdx] = struct{}{}
+	}
+
+	// If the last one we added wasnt the end of the expression, add the rest of the text
+	if lastIdx != len(exp) {
+		parts = append(parts, syntaxPart{
+			argNum:  noArgNum,
+			fromIdx: lastIdx,
+			toIdx:   len(exp),
+		})
+	}
+
+	// Check each arg starting from zero to ensure each in order exists (if any).
+	for idx := 0; idx < len(groupIndexes); idx++ {
+		if _, ok := argsIdxsFound[idx]; !ok {
+			panic(fmt.Errorf("syntax expression '%s' is missing an index argument '%d'", exp, idx))
+		}
+	}
+	return Syntax{
+		expression: exp,
+		parts:      parts,
+	}
+}
+
+// argPosRegex is used to extract argument positions from a single Syntax string
+var argPosRegex = regexp.MustCompile(`{(\d+).?}`)
+
+// noArgNum denotes the part is not to be replaced with an argument
+const noArgNum = -1
+
+// Syntax holds the expression used to expand the Expressions into strings by positional arguments.
+// Note: The Syntax type expects `{\d+}` to denote an arguments position.
+type Syntax struct {
+	expression string
+
+	parts []syntaxPart
+}
+
+type syntaxPart struct {
+	argNum  int // noArgNum for not an argument
+	fromIdx int
+	toIdx   int
+}
+
+type constantStringExpression string
+
+func (s constantStringExpression) Type() reflect.Type { return reflect.TypeOf("") }
+func (s constantStringExpression) String() string     { return string(s) }
+
+func ForEachSyntaxArg[C, T any](builder TypedBuilder[C, T], buildCtx C, s Syntax, argAt func(int) Expression) []T {
+	parts := make([]T, 0, len(s.parts))
+	for idx, part := range s.parts {
+		var exp Expression
+		if part.argNum == noArgNum {
+			exp = constantStringExpression(s.expression[part.fromIdx:part.toIdx]) // SQL part string
+		} else { // expression
+			exp = argAt(part.argNum)
+		}
+		if exp != nil {
+			parts = append(parts, builder.Visit(buildCtx, exp))
+		} else {
+			panic(fmt.Sprintf("Argument number '%d' at syntaxPart index '%d' in Syntax '%s' was nil",
+				part.argNum, idx, s.expression))
+		}
+	}
+	return parts
+}
+
+func DefaultTemplates() Templates {
+	var t = make(Templates, len(defaultTemplate))
+	for k, v := range defaultTemplate {
+		t[k] = v
+	}
+	return t
+}
+
+type Templates map[Operator]Syntax
+
+func (t Templates) FindSyntax(o Operator) (Syntax, bool) {
+	stx, ok := t[o]
+	return stx, ok
+}
+
+var escape = "ESCAPEVALUE" // TODO
+var defaultTemplate = requireSyntaxForEveryOperator(Templates{
+	Property: NewSyntax("{0}.{1}"),
+	Variable: NewSyntax("{0}"),
+
+	// CatArithmetic
+	OpAddition:       NewSyntax("{0} + {1}"),
+	OpSubtraction:    NewSyntax("{0} - {1}"),
+	OpMultiplication: NewSyntax("{0} * {1}"),
+	OpDivision:       NewSyntax("{0} / {1}"),
+	OpModulo:         NewSyntax("{0} % {1}"),
+
+	// CatAssignment
+	OpAssign: NewSyntax("{0} = {1}"),
+	OpAlias:  NewSyntax("{0} AS {1}"),
+
+	// CatBitwise
+	OpBitwiseAND: NewSyntax("{0} & {1}"),
+	OpBitwiseOR:  NewSyntax("{0} | {1}"),
+	OpBitwiseXOR: NewSyntax("{0} ^ {1}"),
+	OpBitwiseNOT: NewSyntax("~{0}"),
+
+	// CatComparison
+	OpEqual:              NewSyntax("{0} = {1}"),
+	OpNotEqual:           NewSyntax("{0} <> {1}"),
+	OpLessThan:           NewSyntax("{0} < {1}"),
+	OpGreaterThan:        NewSyntax("{0} > {1}"),
+	OpLessThanOrEqual:    NewSyntax("{0} <= {1}"),
+	OpGreaterThanOrEqual: NewSyntax("{0} >= {1}"),
+	OpIsNull:             NewSyntax("{0} IS NULL"),
+	OpIsNotNull:          NewSyntax("{0} IS NOT NULL"),
+
+	// CatLogical
+	OpAnd:        NewSyntax("{0} AND {1}"),
+	OpOr:         NewSyntax("( {0} OR {1} )"),
+	OpNot:        NewSyntax("NOT {0}"),
+	OpIn:         NewSyntax("{0} IN {1}"),
+	OpNotIn:      NewSyntax("{0} NOT IN {1}"),
+	OpBetween:    NewSyntax("{0} BETWEEN {1} AND {2}"),
+	OpNotBetween: NewSyntax("{0} NOT BETWEEN {1} AND {2}"),
+	OpAny:        NewSyntax("ANY ({0})"),
+	OpAll:        NewSyntax("ALL ({0})"),
+	OpSome:       NewSyntax("SOME ({0})"),
+	OpExists:     NewSyntax("EXISTS ({0})"),
+
+	// CatSet
+	OpSlice:     NewSyntax("{0}, {1}"),
+	OpUnion:     NewSyntax("{0} UNION {1}"),
+	OpExcept:    NewSyntax("{0} EXCEPT {1}"),
+	OpIntersect: NewSyntax("{0} INTERSECT {1}"),
+
+	// CatString
+	OpStringCast:           NewSyntax("STR({0})"),
+	OpStringConcat:         NewSyntax("{0} || {1}"),
+	OpCharAt:               NewSyntax("CAST(SUBSTR({0}, {1}, 1) AS CHAR)"),
+	OpStringContains:       NewSyntax("{0} LIKE %{1}% ESCAPE '" + escape + "'"),
+	OpStringContainsFold:   NewSyntax("{0l} LIKE %%{1}%% ESCAPE '" + escape + "'"),
+	OpEqualsFold:           NewSyntax("{0l} = {1l}"),
+	OpHasPrefix:            NewSyntax("{0} LIKE {1}% ESCAPE '" + escape + "'"),
+	OpHasPrefixFold:        NewSyntax("{0l} LIKE {1}%% ESCAPE '" + escape + "'"),
+	OpHasSuffix:            NewSyntax("{0} LIKE %{1} ESCAPE '" + escape + "'"),
+	OpHasSuffixFold:        NewSyntax("{0l} LIKE %%{1} ESCAPE '" + escape + "'"),
+	OpIndexOf:              NewSyntax("LOCATE({1},{0})-1"),
+	OpIndexOfN:             NewSyntax("LOCATE({1},{0},{2})-1"),
+	OpStringIsEmpty:        NewSyntax("LENGTH({0}) = 0"),
+	OpStringLength:         NewSyntax("LENGTH({0})"),
+	OpStringLike:           NewSyntax("{0} LIKE {1} ESCAPE '" + escape + "'"),
+	OpStringLikeFold:       NewSyntax("{0} LIKE {1}"), // TODO
+	OpStringLikeEscape:     NewSyntax("{0} LIKE {1} ESCAPE '{2}'"),
+	OpStringLikeFoldEscape: NewSyntax("{0} LIKE {1} ESCAPE '{2}'"), // TODO
+	OpStringLocate:         NewSyntax("LOCATE({0}, {1})"),
+	OpStringLocate2:        NewSyntax("LOCATE({0}, {1}, {2})"),
+	OpStringLower:          NewSyntax("LOWER({0})"),
+	OpStringMatches:        NewSyntax("{0} REGEXP {1}"),
+	OpStringSubstring:      NewSyntax("SUBSTR({0},{1}+1)"),
+	OpStringSubstring2:     NewSyntax("SUBSTR({0},{1},{2})"),
+	OpStringTrim:           NewSyntax("TRIM({0})"),
+	OpStringToUpper:        NewSyntax("UPPER({0})"),
+
+	// CatNumeric
+	OpAbs:        NewSyntax("ABS({0})"),
+	OpCeiling:    NewSyntax("CEIL({0}"),
+	OpFloor:      NewSyntax("FLOOR({0})"),
+	OpMax:        NewSyntax("MAX({0}, {1})"),
+	OpMin:        NewSyntax("MIN({0}, {1})"),
+	OpNumCast:    NewSyntax("CAST({0}, {1})"),
+	OpRound:      NewSyntax("ROUND({0})"),
+	OpSquareRoot: NewSyntax("SQRT({0})"),
+
+	// CatUnary
+	OpNegate: NewSyntax("-{0}"),
+
+	// ???
+	OpCount:            NewSyntax("COUNT({0})"),
+	OpLike:             NewSyntax("{0} LIKE {1}"),
+	OpNotLike:          NewSyntax("{0} NOT LIKE {1}"),
+	OpCurrentTimestamp: NewSyntax("CURRENT_TIMESTAMP"),
+})
+
+func requireSyntaxForEveryOperator(ops Templates) Templates {
+	for op := OpUnknown + 1; op < OpLastOperation; op++ {
+		_, found := ops[op]
+		if !found {
+			panic(fmt.Sprintf("Operator %s(%d) does not have a default Syntax", op, op))
+		}
+	}
+	return ops
+}

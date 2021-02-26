@@ -1,0 +1,286 @@
+package lingo
+
+import (
+	"fmt"
+	"reflect"
+	"regexp"
+)
+
+// ============================================================
+// Untyped Expressions Below
+
+type Expression interface {
+	Type() reflect.Type
+	String() string
+}
+
+type ConstantExpression interface {
+	Expression
+	Interface() interface{}
+}
+
+type ParamExpression interface {
+	Expression
+	Name() string
+	Anonymous() bool
+}
+
+// ============================================================
+// Typed Expressions Below
+
+type TypedExpression[T any] interface {
+	Expression
+}
+
+type PredicateExpression interface {
+	TypedExpression[bool]
+	Not() BooleanExpression
+}
+
+type BooleanExpression interface {
+	TypedExpression[bool]
+	AsPath(p TypedPath[bool]) BooleanExpression
+	As(alias string) BooleanExpression
+
+	And(e PredicateExpression) BooleanExpression
+	Not() BooleanExpression
+	Or(e PredicateExpression) BooleanExpression
+
+	IsTrue() BooleanExpression
+	IsFalse() BooleanExpression
+
+	EqValue(b bool) BooleanExpression
+	Eq(e TypedExpression[bool]) BooleanExpression
+	NotEqValue(b bool) BooleanExpression
+	NotEq(e TypedExpression[bool]) BooleanExpression
+}
+
+// // TODO - somewhere below should go IsNull() and IsNotNull()
+
+type AnyComparableExpression[T any] interface {
+	TypedExpression[T]
+	Asc() Order
+	Desc() Order
+}
+
+type Ordering int
+
+const (
+	OrderUnknown Ordering = iota
+	OrderAsc
+	OrderDesc
+)
+
+type NullOrdering int
+
+const (
+	NullsDefault NullOrdering = iota
+	NullsFirst
+	NullsLast
+)
+
+type Order interface {
+	NullsFirst() Order
+	NullsLast() Order
+	Ascending() bool
+	Order() Ordering
+	NullOrder() NullOrdering
+	Path() Expression
+}
+
+type ComparableExpression[T comparable] interface {
+	AnyComparableExpression[T]
+	BetweenValues(l, r T) BooleanExpression
+	Between(l, r TypedExpression[T]) BooleanExpression
+	NotBetweenValues(l, r T) BooleanExpression
+	NotBetween(l, r TypedExpression[T]) BooleanExpression
+	GTValue(v T) BooleanExpression
+	GT(e TypedExpression[T]) BooleanExpression
+	GTOrEqValue(v T) BooleanExpression
+	GTOrEq(v TypedExpression[T]) BooleanExpression
+	LTValue(v T) BooleanExpression
+	LT(e TypedExpression[T]) BooleanExpression
+	LTOrEqValue(v T) BooleanExpression
+	LTOrEq(v TypedExpression[T]) BooleanExpression
+}
+
+type LiteralExpression[T comparable] interface {
+	ComparableExpression[T]
+	StringValue() StringExpression
+}
+
+type StringExpression interface {
+	LiteralExpression[string]
+	As(alias TypedPath[string]) StringExpression
+	Alias(alias string) StringExpression
+	AppendValue(v string) StringExpression
+	Append(v TypedExpression[string]) StringExpression
+	CharAtValue(idx int) TypedExpression[rune]
+	CharAt(idx TypedExpression[int]) TypedExpression[rune]
+	ConcatValue(v string) StringExpression
+	Concat(v TypedExpression[string]) StringExpression
+	ContainsValue(v string) BooleanExpression
+	Contains(v TypedExpression[string]) BooleanExpression
+	ContainsFoldValue(v string) BooleanExpression
+	ContainsFold(v TypedExpression[string]) BooleanExpression
+	EqualsFoldValue(v string) BooleanExpression
+	EqualsFold(v TypedExpression[string]) BooleanExpression
+	HasPrefixValue(v string) BooleanExpression
+	HasPrefix(v TypedExpression[string]) BooleanExpression
+	HasPrefixFoldValue(v string) BooleanExpression
+	HasPrefixFold(v TypedExpression[string]) BooleanExpression
+	HasSuffixValue(v string) BooleanExpression
+	HasSuffix(v TypedExpression[string]) BooleanExpression
+	HasSuffixFoldValue(v string) BooleanExpression
+	HasSuffixFold(v TypedExpression[string]) BooleanExpression
+	InValues(v ...string) BooleanExpression
+	In(v ...TypedExpression[string]) BooleanExpression
+	IndexOfValue(v string) NumberExpression[int]
+	IndexOf(v TypedExpression[string]) NumberExpression[int]
+	IndexOfNValue(v string, n int) NumberExpression[int]
+	IndexOfN(v TypedExpression[string], n int) NumberExpression[int]
+	IsEmpty() BooleanExpression
+	IsNotEmpty() BooleanExpression
+	Len() NumberExpression[int]
+	LikeValue(v string) BooleanExpression
+	Like(v TypedExpression[string]) BooleanExpression
+	LikeFoldValue(v string) BooleanExpression
+	LikeFold(v TypedExpression[string]) BooleanExpression
+	LikeEscapeValue(v string, escape rune) BooleanExpression
+	LikeEscape(v TypedExpression[string], escape rune) BooleanExpression
+	LikeFoldEscapeValue(v string, escape rune) BooleanExpression
+	LikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression
+	LocateValue(v string) NumberExpression[int]
+	Locate(v TypedExpression[string]) NumberExpression[int]
+	LocateFromValues(v string, start int) NumberExpression[int]
+	LocateFromValue(v TypedExpression[string], start int) NumberExpression[int]
+	LocateFrom(v TypedExpression[string], start TypedExpression[int]) NumberExpression[int]
+	Lower() StringExpression
+	MatchesValue(regex regexp.Regexp) BooleanExpression
+	Matches(regex TypedExpression[string]) BooleanExpression
+	// // Max() StringExpression -- Aggregate
+	// // Min() StringExpression -- Aggregate
+	NotEqFoldValue(v string) BooleanExpression
+	NotEqFold(v TypedExpression[string]) BooleanExpression
+	NotLikeValue(v string) BooleanExpression
+	NotLike(v TypedExpression[string]) BooleanExpression
+	NotLikeFoldValue(v string) BooleanExpression
+	NotLikeFold(v TypedExpression[string]) BooleanExpression
+	NotLikeEscapeValue(v string, escape rune) BooleanExpression
+	NotLikeEscape(v TypedExpression[string], escape rune) BooleanExpression
+	NotLikeFoldEscapeValue(v string, escape rune) BooleanExpression
+	NotLikeFoldEscape(v TypedExpression[string], escape rune) BooleanExpression
+	PrependValue(v string) StringExpression
+	Prepend(v TypedExpression[string]) StringExpression
+	StringValue() StringExpression
+	SubstringStartValue(begin int) StringExpression
+	SubstringStart(begin TypedExpression[int]) StringExpression
+	SubstringStartValueEnd(begin int, end TypedExpression[int]) StringExpression
+	SubstringStartEndValue(begin TypedExpression[int], end int) StringExpression
+	SubstringStartAndEndValue(begin, end int) StringExpression
+	SubstringStartEnd(begin, end TypedExpression[int]) StringExpression
+	Trim() StringExpression
+	Upper() StringExpression
+}
+
+type NumberExpression[T numeric] interface {
+	// ComparableExpression[T]
+	Abs() NumberExpression[T]
+	AddValue(v T) NumberExpression[T]
+	Add(t TypedExpression[T]) NumberExpression[T]
+	AsPath(p TypedPath[T]) NumberExpression[T]
+	As(alias string) NumberExpression[T]
+	// Avg() NumberExpression[T] -- Aggregate
+	// CastToBytes() NumberExpression[?]
+	// CastToDouble() NumberExpression[?]
+	// CastToFloat() NumberExpression[?]
+	// CastToInt16() NumberExpression[?]
+	// CastToInt32() NumberExpression[?]
+	// CastToInt64() NumberExpression[?]
+	Ceil() NumberExpression[T]
+	DivideValue(v T) NumberExpression[T]
+	Divide(e TypedExpression[T]) NumberExpression[T]
+	EqValue(v T) BooleanExpression
+	Eq(v TypedExpression[T]) BooleanExpression
+	GTValue(v T) BooleanExpression
+	GT(v TypedExpression[T]) BooleanExpression
+	LTValue(v T) BooleanExpression
+	LT(v TypedExpression[T]) BooleanExpression
+	Floor() NumberExpression[T]
+	// Max() NumberExpression[T] -- Aggregate
+	// Min() NumberExpression[T] -- Aggregate
+	ModValue(v T) NumberExpression[T]
+	Mod(v TypedExpression[T]) NumberExpression[T]
+	MultiplyValue(v T) NumberExpression[T]
+	Multiply(v TypedExpression[T]) NumberExpression[T]
+	Negate() NumberExpression[T]
+	Round() NumberExpression[T]
+	Sqrt() NumberExpression[T]
+	SubtractValue(v T) NumberExpression[T]
+	Subtract(v TypedExpression[T]) NumberExpression[T]
+	// Sum() -- Aggregate
+	InValues(v ...T) NumberExpression[T]
+	In(v ...TypedExpression[T]) NumberExpression[T]
+	NotInValues(v ...T) NumberExpression[T]
+	NotIn(v ...TypedExpression[T]) NumberExpression[T]
+}
+
+type ExpressionFactory[T any] interface {
+	TypedExpression[T]
+	Args() []Expression
+	New() T
+}
+
+// =======================================================
+// Implementations
+
+var nullExp = NewConstant[struct{}](struct{}{})
+
+func Null() ConstantExpression {
+	return nullExp
+}
+
+// NewConstant should be used to declare a Go constant value.
+func NewConstant[T any](v T) SimpleConstant[T] {
+	return SimpleConstant[T]{
+		value: v,
+	}
+}
+
+type SimpleConstant[T any] struct {
+	value T
+}
+
+func (e SimpleConstant[T]) Type() reflect.Type { return reflect.TypeOf(T(e.value)) }
+func (e SimpleConstant[T]) String() string {
+	return fmt.Sprintf("%v", e.Interface())
+}
+func (e SimpleConstant[T]) Interface() interface{} {
+	return e.value
+}
+
+
+// NewSimpleParam
+func NewSimpleParam(t reflect.Type, anon bool, name string) SimpleParam {
+	return SimpleParam{
+		t:         t,
+		anonymous: anon,
+		name:      name,
+	}
+}
+func NewAnonParam(t reflect.Type) SimpleParam {
+	return NewSimpleParam(t, true, newRandomName())
+}
+
+type SimpleParam struct {
+	t         reflect.Type
+	anonymous bool
+	name      string
+}
+
+func (p SimpleParam) Type() reflect.Type { return p.t }
+func (p SimpleParam) String() string {
+	return p.name
+}
+func (p SimpleParam) Name() string    { return p.name }
+func (p SimpleParam) Anonymous() bool { return p.anonymous }

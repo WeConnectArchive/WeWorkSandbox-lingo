@@ -1,0 +1,110 @@
+package lingo
+
+import (
+	"reflect"
+	"strings"
+)
+
+type JoinType struct {
+	innerJoin, outerJoin bool
+	name                 string
+}
+
+func (j JoinType) IsInnerJoin() bool  { return j.innerJoin }
+func (j JoinType) IsOuterJoint() bool { return j.outerJoin }
+func (j JoinType) String() string {
+	if j.name == "" {
+		return "DEFAULT"
+	}
+	return j.name
+}
+
+var (
+	// jtDefault is a deafult struct, all fields empty
+	jtDefault = JoinType{innerJoin: false, outerJoin: false}
+	jtInner   = JoinType{innerJoin: true, outerJoin: false, name: "INNER"}
+	jtJoin    = JoinType{innerJoin: true, outerJoin: false, name: "JOIN"}
+	jtLeft    = JoinType{innerJoin: false, outerJoin: true, name: "LEFT"}
+	jtRight   = JoinType{innerJoin: false, outerJoin: true, name: "RIGHT"}
+	jtFull    = JoinType{innerJoin: false, outerJoin: true, name: "FULL"}
+)
+
+func DefaultJoinType() JoinType { return jtDefault }
+func InnerJoinType() JoinType   { return jtInner }
+func JoinJoinType() JoinType    { return jtJoin }
+func LeftJoinType() JoinType    { return jtLeft }
+func RightJoinType() JoinType   { return jtRight }
+func FullJoinType() JoinType    { return jtFull }
+
+// JoinFlagPosition determines where the flag should go in the resulting query
+type JoinFlagPosition int
+
+const (
+	JoinPosBeforeTarget = iota // Default '0' is BeforeTarget
+	JoinPosStart
+	JoinPosOverride
+	JoinPosBeforeCondition
+	JoinPosEnd
+)
+
+// JoinFlag
+func NewJoinFlag(flag Expression, pos JoinFlagPosition) JoinFlag {
+	return JoinFlag{
+		flag: flag,
+		pos:  pos,
+	}
+}
+
+type JoinFlag struct {
+	flag Expression
+	pos  JoinFlagPosition
+}
+
+func (jf JoinFlag) Flag() Expression      { return jf.flag }
+func (jf JoinFlag) Pos() JoinFlagPosition { return jf.pos }
+
+// NewJoinExpression
+func NewJoinExpression(
+	jt JoinType, target Expression, condition PredicateExpression, flags []JoinFlag,
+) JoinExpression {
+	return JoinExpression{
+		joinType:  jt,
+		target:    target,
+		condition: condition,
+		joinFlags: flags,
+	}
+}
+
+type JoinExpression struct {
+	joinType  JoinType
+	target    Expression
+	condition PredicateExpression
+	joinFlags []JoinFlag
+}
+
+func (e JoinExpression) Type() reflect.Type {
+	return reflect.TypeOf(e)
+}
+func (e JoinExpression) String() string {
+	var b strings.Builder
+	b.WriteString(e.joinType.String())
+	b.WriteString(" ")
+	b.WriteString(e.target.String())
+	if e.condition != nil {
+		b.WriteString(" ON ")
+		b.WriteString(e.condition.String())
+	}
+	return b.String()
+}
+func (e JoinExpression) JoinType() JoinType {
+	return e.joinType
+}
+func (e JoinExpression) Flags() []JoinFlag {
+	return e.joinFlags
+}
+func (e JoinExpression) Condition() PredicateExpression {
+	return e.condition
+}
+func (e JoinExpression) Target() Expression {
+	return e.target
+}
