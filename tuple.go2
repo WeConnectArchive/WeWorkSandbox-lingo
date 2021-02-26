@@ -2,58 +2,27 @@ package lingo
 
 import "reflect"
 
-type binding struct {
-	exp Expression
-	pos int
-}
-
-type Tuple struct {
-	values   []Expression
-	bindings []binding
+type TupleExpression interface {
+	Expression
+	Args() []Expression
+	Arg(i int) Expression
 }
 
 func NewTuple(args []Expression) Tuple {
-	values := make([]Expression, len(args))
-	copy(values, args)
-	return Tuple{
-		values:   values,
-		bindings: createBindings(args),
-	}
+	return Tuple(args)
 }
 
-func createBindings(args []Expression) []binding {
-	// might need to change this to a map from `binding`
-	var bindings []binding
-	for idx, arg := range args {
-		// if its an alias, include the alias name
-		if op, ok := arg.(Operation); ok {
-			if op.Operator() == OpAlias {
-				bindings = append(bindings, binding{
-					exp: op.Arg(1),
-					pos: idx,
-				})
-			}
-		}
-		bindings = append(bindings, binding{
-			exp: arg,
-			pos: idx,
-		})
-	}
-	return bindings
-}
+type Tuple []Expression
 
-func (t Tuple) Args() []Expression {
-	return t.values
-}
-
-func (t Tuple) Type() reflect.Type {
-	return reflect.TypeOf(t)
-}
-
-func (t Tuple) NewInstance() Tuple {
-	return NewTuple(nil)
-}
-
+func (t Tuple) Type() reflect.Type { return reflect.TypeOf(t) }
 func (t Tuple) String() string {
 	return VisitWithDefaultToStringBuilder(t)
+}
+
+func (t Tuple) Args() []Expression { return t }
+func (t Tuple) Arg(i int) Expression {
+	if i >= len(t) {
+		return nil
+	}
+	return t[i]
 }

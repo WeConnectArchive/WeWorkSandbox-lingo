@@ -7,16 +7,6 @@ import (
 	"strconv"
 )
 
-var numRegex = regexp.MustCompile(`{(\d+).?}`)
-
-const noArgNum = -1
-
-type syntaxPart struct {
-	argNum  int // noArgNum for no arg
-	fromIdx int
-	toIdx   int
-}
-
 // NewSyntax will check the positional argument expression and will panic if it doesnt meet
 // requirements. This should only be used during init code.
 func NewSyntax(exp string) Syntax {
@@ -24,9 +14,9 @@ func NewSyntax(exp string) Syntax {
 		panic("must have a valid syntax expression")
 	}
 
-	groupIndexes := numRegex.FindAllStringSubmatchIndex(exp, -1)
+	groupIndexes := argPosRegex.FindAllStringSubmatchIndex(exp, -1)
 
-	var lastIdx int // Store the last index we worked on
+	var lastIdx int        // Store the last index we worked on
 	var parts []syntaxPart // Store each syntax part we find
 	argsIdxsFound := make(map[int]struct{}, len(groupIndexes))
 	for _, argGroup := range groupIndexes {
@@ -34,9 +24,9 @@ func NewSyntax(exp string) Syntax {
 		if len(argGroup) != 4 {
 			panic(fmt.Errorf("expression '%s' has a group with too many or too little arguments: '%+v'", exp, argGroup))
 		}
-		matchStartIdx := argGroup[0]
+		matchStartIdx := argGroup[0] // Match Group
 		matchEndIdx := argGroup[1]
-		argDigitStartIdx := argGroup[2]
+		argDigitStartIdx := argGroup[2] // Capture Group
 		argDigitEndIdx := argGroup[3]
 
 		// Convert the digit found into a number. We can ignore the error because regex validates it is a digit / int
@@ -83,12 +73,24 @@ func NewSyntax(exp string) Syntax {
 	}
 }
 
+// argPosRegex is used to extract argument positions from a single Syntax string
+var argPosRegex = regexp.MustCompile(`{(\d+).?}`)
+
+// noArgNum denotes the part is not to be replaced with an argument
+const noArgNum = -1
+
 // Syntax holds the expression used to expand the Expressions into strings by positional arguments.
-// Note: The Syntax type expects `{\d+}` as the basic positional token.
+// Note: The Syntax type expects `{\d+}` to denote an arguments position.
 type Syntax struct {
 	expression string
 
 	parts []syntaxPart
+}
+
+type syntaxPart struct {
+	argNum  int // noArgNum for not an argument
+	fromIdx int
+	toIdx   int
 }
 
 type constantStringExpression string
@@ -98,28 +100,21 @@ func (s constantStringExpression) String() string     { return string(s) }
 
 func ForEachSyntaxArg[C, T any](builder TypedBuilder[C, T], buildCtx C, s Syntax, argAt func(int) Expression) []T {
 	parts := make([]T, 0, len(s.parts))
-	for _, part := range s.parts {
+	for idx, part := range s.parts {
 		var exp Expression
 		if part.argNum == noArgNum {
-			exp = constantStringExpression(s.expression[part.fromIdx:part.toIdx]) // SQL part string			
+			exp = constantStringExpression(s.expression[part.fromIdx:part.toIdx]) // SQL part string
 		} else { // expression
 			exp = argAt(part.argNum)
 		}
 		if exp != nil {
 			parts = append(parts, builder.Visit(buildCtx, exp))
+		} else {
+			panic(fmt.Sprintf("Argument number '%d' at syntaxPart index '%d' in Syntax '%s' was nil",
+				part.argNum, idx, s.expression))
 		}
 	}
 	return parts
-}
-
-func (s Syntax) Replace(replaceFunc func(idx int) string) string {
-	return numRegex.ReplaceAllStringFunc(s.expression,
-		func(s string) string {
-			value := s[1 : len(s)-1] // We know its surrounded in `{` and `}`
-			idx, _ := strconv.Atoi(value)
-			return replaceFunc(idx)
-		},
-	)
 }
 
 func DefaultTemplates() Templates {
@@ -141,7 +136,6 @@ var escape = "ESCAPEVALUE" // TODO
 var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	Property: NewSyntax("{0}.{1}"),
 	Variable: NewSyntax("{0}"),
-	Delegate: NewSyntax("{0}"),
 
 	// CatArithmetic
 	OpAddition:       NewSyntax("{0} + {1}"),
@@ -184,8 +178,7 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	OpExists:     NewSyntax("EXISTS ({0})"),
 
 	// CatSet
-	OpSet:       NewSyntax("{0}, {1}"),
-	OpList:      NewSyntax("{0}, {1}"),
+	OpSlice:     NewSyntax("{0}, {1}"),
 	OpUnion:     NewSyntax("{0} UNION {1}"),
 	OpExcept:    NewSyntax("{0} EXCEPT {1}"),
 	OpIntersect: NewSyntax("{0} INTERSECT {1}"),
@@ -229,8 +222,7 @@ var defaultTemplate = requireSyntaxForEveryOperator(Templates{
 	OpSquareRoot: NewSyntax("SQRT({0})"),
 
 	// CatUnary
-	OpSingleton: NewSyntax("{0}"),
-	OpNegate:    NewSyntax("-{0}"),
+	OpNegate: NewSyntax("-{0}"),
 
 	// ???
 	OpCount:            NewSyntax("COUNT({0})"),

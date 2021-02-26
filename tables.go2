@@ -10,92 +10,78 @@ type Actor struct {
 }
 
 func NewTActor() TActor {
-	return NewTActorForVariable("actor")
+	return NewTActorAs("actor")
 }
-func NewTActorForVariable(variable string) TActor {
-	pm := NewPathMetadataForVariable(variable)
+func NewTActorAs(variable string) TActor {
 	var t TActor = TActor{
-		mixin: NewTablePath(pm, "", "actor"),
+		info: NewTable[TActor](variable, "", "actor"),
 	}
-	t.ActorID = NewNumberPath[int16](NewSimplePathForProperty[int16]("actor_id", t.mixin))
-	t.IsActive = NewBoolPath(NewSimplePathForProperty[bool]("is_active", t.mixin))
-	t.FirstName = NewStringPath(NewSimplePathForProperty[string]("first_name", t.mixin))
+	t.ActorID = NewNumberPath[int16](NewProperty[int16]("actor_id", t.info))
+	t.IsActive = NewBoolPath(NewProperty[bool]("is_active", t.info))
+	t.FirstName = NewStringPath(NewProperty[string]("first_name", t.info))
+	t.LastName = NewStringPath(NewProperty[string]("last_name", t.info))
 	return t
 }
 
 type TActor struct {
-	mixin TablePath
+	info Table
 
 	ActorID   NumberPath[int16]
 	IsActive  BoolPath
 	FirstName StringPath
+	LastName  StringPath
 }
+
 // -- Expression
 func (t TActor) Type() reflect.Type {
-	return t.mixin.Type()
+	return t.info.Type()
 }
 func (t TActor) String() string {
-	return VisitWithDefaultToStringBuilder(t.mixin)
+	return t.info.String()
 }
+
 // -- Path
-func (o TActor) Metadata() PathMetadata {
-	return o.mixin.Metadata()
-}
-func (o TActor) Root() Path {
-	return o.mixin
-}
-// -- TableInfo
-func (o TActor) Schema() string {
-	return o.mixin.Schema()
-}
-func (o TActor) Table() string {
-	return o.mixin.Table()
-}
+func (t TActor) LingoPathData() PathData { return t.info.LingoPathData() }
+
+// -- Table
+func (t TActor) LingoTableData() TableData { return t.info.LingoTableData() }
 
 // ============================================================
 
 type Film struct {
 	MainActorID int16
-	Name string
+	Name        string
 }
 
 func NewTFilm() TFilm {
-	return NewTFilmForVariable("film")
+	return NewTFilmAs("film")
 }
-func NewTFilmForVariable(variable string) TFilm {
-	pm := NewPathMetadataForVariable(variable)
+func NewTFilmAs(variable string) TFilm {
 	var t TFilm = TFilm{
-		mixin: NewTablePath(pm, "", "film"),
+		info: NewTable[TFilm](variable, "", "film"),
 	}
-	t.MainActorID = NewNumberPath[int16](NewSimplePathForProperty[int16]("main_actor_id", t.mixin))
-	t.Name = NewStringPath(NewSimplePathForProperty[string]("first_name", t.mixin))
+	t.MainActorID = NewNumberPath[int16](NewProperty[int16]("main_actor_id", t.info))
+	t.NameP = NewStringPath(NewProperty[string]("first_name", t.info))
 	return t
 }
 
 type TFilm struct {
-	mixin TablePath
+	info Table
 
-	MainActorID   NumberPath[int16]
-	Name StringPath
+	MainActorID NumberPath[int16]
+	NameP       StringPath
 }
+
 // -- Expression
 func (t TFilm) Type() reflect.Type {
-	return t.mixin.Type()
+	return t.info.Type()
 }
 func (t TFilm) String() string {
-	return VisitWithDefaultToStringBuilder(t.mixin)
+	return VisitWithDefaultToStringBuilder(t)
 }
+
 // -- Path
-func (o TFilm) Metadata() PathMetadata {
-	return o.mixin.Metadata()
-}
-func (o TFilm) Root() Path {
-	return o.mixin
-}
+func (t TFilm) LingoPathData() PathData { return t.info.LingoPathData() }
+
 // -- TableInfo
-func (o TFilm) Schema() string {
-	return o.mixin.Schema()
-}
-func (o TFilm) Table() string {
-	return o.mixin.Table()
-}
+func (t TFilm) LingoTableData() TableData { return t.info.LingoTableData() }

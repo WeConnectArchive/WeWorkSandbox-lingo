@@ -18,6 +18,7 @@ type ParamMetadata struct {
 	e ParamExpression
 	v interface{}
 }
+
 func (p ParamMetadata) Value() interface{} {
 	return p.v
 }
@@ -102,7 +103,7 @@ func (b ParamsBuilder) Visit(qm QueryMetadata, e Expression) struct{} {
 }
 
 // ValidatingBuilder
-type ValidatingBuilder struct{
+type ValidatingBuilder struct {
 	unknownRoot Path
 }
 
@@ -125,7 +126,7 @@ func (b ValidatingBuilder) Visit(known []Expression, e Expression) []Expression 
 		}
 		if !found {
 			if b.unknownRoot == nil {
-				b.unknownRoot = p.Root()
+				b.unknownRoot = p.LingoPathData().Root()
 			}
 		}
 	}
@@ -156,19 +157,26 @@ func (b ToStringBuilder) Visit(t Templates, e Expression) string {
 		values := ForEachSyntaxArg[Templates, string](b, t, syntax, o.Arg)
 		return strings.Join(values, "")
 	}
+	if tuple, ok := e.(TupleExpression); ok {
+		argStrs := make([]string, len(tuple.Args()))
+		for idx, arg := range tuple.Args() {
+			argStrs[idx] = b.Visit(t, arg)
+		}
+		return strings.Join(argStrs, ", ")
+	}
 	if p, ok := e.(Path); ok {
-		syntax, ok := t[p.Metadata().PathType()]
+		syntax, ok := t[p]
 		if !ok {
-			return fmt.Sprintf("unknown operation for path type %v", p.Metadata().PathType())
+			return fmt.Sprintf("unknown syntax for path type %v", p.Type())
 		}
 
-		elem := p.Metadata().Elem()
-		parent := p.Metadata().Parent()
+		value := p.LingoPathData().Value()
+		parent := p.LingoPathData().Parent()
 		if parent == nil {
-			return b.Visit(t, elem)
+			return b.Visit(t, value)
 		}
 
-		args := []Expression{parent, elem}
+		args := []Expression{parent, value}
 		values := ForEachSyntaxArg[Templates, string](b, t, syntax, func(idx int) Expression {
 			if idx >= len(args) {
 				return nil
@@ -309,16 +317,17 @@ func (b *SQLBuilder) VisitJoins(t SQLTemplates, joinExprs []JoinExpression) {
 			}
 		}
 		if foundAlias != nil {
-			b.appendTable(t, foundAlias.Metadata().Name(), false)
+			b.appendTable(t, foundAlias.LingoPathData().Name(), false)
 		} else {
-			tableInfo, ok := join.Target().(TableInfo)
-			if ok {
-				b.appendSchemaAndTable(t, tableInfo)
-			}
+			joinTable, isTable := join.Target().(interface {
+				Path
+				LingoTableData() TableData
+			})
+			if isTable {
+				b.appendSchemaAndTable(t, joinTable.LingoTableData().Schema(), joinTable.LingoTableData().Name())
 
-			// If the table name does not match the path's name, its an alias
-			if p, ok := join.Target().(Path); ok {
-				if tableInfo.Table() != p.Metadata().Name() {
+				// If the table name does not match the path's name, its an alias
+				if !strings.EqualFold(joinTable.LingoTableData().Name(), joinTable.LingoPathData().Name()) {
 					b.append(" AS ")
 				}
 			}
@@ -378,6 +387,15 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 		b.constants[name] = c.Interface()
 		return struct{}{}
 	}
+	if tuple, ok := e.(TupleExpression); ok {
+		for idx, arg := range tuple.Args() {
+			if idx > 0 {
+				b.append(", ")
+			}
+			b.Visit(t, arg)
+		}
+		return struct{}{}
+	}
 	if p, ok := e.(ParamExpression); ok {
 		b.b.WriteRune('?')
 
@@ -412,29 +430,21 @@ func (b *SQLBuilder) Visit(t SQLTemplates, e Expression) struct{} {
 		ForEachSyntaxArg[SQLTemplates, struct{}](b, t, syntax, op.Arg)
 		return struct{}{}
 	}
-	if p, ok := e.(Path); ok {
-		if b.dml {
-			tableInfo, ok := e.(TableInfo)
-			if p == b.entity && ok {
-				schema, table := tableInfo.Schema(), tableInfo.Table()
 
-				var hasDot bool
-				if b.includeSchema && t.IncludeSchema() {
-					hasDot = true
-					b.appendSchema(t, schema)
-					b.appendDot()
-				}
-				b.appendTable(t, table, hasDot)
-				return struct{}{}
-			}
-			if e == p.Metadata().Parent() && b.skipParent {
-				b.appendAsColumnName(t, p, false)
-				return struct{}{}
-			}
+	// Check Table (more methods) before Path (less restrictive)
+	if table, ok := e.(interface {
+		Path
+		LingoTableData() TableData
+	}); ok {
+		if table == b.entity {
+			schema, table := table.LingoTableData().Schema(), table.LingoTableData().Name()
+			b.appendSchemaAndTable(t, schema, table)
+			return struct{}{}
 		}
-
+	}
+	if p, ok := e.(Path); ok {
 		var hasDot bool
-		if parent := p.Metadata().Parent(); parent != nil && (!b.skipParent || b.dml) {
+		if parent := p.LingoPathData().Parent(); parent != nil && (!b.skipParent || b.dml) {
 			hasDot = true
 
 			b.Visit(t, parent)
@@ -465,9 +475,7 @@ func (b *SQLBuilder) appendTable(t SQLTemplates, name string, hasDot bool) {
 	b.append(t.QuoteID(name, hasDot))
 }
 
-func (b *SQLBuilder) appendSchemaAndTable(t SQLTemplates, ti TableInfo) {
-	schema, table := ti.Schema(), ti.Table()
-
+func (b *SQLBuilder) appendSchemaAndTable(t SQLTemplates, schema, table string) {
 	var hasDot bool
 	if b.includeSchema && t.IncludeSchema() {
 		hasDot = true
@@ -478,6 +486,5 @@ func (b *SQLBuilder) appendSchemaAndTable(t SQLTemplates, ti TableInfo) {
 }
 
 func (b *SQLBuilder) appendAsColumnName(t SQLTemplates, p Path, hasDot bool) {
-	name := p.Metadata().Name()
-	b.append(t.QuoteID(name, hasDot))
+	b.append(t.QuoteID(p.LingoPathData().Name(), hasDot))
 }

@@ -47,10 +47,6 @@ type QueryMetadata interface {
 }
 
 type BasicQueryMetadata struct {
-	// config
-	validationError error
-
-	// members
 	distinct      bool
 	unique        bool
 	groupBy       []Expression
@@ -85,7 +81,7 @@ func (qm *BasicQueryMetadata) AddHaving(e PredicateExpression) {
 
 func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) error {
 	qm.addLastJoin()
-	
+
 	var found bool
 	for _, exp := range qm.expsInJoin {
 		if exp == e {
@@ -97,8 +93,8 @@ func (qm *BasicQueryMetadata) AddJoin(jt JoinType, e Expression) error {
 		return fmt.Errorf("join expression '%s' is already used", e.String())
 	}
 
-	// Add the root if its a Path, else make sure somewhere we have this root
-	if p, ok := e.(Path); ok && p.Metadata().IsRoot() {
+	// Add the base Parent if its a Path, else make sure somewhere we have the parent for this entry
+	if p, ok := e.(Path); ok && p.LingoPathData().Parent() == nil {
 		qm.expsInJoin = append(qm.expsInJoin, e)
 	} else if err := qm.validate(e); err != nil {
 		return err
@@ -137,9 +133,9 @@ func (qm BasicQueryMetadata) Joins() []JoinExpression {
 		return qm.joins
 	}
 
-	// Copy the current joins, append the most recent to the end. Dont return the actual values, 
+	// Copy the current joins, append the most recent to the end. Dont return the actual values,
 	// because then they could be modified.
-	result := make([]JoinExpression, len(qm.joins), len(qm.joins) + 1)
+	result := make([]JoinExpression, len(qm.joins), len(qm.joins)+1)
 	copy(result, qm.joins)
 	return append(result, NewJoinExpression(qm.joinType, qm.joinTarget, qm.joinCondition, qm.joinFlags))
 }
@@ -265,7 +261,7 @@ func (qm BasicQueryMetadata) and(l, r PredicateExpression) PredicateExpression {
 	if l == nil {
 		return r
 	}
-	return NewPredicateOperation(OpAnd, l, r)
+	return NewOpAnd(l, r)
 }
 
 func (qm *BasicQueryMetadata) validate(e Expression) error {

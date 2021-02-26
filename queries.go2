@@ -65,7 +65,7 @@ func SelectColumn[T any](exp TypedExpression[T]) SimpleQuery[TypedExpression[T]]
 	q.mixin.SetProjection(exp)
 	return q
 }
-func SelectColumns(exps []Expression) SimpleQuery[Tuple] {
+func SelectColumns(exps ...Expression) SimpleQuery[Tuple] {
 	t := NewTuple(exps)
 	q := SQLQuery[Tuple]{}
 	md := &BasicQueryMetadata{}
@@ -266,7 +266,7 @@ func (c *SQLUpdateClause) Limit(l int64) *SQLUpdateClause {
 	return c
 }
 
-// TODO - see how useful this is, maybe use this instead of `Set` below. 
+// TODO - see how useful this is, maybe use this instead of `Set` below.
 func SetValue[T any](c *SQLUpdateClause, p TypedPath[T], v T) {
 	c.Set(p, v)
 }
@@ -356,7 +356,7 @@ func (q QueryMixin) RemoveFlag(qf QueryFlag) {
 	q.qm.RemoveFlag(qf)
 }
 
-func (q QueryMixin) SetProjection(e Expression) error{
+func (q QueryMixin) SetProjection(e Expression) error {
 	return q.qm.SetProjection(e)
 }
 
@@ -491,7 +491,7 @@ func (q QueryMixin) createJoinAlias(e Expression, a Path) Expression {
 }
 
 func (q QueryMixin) assertRoot(p Path) {
-	if p.Root() != p {
+	if p.LingoPathData().Root() != p {
 		panic(fmt.Errorf("path %s is not a root path", p))
 	}
 }

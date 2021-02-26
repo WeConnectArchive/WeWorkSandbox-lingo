@@ -8,6 +8,7 @@ import (
 )
 
 var printDebugCounter uint64
+
 func printDebug(msg string, v interface{}) {
 	countNum := atomic.AddUint64(&printDebugCounter, 1)
 	fmt.Println(msg)
@@ -24,15 +25,15 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 		wantElem     Expression
 		wantName     string
 	}
-	sp := NewSimplePath[bool](NewPathMetadataForVariable("bool_simple_path"))
+	sp := NewVariable[bool]("bool_simple_path")
 	tests := []struct {
 		tname    string
-		input    PathMetadata
+		input    Path
 		wantData want
 	}{
 		{
-			tname: `NewPathMetadataForVariable("varName")`,
-			input: NewPathMetadataForVariable("varName"),
+			tname: `NewVariable("varName")`,
+			input: NewVariable[string]("varName"),
 			wantData: want{
 				wantType:     reflect.TypeOf(Variable),
 				wantPathType: Variable,
@@ -44,13 +45,13 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 			},
 		},
 		{
-			tname: `NewPathMetadataForProperty("propName", sp)`,
-			input: NewPathMetadataForProperty("propName", sp),
+			tname: `NewProperty("propName", sp)`,
+			input: NewProperty[string]("propName", sp),
 			wantData: want{
 				wantType:     reflect.TypeOf(Property),
 				wantPathType: Property,
 				wantParent:   sp,
-				wantRoot:     sp.Root(),
+				wantRoot:     sp.LingoPathData().Root(),
 				wantIsRoot:   false,
 				wantElem:     constantStringExpression("propName"),
 				wantName:     "propName",
@@ -60,12 +61,10 @@ func TestPathMetadata_VariableProperty(t *testing.T) {
 
 	for idx, tc := range tests {
 		OnNotEqualFatalf(t, idx, tc.tname, "Type", tc.input.Type(), tc.wantData.wantType)
-		OnNotEqualFatalf(t, idx, tc.tname, "PathType", tc.input.PathType(), tc.wantData.wantPathType)
-		OnNotEqualFatalf(t, idx, tc.tname, "Parent", tc.input.Parent(), tc.wantData.wantParent)
-		OnNotEqualFatalf(t, idx, tc.tname, "Root", tc.input.Root(), tc.wantData.wantRoot)
-		OnNotEqualFatalf(t, idx, tc.tname, "IsRoot", tc.input.IsRoot(), tc.wantData.wantIsRoot)
-		OnNotEqualFatalf(t, idx, tc.tname, "Elem", tc.input.Elem(), tc.wantData.wantElem)
-		OnNotEqualFatalf(t, idx, tc.tname, "Name", tc.input.Name(), tc.wantData.wantName)
+		OnNotEqualFatalf(t, idx, tc.tname, "Parent", tc.input.LingoPathData().Parent(), tc.wantData.wantParent)
+		OnNotEqualFatalf(t, idx, tc.tname, "Root", tc.input.LingoPathData().Root(), tc.wantData.wantRoot)
+		OnNotEqualFatalf(t, idx, tc.tname, "Value", tc.input.LingoPathData().Value(), tc.wantData.wantElem)
+		OnNotEqualFatalf(t, idx, tc.tname, "Name", tc.input.LingoPathData().Name(), tc.wantData.wantName)
 	}
 }
 
@@ -82,7 +81,7 @@ func OnNotEqualFatalf[T comparable](t *testing.T, idx int, name, sub string, lef
 }
 
 func TestDSL(t *testing.T) {
-	var tactor = NewTActorForVariable("a")
+	var tactor = NewTActorAs("a")
 	printDebug("tactor", tactor)
 	printDebug("tactor.ActorID", tactor.ActorID)
 	printDebug("tactor.ActorID.EqValue(int16(10))", tactor.ActorID.EqValue(int16(10)))
@@ -126,17 +125,6 @@ func TestDSL(t *testing.T) {
 	qm.AddWhere(exp3)
 	printDebug("qm", qm)
 
-	var tfilm = NewTFilmForVariable("f")
-	printDebug("tfilm", tfilm)
-
-	// TODO: Have to type cast this, I dont think the new Type system does this many levels deep yet?
-	firstNameTE := TypedExpression[string](tactor.FirstName)
-	var selQuery = SelectColumn(firstNameTE).From(tactor)
-	selQuery.LeftJoin(tfilm, tfilm.MainActorID.Eq(tactor.ActorID))
-	selQuery.Where(tactor.IsActive.IsTrue())
-	selQuery.Where(tactor.FirstName.LocateValue("123").GTValue(10).Or(tactor.FirstName.InValues("abc", "def", "ghi")))
-	printDebug("selQuery", selQuery)
-
 	joinTypes := map[JoinType]string{
 		DefaultJoinType(): "JOIN",
 		InnerJoinType():   "INNER JOIN",
@@ -152,7 +140,27 @@ func TestDSL(t *testing.T) {
 		joinTypes: joinTypes,
 	}
 
+	var tfilm = NewTFilmAs("f")
+	printDebug("tfilm", tfilm)
+
+	// TODO: Have to type cast this, I dont think the new Type system does this many levels deep yet?
+	firstNameTE := TypedExpression[string](tactor.FirstName)
+	var selQuery = SelectColumn(firstNameTE).From(tactor)
+	selQuery.LeftJoin(tfilm, tfilm.MainActorID.Eq(tactor.ActorID))
+	selQuery.Where(tactor.IsActive.IsTrue())
+	selQuery.Where(tactor.FirstName.LocateValue("123").GTValue(10).Or(tactor.FirstName.InValues("abc", "def", "ghi")))
+	printDebug("selQuery", selQuery)
+
 	sqlStr, sqlStrValues := selQuery.Build(sqlTemplates)
+	printDebug("sqlStr", sqlStr)
+	printDebug("sqlStrValues", sqlStrValues)
+
+	var selManyQuery = SelectColumns(tactor.FirstName, tactor.LastName).From(tactor)
+	selManyQuery.LeftJoin(tfilm, tfilm.MainActorID.Eq(tactor.ActorID))
+	selManyQuery.Where(tactor.FirstName.InValues("abc", "def", "ghi"))
+	printDebug("selManyQuery", selManyQuery)
+
+	sqlStr, sqlStrValues = selManyQuery.Build(sqlTemplates)
 	printDebug("sqlStr", sqlStr)
 	printDebug("sqlStrValues", sqlStrValues)
 

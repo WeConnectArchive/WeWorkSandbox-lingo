@@ -1,7 +1,6 @@
 package lingo
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 )
@@ -14,70 +13,37 @@ func (p PathType) Type() reflect.Type {
 
 const (
 	Unknown PathType = iota
-
-	ArrayValue
-	ArrayValueConstant
-	CollectionAny
-	Delegate
-	ListValue
-	ListValueConstant
-	MapValue
-	MapValueConstant
 	Property
 	Variable
 )
-
-func NewPathMetadataForVariable(varName string) PathMetadata {
-	return NewPathMetadata(Variable, constantStringExpression(varName), nil)
-}
-func NewPathMetadataForProperty(propName string, parent Path) PathMetadata {
-	return NewPathMetadata(Property, constantStringExpression(propName), parent)
-}
-func NewPathMetadata(pt PathType, element Expression, parent Path) PathMetadata {
-	var root Path
-	if parent != nil {
-		root = parent.Root()
-	}
-	return PathMetadata{
-		pathType: pt,
-		root:     root,
-		parent:   parent,
-		element:  element,
-	}
-}
-
-type PathMetadata struct {
-	pathType PathType
-	root     Path
-	parent   Path
-	element  Expression
-}
-
-func (pm PathMetadata) Type() reflect.Type { return reflect.TypeOf(pm.pathType) }
-func (pm PathMetadata) IsZero() bool {
-	return pm == PathMetadata{}
-}
-func (pm PathMetadata) PathType() PathType { return pm.pathType }
-func (pm PathMetadata) Parent() Path       { return pm.parent }
-func (pm PathMetadata) Root() Path         { return pm.root }
-func (pm PathMetadata) IsRoot() bool {
-	return pm.Parent() == nil || (pm.PathType() == Delegate && pm.Parent().Metadata().IsRoot())
-}
-func (pm PathMetadata) Elem() Expression { return pm.element }
-func (pm PathMetadata) Name() string {
-	switch pm.pathType {
-	case Variable, Property:
-		return pm.Elem().String()
-	}
-	panic(fmt.Sprintf("name property not available for path type %d, must be accessed with Element()", pm.pathType))
-}
 
 // ================================================
 // PATH
 type Path interface {
 	Expression
-	Metadata() PathMetadata
-	Root() Path
+
+	// LingoPathData is used to ensure no collisions occur with potential Table
+	// or Column names. We use this so things like Parent or Value arent potentially
+	// duplicated from Columns.
+	LingoPathData() PathData
+}
+
+// PathData knows if this is a Property (parent.child) or Variable (name).
+// To create, use `NewProperty` or `NewVariable`. They are effictively the same thing.
+type PathData struct {
+	pathType PathType
+	parent   Path
+	value    constantStringExpression
+}
+
+func (p PathData) Name() string      { return p.value.String() }
+func (p PathData) Value() Expression { return p.value }
+func (p PathData) Parent() Path      { return p.parent }
+func (p PathData) Root() Path {
+	if p.parent == nil {
+		return nil
+	}
+	return p.parent.LingoPathData().Parent()
 }
 
 type TypedPath[T any] interface {
@@ -87,50 +53,48 @@ type TypedPath[T any] interface {
 
 // -------------------------------------
 // NewSimplePath
-func NewSimplePathForProperty[T any](propName string, parent Path) SimplePath[T] {
-	return NewSimplePath[T](NewPathMetadataForProperty(propName, parent))
-}
-func NewSimplePathForVariable[T any](variableName string) SimplePath[T] {
-	return NewSimplePath[T](NewPathMetadataForVariable(variableName))
-}
-func NewSimplePath[T any](pm PathMetadata) SimplePath[T] {
-	return SimplePath[T]{
-		pm:    pm,
-	}
+type SimplePath[T any] PathData
+
+func NewProperty[T any](name string, parent Path) SimplePath[T] {
+	return SimplePath[T](PathData{
+		pathType: Property,
+		parent:   parent,
+		value:    constantStringExpression(name),
+	})
 }
 
-type SimplePath[T any] struct {
-	pm    PathMetadata
+func NewVariable[T any](name string) SimplePath[T] {
+	return SimplePath[T](PathData{
+		pathType: Variable,
+		value:    constantStringExpression(name),
+	})
 }
 
-func (p SimplePath[T]) Type() reflect.Type     { return p.pm.Type() }
-func (p SimplePath[T]) String() string         { return VisitWithDefaultToStringBuilder(p) }
-func (p SimplePath[T]) Metadata() PathMetadata { return p.pm }
-func (p SimplePath[T]) Root() Path             { return p.pm.Root() }
+// -- Expression
+func (p SimplePath[T]) Type() reflect.Type { return reflect.TypeOf(PathData(p).pathType) }
+func (p SimplePath[T]) String() string     { return PathData(p).value.String() }
+
+// -- Path
+func (p SimplePath[T]) LingoPathData() PathData { return PathData(p) }
 
 // -------------------------------------
 // NewBoolPath
 func NewBoolPath(p SimplePath[bool]) BoolPath {
-	return BoolPath{
-		mixin: p,
-	}
+	return BoolPath(p)
 }
 
-type BoolPath struct {
-	mixin SimplePath[bool] // & BooleanExpression
-}
+type BoolPath SimplePath[bool]
 
 // -- Expression
-func (p BoolPath) Type() reflect.Type { return p.mixin.Type() }
+func (p BoolPath) Type() reflect.Type { return SimplePath[bool](p).Type() }
 func (p BoolPath) String() string     { return VisitWithDefaultToStringBuilder(p) }
 
 // -- Path
-func (p BoolPath) Metadata() PathMetadata { return p.mixin.Metadata() }
-func (p BoolPath) Root() Path             { return p.mixin.Root() }
+func (p BoolPath) LingoPathData() PathData { return PathData(p) }
 
 // -- BooleanExpression
 func (o BoolPath) As(alias string) BooleanExpression {
-	return o.AsPath(NewSimplePathForVariable[bool](alias))
+	return o.AsPath(NewVariable[bool](alias))
 }
 func (o BoolPath) AsPath(p TypedPath[bool]) BooleanExpression {
 	return NewOpAlias(o, p)
@@ -166,23 +130,18 @@ func (p BoolPath) NotEq(v TypedExpression[bool]) BooleanExpression {
 // -------------------------------------
 // NewNumberPath
 func NewNumberPath[T numeric](p SimplePath[T]) NumberPath[T] {
-	return NumberPath[T]{
-		mixin: p,
-	}
+	return NumberPath[T](p)
 }
 
 // NumberPath is a basic NumberExpression of numberic type T
-type NumberPath[T numeric] struct {
-	mixin SimplePath[T]
-}
+type NumberPath[T numeric] SimplePath[T]
 
 // -- Expression
-func (p NumberPath[T]) Type() reflect.Type { return p.mixin.Type() }
+func (p NumberPath[T]) Type() reflect.Type { return SimplePath[T](p).Type() }
 func (p NumberPath[T]) String() string     { return VisitWithDefaultToStringBuilder(p) }
 
 // -- Path
-func (p NumberPath[T]) Metadata() PathMetadata { return p.mixin.Metadata() }
-func (p NumberPath[T]) Root() Path             { return p.mixin.Root() }
+func (p NumberPath[T]) LingoPathData() PathData { return PathData(p) }
 
 // -- LiteralExpression
 func (p NumberPath[T]) StringValue() StringExpression {
@@ -249,7 +208,7 @@ func (o NumberPath[T]) AsPath(p TypedPath[T]) NumberExpression[T] {
 	return NewNumberOperation[T](OpAlias, o, p)
 }
 func (o NumberPath[T]) As(alias string) NumberExpression[T] {
-	return o.AsPath(NewSimplePathForVariable[T](alias))
+	return o.AsPath(NewVariable[T](alias))
 }
 func (o NumberPath[T]) Ceil() NumberExpression[T] {
 	return NewNumberOperation[T](OpCeiling, o)
@@ -300,40 +259,29 @@ func (o NumberPath[T]) InValues(v ...T) NumberExpression[T] {
 	return o.In(NewConstant[[]T](v))
 }
 func (o NumberPath[T]) In(v ...TypedExpression[T]) NumberExpression[T] {
-	return NewNumberOperation[T](OpIn, o, NewSet[T](v...))
+	return NewNumberOperation[T](OpIn, o, NewSlice[T](v...))
 }
 func (o NumberPath[T]) NotInValues(v ...T) NumberExpression[T] {
 	return o.NotIn(NewConstant[[]T](v))
 }
 func (o NumberPath[T]) NotIn(v ...TypedExpression[T]) NumberExpression[T] {
-	return NewNumberOperation[T](OpNotIn, o, NewSet[T](v...))
+	return NewNumberOperation[T](OpNotIn, o, NewSlice[T](v...))
 }
 
 // -------------------------------------
 // NewStringPath is a basic StringExpression path
 func NewStringPath(p SimplePath[string]) StringPath {
-	return StringPath{
-		mixin: p,
-	}
+	return StringPath(p)
 }
 
-type StringPath struct {
-	mixin SimplePath[string]
-}
+type StringPath SimplePath[string]
 
 // -- Expression
-func (o StringPath) Type() reflect.Type { return o.mixin.Type() }
-func (o StringPath) String() string {
-	return o.mixin.String()
-}
+func (o StringPath) Type() reflect.Type { return SimplePath[string](o).Type() }
+func (o StringPath) String() string     { return SimplePath[string](o).String() }
 
 // -- Path
-func (o StringPath) Metadata() PathMetadata {
-	return o.mixin.Metadata()
-}
-func (o StringPath) Root() Path {
-	return o.mixin.Root()
-}
+func (p StringPath) LingoPathData() PathData { return PathData(p) }
 
 // -- AnyComparableExpression
 func (o StringPath) Asc() Order {
@@ -391,7 +339,7 @@ func (o StringPath) As(alias TypedPath[string]) StringExpression {
 	return NewStringOperation(OpAlias, o, alias)
 }
 func (o StringPath) Alias(alias string) StringExpression {
-	return o.As(NewSimplePathForVariable[string](alias))
+	return o.As(NewVariable[string](alias))
 }
 func (o StringPath) AppendValue(v string) StringExpression {
 	return o.Append(NewConstant[string](v))
@@ -457,7 +405,7 @@ func (o StringPath) InValues(v ...string) BooleanExpression {
 	return NewBooleanOperation(OpIn, o, NewConstant[[]string](v))
 }
 func (o StringPath) In(v ...TypedExpression[string]) BooleanExpression {
-	return NewBooleanOperation(OpIn, o, NewSet(v...))
+	return NewBooleanOperation(OpIn, o, NewSlice(v...))
 }
 func (o StringPath) IndexOfValue(v string) NumberExpression[int] {
 	return o.IndexOf(NewConstant[string](v))
@@ -590,48 +538,39 @@ func (o StringPath) Upper() StringExpression {
 	return NewStringOperation(OpStringToUpper, o)
 }
 
-type TableInfo interface {
-	Schema() string
-	Table() string
-	// Columns() []Path
-	// PrimaryKey() PrimaryKey
-	// ForeignKeys() []ForeignKey
-	// InverseForeignKeys() []ForeignKey
-	// Metadata(column Path) ColumnMetadata
-}
-
-// -------------------------------------
-// NewTablePath is a basic Table path
-func NewTablePath(md PathMetadata, schema, table string) TablePath {
-	return TablePath{
-		md: md,
-		schema: schema,
-		table: table,
-	}
-}
-
-type TablePath struct {
-	md     PathMetadata
+type TableData struct {
 	schema string
 	table  string
 }
 
+func (t TableData) Name() string   { return t.table }
+func (t TableData) Schema() string { return t.schema }
+
+// -------------------------------------
+// NewTable is a basic Table path
+func NewTable[T any](alias, schema, table string) Table {
+	return Table{
+		alias: NewVariable[T](alias),
+		table: TableData{
+			schema: schema,
+			table:  table,
+		},
+	}
+}
+
+type Table struct {
+	alias Path
+	table TableData
+}
+
 // -- Expression
-func (o TablePath) Type() reflect.Type { return reflect.TypeOf(o) }
-func (o TablePath) String() string {
-	return VisitWithDefaultToStringBuilder(o)
+func (o Table) Type() reflect.Type { return reflect.TypeOf(o) }
+func (o Table) String() string {
+	return VisitWithDefaultToStringBuilder(o.alias)
 }
+
 // -- Path
-func (o TablePath) Metadata() PathMetadata {
-	return o.md
-}
-func (o TablePath) Root() Path {
-	return o.md.Root()
-}
-// -- TableInfo
-func (o TablePath) Schema() string {
-	return o.schema
-}
-func (o TablePath) Table() string {
-	return o.table
-}
+func (o Table) LingoPathData() PathData { return o.alias.LingoPathData() }
+
+// -- Table
+func (o Table) LingoTableData() TableData { return o.table }
