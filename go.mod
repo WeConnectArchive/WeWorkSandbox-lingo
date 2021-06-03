@@ -13,7 +13,7 @@ require (
 	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
 	github.com/magefile/mage v1.10.0
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
-	github.com/onsi/ginkgo v1.14.0
+	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.10.1
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.7.0 // indirect
@@ -26,7 +26,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.0
 	go.opentelemetry.io/otel v0.8.0
-	golang.org/x/tools v0.0.0-20200225230052-807dcd883420 // indirect
 	google.golang.org/grpc v1.30.0
 	gopkg.in/ini.v1 v1.55.0 // indirect
 )
